@@ -312,6 +312,7 @@ function initUI() {
   let places = getItem("places")
   if (places == null) { // if this triggers it's their first visit
     needsInit = true
+    $(".title-container").css("animation", "none")
     $(".selection-container").css("display", "none")
     $("#initLoad").css("display", "flex")
     return

@@ -21,7 +21,8 @@ html, body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 3em
+  font-size: 3em;
+  animation: descend 1s;
 }
 
 .selection-container {
@@ -32,6 +33,7 @@ html, body {
   height: 66px;
   box-shadow: 2px 3px 5px #ccc;
   max-width: min(1000px, 90vw);
+  animation: descend 1s;
 }
 
 #selection {
@@ -93,6 +95,10 @@ html, body {
   overflow: hidden;
 }
 
+#initLoad {
+  margin-top: 20px;
+}
+
 .spinner {
   margin-top: 30px;
   width: 100px;
@@ -130,6 +136,15 @@ html, body {
   }
 }
 
+@keyframes fadein {
+    from { opacity: 0; d}
+    to   { opacity: 1; }
+}
+
+@keyframes descend {
+  from {transform: translateY(-100vh);}
+  to {transform: translateY(0vh);}
+}
 
 #results {
   display: grid;
@@ -146,6 +161,7 @@ html, body {
   background-color: whitesmoke;
   border-radius: 10px;
   font-size: 2em;
+  animation: fadein 1s;
 }
 
 .leg {
