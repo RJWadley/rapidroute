@@ -206,11 +206,6 @@ function parseMRT(jason) {
             "To": transfer,
             "Type": "MRT Transfer"
           })
-          routes.push({
-            "From": transfer,
-            "To": item["Code"],
-            "Type": "MRT Transfer"
-          })
         });
 
       }
