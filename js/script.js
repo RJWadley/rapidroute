@@ -1,6 +1,7 @@
 var routesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/2/public/full?alt=json";
 var placesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/3/public/full?alt=json";
 var mrtUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/4/public/full?alt=json";
+var needsInit = false;
 
 function update() {
   $.ajax({
@@ -221,9 +222,16 @@ function parseMRT(jason) {
     setItem("routes", routes)
     setItem("places", places)
 
-}
+    if (needsInit == true) {
+      $(".selection-container").css("display", "block")
+      $("#initLoad").css("display", "none")
+      initUI();
+    }
+  }
+
 
 function populateResults(results){
+  let places = getItem("places")
   $("#results").html("")
 
   if (results.length == 0) {
@@ -243,10 +251,15 @@ function populateResults(results){
         }
       }
 
-      $("#results").children().last().append("<div class='leg'>LEG:</div>")
+      console.log(item)
+      $("#results").children().last().append("<div class='leg'></div>")
       currentDiv = $("#results").children().last().children().last();
-      currentDiv.append(`<div>From: ${item.From}</div>`)
-      currentDiv.append(`<div>To: ${item.To}</div>`)
+      currentDiv.append(`
+        <div class="leg-summary">
+          <div>${item.From}${places.find(x => x.Name === item.From).DisplayName}</div>
+          <div>&#x2794;</div>
+          <div>${item.To}</div>
+        </div`)
       currentDiv.append(`<div>Type: ${item.Type}</div>`)
 
       if (item.Type == "Flight") {
@@ -269,7 +282,12 @@ function populateResults(results){
 function initUI() {
   console.log("intializing UI")
   let places = getItem("places")
-  if (places == null) {return}
+  if (places == null) { // if this triggers it's their first visit
+    needsInit = true
+    $(".selection-container").css("display", "none")
+    $("#initLoad").css("display", "flex")
+    return
+  }
   $('#to, #from').children().remove()
   $('#to, #from').append("<option></option>")
   let selection = [

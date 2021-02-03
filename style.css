@@ -24,12 +24,13 @@ html, body {
 }
 
 .selection-container {
-  margin: 50px 40px;
+  margin: 50px auto;
   margin-top: -20px;
   background-color: white;
   border-radius: 10px;
   height: 66px;
   box-shadow: 2px 3px 5px #ccc;
+  max-width: min(1000px, 90vw);
 }
 
 #selection {
@@ -70,12 +71,15 @@ html, body {
   }
 }
 
-#searching {
-  width: 100%;
+.searching {
+  padding: 0 10px;
+  width: calc(100% - 20px);
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   flex-direction: column;
+  margin-bottom: 40px;
 }
 
 .spinner {
@@ -118,6 +122,8 @@ html, body {
   display: grid;
   grid-template-columns: repeat( auto-fit, min(minmax(400px, 1fr), 100%) );
   grid-gap: 10px;
+  max-width: min(1000px, 90vw);
+  margin: 0 auto;
 }
 
 .route {
@@ -131,4 +137,9 @@ html, body {
   grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) );
   margin: 10px 0px;
   padding: 10px;
+}
+
+.leg-summary {
+  display: flex;
+  justify-content: space-around;
 }

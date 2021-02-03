@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>RapidRoute</title>
+  <title>MRT RapidRoute</title>
   <meta name="description" content="Minecart Rapid Transit route finder">
   <meta name="author" content="Scarycrumb45">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,7 @@
 <body>
   <div class="title-container">
     <div class="title">
-      RapidRoute
+      MRT RapidRoute
     </div>
     <div>
     </div>
@@ -38,8 +38,15 @@
     </form>
   </div>
 
-  <div id="searching" style="display: none">
+  <div id="searching" class="searching" style="display: none">
     <h2>Searching</h2>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="initLoad" class="searching" style="display: none">
+    <h1>Welcome to RapidRoute!</h1>
+    <h2>We're compiling the route tables for the first time.
+      This could take a minute, but we only need to do it once.</h2>
     <div class="spinner"></div>
   </div>
 
