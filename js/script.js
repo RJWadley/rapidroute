@@ -254,6 +254,9 @@ function populateResults(results){
       $("#results").children().last().append("<div class='leg'></div>")
       currentDiv = $("#results").children().last().children().last();
 
+      let fromDisplay = places.find(x => x.Name === item.From).DisplayName
+      let toDisplay = places.find(x => x.Name === item.To).DisplayName
+
       if (item.Type == "Flight") {
         currentDiv.append(`
           <div class="leg-blurb">
@@ -273,8 +276,8 @@ function populateResults(results){
             <div class="leg-code">${item.To}</div>
           </div>
           <div class="leg-details">
-            <div>${places.find(x => x.Name === item.From).DisplayName}</div>
-            <div>${places.find(x => x.Name === item.To).DisplayName}</div>
+            <div>${fromDisplay == undefined ? "Foobar" : fromDisplay}</div>
+            <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
           </div>
         `)
       } else {
@@ -288,8 +291,8 @@ function populateResults(results){
             <div class="leg-code">${item.To}</div>
           </div>
           <div class="leg-details">
-            <div>${places.find(x => x.Name === item.From).DisplayName}</div>
-            <div>${places.find(x => x.Name === item.To).DisplayName}</div>
+            <div>${fromDisplay == undefined ? "Foobar" : fromDisplay}</div>
+            <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
           </div>
         `)
       }
