@@ -1,0 +1,55 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>RapidRoute</title>
+  <meta name="description" content="Minecart Rapid Transit route finder">
+  <meta name="author" content="Scarycrumb45">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <div class="title-container">
+    <div class="title">
+      RapidRoute
+    </div>
+    <div>
+    </div>
+  </div>
+
+  <div class="selection-container">
+    <form id="selection">
+      <div>
+        <select style="width: 100%" id="from">
+          <option>Loading</option>
+        </select>
+      </div><div>
+        <select style="width: 100%" id="to">
+          <option>Loading</option>
+        </select>
+      </div>
+    </form>
+  </div>
+
+  <div id="searching" style="dispdlay: none">
+    <h2>Searching</h2>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="results"></div>
+
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="js/lz-string.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+var currentIterationCount = 0;
+var nextIterationCount = 0;
+var visited = []
+var nextvisited = []
+
+onmessage = function(e) {
+  search(e.data[0],e.data[1],e.data[2],e.data[3])
+}
+
+function search(from, to, places, routes) {
+  //check for identical and empty
+  if (to == from || to == "" || from == "") {
+      postMessage("pass")
+      return
+  }
+  console.log("starting search")
+
+  let destinationReached = false
+  let solutions = []
+  let paths = []
+  visited = []
+  nextvisited = []
+  //prepopulate with starting route
+  let startingOptions = routes.filter(item => item["From"] == from)
+  for (var i = 0; i < startingOptions.length; i++) {
+   paths.push([startingOptions[i]])
+   //check for direct flights
+   if (startingOptions[i].To == to) {
+     destinationReached = true
+     solutions.push([startingOptions[i]])
+     postMessage(solutions)
+   }
+  }
+  currentIterationCount = paths.length
+
+  function discover() {
+
+    //get first path
+    let firstPath = paths.shift()
+    //get last item of first path
+    let mostRecent = firstPath[firstPath.length-1]
+    //get all possible next moves
+    possibleMoves = routes;
+    possibleMoves = possibleMoves.filter(item => item["From"] == mostRecent["To"])
+    //for each possible move:
+    possibleMoves.forEach((item, i) => {
+      //check if visited
+      if (!visited.includes(item["To"])) {
+        //if not, add to list of visited places
+        nextvisited.push(item["To"])
+        //generate whole path
+        let newPath = [...firstPath]
+        newPath.push(item)
+        //check if completes route
+        if (item["To"] == to) {
+          //if it does, add it to solutions
+          destinationReached = true
+          solutions.push(newPath)
+          postMessage(solutions)
+        }
+        //if the solution has not yet been reached
+        if (destinationReached == false) {
+          //add new path to path list
+          nextIterationCount++
+          paths.push(newPath)
+        }
+      }
+    });
+
+  }
+
+  for (var i = 0; i < 100; i++) {
+    for (var j = 0; j < currentIterationCount; j++) {
+      if (paths.length > 0) {
+        discover();
+      }
+    }
+    currentIterationCount = nextIterationCount;
+    nextIterationCount = 0;
+    visited = [...visited, ...nextvisited]
+    nextvisited = []
+  }
+
+  postMessage(solutions)
+
+}
