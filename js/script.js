@@ -204,12 +204,12 @@ function parseMRT(jason) {
           routes.push({
             "From": item["Code"],
             "To": transfer,
-            "Type": "MRT"
+            "Type": "MRT Transfer"
           })
           routes.push({
             "From": transfer,
             "To": item["Code"],
-            "Type": "MRT"
+            "Type": "MRT Transfer"
           })
         });
 
@@ -239,7 +239,7 @@ function populateResults(results){
   }
 
   results.forEach((result, i) => {
-    $("#results").append("<div class='route'>ROUTE:</div>")
+    $("#results").append("<div class='route'>Option " + (i + 1) + "</div>")
     //add to dom
     result.forEach((item, j) => {
 
@@ -251,7 +251,6 @@ function populateResults(results){
         }
       }
 
-      console.log(item)
       $("#results").children().last().append("<div class='leg'></div>")
       currentDiv = $("#results").children().last().children().last();
 
@@ -263,7 +262,7 @@ function populateResults(results){
           <div class="leg-summary">
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
-              <div>Gate:</div>
+              <div>Gate</div>
               <div>${item.ArriveGate == undefined ? "Unknown" : item.ArriveGate }</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>

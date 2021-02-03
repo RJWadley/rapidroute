@@ -78,6 +78,7 @@ function search(from, to, places, routes) {
     currentIterationCount = nextIterationCount;
     nextIterationCount = 0;
     visited = [...visited, ...nextvisited]
+    //visited = [] //uncomment for lols
     nextvisited = []
   }
 
