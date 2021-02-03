@@ -256,7 +256,7 @@ function populateResults(results){
 
       if (item.Type == "Flight") {
         currentDiv.append(`
-          <div>
+          <div class="leg-blurb">
             Flight ${item.Number} by ${item.Company}
           </div>
           <div class="leg-summary">
@@ -279,7 +279,7 @@ function populateResults(results){
         `)
       } else {
         currentDiv.append(`
-          <div>
+          <div class="leg-blurb">
             By ${item.Type}
           </div>
           <div class="leg-summary">
