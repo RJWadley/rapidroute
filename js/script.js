@@ -393,5 +393,20 @@ worker.onmessage = function(e) {
   }
 }
 
+//custom matcher
+var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
+function customMatcher(params, data) {
+  // If there are no search terms, return all of the data
+  if ($.trim(params.term) === '') {
+    return data;
+  }
+
+  if (data["Keywords"].toUpperCase().indexOf(params.term.toUpperCase()) == 0) {
+    return data;
+  }
+
+  return defaultMatcher(params, data);
+}
+
 initUI()
 update()
