@@ -71,16 +71,21 @@ function parsePlaces(jason) {
 
   places.forEach((item, i) => {
     if (item["MRT Station"] != undefined) {
-        routes.push({
-          "From": item.Name,
-          "To": item["MRT Station"],
-          "Type": "Walk"
-        })
-        routes.push({
-          "From": item["MRT Station"],
-          "To": item.Name,
-          "Type": "Walk"
-        })
+      let stations = item["MRT Station"].split(",")
+
+      stations.forEach((station, j) => {
+          routes.push({
+            "From": item.Name,
+            "To": station,
+            "Type": "Walk"
+          })
+          routes.push({
+            "From": station,
+            "To": item.Name,
+            "Type": "Walk"
+          })
+      });
+
     }
   });
 
@@ -227,13 +232,15 @@ function parseMRT(jason) {
 
 function populateResults(results){
   let places = getItem("places")
-  $("#results").html("")
 
   if (results.length == 0) {
     $("#results").append("<div class='route'>Unable to find a path.</div>")
   }
 
   results.forEach((result, i) => {
+    //skip if already in existance
+    if($("#results").children().length > i) {return}
+
     $("#results").append("<div class='route'>Option " + (i + 1) + "</div>")
     //add to dom
     result.forEach((item, j) => {
@@ -312,6 +319,7 @@ function initUI() {
     $("#initLoad").css("display", "flex")
     return
   }
+
   $('#to, #from').children().remove()
   $('#to, #from').append("<option></option>")
   let selection = [
@@ -369,6 +377,8 @@ function initUI() {
 $('#from, #to').on('select2:select', function (e) {
   $("#searching").css("display", "flex")
   $("#results").html("")
+  //routes = getItem("routes").filter(route => route.Type != "Flight");
+  //console.log(routes)
   worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), getItem("routes")])
 });
 
