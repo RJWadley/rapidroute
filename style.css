@@ -60,6 +60,11 @@ html, body {
   border-radius: 4px !important;
 }
 
+.select2-search__field {
+  font-size: 1.1em;
+  font-family: Rubik, sans-serif;
+}
+
 @media only screen and (max-width: 600px) {
   #selection {
     grid-template-columns: 1fr;
@@ -133,13 +138,27 @@ html, body {
 
 .leg {
   border: 1px solid blue;
-  display: grid;
-  grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) );
   margin: 10px 0px;
   padding: 10px;
 }
 
 .leg-summary {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.leg-code {
+  font-size: 3em;
+}
+
+.leg-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.leg-details div:nth-child(2) {
+  text-align: right;
 }

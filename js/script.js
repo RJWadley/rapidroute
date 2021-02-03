@@ -254,19 +254,45 @@ function populateResults(results){
       console.log(item)
       $("#results").children().last().append("<div class='leg'></div>")
       currentDiv = $("#results").children().last().children().last();
-      currentDiv.append(`
-        <div class="leg-summary">
-          <div>${item.From}${places.find(x => x.Name === item.From).DisplayName}</div>
-          <div>&#x2794;</div>
-          <div>${item.To}</div>
-        </div`)
-      currentDiv.append(`<div>Type: ${item.Type}</div>`)
 
       if (item.Type == "Flight") {
-        currentDiv.append(`<div>Company: ${item.Company}</div>`)
-        currentDiv.append(`<div>Departure Gate: ${item.DepartGate}</div>`)
-        currentDiv.append(`<div>Arrival Gate: ${item.ArriveGate}</div>`)
-        currentDiv.append(`<div>Flight Number: ${item.Number}</div>`)
+        currentDiv.append(`
+          <div>
+            Flight ${item.Number} by ${item.Company}
+          </div>
+          <div class="leg-summary">
+            <div class="leg-code">${item.From}</div>
+            <div class="leg-gate">
+              <div>Gate:</div>
+              <div>${item.ArriveGate == undefined ? "Unknown" : item.ArriveGate }</div>
+            </div>
+            <div class="leg-arrow">&#x2794;</div>
+            <div class="leg-gate">
+              <div>Gate:</div>
+              <div>${item.DepartGate == undefined ? "Unknown" : item.DepartGate }</div>
+            </div>
+            <div class="leg-code">${item.To}</div>
+          </div>
+          <div class="leg-details">
+            <div>${places.find(x => x.Name === item.From).DisplayName}</div>
+            <div>${places.find(x => x.Name === item.To).DisplayName}</div>
+          </div>
+        `)
+      } else {
+        currentDiv.append(`
+          <div>
+            By ${item.Type}
+          </div>
+          <div class="leg-summary">
+            <div class="leg-code">${item.From}</div>
+            <div class="leg-arrow">&#x2794;</div>
+            <div class="leg-code">${item.To}</div>
+          </div>
+          <div class="leg-details">
+            <div>${places.find(x => x.Name === item.From).DisplayName}</div>
+            <div>${places.find(x => x.Name === item.To).DisplayName}</div>
+          </div>
+        `)
       }
 
       if (item.Active == "FALSE") {
@@ -336,6 +362,9 @@ function initUI() {
     allowClear: true,
     width: 'resolve',
     data: selection
+  });
+  $('#to, #from').on('select2:open', function(e) {
+    $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
   });
 }
 
