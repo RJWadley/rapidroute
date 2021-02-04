@@ -233,7 +233,12 @@ function parseMRT(jason) {
 
 
 function populateResults(results){
-  let places = getItem("places")
+
+  if (placesData == null || placesData == undefined) {
+    placesData = getItem("places")
+  }
+
+  let places = placesData
 
   if (results.length == 0) {
     $("#results").append("<div class='route'>Unable to find a path.</div>")
@@ -413,6 +418,11 @@ worker.onmessage = function(e) {
 //custom matcher
 var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
 function customMatcher(params, data) {
+
+  //get data if it doesn't exist
+  if (placesData == null || placesData == undefined) {
+    placesData = getItem(places);
+  }
 
   // If there are no search terms, return all of the data
   if ($.trim(params.term) === '') {
