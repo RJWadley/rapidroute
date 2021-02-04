@@ -21,8 +21,35 @@ html, body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 3em;
   animation: descend 1s;
+}
+
+.title {
+  font-size: 2em;
+  position: relative;
+}
+
+.title span {
+  position: absolute;
+  bottom: 30px;
+  right: -40px;
+  color: #003815;
+  -webkit-transform: rotate(-20deg);
+  -ms-transform: rotate(-20deg);
+  transform: rotate(-20deg);
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: rotate(-20deg) scale(0.9)
+  }
+  50% {
+    transform: rotate(-20deg) scale(1.1)
+  }
+  100% {
+    transform: rotate(-20deg) scale(0.9)
+  }
 }
 
 .selection-container {
