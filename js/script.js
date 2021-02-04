@@ -275,12 +275,12 @@ function populateResults(results){
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
-              <div>${item.ArriveGate == undefined ? "Unknown" : item.ArriveGate }</div>
+              <div>${item.ArriveGate == undefined ? "Unknown" : item.DepartGate }</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-gate">
               <div>Gate:</div>
-              <div>${item.DepartGate == undefined ? "Unknown" : item.DepartGate }</div>
+              <div>${item.DepartGate == undefined ? "Unknown" : item.ArriveGate }</div>
             </div>
             <div class="leg-code">${item.To}</div>
           </div>
