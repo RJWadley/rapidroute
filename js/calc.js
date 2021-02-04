@@ -81,7 +81,7 @@ function search(from, to, places, routes) {
     //visited = [] //uncomment for lols
     nextvisited = []
   }
-
+  console.log("done calculating")
   postMessage(solutions)
 
 }

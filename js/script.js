@@ -2,6 +2,8 @@ var routesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22
 var placesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/3/public/full?alt=json";
 var mrtUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/4/public/full?alt=json";
 var needsInit = false;
+var routesData;
+var placesData
 
 function update() {
   $.ajax({
@@ -361,25 +363,40 @@ function initUI() {
     placeholder: "Where to?",
     allowClear: true,
     width: 'resolve',
-    data: selection
+    data: selection,
+    matcher: customMatcher
   });
   $('#from').select2({
     placeholder: "Where from?",
     allowClear: true,
     width: 'resolve',
-    data: selection
+    data: selection,
+    matcher: customMatcher
   });
   $('#to, #from').on('select2:open', function(e) {
     $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
   });
 }
 
+$("#airports-check, #mrt-check").on("change", function(e) {
+  console.log("ya")
+  $("#from").trigger("select2:select")
+})
+
 $('#from, #to').on('select2:select', function (e) {
-  $("#searching").css("display", "flex")
   $("#results").html("")
-  //routes = getItem("routes").filter(route => route.Type != "Flight");
-  //console.log(routes)
-  worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), getItem("routes")])
+  if ($("#from").val() == "" || $("#to").val() == "") {return}
+  $("#searching").fadeIn()
+
+  routes = getItem("routes")
+  if ($("#airports-check").prop("checked") == false) {
+    routes = routes.filter(route => route.Type != "Flight");
+  }
+  if ($("#mrt-check").prop("checked") == false) {
+    routes = routes.filter(route => route.Type != "MRT");
+  }
+  console.log(routes)
+  worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), routes])
 });
 
 if (typeof(worker) == "undefined") {
@@ -396,17 +413,55 @@ worker.onmessage = function(e) {
 //custom matcher
 var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
 function customMatcher(params, data) {
+
   // If there are no search terms, return all of the data
   if ($.trim(params.term) === '') {
     return data;
   }
 
-  if (data["Keywords"].toUpperCase().indexOf(params.term.toUpperCase()) == 0) {
-    return data;
+  // Skip if there is no 'children' property
+  if (typeof data.children === 'undefined') {
+    return defaultMatcher(params, data);
   }
 
-  return defaultMatcher(params, data);
+  // for each child
+  var relevantChildren = [];
+  var keywordChildren = [];
+  var defaultChildren = [];
+  var filteredChildren = [];
+  $.each(data.children, function (idx, child) {
+    let placeInfo = placesData.filter(x => x.Name == child.id)[0]
+    //relevant search
+    if (child.text.toUpperCase().indexOf(params.term.toUpperCase()) == 0) {
+      relevantChildren.push(child);
+    } else if (placeInfo["Keywords"] != undefined && placeInfo["Keywords"].toUpperCase().indexOf(params.term.toUpperCase()) != -1) {
+      //keyword search
+      keywordChildren.push(child);
+    } else {
+      //perform a default search
+      let matched = defaultMatcher(params, child)
+      if (matched != null) {
+        defaultChildren.push(matched)
+      }
+    }
+  });
+
+  filteredChildren = [...relevantChildren, ...keywordChildren, ...defaultChildren]
+
+  // If we matched any children set the matched children on the group
+  // and return the group object
+  if (filteredChildren.length) {
+    var modifiedData = $.extend({}, data, true);
+    modifiedData.children = filteredChildren;
+
+    return modifiedData;
+  }
+
+  return null;
 }
 
 initUI()
 update()
+
+routesData = getItem("routes")
+placesData = getItem("places")
