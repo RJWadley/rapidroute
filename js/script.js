@@ -404,8 +404,13 @@ $('#from, #to').on('select2:select', function (e) {
   worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), routes])
 });
 
-if (typeof(worker) == "undefined") {
-  worker = new Worker("./js/calc.js");
+try {
+  if (typeof(worker) == "undefined") {
+    worker = new Worker("./js/calc.js");
+  }
+} catch (e) {
+  alert("Something went wrong. Your browser might not be supported.")
+  console.log(e)
 }
 
 worker.onmessage = function(e) {
