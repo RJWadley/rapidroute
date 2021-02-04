@@ -395,10 +395,10 @@ $('#from, #to').on('select2:select', function (e) {
 
   routes = getItem("routes")
   if ($("#airports-check").prop("checked") == false) {
-    routes = routes.filter(route => route.Type != "Flight");
+    routes = routes.filter(route => route.Type !== "Flight");
   }
   if ($("#mrt-check").prop("checked") == false) {
-    routes = routes.filter(route => route.Type != "MRT");
+    routes = routes.filter(route => route.Type !== "MRT");
   }
   console.log(routes)
   worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), routes])
@@ -426,7 +426,7 @@ function customMatcher(params, data) {
 
   //get data if it doesn't exist
   if (placesData == null || placesData == undefined) {
-    placesData = getItem(places);
+    placesData = getItem("places");
   }
 
   // If there are no search terms, return all of the data

@@ -183,6 +183,7 @@ html, body {
 
 .spinner {
   margin-top: 30px;
+  margin-bottom: 100px;
   width: 100px;
   height: 100px;
   /*position: fixed;

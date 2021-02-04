@@ -69,7 +69,7 @@ function search(from, to, places, routes) {
 
   }
 
-  for (var i = 0; i < 100; i++) {
+  for (var i = 0; i < 500; i++) {
     for (var j = 0; j < currentIterationCount; j++) {
       if (paths.length > 0) {
         discover();
