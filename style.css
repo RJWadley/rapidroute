@@ -48,6 +48,11 @@ html, body {
   overflow: hidden;
 }
 
+select {
+    opacity: 0; /*initially hide ugly boxes*/
+    height: 50px;
+}
+
 .select2-container, .select2-selection--single {
   outline: none;
   background-color: none;

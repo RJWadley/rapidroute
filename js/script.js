@@ -384,7 +384,6 @@ function initUI() {
 }
 
 $("#airports-check, #mrt-check").on("change", function(e) {
-  console.log("ya")
   $("#from").trigger("select2:select")
 })
 
@@ -400,7 +399,6 @@ $('#from, #to').on('select2:select', function (e) {
   if ($("#mrt-check").prop("checked") == false) {
     routes = routes.filter(route => route.Type !== "MRT");
   }
-  console.log(routes)
   worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), routes])
 });
 

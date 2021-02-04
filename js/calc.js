@@ -7,6 +7,19 @@ onmessage = function(e) {
   search(e.data[0],e.data[1],e.data[2],e.data[3])
 }
 
+//standard shuffle alg
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
+
 function search(from, to, places, routes) {
   //check for identical and empty
   if (to == from || to == "" || from == "") {
@@ -14,6 +27,10 @@ function search(from, to, places, routes) {
       return
   }
   console.log("starting search")
+
+  //we shuffle so that the results won't appear in the same order every time
+  //wouldn't want to accidentally bias any particular airline
+  routes = shuffle(routes);
 
   let destinationReached = false
   let solutions = []
