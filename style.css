@@ -29,6 +29,15 @@ html, body {
   position: relative;
 }
 
+.title h1 {
+  margin-top: 0px;
+}
+
+.title p {
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
 .title span {
   position: absolute;
   bottom: 30px;
@@ -114,6 +123,13 @@ select {
 }
 
 @media only screen and (max-width: 600px) {
+
+  /* fix bounce on mobile */
+  .title span {
+    bottom: 20px;
+    right: 10px;
+  }
+
   #selection {
     grid-template-columns: 1fr;
   }
@@ -311,7 +327,12 @@ select {
 
 .leg-code {
   font-size: 3em;
-  width: 2.7em;
+  width: 2.6em;
+  text-align: right;
+}
+
+.leg-code:nth-child(1) {
+  text-align: left;
 }
 
 .leg-arrow {
