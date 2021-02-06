@@ -234,6 +234,65 @@ select {
   margin-bottom: -50px;
 }
 
+@keyframes feedback {
+  0% {
+  }
+  20%, 80% {
+    width: 140px;
+  }
+  100% {
+  }
+}
+
+@keyframes feedback-text {
+  0% {
+  }
+  20%, 80% {
+    width: inherit;
+  }
+  90% {
+  }
+}
+
+.feedback {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 999px;
+  background-color: var(--mint);
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  width: 20px;
+  height: 40px;
+  padding: 10px 20px;
+  animation: feedback 5s ease;
+  animation-delay: 5s;
+  transition: background-color 0.3s, width 0.3s;
+  overflow: hidden;
+  color: black;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.feedback .material-icons {
+  padding-right: 10px;
+  position: relative;
+  top: 2px;
+  left: -1px
+}
+
+.feedback-text {
+  position: absolute;
+  left: 60px;
+  overflow: hidden;
+}
+
+.feedback:hover {
+  background-color: var(--light-mint);
+  width: 140px;
+}
+
 #initLoad {
   margin-top: 20px;
 }
