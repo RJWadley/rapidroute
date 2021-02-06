@@ -100,9 +100,7 @@ select {
 }
 
 .select2-container--focus .select2-selection__rendered {
-  dborder: 1px solid red;
-  box-shadow: 0px 0px 3px #999 inset;
-  border-radius: 4px;
+  text-decoration: underline;
 }
 
 .select2-selection__clear {
@@ -193,10 +191,14 @@ select {
   border-color: var(--forest);
 }
 
-.options input:checked ~ .checkbox-text {
+.options input:checked ~ label {
   color: #666
 }
 
+/* add outline when focused */
+.options input:focus ~ .checkbox-text {
+  text-decoration: underline;
+}
 
 /* Create the checkmark (hidden when not checked) */
 .check:after {
@@ -293,6 +295,12 @@ select {
   width: 140px;
 }
 
+.feedback:active {
+  border: 2px solid gray;
+  bottom: 18px;
+  right: 18px;
+}
+
 #initLoad {
   margin-top: 20px;
 }
@@ -352,7 +360,7 @@ select {
   grid-gap: 30px;
   max-width: min(1000px, 90vw);
   margin: 0 auto;
-  margin-bottom: 50px;
+  margin-bottom: 100px;
 }
 
 .route {

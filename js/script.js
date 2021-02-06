@@ -5,6 +5,13 @@ var needsInit = false;
 var routesData;
 var placesData
 
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || window.location.href.indexOf('useDevSheet') != -1) {
+  console.log("USING DEV SHEET")
+  routesUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/2/public/full?alt=json";
+  placesUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/3/public/full?alt=json";
+  mrtUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/4/public/full?alt=json";
+}
+
 function update() {
   $.ajax({
     url: routesUrl,
@@ -71,9 +78,10 @@ function parsePlaces(jason) {
     }
   })
 
+  //generate walking routes
   places.forEach((item, i) => {
-    if (item["MRT Station"] != undefined) {
-      let stations = item["MRT Station"].split(",")
+    if (item["Transfers"] != undefined) {
+      let stations = item["Transfers"].split(",")
 
       stations.forEach((station, j) => {
           routes.push({
@@ -275,12 +283,12 @@ function populateResults(results){
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
-              <div>${item.ArriveGate == undefined ? "Unknown" : item.DepartGate }</div>
+              <div>${item.ArriveGate == undefined ? "unk." : item.DepartGate }</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-gate">
               <div>Gate:</div>
-              <div>${item.DepartGate == undefined ? "Unknown" : item.ArriveGate }</div>
+              <div>${item.DepartGate == undefined ? "unk." : item.ArriveGate }</div>
             </div>
             <div class="leg-code">${item.To}</div>
           </div>
@@ -337,11 +345,20 @@ function initUI() {
     {
       "text": "MRT Stops",
       "children" : []
+    },
+    {
+      "text": "Ferry Depots",
+      "children" : []
     }
   ]
 
 
   for (var i = 0; i < places.length; i++) {
+
+    if (places[i] == null) {
+      console.log("Misformed places sheet at index " + i + ", discarding")
+      continue
+    }
 
     let optionText = `${places[i].Supported == "No" ? "(Unsupported) " : ""}${places[i].Name} - ${places[i].DisplayName == undefined ? "Foobar" : places[i].DisplayName}`
 
@@ -352,6 +369,11 @@ function initUI() {
       })
     } else if (places[i]["Type"] == "MRT") {
       selection[1]["children"].push({
+          "id": places[i].Name,
+          "text": optionText
+      })
+    } else if (places[i]["Type"] == "Ferry") {
+      selection[2]["children"].push({
           "id": places[i].Name,
           "text": optionText
       })

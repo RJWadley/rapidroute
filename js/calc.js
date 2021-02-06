@@ -1,3 +1,6 @@
+
+// TODO: ADD AUTO DUPLICATE ROUTE REMOVALS (probably in main script: during launch)
+
 var currentIterationCount = 0;
 var nextIterationCount = 0;
 var visited = []
@@ -38,6 +41,15 @@ function search(from, to, places, routes) {
   visited = []
   nextvisited = []
   //prepopulate with starting route
+
+  for (var i = routes.length - 1; i >=0 ; i--) {
+    if (routes[i] == null || routes[i]["From"] == null ||
+      routes[i]["To"] == null || routes[i]["From"] == undefined ||
+        routes[i]["To"] == undefined) {
+          routes.splice(i, 1);
+        }
+  }
+
   let startingOptions = routes.filter(item => item["From"] == from)
   for (var i = 0; i < startingOptions.length; i++) {
    paths.push([startingOptions[i]])
