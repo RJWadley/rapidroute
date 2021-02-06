@@ -360,7 +360,7 @@ select {
   grid-gap: 30px;
   max-width: min(1000px, 90vw);
   margin: 0 auto;
-  margin-bottom: 50px;
+  margin-bottom: 100px;
 }
 
 .route {
