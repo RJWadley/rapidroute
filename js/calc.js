@@ -41,7 +41,6 @@ function search(from, to, places, routes) {
   visited = []
   nextvisited = []
   //prepopulate with starting route
-  console.log(routes)
 
   for (var i = routes.length - 1; i >=0 ; i--) {
     if (routes[i] == null || routes[i]["From"] == null ||
