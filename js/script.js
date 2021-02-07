@@ -1,3 +1,8 @@
+// version should change when database changes significantly
+// a different version will force a reload on the client after load
+var version = 20210207
+var updating = false
+
 var routesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/2/public/full?alt=json";
 var placesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/3/public/full?alt=json";
 var mrtUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/4/public/full?alt=json";
@@ -299,6 +304,15 @@ function parseMRT(jason) {
       $("#initLoad").css("display", "none")
       initUI();
     }
+
+    //version check
+    currVersion = getItem("version");
+
+    if ( currVersion != version ) {
+      setItem("version", version)
+      window.location.reload()
+    }
+
   }
 
 
@@ -391,6 +405,7 @@ function initUI() {
   console.log("intializing UI")
   let places = getItem("places")
   if (places == null) { // if this triggers it's their first visit
+    setItem("version", version)
     needsInit = true
     $(".title-container").css("animation", "none")
     $(".selection-container").css("display", "none")
@@ -466,6 +481,17 @@ function initUI() {
   $('#to, #from').on('select2:open', function(e) {
     $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
   });
+
+
+  //version check
+  currVersion = getItem("version");
+
+  if ( currVersion != version ) {
+    setTimeout(function(){window.location.reload()}, 20 * 1000)
+    $("#results").append("<h2 style='text-align: center'>New version available. Updating...</h2>")
+    $(".selection-container").remove()
+  }
+
 }
 
 $("#airports-check, #mrt-check").on("change", function(e) {
