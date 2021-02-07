@@ -39,6 +39,14 @@ function search(from, to, places, routes) {
   visited = []
   nextvisited = []
 
+  // remember what I said about bias?
+  // lets definitely bias routes with gates
+
+  //routesGenerated.sort((a, b) => {
+  //  if (a.Company > b.Company) return 1
+  //  if (a.Company < b.Company) return -1
+  //})
+
   //remove any null routes
   for (var i = routes.length - 1; i >=0 ; i--) {
     if (routes[i] == null || routes[i]["From"] == null ||

@@ -337,6 +337,7 @@ function populateResults(results){
       let toDisplay = places.find(x => x.Name === item.To).DisplayName
 
       if (item.Type == "Flight") {
+        console.log(item)
         currentDiv.append(`
           <div class="leg-blurb">
             Flight ${item.Number} by ${item.Company}
@@ -345,12 +346,12 @@ function populateResults(results){
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
-              <div>${item.ArriveGate == undefined ? "unk." : item.DepartGate }</div>
+              <div>${item.FromGate == undefined ? "unk." : item.FromGate }</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-gate">
               <div>Gate:</div>
-              <div>${item.DepartGate == undefined ? "unk." : item.ArriveGate }</div>
+              <div>${item.ToGate == undefined ? "unk." : item.ToGate }</div>
             </div>
             <div class="leg-code">${item.To}</div>
           </div>
