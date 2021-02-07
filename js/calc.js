@@ -40,8 +40,8 @@ function search(from, to, places, routes) {
   let paths = []
   visited = []
   nextvisited = []
-  //prepopulate with starting route
 
+  //remove any null routes
   for (var i = routes.length - 1; i >=0 ; i--) {
     if (routes[i] == null || routes[i]["From"] == null ||
       routes[i]["To"] == null || routes[i]["From"] == undefined ||
@@ -50,16 +50,31 @@ function search(from, to, places, routes) {
         }
   }
 
+  //prepopulate with starting routes
   let startingOptions = routes.filter(item => item["From"] == from)
+
+  //add warp to spawn using /spawn
+  startingOptions.push({
+    "From": from,
+    "To": "X0",
+    "Type": "the /spawn command"
+  })
+  startingOptions.push({
+    "From": from,
+    "To": "Z0",
+    "Type": "/spawn"
+  })
+
+  //check for one-stop solutions
   for (var i = 0; i < startingOptions.length; i++) {
    paths.push([startingOptions[i]])
-   //check for direct flights
    if (startingOptions[i].To == to) {
      destinationReached = true
      solutions.push([startingOptions[i]])
      postMessage(solutions)
    }
   }
+
   currentIterationCount = paths.length
 
   function discover() {
