@@ -1,3 +1,8 @@
+// version should change when database changes significantly
+// a different version will force a reload on the client after load
+var version = 20210207
+var updating = false
+
 var routesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/2/public/full?alt=json";
 var placesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/3/public/full?alt=json";
 var mrtUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/4/public/full?alt=json";
@@ -12,6 +17,7 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || wi
   mrtUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/4/public/full?alt=json";
 }
 
+//everything goes in sequence because that's easier
 function update() {
   $.ajax({
     url: routesUrl,
@@ -23,17 +29,21 @@ function update() {
 function parseRoutes(jason) {
 
   let routes = []
+  let routesGenerated = []
   let titles = []
 
+  //for each cell in the spreadsheet:
   jason.feed.entry.forEach((item, i) => {
     row = item.gs$cell.row
     col = item.gs$cell.col
-    if (col == 1 || col >= 11) {
+    //discard rows outside our interest range
+    if (col == 1 || col >= 12) {
       return
     }
 
     content = item.content.$t
 
+    //create array of routes
     if (row == 1) {
       titles.push(content)
     } else {
@@ -42,9 +52,66 @@ function parseRoutes(jason) {
       }
       routes[row-2][titles[col-2]] = content
     }
+
+    });
+
+    //use the array of routes to generate two way routes
+    routes.forEach((item, i) => {
+      if (item["OneWay"] == "TRUE") {
+        //rename PointA and PointB to From and To
+        delete Object.assign(item, {["From"]: item["PointA"] })["PointA"];
+        delete Object.assign(item, {["To"]: item["PointB"] })["PointB"];
+        //rename gates
+        delete Object.assign(item, {["FromGate"]: item["GateA"] })["GateA"];
+        delete Object.assign(item, {["ToGate"]: item["GateB"] })["GateB"];
+        routesGenerated.push(item)
+      } else {
+        //copy item for return trip
+        routeBack = {...item}
+        //rename PointA and PointB to From and To
+        delete Object.assign(item, {["From"]: item["PointA"] })["PointA"];
+        delete Object.assign(item, {["To"]: item["PointB"] })["PointB"];
+        //reverse the roles for the route back
+        delete Object.assign(routeBack, {["To"]: routeBack["PointA"] })["PointA"];
+        delete Object.assign(routeBack, {["From"]: routeBack["PointB"] })["PointB"];
+        //rename gates
+        delete Object.assign(item, {["FromGate"]: item["GateA"] })["GateA"];
+        delete Object.assign(item, {["ToGate"]: item["GateB"] })["GateB"];
+        //reverse the roles for the route back
+        delete Object.assign(routeBack, {["ToGate"]: routeBack["GateA"] })["GateA"];
+        delete Object.assign(routeBack, {["FromGate"]: routeBack["GateB"] })["GateB"];
+
+        routesGenerated.push(item)
+        routesGenerated.push(routeBack)
+
+      }
   })
 
-  setItem("routes", routes)
+  //sort the array in the order To > From > Company
+  routesGenerated.sort((a, b) => {
+    if (a.Company > b.Company) return 1
+    if (a.Company < b.Company) return -1
+    if (a.From > b.From) return 1
+    if (a.From < b.From) return -1
+    if (a.To > b.To) return 1
+    if (a.To < b.To) return -1
+  })
+
+  //remove duplicate routes
+  removedCount = 0;
+  for (var i = routesGenerated.length - 2; i > 0 ; i--) {
+    if (routesGenerated[i]["From"] == routesGenerated[i+1]["From"] &&
+        routesGenerated[i]["To"] == routesGenerated[i+1]["To"] &&
+        routesGenerated[i]["Company"] == routesGenerated[i+1]["Company"] &&
+        routesGenerated[i]["GateA"] == routesGenerated[i+1]["GateA"] ) {
+          routesGenerated.splice(i, 1)
+          removedCount++;
+    }
+  }
+  console.log("Successfully removed " + removedCount + " duplicate routes.")
+
+  //save data
+  setItem("routes", routesGenerated)
 
   $.ajax({
     url: placesUrl,
@@ -237,6 +304,15 @@ function parseMRT(jason) {
       $("#initLoad").css("display", "none")
       initUI();
     }
+
+    //version check
+    currVersion = getItem("version");
+
+    if ( currVersion != version ) {
+      setItem("version", version)
+      window.location.reload()
+    }
+
   }
 
 
@@ -275,6 +351,7 @@ function populateResults(results){
       let toDisplay = places.find(x => x.Name === item.To).DisplayName
 
       if (item.Type == "Flight") {
+        console.log(item)
         currentDiv.append(`
           <div class="leg-blurb">
             Flight ${item.Number} by ${item.Company}
@@ -283,12 +360,12 @@ function populateResults(results){
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
-              <div>${item.ArriveGate == undefined ? "unk." : item.DepartGate }</div>
+              <div>${item.FromGate == undefined ? "unk." : item.FromGate }</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-gate">
               <div>Gate:</div>
-              <div>${item.DepartGate == undefined ? "unk." : item.ArriveGate }</div>
+              <div>${item.ToGate == undefined ? "unk." : item.ToGate }</div>
             </div>
             <div class="leg-code">${item.To}</div>
           </div>
@@ -328,6 +405,7 @@ function initUI() {
   console.log("intializing UI")
   let places = getItem("places")
   if (places == null) { // if this triggers it's their first visit
+    setItem("version", version)
     needsInit = true
     $(".title-container").css("animation", "none")
     $(".selection-container").css("display", "none")
@@ -403,6 +481,17 @@ function initUI() {
   $('#to, #from').on('select2:open', function(e) {
     $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
   });
+
+
+  //version check
+  currVersion = getItem("version");
+
+  if ( currVersion != version ) {
+    setTimeout(function(){window.location.reload()}, 20 * 1000)
+    $("#results").append("<h2 style='text-align: center'>New version available. Updating...</h2>")
+    $(".selection-container").remove()
+  }
+
 }
 
 $("#airports-check, #mrt-check").on("change", function(e) {

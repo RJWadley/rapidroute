@@ -1,11 +1,9 @@
-
-// TODO: ADD AUTO DUPLICATE ROUTE REMOVALS (probably in main script: during launch)
-
 var currentIterationCount = 0;
 var nextIterationCount = 0;
 var visited = []
 var nextvisited = []
 
+//search on message recieved
 onmessage = function(e) {
   search(e.data[0],e.data[1],e.data[2],e.data[3])
 }
@@ -41,6 +39,15 @@ function search(from, to, places, routes) {
   visited = []
   nextvisited = []
 
+  // remember what I said about bias?
+  // lets definitely bias routes with gates
+  routes = routes.sort((a, b) => {
+    if (a.FromGate == undefined) return 1
+    if (b.FromGate == undefined) return -1
+  })
+
+  console.log(routes)
+
   //remove any null routes
   for (var i = routes.length - 1; i >=0 ; i--) {
     if (routes[i] == null || routes[i]["From"] == null ||
@@ -62,7 +69,7 @@ function search(from, to, places, routes) {
   startingOptions.push({
     "From": from,
     "To": "Z0",
-    "Type": "/spawn"
+    "Type": "the /spawn command"
   })
 
   //check for one-stop solutions
@@ -113,16 +120,21 @@ function search(from, to, places, routes) {
 
   }
 
+  //main search loop
+  // will search for a max of 500 moves (sorry, MRT stop Z501)
   for (var i = 0; i < 500; i++) {
     for (var j = 0; j < currentIterationCount; j++) {
       if (paths.length > 0) {
         discover();
       }
     }
+
     currentIterationCount = nextIterationCount;
     nextIterationCount = 0;
     visited = [...visited, ...nextvisited]
     //visited = [] //uncomment for lols
+    // and by lols I mean death
+    // because your computer will catch on fire
     nextvisited = []
   }
   console.log("done calculating")
