@@ -3,7 +3,7 @@ function setItem(name, value) {
     let compressed = LZString.compressToUTF16(JSON.stringify(value));
     //store it
     localStorage.setItem(name,compressed);
-    console.groupCollapsed("Data Set");
+    console.groupCollapsed("Data Set: " + name);
     console.log(JSON.stringify(value));
     console.groupEnd();
 }
@@ -16,7 +16,7 @@ function getItem(name) {
 
     //decompress then parse then return
     let data = JSON.parse(LZString.decompressFromUTF16(localStorage.getItem(name)));
-    console.groupCollapsed("Data Got");
+    console.groupCollapsed("Data Got: " + name);
     console.log(JSON.stringify(data));
     console.groupEnd();
     return data;

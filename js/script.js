@@ -16,6 +16,9 @@ $.ajax({
             "ranges='Airline Class Distribution'!A3:C161" +
             "&ranges='Airline Class Distribution'!E2:AO2" +
             "&ranges='Airline Class Distribution'!E3:AO161" +
+            "&ranges='Helicopters'!A3:C161" +
+            "&ranges='Helicopters'!E2:AO2" +
+            "&ranges='Helicopters'!E3:AO161" +
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -48,6 +51,11 @@ function processSheets(transitSheet, dataSheet) {
   let transitAirports = [...transitSheet.valueRanges[0].values]
   let transitCompanies = [...transitSheet.valueRanges[1].values[0]]
   let transitFlightData = [...transitSheet.valueRanges[2].values]
+
+  //get heli data
+  let heliports = [...transitSheet.valueRanges[3].values]
+  let heliCompanies = [...transitSheet.valueRanges[4].values[0]]
+  let transitHeliData = [...transitSheet.valueRanges[5].values]
 
   //we need to transpose the flight data
   transitFlightData = transpose(transitFlightData)
@@ -506,8 +514,8 @@ function initUI() {
 $("#airports-check, #mrt-check").on("change", function(e) {
   $("#from").trigger("select2:select")
 })
-
 $('#from, #to').on('select2:select', function (e) {
+
   $("#results").html("")
   if ($("#from").val() == "" || $("#to").val() == "") {return}
   $("#searching").fadeIn()
