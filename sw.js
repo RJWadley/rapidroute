@@ -68,7 +68,6 @@ function fromCache(request) {
   return caches.open(CACHE).then(function (cache) {
     return cache.match(request).then(function (matching) {
       if (location.hostname === "localhost" || !matching || matching.status === 404) {
-        console.log("no match")
         return Promise.reject("no-match");
       }
 
