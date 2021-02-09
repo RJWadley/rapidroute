@@ -1,0 +1,39 @@
+html, body {
+  margin: 0;
+  font-family: Rubik, sans-serif;
+}
+
+:root {
+  --light-mint: #A0EEC0;
+  --mint: #8AE9C1;
+  --main: #86CD82;
+  --forest: #72A276;
+  --dim-gray: #666B6A;
+}
+
+.title-container {
+  width: 100%;
+  height: 250px;
+  padding-bottom: 50px;
+  background-color: var(--main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: descend 1s;
+}
+
+.title {
+  font-size: 2em;
+  position: relative;
+}
+
+.changelog {
+  max-width: min(1000px, 90vw);
+  margin: 0 auto;
+  margin-bottom: 100px;
+}
+
+li {
+  margin-bottom: 10px;
+}
