@@ -11,6 +11,7 @@
     "type": "image/png"
   }],
   "theme_color": "#86CD82",
+  "Scope": "./",
   "background_color": "#ffffff",
   "display": "standalone"
 }
