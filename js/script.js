@@ -215,6 +215,18 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
+  //and C is a ring line, so add those
+  routeList.push({
+    "From": "C1",
+    "To": "C119",
+    "Type": "MRT"
+  })
+  routeList.push({
+    "From": "C119",
+    "To": "C1",
+    "Type": "MRT"
+  })
+
   //and don't forget to generate walking routes!
   placeList.forEach((item, i) => {
     if (item["transfers"] != undefined) {
