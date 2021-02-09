@@ -11,7 +11,7 @@
     "type": "image/png"
   }],
   "theme_color": "#86CD82",
-  "Scope": "./",
+  "Scope": "/mrt-path/",
   "background_color": "#ffffff",
   "display": "standalone"
 }
