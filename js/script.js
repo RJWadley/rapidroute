@@ -1,5 +1,6 @@
 // version should change when database changes significantly
 // a different version will force a reload on the client after load
+
 var version = 0
 var updating = false
 
@@ -333,6 +334,7 @@ function processGateNumbers (result, companies) {
   setItem("gateData", gateData)
 
 }
+
 
 function getGateData (company, flightNumber, airport) {
 

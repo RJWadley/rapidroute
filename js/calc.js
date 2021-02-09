@@ -41,11 +41,12 @@ function search(from, to, places, routes) {
 
   // remember what I said about bias?
   // lets definitely bias routes with gates
+  routes = routes.sort((a, b) => {
+    if (a.FromGate == undefined) return 1
+    if (b.FromGate == undefined) return -1
+  })
 
-  //routesGenerated.sort((a, b) => {
-  //  if (a.Company > b.Company) return 1
-  //  if (a.Company < b.Company) return -1
-  //})
+  console.log(routes)
 
   //remove any null routes
   for (var i = routes.length - 1; i >=0 ; i--) {
@@ -127,6 +128,7 @@ function search(from, to, places, routes) {
         discover();
       }
     }
+
     currentIterationCount = nextIterationCount;
     nextIterationCount = 0;
     visited = [...visited, ...nextvisited]
