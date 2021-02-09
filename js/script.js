@@ -322,7 +322,13 @@ function processGateNumbers (result, companies) {
   //process other gates
 
   sheets.forEach((sheet) => {
-    companyName = sheet.range.split("'")[1]
+    
+    if (sheet.range.indexOf("'") == -1) {
+      companyName = sheet.range.split("!")[0]
+    } else {
+      companyName = sheet.range.split("'")[1]
+    }
+
     flights = sheet.values
     flights.forEach((flight) => {
       flight[0] = companyName

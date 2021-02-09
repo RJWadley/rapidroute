@@ -37,3 +37,19 @@ html, body {
 li {
   margin-bottom: 10px;
 }
+
+.button-container {
+  margin: 10px;
+}
+
+a {
+  display: block;
+  margin: 20px auto;
+  text-align: center;
+  max-width: 300px;
+  text-decoration: none;
+  color: black;
+  background-color: var(--light-mint);
+  padding: 10px;
+  border-radius: 5px;
+}
