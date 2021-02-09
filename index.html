@@ -8,10 +8,15 @@
   <meta name="description" content="Minecart Rapid Transit route finder">
   <meta name="author" content="Scarycrumb45">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <meta name="theme-color" content="#86CD82"/>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik|Material+Icons">
   <link rel="stylesheet" href="style.css">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+  <link rel="manifest" href="/mrt-path/site.webmanifest">
 
 </head>
 
@@ -81,5 +86,23 @@
   <script src="js/lz-string.js"></script>
   <script src="js/util.js"></script>
   <script src="js/script.js"></script>
+
+  <script>
+      if ("serviceWorker" in navigator) {
+      if (navigator.serviceWorker.controller) {
+          console.log("[PWA Builder] active service worker found");
+      } else {
+          // Register the service worker
+          navigator.serviceWorker
+          .register("sw.js", {
+              scope: "./"
+          })
+          .then(function (reg) {
+              console.log("[PWA Builder] Service worker has been registered for scope: " + reg.scope);
+          });
+      }
+      }
+  </script>
+
 </body>
 </html>

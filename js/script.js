@@ -1,164 +1,255 @@
 // version should change when database changes significantly
 // a different version will force a reload on the client after load
-var version = 20210207
+
+var version = 0
 var updating = false
 
-var routesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/2/public/full?alt=json";
-var placesUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/3/public/full?alt=json";
-var mrtUrl = "https://spreadsheets.google.com/feeds/cells/1EQVk23tITO48PkeB22cO5FgQLjzduKBP8R-mp_dUttQ/4/public/full?alt=json";
+var dataSheetID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"
+var transitSheetID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"
+var API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
+
 var needsInit = false;
-var routesData;
-var placesData
 
-if (location.hostname === "localhost" || location.hostname === "127.0.0.1" || window.location.href.indexOf('useDevSheet') != -1) {
-  console.log("USING DEV SHEET")
-  routesUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/2/public/full?alt=json";
-  placesUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/3/public/full?alt=json";
-  mrtUrl = "https://spreadsheets.google.com/feeds/cells/1Plv2rmP6_6S97g7_jgwfxBlpCuQLqFIklMBunKCeDrY/4/public/full?alt=json";
-}
-
-//everything goes in sequence because that's easier
-function update() {
-  $.ajax({
-    url: routesUrl,
-    success: function(result){
-      parseRoutes(result)
-    }});
-}
-
-function parseRoutes(jason) {
-
-  let routes = []
-  let routesGenerated = []
-  let titles = []
-
-  //for each cell in the spreadsheet:
-  jason.feed.entry.forEach((item, i) => {
-    row = item.gs$cell.row
-    col = item.gs$cell.col
-    //discard rows outside our interest range
-    if (col == 1 || col >= 12) {
-      return
-    }
-
-    content = item.content.$t
-
-    //create array of routes
-    if (row == 1) {
-      titles.push(content)
+var holding = undefined
+//transit sheet
+$.ajax({
+  url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
+            "ranges='Airline Class Distribution'!A3:C161" +
+            "&ranges='Airline Class Distribution'!E2:AO2" +
+            "&ranges='Airline Class Distribution'!E3:AO161" +
+            "&ranges='Helicopters'!A3:C161" +
+            "&ranges='Helicopters'!E2:AO2" +
+            "&ranges='Helicopters'!E3:AO161" +
+            "&key=" + API_KEY,
+  success: function(result) {
+    if (holding == undefined) {
+      holding = result
     } else {
-      if (routes[row-2] == undefined) {
-        routes[row-2] = {}
-      }
-      routes[row-2][titles[col-2]] = content
-    }
+      processSheets(result, holding)
+    }}
+});
 
-    });
-
-    //use the array of routes to generate two way routes
-    routes.forEach((item, i) => {
-      if (item["OneWay"] == "TRUE") {
-        //rename PointA and PointB to From and To
-        delete Object.assign(item, {["From"]: item["PointA"] })["PointA"];
-        delete Object.assign(item, {["To"]: item["PointB"] })["PointB"];
-        //rename gates
-        delete Object.assign(item, {["FromGate"]: item["GateA"] })["GateA"];
-        delete Object.assign(item, {["ToGate"]: item["GateB"] })["GateB"];
-        routesGenerated.push(item)
-      } else {
-        //copy item for return trip
-        routeBack = {...item}
-        //rename PointA and PointB to From and To
-        delete Object.assign(item, {["From"]: item["PointA"] })["PointA"];
-        delete Object.assign(item, {["To"]: item["PointB"] })["PointB"];
-        //reverse the roles for the route back
-        delete Object.assign(routeBack, {["To"]: routeBack["PointA"] })["PointA"];
-        delete Object.assign(routeBack, {["From"]: routeBack["PointB"] })["PointB"];
-        //rename gates
-        delete Object.assign(item, {["FromGate"]: item["GateA"] })["GateA"];
-        delete Object.assign(item, {["ToGate"]: item["GateB"] })["GateB"];
-        //reverse the roles for the route back
-        delete Object.assign(routeBack, {["ToGate"]: routeBack["GateA"] })["GateA"];
-        delete Object.assign(routeBack, {["FromGate"]: routeBack["GateB"] })["GateB"];
-
-        routesGenerated.push(item)
-        routesGenerated.push(routeBack)
-
-      }
-  })
-
-  //sort the array in the order To > From > Company
-  routesGenerated.sort((a, b) => {
-    if (a.Company > b.Company) return 1
-    if (a.Company < b.Company) return -1
-    if (a.From > b.From) return 1
-    if (a.From < b.From) return -1
-    if (a.To > b.To) return 1
-    if (a.To < b.To) return -1
-  })
-
-  //remove duplicate routes
-  removedCount = 0;
-  for (var i = routesGenerated.length - 2; i > 0 ; i--) {
-    if (routesGenerated[i]["From"] == routesGenerated[i+1]["From"] &&
-        routesGenerated[i]["To"] == routesGenerated[i+1]["To"] &&
-        routesGenerated[i]["Company"] == routesGenerated[i+1]["Company"] &&
-        routesGenerated[i]["GateA"] == routesGenerated[i+1]["GateA"] ) {
-          routesGenerated.splice(i, 1)
-          removedCount++;
+//data sheet
+$.ajax({
+  url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
+            "ranges='MRT'!B2:F19" +
+            "&ranges='MRT'!B24:D1133" +
+            "&ranges='Airports'!A2:D172" +
+            "&ranges='Companies'!A2:C43" +
+            "&key=" + API_KEY,
+  success: function(result) {
+    if (holding == undefined) {
+      holding = result
+    } else {
+      processSheets(holding, result)
     }
   }
-  console.log("Successfully removed " + removedCount + " duplicate routes.")
+});
 
-  //save data
-  setItem("routes", routesGenerated)
+function processSheets(transitSheet, dataSheet) {
 
-  $.ajax({
-    url: placesUrl,
-    success: function(result){
-      parsePlaces(result)
-    }});
+  //get data from MRT transit sheet
+  let transitAirports = [...transitSheet.valueRanges[0].values]
+  let transitCompanies = [...transitSheet.valueRanges[1].values[0]]
+  let transitFlightData = [...transitSheet.valueRanges[2].values]
 
-}
+  //get heli data
+  let heliports = [...transitSheet.valueRanges[3].values]
+  let heliCompanies = [...transitSheet.valueRanges[4].values[0]]
+  let transitHeliData = [...transitSheet.valueRanges[5].values]
 
-function parsePlaces(jason) {
-  let places = []
-  let routes = getItem("routes")
-  let titles = []
+  //we need to transpose the flight data
+  transitFlightData = transpose(transitFlightData)
 
-  jason.feed.entry.forEach((item, i) => {
-    row = item.gs$cell.row
-    col = item.gs$cell.col
-    if (col > 6) {
-      return
-    }
+  //get data from dataSheet
+  let mrtLineInfo = [...dataSheet.valueRanges[0].values]
+  let mrtStopInfo = [...dataSheet.valueRanges[1].values]
+  let dataSheetAirports = [...dataSheet.valueRanges[2].values]
+  let dataSheetCompanies = [...dataSheet.valueRanges[3].values]
 
-    content = item.content.$t
+  // inst
+  airportList = []
+  routeList = []
+  placeList = []
 
-    if (row == 1) {
-      titles.push(content)
-    } else {
-      if (places[row-2] == undefined) {
-        places[row-2] = {}
+  //// generate list of Airports
+
+  //convert data sheet airports into something easier to use
+  dataSheetAirportsObject = {}
+  dataSheetAirports.forEach((airport, i) => {
+    dataSheetAirportsObject[airport[0]] = airport
+  });
+
+  //create an object for each airport and add it to list
+  transitAirports.forEach((airport, i) => {
+    airportList.push({
+      "primaryID": airport[1],
+      "code": airport[1],
+      "internalName": airport[0],
+      "world": airport[2],
+      "type": "Airport",
+      "displayName": dataSheetAirportsObject[airport[1]][1],
+      "keywords": dataSheetAirportsObject[airport[1]][2],
+      "transfers": dataSheetAirportsObject[airport[1]][3]
+    })
+  });
+
+  placeList = [...airportList]
+
+  //generate list of flight routes data
+  let airlines = []
+
+  transitCompanies.forEach((company, i) => {
+    let airline = {"airlineName": company, "airlineFlights": {}}
+    transitFlightData[i].forEach((destination, j) => {
+      if (destination == "" || destination == undefined) return
+      destination.split(",").forEach((flight, k) => {
+        number = flight.trim()
+        if (airline.airlineFlights[number] == undefined) {
+          airline.airlineFlights[number] = []
+        }
+        // add current airport to flight object
+        airline.airlineFlights[number].push(airportList[j]["primaryID"])
+      });
+    });
+    airlines.push(airline)
+  });
+
+  //now we use this flight data to actually generate routes
+  airlines.forEach(airline => {
+    //get all flight numbers for airline
+    flights = airline.airlineFlights
+    if (flights == undefined) return
+    allNumbers = Object.keys(flights)
+    //generate all possible routes
+    allNumbers.forEach((number, i) => {
+      for (var j = 0; j < flights[number].length; j++) {
+        for (var k = 0; k < flights[number].length; k++) {
+          if (j != k) {
+            routeList.push({
+              "From": flights[number][j],
+              "To": flights[number][k],
+              "Type": "Flight",
+              "Company": airline.airlineName,
+              "Number": number
+            })
+          }
+        }
       }
-      places[row-2][titles[col-1]] = content
+    });
+  });
+
+  //generate list of MRT stop routes
+  mrtLineInfo.forEach((item, i) => {
+    let minSE = 2;
+    let maxNW = 3;
+    let nsew = 4;
+    let lineCode = item[1]
+    let line = [];
+    //0: {Name: "Artic Line", Code: "A", Min-SE: "X", Max-NW: "53"}
+    if (item[minSE] == "X") {
+      line = [lineCode + "X"]
+      for (var i = 0; i <= item[maxNW]; i++) {
+        line.push(lineCode + i)
+      }
+    } else if (item[minSE] == "XHW") {
+      line = [lineCode + "X", lineCode + "H", lineCode + "W"]
+      for (var i = 0; i <= item[maxNW]; i++) {
+        line.push(lineCode + i)
+      }
+    } else if (item[nsew] == "NS") {
+      for (var i = item[minSE]; i > 0; i--) {
+        line.push(lineCode + "S" + i)
+      }
+      line.push(lineCode + "0")
+      for (var i = 1; i <= item[maxNW]; i++) {
+        line.push(lineCode + "N" + i)
+      }
+    } else if (item[nsew] == "EW") {
+      for (var i = item[minSE]; i > 0; i--) {
+        line.push(lineCode + "E" + i)
+      }
+      line.push(lineCode + "0")
+      for (var i = 1; i <= item[maxNW]; i++) {
+        line.push(lineCode + "W" + i)
+      }
+    } else {
+      for (var i = 1; i <= item[maxNW]; i++) {
+        line.push(lineCode + i)
+      }
     }
+
+    //create routes
+    for (var i = 0; i < line.length; i++) {
+      if (i != 0) {
+        routeList.push({
+          "From": line[i],
+          "To": line[i-1],
+          "Type": "MRT"
+        })
+      }
+      if (i != line.length-1) {
+        routeList.push({
+          "From": line[i],
+          "To": line[i+1],
+          "Type": "MRT"
+        })
+      }
+    }
+  });
+
+  //and generate stop names for place list
+
+  mrtStopInfo.forEach((item, i) => {
+    //add place
+    if (item[0] == undefined) return
+    placeList.push({
+      "primaryID": item[0],
+      "code": item[0],
+      "displayName": (item[1] == "" || item[1 == undefined]) ? "Foobar" : item[1],
+      "type": "MRT"
+    })
+
+    //generate routes from routeinfos
+    if (item[2] != undefined) {
+      let transfers = item[2].split(",")
+      transfers.forEach((transfer, i) => {
+        routeList.push({
+          "From": item[0],
+          "To": transfer,
+          "Type": "MRT Transfer"
+        })
+      });
+
+    }
+  });
+
+  //and C is a ring line, so add those
+  routeList.push({
+    "From": "C1",
+    "To": "C119",
+    "Type": "MRT"
+  })
+  routeList.push({
+    "From": "C119",
+    "To": "C1",
+    "Type": "MRT"
   })
 
-  //generate walking routes
-  places.forEach((item, i) => {
-    if (item["Transfers"] != undefined) {
-      let stations = item["Transfers"].split(",")
+  //and don't forget to generate walking routes!
+  placeList.forEach((item, i) => {
+    if (item["transfers"] != undefined) {
+      let dests = item["transfers"].split(",")
 
-      stations.forEach((station, j) => {
-          routes.push({
-            "From": item.Name,
-            "To": station,
+      dests.forEach((dest, j) => {
+          routeList.push({
+            "From": item.primaryID,
+            "To": dest,
             "Type": "Walk"
           })
-          routes.push({
-            "From": station,
-            "To": item.Name,
+          routeList.push({
+            "From": dest,
+            "To": item.primaryID,
             "Type": "Walk"
           })
       });
@@ -166,163 +257,100 @@ function parsePlaces(jason) {
     }
   });
 
-  $.ajax({
-    url: mrtUrl,
-    success: function(result){
-      parseMRT(result)
-  }});
 
-  setItem("routes", routes)
-  setItem("places", places)
+  setItem("routeList", routeList)
+  setItem("placeList", placeList)
+
+  //set legacy gate numbers and
+  //request new gate numbers
+
+  let requestURL = "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID +
+  "/values:batchGet?ranges='Legacy Gate Data'!A:D"
+
+  dataSheetCompanies.forEach((company, i) => {
+    if (company.length > 1) {
+      if (company[1] == "Yes") {
+        requestURL += "&ranges='" + company[0] + "'!A:D"
+      }
+    }
+  });
+
+  $.ajax({
+    url: requestURL + "&key=" + API_KEY,
+    success: function(result) {
+        processGateNumbers(result, dataSheetCompanies)
+      }
+  });
+
+  if (needsInit == true) {
+    $(".selection-container").css("display", "block")
+    $("#initLoad").css("display", "none")
+    initUI();
+  }
+
+  //version check
+  currVersion = getItem("version");
+
+  if ( currVersion != version ) {
+    setItem("version", version)
+    window.location.reload()
+  }
 
 }
 
-function parseMRT(jason) {
-    let routes = getItem("routes")
-    routeInfos = []
-    stopInfos = []
+function processGateNumbers (result, companies) {
+  gateData = []
 
-    //for each spreadsheet cell
-    jason.feed.entry.forEach((item, i) => {
-      row = item.gs$cell.row
-      col = item.gs$cell.col
-      if (col > 6 || col == 1) {
-        return
-      }
+  sheets = result.valueRanges
 
-      titles = ["Name","Code","Min-SE","Max-NW","NS-EW"]
-      stopTitles = ["Code", "Name", "Transfers"]
+  legacySheet = sheets.shift().values
+  legacySheet.shift()
 
-      content = item.content.$t
-
-      if (row < 20 && row > 1) {
-        if (routeInfos[row-2] == undefined) {
-          routeInfos[row-2] = {}
-        }
-        routeInfos[row-2][titles[col-2]] = content
-      }
-
-      if (row > 23) {
-        if (stopInfos[row-24] == undefined) {
-          stopInfos[row-24] = {}
-        }
-        if (col == 2 || col == 3 || col == 4) {
-          stopInfos[row-24][stopTitles[col-2]] = content
-        }
-
-      }
-
-    })
-
-    //generate routes from routeinfos
-    routeInfos.forEach((item, i) => {
-      let line = [];
-      //0: {Name: "Artic Line", Code: "A", Min-SE: "X", Max-NW: "53"}
-      if (item["Min-SE"] == "X") {
-        line = [item.Code + "X"]
-        for (var i = 0; i <= item["Max-NW"]; i++) {
-          line.push(item.Code + i)
-        }
-      } else if (item["Min-SE"] == "XHW") {
-        line = [item.Code + "X", item.Code + "H", item.Code + "W"]
-        for (var i = 0; i <= item["Max-NW"]; i++) {
-          line.push(item.Code + i)
-        }
-      } else if (item["NS-EW"] == "NS") {
-        for (var i = item["Min-SE"]; i > 0; i--) {
-          line.push(item.Code + "S" + i)
-        }
-        line.push(item.Code + "0")
-        for (var i = 1; i <= item["Max-NW"]; i++) {
-          line.push(item.Code + "N" + i)
-        }
-      } else if (item["NS-EW"] == "EW") {
-        for (var i = item["Min-SE"]; i > 0; i--) {
-          line.push(item.Code + "E" + i)
-        }
-        line.push(item.Code + "0")
-        for (var i = 1; i <= item["Max-NW"]; i++) {
-          line.push(item.Code + "W" + i)
-        }
-      } else {
-        for (var i = 1; i <= item["Max-NW"]; i++) {
-          line.push(item.Code + i)
-        }
-      }
-
-
-      for (var i = 0; i < line.length; i++) {
-        if (i != 0) {
-          routes.push({
-            "From": line[i],
-            "To": line[i-1],
-            "Type": "MRT"
-          })
-        }
-        if (i != line.length-1) {
-          routes.push({
-            "From": line[i],
-            "To": line[i+1],
-            "Type": "MRT"
-          })
-        }
-      }
-
-    });
-
-    places = getItem("places")
-    //generate places from stopinfos
-    stopInfos.forEach((item, i) => {
-      places.push({
-        "Name": item["Code"],
-        "DisplayName": item["Name"],
-        "Type": "MRT"
-      })
-
-      //generate routes from routeinfos
-      if (item["Transfers"] != undefined) {
-        let transfers = item["Transfers"].split(",")
-        transfers.forEach((transfer, i) => {
-          routes.push({
-            "From": item["Code"],
-            "To": transfer,
-            "Type": "MRT Transfer"
-          })
+  //process legacy gates
+  companies.forEach((company, i) => {
+    if (company.length > 1) {
+      if (company[1] == "Legacy") {
+        let flights = legacySheet.filter(x => x[0] == company[2])
+        flights.forEach((item) => {
+          item[0] = company[0]
         });
-
+        gateData = [...gateData, ...flights]
       }
+    }
+  });
 
+  //process other gates
+
+  sheets.forEach((sheet) => {
+    companyName = sheet.range.split("'")[1]
+    flights = sheet.values
+    flights.forEach((flight) => {
+      flight[0] = companyName
     });
 
+    gateData = [...gateData, ...flights]
+  });
+
+  setItem("gateData", gateData)
+
+}
 
 
-    setItem("routes", routes)
-    setItem("places", places)
+function getGateData (company, flightNumber, airport) {
 
-    if (needsInit == true) {
-      $(".selection-container").css("display", "block")
-      $("#initLoad").css("display", "none")
-      initUI();
-    }
+  gateData = getItem("gateData")
 
-    //version check
-    currVersion = getItem("version");
+  //if gate data doesn't exist, we don't know yet
+  if (gateData == null) return "unk."
 
-    if ( currVersion != version ) {
-      setItem("version", version)
-      window.location.reload()
-    }
+  gate = gateData.filter(x => (x[0] == company && x[1] == flightNumber && x[2] == airport))[0]
 
-  }
-
+  if (gate == undefined) return "unk."
+  else return gate[3]
+}
 
 function populateResults(results){
-
-  if (placesData == null || placesData == undefined) {
-    placesData = getItem("places")
-  }
-
-  let places = placesData
+  let places = getItem("placeList")
 
   if (results.length == 0) {
     $("#results").append("<div class='route'>Unable to find a path.</div>")
@@ -347,11 +375,10 @@ function populateResults(results){
       $("#results").children().last().append("<div class='leg'></div>")
       currentDiv = $("#results").children().last().children().last();
 
-      let fromDisplay = places.find(x => x.Name === item.From).DisplayName
-      let toDisplay = places.find(x => x.Name === item.To).DisplayName
+      let fromDisplay = places.find(x => x.primaryID === item.From).displayName
+      let toDisplay = places.find(x => x.primaryID === item.To).displayName
 
       if (item.Type == "Flight") {
-        console.log(item)
         currentDiv.append(`
           <div class="leg-blurb">
             Flight ${item.Number} by ${item.Company}
@@ -360,18 +387,18 @@ function populateResults(results){
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
-              <div>${item.FromGate == undefined ? "unk." : item.FromGate }</div>
+              <div>${getGateData(item.Company, item.Number, item.From)}</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-gate">
               <div>Gate:</div>
-              <div>${item.ToGate == undefined ? "unk." : item.ToGate }</div>
+              <div>${getGateData(item.Company, item.Number, item.To)}</div>
             </div>
             <div class="leg-code">${item.To}</div>
           </div>
           <div class="leg-details">
-            <div>${fromDisplay == undefined ? "Foobar" : fromDisplay}</div>
-            <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
+            <div>${fromDisplay}</div>
+            <div>${toDisplay}</div>
           </div>
         `)
       } else {
@@ -403,16 +430,19 @@ function populateResults(results){
 
 function initUI() {
   console.log("intializing UI")
-  let places = getItem("places")
-  if (places == null) { // if this triggers it's their first visit
-    setItem("version", version)
+  placeList = getItem("placeList")
+
+  if (placeList == null) { // if this triggers it's their first visit
+    localStorage.clear()
     needsInit = true
+    setItem("version", version)
     $(".title-container").css("animation", "none")
     $(".selection-container").css("display", "none")
     $("#initLoad").css("display", "flex")
     return
   }
 
+  //reset select boxes
   $('#to, #from').children().remove()
   $('#to, #from').append("<option></option>")
   let selection = [
@@ -423,41 +453,31 @@ function initUI() {
     {
       "text": "MRT Stops",
       "children" : []
-    },
-    {
-      "text": "Ferry Depots",
-      "children" : []
     }
   ]
 
 
-  for (var i = 0; i < places.length; i++) {
+  for (var i = 0; i < placeList.length; i++) {
 
-    if (places[i] == null) {
-      console.log("Misformed places sheet at index " + i + ", discarding")
+    if (placeList[i] == null) {
+      console.log("Misformed places at index " + i + ", discarding")
       continue
     }
 
-    let optionText = `${places[i].Supported == "No" ? "(Unsupported) " : ""}${places[i].Name} - ${places[i].DisplayName == undefined ? "Foobar" : places[i].DisplayName}`
-
-    if (places[i]["Type"] == "Airport") {
+    let optionText = `${placeList[i].Supported == "No" ? "(Unsupported) " : ""}${placeList[i].code == undefined ? "Foobar" : placeList[i].code} - ${placeList[i].displayName == undefined ? "Foobar" : placeList[i].displayName}`
+    if (placeList[i]["type"] == "Airport") {
       selection[0]["children"].push({
-          "id": places[i].Name,
+          "id": placeList[i].primaryID,
           "text": optionText
       })
-    } else if (places[i]["Type"] == "MRT") {
+    } else if (placeList[i]["type"] == "MRT") {
       selection[1]["children"].push({
-          "id": places[i].Name,
-          "text": optionText
-      })
-    } else if (places[i]["Type"] == "Ferry") {
-      selection[2]["children"].push({
-          "id": places[i].Name,
+          "id": placeList[i].primaryID,
           "text": optionText
       })
     } else {
       selection.push({
-          "id": places[i].Name,
+          "id": placeList[i].primaryID,
           "text": optionText
       })
     }
@@ -482,8 +502,7 @@ function initUI() {
     $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
   });
 
-
-  //version check
+  //initial version check
   currVersion = getItem("version");
 
   if ( currVersion != version ) {
@@ -497,20 +516,20 @@ function initUI() {
 $("#airports-check, #mrt-check").on("change", function(e) {
   $("#from").trigger("select2:select")
 })
-
 $('#from, #to').on('select2:select', function (e) {
+
   $("#results").html("")
   if ($("#from").val() == "" || $("#to").val() == "") {return}
   $("#searching").fadeIn()
 
-  routes = getItem("routes")
+  routes = getItem("routeList")
   if ($("#airports-check").prop("checked") == false) {
     routes = routes.filter(route => route.Type !== "Flight");
   }
   if ($("#mrt-check").prop("checked") == false) {
     routes = routes.filter(route => route.Type !== "MRT");
   }
-  worker.postMessage([$("#from").val(), $("#to").val(), getItem("places"), routes])
+  worker.postMessage([$("#from").val(), $("#to").val(), getItem("placeList"), routes])
 });
 
 try {
@@ -525,7 +544,8 @@ try {
 worker.onmessage = function(e) {
   $("#searching").css("display", "none")
   if (e.data != "pass") {
-    populateResults(e.data)
+
+    populateResults(e.data, getItem("placeData"))
   }
 }
 
@@ -534,8 +554,8 @@ var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
 function customMatcher(params, data) {
 
   //get data if it doesn't exist
-  if (placesData == null || placesData == undefined) {
-    placesData = getItem("places");
+  if (placeList == null || placeList == undefined) {
+    placeList = getItem("placeList");
   }
 
   // If there are no search terms, return all of the data
@@ -554,11 +574,11 @@ function customMatcher(params, data) {
   var defaultChildren = [];
   var filteredChildren = [];
   $.each(data.children, function (idx, child) {
-    let placeInfo = placesData.filter(x => x.Name == child.id)[0]
+    let placeInfo = placeList.filter(x => x.primaryID == child.id)[0]
     //relevant search
     if (child.text.toUpperCase().indexOf(params.term.toUpperCase()) == 0) {
       relevantChildren.push(child);
-    } else if (placeInfo["Keywords"] != undefined && placeInfo["Keywords"].toUpperCase().indexOf(params.term.toUpperCase()) != -1) {
+    } else if (placeInfo["keywords"] != undefined && placeInfo["keywords"].toUpperCase().indexOf(params.term.toUpperCase()) != -1) {
       //keyword search
       keywordChildren.push(child);
     } else {
@@ -585,7 +605,3 @@ function customMatcher(params, data) {
 }
 
 initUI()
-update()
-
-routesData = getItem("routes")
-placesData = getItem("places")
