@@ -1,7 +1,7 @@
 // version should change when database changes significantly
 // a different version will force a reload on the client after load
 
-var version = 0
+var version = 20210208
 var updating = false
 
 var dataSheetID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"
