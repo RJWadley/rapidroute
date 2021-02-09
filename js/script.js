@@ -1,8 +1,13 @@
+// version should change when database changes significantly
+// a different version will force a reload on the client after load
+var version = 0
+var updating = false
+
 var dataSheetID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"
 var transitSheetID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"
 var API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
 
-var firstVisit = false;
+var needsInit = false;
 
 var holding = undefined
 //transit sheet
@@ -27,7 +32,6 @@ $.ajax({
             "&ranges='MRT'!B24:D1133" +
             "&ranges='Airports'!A2:D172" +
             "&ranges='Companies'!A2:C43" +
-            "&ranges='Legacy Gate Data'!A2:C1914" +
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -39,8 +43,6 @@ $.ajax({
 });
 
 function processSheets(transitSheet, dataSheet) {
-  console.log(transitSheet)
-  console.log(dataSheet)
 
   //get data from MRT transit sheet
   let transitAirports = [...transitSheet.valueRanges[0].values]
@@ -55,7 +57,6 @@ function processSheets(transitSheet, dataSheet) {
   let mrtStopInfo = [...dataSheet.valueRanges[1].values]
   let dataSheetAirports = [...dataSheet.valueRanges[2].values]
   let dataSheetCompanies = [...dataSheet.valueRanges[3].values]
-  let dataSheetLegacyGates = [...dataSheet.valueRanges[4].values]
 
   // inst
   airportList = []
@@ -86,7 +87,7 @@ function processSheets(transitSheet, dataSheet) {
 
   placeList = [...airportList]
 
-  //generate list of flight routes
+  //generate list of flight routes data
   let airlines = []
 
   transitCompanies.forEach((company, i) => {
@@ -105,7 +106,7 @@ function processSheets(transitSheet, dataSheet) {
     airlines.push(airline)
   });
 
-  //now we use this airline data to generate routes
+  //now we use this flight data to actually generate routes
   airlines.forEach(airline => {
     //get all flight numbers for airline
     flights = airline.airlineFlights
@@ -121,7 +122,7 @@ function processSheets(transitSheet, dataSheet) {
               "To": flights[number][k],
               "Type": "Flight",
               "Company": airline.airlineName,
-              "FlightNumber": number
+              "Number": number
             })
           }
         }
@@ -196,7 +197,7 @@ function processSheets(transitSheet, dataSheet) {
     placeList.push({
       "primaryID": item[0],
       "code": item[0],
-      "displayName": item[1],
+      "displayName": (item[1] == "" || item[1 == undefined]) ? "Foobar" : item[1],
       "type": "MRT"
     })
 
@@ -214,20 +215,119 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
+  //and don't forget to generate walking routes!
+  placeList.forEach((item, i) => {
+    if (item["transfers"] != undefined) {
+      let dests = item["transfers"].split(",")
+
+      dests.forEach((dest, j) => {
+          routeList.push({
+            "From": item.primaryID,
+            "To": dest,
+            "Type": "Walk"
+          })
+          routeList.push({
+            "From": dest,
+            "To": item.primaryID,
+            "Type": "Walk"
+          })
+      });
+
+    }
+  });
+
+
   setItem("routeList", routeList)
   setItem("placeList", placeList)
 
   //set legacy gate numbers and
   //request new gate numbers
+
+  let requestURL = "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID +
+  "/values:batchGet?ranges='Legacy Gate Data'!A:D"
+
+  dataSheetCompanies.forEach((company, i) => {
+    if (company.length > 1) {
+      if (company[1] == "Yes") {
+        requestURL += "&ranges='" + company[0] + "'!A:D"
+      }
+    }
+  });
+
+  $.ajax({
+    url: requestURL + "&key=" + API_KEY,
+    success: function(result) {
+        processGateNumbers(result, dataSheetCompanies)
+      }
+  });
+
+  if (needsInit == true) {
+    $(".selection-container").css("display", "block")
+    $("#initLoad").css("display", "none")
+    initUI();
+  }
+
+  //version check
+  currVersion = getItem("version");
+
+  if ( currVersion != version ) {
+    setItem("version", version)
+    window.location.reload()
+  }
+
 }
 
-function processGateNumbers (parame) {console.log(parame)}
+function processGateNumbers (result, companies) {
+  gateData = []
 
-function getGateData (flightNumber, airport) {return 1}
+  sheets = result.valueRanges
+
+  legacySheet = sheets.shift().values
+  legacySheet.shift()
+
+  //process legacy gates
+  companies.forEach((company, i) => {
+    if (company.length > 1) {
+      if (company[1] == "Legacy") {
+        let flights = legacySheet.filter(x => x[0] == company[2])
+        flights.forEach((item) => {
+          item[0] = company[0]
+        });
+        gateData = [...gateData, ...flights]
+      }
+    }
+  });
+
+  //process other gates
+
+  sheets.forEach((sheet) => {
+    companyName = sheet.range.split("'")[1]
+    flights = sheet.values
+    flights.forEach((flight) => {
+      flight[0] = companyName
+    });
+
+    gateData = [...gateData, ...flights]
+  });
+
+  setItem("gateData", gateData)
+
+}
+
+function getGateData (company, flightNumber, airport) {
+
+  gateData = getItem("gateData")
+
+  //if gate data doesn't exist, we don't know yet
+  if (gateData == null) return "unk."
+
+  gate = gateData.filter(x => (x[0] == company && x[1] == flightNumber && x[2] == airport))[0]
+
+  if (gate == undefined) return "unk."
+  else return gate[3]
+}
 
 function populateResults(results){
-  console.log(results);
-
   let places = getItem("placeList")
 
   if (results.length == 0) {
@@ -253,8 +353,8 @@ function populateResults(results){
       $("#results").children().last().append("<div class='leg'></div>")
       currentDiv = $("#results").children().last().children().last();
 
-      let fromDisplay = places.find(x => x.primaryID === item.From).DisplayName
-      let toDisplay = places.find(x => x.primaryID === item.To).DisplayName
+      let fromDisplay = places.find(x => x.primaryID === item.From).displayName
+      let toDisplay = places.find(x => x.primaryID === item.To).displayName
 
       if (item.Type == "Flight") {
         currentDiv.append(`
@@ -265,18 +365,18 @@ function populateResults(results){
             <div class="leg-code">${item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
-              <div>${item.FromGate == undefined ? "unk." : item.FromGate }</div>
+              <div>${getGateData(item.Company, item.Number, item.From)}</div>
             </div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-gate">
               <div>Gate:</div>
-              <div>${item.ToGate == undefined ? "unk." : item.ToGate }</div>
+              <div>${getGateData(item.Company, item.Number, item.To)}</div>
             </div>
             <div class="leg-code">${item.To}</div>
           </div>
           <div class="leg-details">
-            <div>${fromDisplay == undefined ? "Foobar" : fromDisplay}</div>
-            <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
+            <div>${fromDisplay}</div>
+            <div>${toDisplay}</div>
           </div>
         `)
       } else {
@@ -311,7 +411,9 @@ function initUI() {
   placeList = getItem("placeList")
 
   if (placeList == null) { // if this triggers it's their first visit
-    firstTime = true
+    localStorage.clear()
+    needsInit = true
+    setItem("version", version)
     $(".title-container").css("animation", "none")
     $(".selection-container").css("display", "none")
     $("#initLoad").css("display", "flex")
@@ -377,6 +479,16 @@ function initUI() {
   $('#to, #from').on('select2:open', function(e) {
     $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
   });
+
+  //initial version check
+  currVersion = getItem("version");
+
+  if ( currVersion != version ) {
+    setTimeout(function(){window.location.reload()}, 20 * 1000)
+    $("#results").append("<h2 style='text-align: center'>New version available. Updating...</h2>")
+    $(".selection-container").remove()
+  }
+
 }
 
 $("#airports-check, #mrt-check").on("change", function(e) {

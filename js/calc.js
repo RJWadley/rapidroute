@@ -68,7 +68,7 @@ function search(from, to, places, routes) {
   startingOptions.push({
     "From": from,
     "To": "Z0",
-    "Type": "/spawn"
+    "Type": "the /spawn command"
   })
 
   //check for one-stop solutions
