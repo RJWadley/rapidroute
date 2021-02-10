@@ -47,22 +47,26 @@ function search(from, to, places, routes) {
         }
   }
 
-  //prepopulate with starting routes
-  let startingOptions = routes.filter(item => item["From"] == from)
-  let finishingOptions = routes.filter(item => item["To"] == to)
-
   //add warp to spawn using /spawn
   //we only need these on the first round
-  startingOptions.push({
+  routes.unshift({
     "From": from,
     "To": "X0",
     "Type": "the /spawn command"
   })
-  startingOptions.push({
+  routes.unshift({
     "From": from,
     "To": "Z0",
     "Type": "the /spawn command"
   })
+
+  //prepopulate with starting routes
+  startingOptions = []
+  routes.forEach((item, i) => {
+    if (item["From"] == from) startingOptions.push(i)
+  });
+
+  let finishingOptions = routes.filter(item => item["To"] == to)
 
   if (finishingOptions.length == 0) {
     postMessage("Destination airport not supported")
@@ -72,7 +76,7 @@ function search(from, to, places, routes) {
   //check for one-stop solutions
   for (var i = 0; i < startingOptions.length; i++) {
    paths.push([startingOptions[i]])
-   if (startingOptions[i].To == to) {
+   if (routes[startingOptions[i]].To == to) {
      destinationReached = true
      solutions.push([startingOptions[i]])
    }
@@ -91,10 +95,13 @@ function search(from, to, places, routes) {
     //get last item of first path
     let mostRecent = firstPath[firstPath.length-1]
     //get all possible next moves
-    possibleMoves = routes.filter(item => item["From"] == mostRecent["To"])
+    //possibleMoves = routes.filter(item => item["From"] == routes[mostRecent]["To"])
 
-    //for each possible move:
-    possibleMoves.forEach((item, i) => {
+    //for each route:
+    routes.forEach((item, i) => {
+
+      //check if valid move
+      if (item["From"] != routes[mostRecent]["To"]) return
 
       //if we have too many solutions then stop
       //check if visited
@@ -103,7 +110,7 @@ function search(from, to, places, routes) {
         nextvisited.push(item["To"])
         //generate whole path
         let newPath = [...firstPath]
-        newPath.push(item)
+        newPath.push(i)
         //check if completes route
         if (item["To"] == to) {
           postMessage("found")
@@ -140,32 +147,33 @@ function search(from, to, places, routes) {
     nextvisited = []
   }
   console.log("done searching")
-  sendResults(solutions)
+  sendResults(solutions, routes)
 
 }
 
-function sendResults(solutions) {
+function sendResults(solutions, routes) {
   let sortKeys = []
   solutions.forEach((solution, i) => {
     gatesCount = 0;
     solution.forEach((item, i) => {
-      if (item.hasFromGateData) {
+      solution[i] = routes[solution[i]]
+      if (solution[i].hasFromGateData) {
+        gatesCount += 2;
+      }
+      if (solution[i].hasToGateData) {
         gatesCount++;
       }
-      if (item.hasToGateData) {
-        gatesCount++;
-      }
-      if (item.Type == "MRT") {
+      if (solution[i].Type == "MRT") {
         gatesCount += 2;
       }
     });
 
-    let key = -(solution.length  - (gatesCount * 0.99 / (solution.length * 2)))
-
+    let key = -(solution.length  - (gatesCount * 0.99 / (solution.length * 3)))
     sortKeys.push(key)
   });
 
   solutions = mergeSort(solutions, sortKeys)[0]
+  solutionskeys = mergeSort(solutions, sortKeys)[0]
 
   postMessage(solutions)
 }
@@ -203,7 +211,7 @@ function merge (left, right) {
 // Merge Sort Implentation (Recursion)
 function mergeSort (unsortedArray, sortKeys) {
   if (unsortedArray.length != sortKeys.length) {
-    console.log("BAD BAD BAD");
+    throw new Error('Keys length did not match array length!');
   }
 
   // No need to sort the array if the array only has one element or empty
