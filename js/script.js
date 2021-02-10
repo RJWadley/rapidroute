@@ -590,6 +590,10 @@ function initUI() {
     {
       "text": "Heliports",
       "children" : []
+    },
+    {
+      "text": "Old World",
+      "children" : []
     }
   ]
 
@@ -607,7 +611,12 @@ function initUI() {
     else {name = "Foobar"}
 
     let optionText = `${(placeList[i].code == undefined || placeList[i].code == "") ? "" : placeList[i].code + " - "}${name}`
-    if (placeList[i]["type"] == "Airport") {
+    if (placeList[i]["world"] == "Old") {
+      selection[3]["children"].push({
+          "id": placeList[i].primaryID,
+          "text": optionText
+      })
+    } else if (placeList[i]["type"] == "Airport") {
       selection[0]["children"].push({
           "id": placeList[i].primaryID,
           "text": optionText
@@ -636,14 +645,16 @@ function initUI() {
     allowClear: true,
     width: 'resolve',
     data: selection,
-    matcher: customMatcher
+    matcher: customMatcher,
+    sorter: sortResults
   });
   $('#from').select2({
     placeholder: "Where from?",
     allowClear: true,
     width: 'resolve',
     data: selection,
-    matcher: customMatcher
+    matcher: customMatcher,
+    sorter: sortResults
   });
   $('#to, #from').on('select2:open', function(e) {
     $('input.select2-search__field').prop('placeholder', 'Search by airport, city, or MRT stop');
@@ -703,6 +714,11 @@ worker.onmessage = function(e) {
 
 //custom matcher
 var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
+
+function sortResults(results){
+  return results.sort((a,b) => {return (a.children.length > b.children.length) ? -1 : 1})
+}
+
 function customMatcher(params, data) {
 
   //get data if it doesn't exist
