@@ -27,26 +27,18 @@ function search(from, to, places, routes) {
       postMessage("pass")
       return
   }
-  console.log("starting search")
 
   //we shuffle so that the results won't appear in the same order every time
   //wouldn't want to accidentally bias any particular airline
   routes = shuffle(routes);
+
+  routes = mergeSort(routes)
 
   let destinationReached = false
   let solutions = []
   let paths = []
   visited = []
   nextvisited = []
-
-  // remember what I said about bias?
-  // lets definitely bias routes with gates
-  routes = routes.sort((a, b) => {
-    if (a.FromGate == undefined) return 1
-    if (b.FromGate == undefined) return -1
-  })
-
-  console.log(routes)
 
   //remove any null routes
   for (var i = routes.length - 1; i >=0 ; i--) {
@@ -59,8 +51,10 @@ function search(from, to, places, routes) {
 
   //prepopulate with starting routes
   let startingOptions = routes.filter(item => item["From"] == from)
+  let finishingOptions = routes.filter(item => item["To"] == to)
 
   //add warp to spawn using /spawn
+  //we only need these on the first round
   startingOptions.push({
     "From": from,
     "To": "X0",
@@ -71,6 +65,11 @@ function search(from, to, places, routes) {
     "To": "Z0",
     "Type": "the /spawn command"
   })
+
+  if (finishingOptions.length == 0) {
+    postMessage("Destination airport not supported")
+    return
+  }
 
   //check for one-stop solutions
   for (var i = 0; i < startingOptions.length; i++) {
@@ -86,15 +85,25 @@ function search(from, to, places, routes) {
 
   function discover() {
 
+    if (paths.length == 0 || paths == undefined) {
+      return
+    }
+
     //get first path
     let firstPath = paths.shift()
     //get last item of first path
     let mostRecent = firstPath[firstPath.length-1]
     //get all possible next moves
-    possibleMoves = routes;
-    possibleMoves = possibleMoves.filter(item => item["From"] == mostRecent["To"])
+    possibleMoves = routes.filter(item => item["From"] == mostRecent["To"])
+
     //for each possible move:
     possibleMoves.forEach((item, i) => {
+
+      //if we have too many solutions then stop
+      if (solutions.length >= 50) {
+        console.log("done searching")
+        return
+      }
       //check if visited
       if (!visited.includes(item["To"])) {
         //if not, add to list of visited places
@@ -104,6 +113,7 @@ function search(from, to, places, routes) {
         newPath.push(item)
         //check if completes route
         if (item["To"] == to) {
+
           //if it does, add it to solutions
           destinationReached = true
           solutions.push(newPath)
@@ -124,8 +134,14 @@ function search(from, to, places, routes) {
   // will search for a max of 500 moves (sorry, MRT stop Z501)
   for (var i = 0; i < 500; i++) {
     for (var j = 0; j < currentIterationCount; j++) {
+
       if (paths.length > 0) {
-        discover();
+
+        //prioritize routes with gates here
+        paths = mergeSort(paths) //merge sort
+        //paths = paths.sort((a, b) => sortCheck(a, b)) //quicksort
+
+        discover()
       }
     }
 
@@ -137,7 +153,71 @@ function search(from, to, places, routes) {
     // because your computer will catch on fire
     nextvisited = []
   }
-  console.log("done calculating")
+  console.log("done searching")
   postMessage(solutions)
 
+}
+
+function sortCheck(a, b) {
+  if (a instanceof Array && b instanceof Array) {
+    aHasGates = (a[a.length-1]["hasFromGateData"] == undefined) ? false : true;
+    bHasGates = (b[b.length-1]["hasFromGateData"] == undefined) ? false : true;
+
+    if (aHasGates != bHasGates) {
+      if (aHasGates) return true
+      if (bHasGates) return false
+    }
+  } else if (b instanceof Array) {
+    return false
+  } else {
+    aHasGates = (a["hasFromGateData"] == undefined) ? false : a["hasFromGateData"];
+    bHasGates = (b["hasFromGateData"] == undefined) ? false : b["hasFromGateData"];
+
+    if (aHasGates != bHasGates) {
+      if (aHasGates) return true
+      if (bHasGates) return false
+    }
+  }
+  return true
+}
+
+// Merge the two arrays: left and right
+function merge (left, right) {
+  let resultArray = [], leftIndex = 0, rightIndex = 0;
+
+  // We will concatenate values into the resultArray in order
+  while (leftIndex < left.length && rightIndex < right.length) {
+    if (sortCheck(left[leftIndex], right[rightIndex])) {
+      resultArray.push(left[leftIndex]);
+      leftIndex++; // move left array cursor
+    } else {
+      resultArray.push(right[rightIndex]);
+      rightIndex++; // move right array cursor
+    }
+  }
+
+  // We need to concat here because there will be one element remaining
+  // from either left OR the right
+  return resultArray
+          .concat(left.slice(leftIndex))
+          .concat(right.slice(rightIndex));
+}
+
+// Merge Sort Implentation (Recursion)
+function mergeSort (unsortedArray) {
+  // No need to sort the array if the array only has one element or empty
+  if (unsortedArray.length <= 1) {
+    return unsortedArray;
+  }
+  // In order to divide the array in half, we need to figure out the middle
+  const middle = Math.floor(unsortedArray.length / 2);
+
+  // This is where we will be dividing the array into left and right
+  const left = unsortedArray.slice(0, middle);
+  const right = unsortedArray.slice(middle);
+
+  // Using recursion to combine the left and right
+  return merge(
+    mergeSort(left), mergeSort(right)
+  );
 }

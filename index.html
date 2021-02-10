@@ -90,7 +90,7 @@
   <script>
       if ("serviceWorker" in navigator) {
       if (navigator.serviceWorker.controller) {
-          console.log("[PWA Builder] active service worker found");
+          console.log("[SW] active service worker found");
       } else {
           // Register the service worker
           navigator.serviceWorker
@@ -98,7 +98,7 @@
               scope: "./"
           })
           .then(function (reg) {
-              console.log("[PWA Builder] Service worker has been registered for scope: " + reg.scope);
+              console.log("[SW] Service worker has been registered for scope: " + reg.scope);
           });
       }
       }

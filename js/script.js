@@ -1,7 +1,7 @@
 // version should change when database changes significantly
 // a different version will force a reload on the client after load
 
-var version = 20210208
+var version = 20210210
 var updating = false
 
 var dataSheetID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"
@@ -14,12 +14,12 @@ var holding = undefined
 //transit sheet
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
-            "ranges='Airline Class Distribution'!A3:C161" +
-            "&ranges='Airline Class Distribution'!E2:AO2" +
-            "&ranges='Airline Class Distribution'!E3:AO161" +
-            "&ranges='Helicopters'!A3:C161" +
-            "&ranges='Helicopters'!E2:AO2" +
-            "&ranges='Helicopters'!E3:AO161" +
+            "ranges='Airline Class Distribution'!A3:C161" + //airports
+            "&ranges='Airline Class Distribution'!E2:AO2" + //company names
+            "&ranges='Airline Class Distribution'!E3:AO161" + //actual flight numbers
+            "&ranges='Helicopters'!A2:C155" + //heliports
+            "&ranges='Helicopters'!E1:X1" + //companynames
+            "&ranges='Helicopters'!E2:X155" + //actual flight numbers
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -61,6 +61,9 @@ function processSheets(transitSheet, dataSheet) {
   //we need to transpose the flight data
   transitFlightData = transpose(transitFlightData)
 
+  //we need to transpose the flight data
+  transitHeliData = transpose(transitHeliData)
+
   //get data from dataSheet
   let mrtLineInfo = [...dataSheet.valueRanges[0].values]
   let mrtStopInfo = [...dataSheet.valueRanges[1].values]
@@ -68,37 +71,59 @@ function processSheets(transitSheet, dataSheet) {
   let dataSheetCompanies = [...dataSheet.valueRanges[3].values]
 
   // inst
-  airportList = []
+  locationList = []
   routeList = []
   placeList = []
 
-  //// generate list of Airports
+  //// generate list of Airports, Heliports, etc
+  locationObjectObject = {}
 
   //convert data sheet airports into something easier to use
   dataSheetAirportsObject = {}
   dataSheetAirports.forEach((airport, i) => {
-    dataSheetAirportsObject[airport[0]] = airport
+    dataSheetAirportsObject[airport[0]] = {
+      "code": airport[0],
+      "displayName": airport[1],
+      "keywords": airport[2],
+      "transfers": airport[3]
+    }
+  });
+
+  heliportsObject = {}
+  heliports.forEach((heliport, i) => {
+    heliportsObject[(heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1]] = {
+      "primaryID": (heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1],
+      "internalName": heliport[0],
+      "code": heliport[1],
+      "world": heliport[3],
+      "type": "Heliport",
+    }
   });
 
   //create an object for each airport and add it to list
+  transitAirportsObject = {}
   transitAirports.forEach((airport, i) => {
-    airportList.push({
+    transitAirportsObject[airport[1]] = {
       "primaryID": airport[1],
       "code": airport[1],
       "internalName": airport[0],
       "world": airport[2],
       "type": "Airport",
-      "displayName": dataSheetAirportsObject[airport[1]][1],
-      "keywords": dataSheetAirportsObject[airport[1]][2],
-      "transfers": dataSheetAirportsObject[airport[1]][3]
-    })
+    }
   });
 
-  placeList = [...airportList]
+  //combine objects
+  locationObjectObject = deepExtend(dataSheetAirportsObject, transitAirportsObject)
+  locationObjectObject = deepExtend(heliportsObject, locationObjectObject)
+
+  //convert into array
+  let locationKeys = Object.keys(locationObjectObject);
+  locationKeys.forEach((locationKey) => {
+    placeList.push(locationObjectObject[locationKey])
+  });
 
   //generate list of flight routes data
   let airlines = []
-
   transitCompanies.forEach((company, i) => {
     let airline = {"airlineName": company, "airlineFlights": {}}
     transitFlightData[i].forEach((destination, j) => {
@@ -109,10 +134,29 @@ function processSheets(transitSheet, dataSheet) {
           airline.airlineFlights[number] = []
         }
         // add current airport to flight object
-        airline.airlineFlights[number].push(airportList[j]["primaryID"])
+        airline.airlineFlights[number].push(transitAirports[j][1])
       });
     });
     airlines.push(airline)
+  });
+
+  helilines = []
+  //generate list of helicopter flights
+  heliCompanies.forEach((company, i) => {
+    let airline = {"airlineName": company, "airlineFlights": {}}
+    if (transitHeliData[i] == undefined) return //skip if empty
+    transitHeliData[i].forEach((destination, j) => {
+      if (destination == "" || destination == undefined) return
+      destination.split(",").forEach((flight, k) => {
+        number = flight.trim()
+        if (airline.airlineFlights[number] == undefined) {
+          airline.airlineFlights[number] = []
+        }
+        // add current airport to flight object
+        airline.airlineFlights[number].push((heliports[j][1] == "" || heliports[j][1] == undefined) ? heliports[j][0] : heliports[j][1])
+      });
+    });
+    helilines.push(airline)
   });
 
   //now we use this flight data to actually generate routes
@@ -130,6 +174,30 @@ function processSheets(transitSheet, dataSheet) {
               "From": flights[number][j],
               "To": flights[number][k],
               "Type": "Flight",
+              "Company": airline.airlineName,
+              "Number": number
+            })
+          }
+        }
+      }
+    });
+  });
+
+  //and helilines is exactly the same but with a different type
+  helilines.forEach(airline => {
+    //get all flight numbers for airline
+    flights = airline.airlineFlights
+    if (flights == undefined) return
+    allNumbers = Object.keys(flights)
+    //generate all possible routes
+    allNumbers.forEach((number, i) => {
+      for (var j = 0; j < flights[number].length; j++) {
+        for (var k = 0; k < flights[number].length; k++) {
+          if (j != k) {
+            routeList.push({
+              "From": flights[number][j],
+              "To": flights[number][k],
+              "Type": "Heli",
               "Company": airline.airlineName,
               "Number": number
             })
@@ -257,7 +325,6 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
-
   setItem("routeList", routeList)
   setItem("placeList", placeList)
 
@@ -288,11 +355,10 @@ function processSheets(transitSheet, dataSheet) {
     initUI();
   }
 
-  //version check
-  currVersion = getItem("version");
-
-  if ( currVersion != version ) {
+  //if updating reload
+  if ( updating == true ) {
     setItem("version", version)
+    sessionStorage.clear();
     window.location.reload()
   }
 
@@ -322,7 +388,7 @@ function processGateNumbers (result, companies) {
   //process other gates
 
   sheets.forEach((sheet) => {
-    
+
     if (sheet.range.indexOf("'") == -1) {
       companyName = sheet.range.split("!")[0]
     } else {
@@ -338,6 +404,17 @@ function processGateNumbers (result, companies) {
   });
 
   setItem("gateData", gateData)
+
+  routeList = getItem("routeList")
+
+  //now add gate info to routes
+  routeList.forEach((route, i) => {
+    if (gateData.filter(x => (x[0] == route["Company"] && x[1] == route["Number"] && x[2] == route["From"])).length > 0) {
+      routeList[i]["hasFromGateData"] = true
+    }
+  });
+
+  setItem("routeList", routeList)
 
 }
 
@@ -358,8 +435,18 @@ function getGateData (company, flightNumber, airport) {
 function populateResults(results){
   let places = getItem("placeList")
 
+  if (results == "Destination airport not supported") {
+    $("#results").append("<div class='route'>Destination airport has no flights.</div>")
+    return
+  }
+
   if (results.length == 0) {
     $("#results").append("<div class='route'>Unable to find a path.</div>")
+  }
+
+  if (results.length >= 1 && $(".route").html() == "Unable to find a path.") {
+    console.log("prevented")
+    $("#results").html("") // to prevent accidentally having no results, followed by results
   }
 
   results.forEach((result, i) => {
@@ -384,10 +471,36 @@ function populateResults(results){
       let fromDisplay = places.find(x => x.primaryID === item.From).displayName
       let toDisplay = places.find(x => x.primaryID === item.To).displayName
 
+      if (fromDisplay == undefined) fromDisplay = places.find(x => x.primaryID === item.From).internalName
+      if (toDisplay == undefined) toDisplay = places.find(x => x.primaryID === item.To).internalName
+
       if (item.Type == "Flight") {
         currentDiv.append(`
           <div class="leg-blurb">
             Flight ${item.Number} by ${item.Company}
+          </div>
+          <div class="leg-summary">
+            <div class="leg-code">${item.From}</div>
+            <div class="leg-gate">
+              <div>Gate</div>
+              <div>${getGateData(item.Company, item.Number, item.From)}</div>
+            </div>
+            <div class="leg-arrow">&#x2794;</div>
+            <div class="leg-gate">
+              <div>Gate:</div>
+              <div>${getGateData(item.Company, item.Number, item.To)}</div>
+            </div>
+            <div class="leg-code">${item.To}</div>
+          </div>
+          <div class="leg-details">
+            <div>${fromDisplay}</div>
+            <div>${toDisplay}</div>
+          </div>
+        `)
+      } else if (item.Type == "Heli") {
+        currentDiv.append(`
+          <div class="leg-blurb">
+            Helicopter Flight ${item.Number} by ${item.Company}
           </div>
           <div class="leg-summary">
             <div class="leg-code">${item.From}</div>
@@ -440,6 +553,7 @@ function initUI() {
 
   if (placeList == null) { // if this triggers it's their first visit
     localStorage.clear()
+    sessionStorage.clear()
     needsInit = true
     setItem("version", version)
     $(".title-container").css("animation", "none")
@@ -459,6 +573,10 @@ function initUI() {
     {
       "text": "MRT Stops",
       "children" : []
+    },
+    {
+      "text": "Heliports",
+      "children" : []
     }
   ]
 
@@ -470,7 +588,12 @@ function initUI() {
       continue
     }
 
-    let optionText = `${placeList[i].Supported == "No" ? "(Unsupported) " : ""}${placeList[i].code == undefined ? "Foobar" : placeList[i].code} - ${placeList[i].displayName == undefined ? "Foobar" : placeList[i].displayName}`
+    let name
+    if (placeList[i].displayName != undefined) {name = placeList[i].displayName}
+    else if (placeList[i].internalName != undefined) {name = placeList[i].internalName}
+    else {name = "Foobar"}
+
+    let optionText = `${(placeList[i].code == undefined || placeList[i].code == "") ? "" : placeList[i].code + " - "}${name}`
     if (placeList[i]["type"] == "Airport") {
       selection[0]["children"].push({
           "id": placeList[i].primaryID,
@@ -478,6 +601,11 @@ function initUI() {
       })
     } else if (placeList[i]["type"] == "MRT") {
       selection[1]["children"].push({
+          "id": placeList[i].primaryID,
+          "text": optionText
+      })
+    } else if (placeList[i]["type"] == "Heliport") {
+      selection[2]["children"].push({
           "id": placeList[i].primaryID,
           "text": optionText
       })
@@ -512,6 +640,8 @@ function initUI() {
   currVersion = getItem("version");
 
   if ( currVersion != version ) {
+    console.log("Updating from version " + currVersion + " to " + version)
+    updating = true;
     setTimeout(function(){window.location.reload()}, 20 * 1000)
     $("#results").append("<h2 style='text-align: center'>New version available. Updating...</h2>")
     $(".selection-container").remove()

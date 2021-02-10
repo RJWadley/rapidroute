@@ -3,9 +3,10 @@ function setItem(name, value) {
     let compressed = LZString.compressToUTF16(JSON.stringify(value));
     //store it
     localStorage.setItem(name,compressed);
-    console.groupCollapsed("Data Set: " + name);
-    console.log(JSON.stringify(value));
-    console.groupEnd();
+    sessionStorage.setItem(name,JSON.stringify(value));
+    //console.groupCollapsed("Data Set: " + name);
+    //console.log(JSON.stringify(value));
+    //console.groupEnd();
 }
 
 function getItem(name) {
@@ -14,11 +15,21 @@ function getItem(name) {
         return null;
     }
 
+    //attempt to get from sessionStorage
+    let data = JSON.parse(sessionStorage.getItem(name))
+    if (data != null) {
+      //console.groupCollapsed("[Session] Data Got: " + name);
+      //console.log(JSON.stringify(data));
+      //console.groupEnd();
+      return data
+    }
+
     //decompress then parse then return
-    let data = JSON.parse(LZString.decompressFromUTF16(localStorage.getItem(name)));
-    console.groupCollapsed("Data Got: " + name);
-    console.log(JSON.stringify(data));
-    console.groupEnd();
+    data = JSON.parse(LZString.decompressFromUTF16(localStorage.getItem(name)));
+    //console.groupCollapsed("[Local] Data Got: " + name);
+    //console.log(JSON.stringify(data));
+    //console.groupEnd();
+    sessionStorage.setItem(name, JSON.stringify(data))
     return data;
 }
 
@@ -26,7 +37,14 @@ function transpose(a) {
 
   // Calculate the width and height of the Array
   var w = a.length || 0;
-  var h = a[0] instanceof Array ? a[0].length : 0;
+
+  //calculate the max height of array
+  maxHeight = 0;
+  a.forEach((item) => {
+    if (item.length > maxHeight) {maxHeight = item.length}
+  });
+
+  var h = maxHeight;
 
   // In case it is a zero matrix, no transpose routine needed.
   if(h === 0 || w === 0) { return []; }
@@ -53,4 +71,21 @@ function transpose(a) {
   }
 
   return t;
+}
+
+function deepExtend(object1, object2) {
+  keys1 = Object.keys(object1);
+  keys2 = Object.keys(object2);
+
+  combined = [...keys1, ...keys2]
+  keys = combined.filter((item,index) => combined.indexOf(item) === index)
+
+  combinedObject = {}
+
+  keys.forEach((key) => {
+    combinedObject[key] = $.extend(object1[key], object2[key])
+  });
+
+  return combinedObject
+
 }
