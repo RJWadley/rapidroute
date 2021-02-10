@@ -139,6 +139,7 @@ select {
   .selection-container {
     height: 112px;
     margin-top: -40px;
+    margin-bottom: 125px;
   }
 }
 
@@ -306,8 +307,7 @@ select {
 }
 
 .spinner {
-  margin-top: 30px;
-  margin-bottom: 100px;
+  margin: 30px auto 100px auto;
   width: 100px;
   height: 100px;
   /*position: fixed;
