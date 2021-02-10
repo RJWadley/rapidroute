@@ -5,7 +5,7 @@ var nextvisited = []
 
 //search on message recieved
 onmessage = function(e) {
-  search(e.data[0],e.data[1],e.data[2],e.data[3])
+  search(e.data[0],e.data[1],e.data[2],e.data[3],e.data[4])
 }
 
 //standard shuffle alg
@@ -21,7 +21,7 @@ function shuffle(array) {
   return array;
 }
 
-function search(from, to, places, routes) {
+function search(from, to, places, routes, allowTp) {
   //check for identical and empty
   if (to == from || to == "" || from == "") {
       postMessage("pass")
@@ -49,16 +49,18 @@ function search(from, to, places, routes) {
 
   //add warp to spawn using /spawn
   //we only need these on the first round
-  routes.unshift({
-    "From": from,
-    "To": "X0",
-    "Type": "the /spawn command"
-  })
-  routes.unshift({
-    "From": from,
-    "To": "Z0",
-    "Type": "the /spawn command"
-  })
+  if (allowTp) {
+    routes.unshift({
+      "From": from,
+      "To": "X0",
+      "Type": "the /spawn command"
+    })
+    routes.unshift({
+      "From": from,
+      "To": "Z0",
+      "Type": "the /spawn command"
+    })
+  }
 
   //prepopulate with starting routes
   startingOptions = []

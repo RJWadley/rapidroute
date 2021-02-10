@@ -660,7 +660,7 @@ function initUI() {
 
 }
 
-$("#airports-check, #mrt-check").on("change", function(e) {
+$("input").on("change", function(e) {
   $("#from").trigger("select2:select")
 })
 $('#from, #to').on('select2:select', function (e) {
@@ -676,7 +676,10 @@ $('#from, #to').on('select2:select', function (e) {
   if ($("#mrt-check").prop("checked") == false) {
     routes = routes.filter(route => route.Type !== "MRT");
   }
-  worker.postMessage([$("#from").val(), $("#to").val(), getItem("placeList"), routes])
+  if ($("#heli-check").prop("checked") == false) {
+    routes = routes.filter(route => route.Type !== "Heli");
+  }
+  worker.postMessage([$("#from").val(), $("#to").val(), getItem("placeList"), routes, $("#tp-check").prop("checked")])
 });
 
 try {
