@@ -2,10 +2,12 @@ var currentIterationCount = 0;
 var nextIterationCount = 0;
 var visited = []
 var nextvisited = []
+var searching
 
 //search on message recieved
 onmessage = function(e) {
-  search(e.data[0],e.data[1],e.data[2],e.data[3],e.data[4])
+  searching = Math.random()
+  search(e.data[0],e.data[1],e.data[2],e.data[3],e.data[4],searching)
 }
 
 //standard shuffle alg
@@ -21,7 +23,8 @@ function shuffle(array) {
   return array;
 }
 
-function search(from, to, places, routes, allowTp) {
+function search(from, to, places, routes, allowTp, localSearching) {
+  let paths = []
   //check for identical and empty
   if (to == from || to == "" || from == "") {
       postMessage("pass")
@@ -34,7 +37,6 @@ function search(from, to, places, routes, allowTp) {
 
   let destinationReached = false
   let solutions = []
-  let paths = []
   visited = []
   nextvisited = []
 
@@ -148,12 +150,11 @@ function search(from, to, places, routes, allowTp) {
     // because your computer will catch on fire
     nextvisited = []
   }
-  console.log("done searching")
-  sendResults(solutions, routes)
-
+  
+  setTimeout(function(){sendResults(solutions, routes, localSearching)}, 1)
 }
 
-function sendResults(solutions, routes) {
+function sendResults(solutions, routes, localSearching) {
   let sortKeys = []
   solutions.forEach((solution, i) => {
     gatesCount = 0;
@@ -177,7 +178,9 @@ function sendResults(solutions, routes) {
   solutions = mergeSort(solutions, sortKeys)[0]
   solutionskeys = mergeSort(solutions, sortKeys)[0]
 
-  postMessage(solutions)
+  if (searching == localSearching) {
+    postMessage(solutions)
+  }
 }
 
 // Merge the two arrays: left and right

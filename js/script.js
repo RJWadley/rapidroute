@@ -456,13 +456,15 @@ function populateResults(results){
     $("#results").append("<div class='route'>Unable to find a path.</div>")
   }
 
-  if (results.length >= 1 && $(".route").html() == "Unable to find a path.") {
-    $("#results").html("") // to prevent accidentally having no results, followed by results
-  }
+  //not needed, since all results come at once
+  //if (results.length >= 1 && $(".route").html() == "Unable to find a path.") {
+  //  $("#results").html("") // to prevent accidentally having no results, followed by results
+  //}
 
   results.forEach((result, i) => {
     //skip if already in existance
-    if($("#results").children().length > i) {return}
+    //not needed since all results come at once
+    //if($("#results").children().length > i) {return}
 
     $("#results").append("<div class='route'>Option " + (i + 1) + "</div>")
     //add to dom
