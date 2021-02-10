@@ -491,7 +491,7 @@ function populateResults(results){
             Flight ${item.Number} by ${item.Company}
           </div>
           <div class="leg-summary">
-            <div class="leg-code">${item.From}</div>
+            <div class="leg-code">${(item.From.length > 4) ? "—" : item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
               <div>${getGateData(item.Company, item.Number, item.From)}</div>
@@ -501,7 +501,7 @@ function populateResults(results){
               <div>Gate:</div>
               <div>${getGateData(item.Company, item.Number, item.To)}</div>
             </div>
-            <div class="leg-code">${item.To}</div>
+            <div class="leg-code">${(item.To.length > 4) ? "—" : item.To}</div>
           </div>
           <div class="leg-details">
             <div>${fromDisplay}</div>
@@ -514,7 +514,7 @@ function populateResults(results){
             Helicopter Flight ${item.Number} by ${item.Company}
           </div>
           <div class="leg-summary">
-            <div class="leg-code">${item.From}</div>
+            <div class="leg-code">${(item.From.length > 4) ? "—" : item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
               <div>${getGateData(item.Company, item.Number, item.From)}</div>
@@ -524,7 +524,7 @@ function populateResults(results){
               <div>Gate:</div>
               <div>${getGateData(item.Company, item.Number, item.To)}</div>
             </div>
-            <div class="leg-code">${item.To}</div>
+            <div class="leg-code">${(item.To.length > 4) ? "—" : item.To}</div>
           </div>
           <div class="leg-details">
             <div>${fromDisplay}</div>
