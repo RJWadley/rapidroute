@@ -116,6 +116,8 @@ function processSheets(transitSheet, dataSheet) {
   locationObjectObject = deepExtend(dataSheetAirportsObject, transitAirportsObject)
   locationObjectObject = deepExtend(heliportsObject, locationObjectObject)
 
+  delete locationObjectObject["ITO"] //ITO doesn't exist
+
   //convert into array
   let locationKeys = Object.keys(locationObjectObject);
   locationKeys.forEach((locationKey) => {
