@@ -165,8 +165,8 @@ function sendResults(solutions, routes) {
       if (solution[i].hasToGateData) {
         gatesCount++;
       }
-      if (solution[i].Type == "MRT") {
-        gatesCount += 2;
+      if (solution[i].Type != "Flight" && solution[i].Type != "Heli") {
+        gatesCount += 3; //don't penalize MRT and walk
       }
     });
 
