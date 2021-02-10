@@ -439,7 +439,7 @@ function populateResults(results){
   let places = getItem("placeList")
 
   if (results == "Destination airport not supported") {
-    $("#results").append("<div class='route'>Destination airport has no flights.</div>")
+    $("#results").append("<div class='route'>Destination unreachable</div>")
     $("#searching").css("display", "none")
     return
   }
