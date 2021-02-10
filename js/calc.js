@@ -32,8 +32,6 @@ function search(from, to, places, routes) {
   //wouldn't want to accidentally bias any particular airline
   routes = shuffle(routes);
 
-  routes = mergeSort(routes)
-
   let destinationReached = false
   let solutions = []
   let paths = []
@@ -77,7 +75,6 @@ function search(from, to, places, routes) {
    if (startingOptions[i].To == to) {
      destinationReached = true
      solutions.push([startingOptions[i]])
-     postMessage(solutions)
    }
   }
 
@@ -100,10 +97,6 @@ function search(from, to, places, routes) {
     possibleMoves.forEach((item, i) => {
 
       //if we have too many solutions then stop
-      if (solutions.length >= 50) {
-        console.log("done searching")
-        return
-      }
       //check if visited
       if (!visited.includes(item["To"])) {
         //if not, add to list of visited places
@@ -113,11 +106,10 @@ function search(from, to, places, routes) {
         newPath.push(item)
         //check if completes route
         if (item["To"] == to) {
-
+          postMessage("found")
           //if it does, add it to solutions
           destinationReached = true
           solutions.push(newPath)
-          postMessage(solutions)
         }
         //if the solution has not yet been reached
         if (destinationReached == false) {
@@ -134,13 +126,7 @@ function search(from, to, places, routes) {
   // will search for a max of 500 moves (sorry, MRT stop Z501)
   for (var i = 0; i < 500; i++) {
     for (var j = 0; j < currentIterationCount; j++) {
-
       if (paths.length > 0) {
-
-        //prioritize routes with gates here
-        paths = mergeSort(paths) //merge sort
-        //paths = paths.sort((a, b) => sortCheck(a, b)) //quicksort
-
         discover()
       }
     }
@@ -154,70 +140,88 @@ function search(from, to, places, routes) {
     nextvisited = []
   }
   console.log("done searching")
-  postMessage(solutions)
+  sendResults(solutions)
 
 }
 
-function sortCheck(a, b) {
-  if (a instanceof Array && b instanceof Array) {
-    aHasGates = (a[a.length-1]["hasFromGateData"] == undefined) ? false : true;
-    bHasGates = (b[b.length-1]["hasFromGateData"] == undefined) ? false : true;
+function sendResults(solutions) {
+  let sortKeys = []
+  solutions.forEach((solution, i) => {
+    gatesCount = 0;
+    solution.forEach((item, i) => {
+      if (item.hasFromGateData) {
+        gatesCount++;
+      }
+      if (item.hasToGateData) {
+        gatesCount++;
+      }
+      if (item.Type == "MRT") {
+        gatesCount += 2;
+      }
+    });
 
-    if (aHasGates != bHasGates) {
-      if (aHasGates) return true
-      if (bHasGates) return false
-    }
-  } else if (b instanceof Array) {
-    return false
-  } else {
-    aHasGates = (a["hasFromGateData"] == undefined) ? false : a["hasFromGateData"];
-    bHasGates = (b["hasFromGateData"] == undefined) ? false : b["hasFromGateData"];
+    let key = -(solution.length  - (gatesCount * 0.99 / (solution.length * 2)))
 
-    if (aHasGates != bHasGates) {
-      if (aHasGates) return true
-      if (bHasGates) return false
-    }
-  }
-  return true
+    sortKeys.push(key)
+  });
+
+  solutions = mergeSort(solutions, sortKeys)[0]
+
+  postMessage(solutions)
 }
 
 // Merge the two arrays: left and right
+// takes two arrays of size two: [arrayToSort, sortKey]
 function merge (left, right) {
-  let resultArray = [], leftIndex = 0, rightIndex = 0;
+  let resultArray = [], resultKeys = [], leftIndex = 0, rightIndex = 0;
 
   // We will concatenate values into the resultArray in order
-  while (leftIndex < left.length && rightIndex < right.length) {
-    if (sortCheck(left[leftIndex], right[rightIndex])) {
-      resultArray.push(left[leftIndex]);
+  while (leftIndex < left[1].length && rightIndex < right[1].length) {
+    if (left[1][leftIndex] > right[1][rightIndex]) {
+      resultArray.push(left[0][leftIndex]);
+      resultKeys.push(left[1][leftIndex]);
       leftIndex++; // move left array cursor
     } else {
-      resultArray.push(right[rightIndex]);
+      resultArray.push(right[0][rightIndex]);
+      resultKeys.push(right[1][rightIndex]);
       rightIndex++; // move right array cursor
     }
   }
 
   // We need to concat here because there will be one element remaining
   // from either left OR the right
-  return resultArray
-          .concat(left.slice(leftIndex))
-          .concat(right.slice(rightIndex));
+  returnArray = resultArray
+    .concat(left[0].slice(leftIndex))
+    .concat(right[0].slice(rightIndex));
+  returnKeys = resultKeys
+    .concat(left[1].slice(leftIndex))
+    .concat(right[1].slice(rightIndex));
+
+  return [returnArray, returnKeys];
 }
 
 // Merge Sort Implentation (Recursion)
-function mergeSort (unsortedArray) {
-  // No need to sort the array if the array only has one element or empty
-  if (unsortedArray.length <= 1) {
-    return unsortedArray;
+function mergeSort (unsortedArray, sortKeys) {
+  if (unsortedArray.length != sortKeys.length) {
+    console.log("BAD BAD BAD");
   }
+
+  // No need to sort the array if the array only has one element or empty
+  if (sortKeys.length <= 1) {
+    return [unsortedArray, sortKeys];
+  }
+
   // In order to divide the array in half, we need to figure out the middle
-  const middle = Math.floor(unsortedArray.length / 2);
+  const middle = Math.floor(sortKeys.length / 2);
 
   // This is where we will be dividing the array into left and right
   const left = unsortedArray.slice(0, middle);
   const right = unsortedArray.slice(middle);
+  const leftKeys = sortKeys.slice(0, middle);
+  const rightKeys = sortKeys.slice(middle);
 
   // Using recursion to combine the left and right
   return merge(
-    mergeSort(left), mergeSort(right)
+    mergeSort(left, leftKeys), mergeSort(right, rightKeys)
   );
 }

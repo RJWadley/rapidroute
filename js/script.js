@@ -412,6 +412,9 @@ function processGateNumbers (result, companies) {
     if (gateData.filter(x => (x[0] == route["Company"] && x[1] == route["Number"] && x[2] == route["From"])).length > 0) {
       routeList[i]["hasFromGateData"] = true
     }
+    if (gateData.filter(x => (x[0] == route["Company"] && x[1] == route["Number"] && x[2] == route["To"])).length > 0) {
+      routeList[i]["hasToGateData"] = true
+    }
   });
 
   setItem("routeList", routeList)
@@ -438,6 +441,14 @@ function populateResults(results){
   if (results == "Destination airport not supported") {
     $("#results").append("<div class='route'>Destination airport has no flights.</div>")
     return
+  }
+
+  if (results == "found") {
+    $("#searching").children().first().html("Checking for better paths...")
+    return
+  } else {
+    $("#searching").css("display", "none")
+    $("#searching").children().first().html("Searching...")
   }
 
   if (results.length == 0) {
@@ -678,9 +689,7 @@ try {
 }
 
 worker.onmessage = function(e) {
-  $("#searching").css("display", "none")
   if (e.data != "pass") {
-
     populateResults(e.data, getItem("placeData"))
   }
 }
