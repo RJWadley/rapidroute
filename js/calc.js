@@ -211,7 +211,7 @@ function merge (left, right) {
 // Merge Sort Implentation (Recursion)
 function mergeSort (unsortedArray, sortKeys) {
   if (unsortedArray.length != sortKeys.length) {
-    throw new Error('Keys length did not match array length!');
+    throw new Error('Keys length does not match array length');
   }
 
   // No need to sort the array if the array only has one element or empty

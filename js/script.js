@@ -440,6 +440,7 @@ function populateResults(results){
 
   if (results == "Destination airport not supported") {
     $("#results").append("<div class='route'>Destination airport has no flights.</div>")
+    $("#searching").css("display", "none")
     return
   }
 
@@ -456,7 +457,6 @@ function populateResults(results){
   }
 
   if (results.length >= 1 && $(".route").html() == "Unable to find a path.") {
-    console.log("prevented")
     $("#results").html("") // to prevent accidentally having no results, followed by results
   }
 
@@ -667,7 +667,7 @@ $('#from, #to').on('select2:select', function (e) {
 
   $("#results").html("")
   if ($("#from").val() == "" || $("#to").val() == "") {return}
-  $("#searching").fadeIn()
+  $("#searching").css("display", "block")
 
   routes = getItem("routeList")
   if ($("#airports-check").prop("checked") == false) {
@@ -691,6 +691,8 @@ try {
 worker.onmessage = function(e) {
   if (e.data != "pass") {
     populateResults(e.data, getItem("placeData"))
+  } else {
+    $("#searching").css("display", "none")
   }
 }
 

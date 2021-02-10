@@ -306,8 +306,7 @@ select {
 }
 
 .spinner {
-  margin-top: 30px;
-  margin-bottom: 100px;
+  margin: 30px auto 100px auto;
   width: 100px;
   height: 100px;
   /*position: fixed;
