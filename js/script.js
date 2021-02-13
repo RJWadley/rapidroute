@@ -85,7 +85,7 @@ function processSheets(transitSheet, dataSheet) {
   dataSheetAirportsObject = {}
   dataSheetAirports.forEach((airport, i) => {
     dataSheetAirportsObject[airport[0]] = {
-      "code": airport[0],
+      "primaryID": airport[0],
       "displayName": airport[1],
       "keywords": airport[2],
       "transfers": airport[3]
@@ -114,6 +114,16 @@ function processSheets(transitSheet, dataSheet) {
       "type": "Airport",
     }
   });
+
+  // //remove invalid places
+  // for (var i = placeList.length-1; i >= 0; i--) {
+  //   if (placeList[i].primaryID == null) {
+  //     if (placeList[i].code != null) {
+  //       console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
+  //     }
+  //     placeList.splice(i, 1)
+  //   }
+  // }
 
   //combine objects
   locationObjectObject = deepExtend(dataSheetAirportsObject, transitAirportsObject)
@@ -328,18 +338,6 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
-  //remove invalid places
-  for (var i = placeList.length-1; i >= 0; i--) {
-    if (placeList[i].primaryID == null) {
-      if (placeList[i].code != null) {
-        console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
-      }
-      placeList.splice(i, 1)
-    }
-  }
-
-  console.log(placeList)
-
   setItem("routeList", routeList)
   setItem("placeList", placeList)
 
@@ -499,8 +497,8 @@ function populateResults(results){
       let fromDisplay = places.find(x => x.primaryID === item.From).displayName
       let toDisplay = places.find(x => x.primaryID === item.To).displayName
 
-      if (fromDisplay == undefined) fromDisplay = places.find(x => x.primaryID === item.From).internalName
-      if (toDisplay == undefined) toDisplay = places.find(x => x.primaryID === item.To).internalName
+      if (fromDisplay == undefined || fromDisplay == "") fromDisplay = places.find(x => x.primaryID === item.From).internalName
+      if (toDisplay == undefined || fromDisplay == "") toDisplay = places.find(x => x.primaryID === item.To).internalName
 
       if (item.Type == "Flight") {
         currentDiv.append(`
@@ -731,7 +729,12 @@ worker.onmessage = function(e) {
 var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
 
 function sortResults(results){
-  return results.sort((a,b) => {return (a.children.length > b.children.length) ? -1 : 1})
+  console.log(results)
+  return results.sort((a,b) => {
+    if (a.children == null) return 1
+    if (b.children == null) return -1
+    return (a.children.length > b.children.length) ? -1 : 1
+  })
 }
 
 function customMatcher(params, data) {
