@@ -18,11 +18,11 @@ var holding = undefined
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
             "ranges='Airline Class Distribution'!A3:C161" + //airports
-            "&ranges='Airline Class Distribution'!E2:AO2" + //company names
-            "&ranges='Airline Class Distribution'!E3:AO161" + //actual flight numbers
-            "&ranges='Helicopters'!A2:C155" + //heliports
+            "&ranges='Airline Class Distribution'!E2:AZ2" + //company names
+            "&ranges='Airline Class Distribution'!E3:AZ161" + //actual flight numbers
+            "&ranges='Helicopters'!A2:C156" + //heliports
             "&ranges='Helicopters'!E1:X1" + //companynames
-            "&ranges='Helicopters'!E2:X155" + //actual flight numbers
+            "&ranges='Helicopters'!E2:X156" + //actual flight numbers
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -35,9 +35,9 @@ $.ajax({
 //data sheet
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
-            "ranges='MRT'!B2:F19" +
-            "&ranges='MRT'!B24:D1133" +
-            "&ranges='Airports'!A2:D1000" +
+            "ranges='MRT'!B2:F19" + //mrt info
+            "&ranges='MRT'!B24:D1133" + //mrt stop names
+            "&ranges='Airports'!A2:D500" +
             "&ranges='Companies'!A2:C200" +
             "&key=" + API_KEY,
   success: function(result) {
@@ -327,6 +327,18 @@ function processSheets(transitSheet, dataSheet) {
 
     }
   });
+
+  //remove invalid places
+  for (var i = placeList.length-1; i >= 0; i--) {
+    if (placeList[i].primaryID == null) {
+      if (placeList[i].code != null) {
+        console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
+      }
+      placeList.splice(i, 1)
+    }
+  }
+
+  console.log(placeList)
 
   setItem("routeList", routeList)
   setItem("placeList", placeList)
