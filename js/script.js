@@ -1,6 +1,9 @@
 // version should change when database changes significantly
 // a different version will force a reload on the client after load
 
+// welcome to the source code
+//enjoy your stay
+
 var version = 20210210
 var updating = false
 
@@ -34,8 +37,8 @@ $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
             "ranges='MRT'!B2:F19" +
             "&ranges='MRT'!B24:D1133" +
-            "&ranges='Airports'!A2:D172" +
-            "&ranges='Companies'!A2:C43" +
+            "&ranges='Airports'!A2:D1000" +
+            "&ranges='Companies'!A2:C200" +
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -95,7 +98,7 @@ function processSheets(transitSheet, dataSheet) {
       "primaryID": (heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1],
       "internalName": heliport[0],
       "code": heliport[1],
-      "world": heliport[3],
+      "world": heliport[2],
       "type": "Heliport",
     }
   });
