@@ -1,6 +1,9 @@
 // version should change when database changes significantly
 // a different version will force a reload on the client after load
 
+// welcome to the source code
+//enjoy your stay
+
 var version = 20210210
 var updating = false
 
@@ -15,11 +18,11 @@ var holding = undefined
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
             "ranges='Airline Class Distribution'!A3:C161" + //airports
-            "&ranges='Airline Class Distribution'!E2:AO2" + //company names
-            "&ranges='Airline Class Distribution'!E3:AO161" + //actual flight numbers
-            "&ranges='Helicopters'!A2:C155" + //heliports
+            "&ranges='Airline Class Distribution'!E2:AZ2" + //company names
+            "&ranges='Airline Class Distribution'!E3:AZ161" + //actual flight numbers
+            "&ranges='Helicopters'!A2:C156" + //heliports
             "&ranges='Helicopters'!E1:X1" + //companynames
-            "&ranges='Helicopters'!E2:X155" + //actual flight numbers
+            "&ranges='Helicopters'!E2:X156" + //actual flight numbers
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -32,10 +35,10 @@ $.ajax({
 //data sheet
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
-            "ranges='MRT'!B2:F19" +
-            "&ranges='MRT'!B24:D1133" +
-            "&ranges='Airports'!A2:D172" +
-            "&ranges='Companies'!A2:C43" +
+            "ranges='MRT'!B2:F19" + //mrt info
+            "&ranges='MRT'!B24:D1133" + //mrt stop names
+            "&ranges='Airports'!A2:D500" +
+            "&ranges='Companies'!A2:C200" +
             "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -95,7 +98,7 @@ function processSheets(transitSheet, dataSheet) {
       "primaryID": (heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1],
       "internalName": heliport[0],
       "code": heliport[1],
-      "world": heliport[3],
+      "world": heliport[2],
       "type": "Heliport",
     }
   });
@@ -324,6 +327,18 @@ function processSheets(transitSheet, dataSheet) {
 
     }
   });
+
+  //remove invalid places
+  for (var i = placeList.length-1; i >= 0; i--) {
+    if (placeList[i].primaryID == null) {
+      if (placeList[i].code != null) {
+        console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
+      }
+      placeList.splice(i, 1)
+    }
+  }
+
+  console.log(placeList)
 
   setItem("routeList", routeList)
   setItem("placeList", placeList)
