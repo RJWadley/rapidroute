@@ -4,7 +4,7 @@
 // welcome to the source code
 //enjoy your stay
 
-var version = 20210210
+var version = 20211003
 var updating = false
 
 var dataSheetID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"
@@ -12,24 +12,44 @@ var transitSheetID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"
 var API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
 
 var needsInit = false;
-
 var holding = undefined
-//transit sheet
+
+//get hook values from sheet
 $.ajax({
-  url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
-            "ranges='Airline Class Distribution'!A3:C161" + //airports
-            "&ranges='Airline Class Distribution'!E2:AZ2" + //company names
-            "&ranges='Airline Class Distribution'!E3:AZ161" + //actual flight numbers
-            "&ranges='Helicopters'!A2:C156" + //heliports
-            "&ranges='Helicopters'!E1:X1" + //companynames
-            "&ranges='Helicopters'!E2:X156" + //actual flight numbers
+  url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
+            "ranges='MRT Transit'!B3:B5" + //row info
+            "&ranges='MRT Transit'!F3:F5" + //column info
             "&key=" + API_KEY,
   success: function(result) {
-    if (holding == undefined) {
-      holding = result
-    } else {
-      processSheets(result, holding)
-    }}
+    let rows = result.valueRanges[0].values;
+    let cols = result.valueRanges[1].values;
+
+    //now get transit sheet
+    $.ajax({
+      url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
+                //rows[0] is the last row and cols[0] is last column
+                `ranges='Airline Class Distribution'!A3:C${rows[0][0]}` + //airports
+                `&ranges='Airline Class Distribution'!E2:${cols[0][0]}2` + //company names
+                `&ranges='Airline Class Distribution'!E3:${cols[0][0]}${rows[0][0]}` + //actual flight numbers
+                //same scheme here
+                `&ranges='Helicopters'!A2:C${rows[2][0]}` + //heliports
+                `&ranges='Helicopters'!E1:${cols[2][0]}1` + //companynames
+                `&ranges='Helicopters'!E2:${cols[2][0]}${rows[2][0]}` + //actual flight numbers
+                //and seaplanes
+                `&ranges='Seaplane Class Distribution'!A3:C${rows[1][0]}` + //heliports
+                `&ranges='Seaplane Class Distribution'!D2:${cols[1][0]}2` + //companynames
+                `&ranges='Seaplane Class Distribution'!D3:${cols[1][0]}${rows[1][0]}` + //actual flight numbers
+                "&key=" + API_KEY,
+      success: function(result, rows, cols) {
+        if (holding == undefined) {
+          holding = result
+        } else {
+          processSheets(result, holding)
+        }}
+    });
+
+
+  }
 });
 
 //data sheet
@@ -61,31 +81,35 @@ function processSheets(transitSheet, dataSheet) {
   let heliCompanies = [...transitSheet.valueRanges[4].values[0]]
   let transitHeliData = [...transitSheet.valueRanges[5].values]
 
-  //we need to transpose the flight data
+  //and don't forget seaplanes
+  let seaplanePorts = [...transitSheet.valueRanges[6].values]
+  let seaplaneCompanies = [...transitSheet.valueRanges[7].values[0]]
+  let transitSeaplaneData = [...transitSheet.valueRanges[8].values]
+
+  //we need to transpose all the flight data
   transitFlightData = transpose(transitFlightData)
-
-  //we need to transpose the flight data
   transitHeliData = transpose(transitHeliData)
+  transitSeaplaneData = transpose(transitSeaplaneData)
 
-  //get data from dataSheet
+  //get data from our dataSheet
   let mrtLineInfo = [...dataSheet.valueRanges[0].values]
   let mrtStopInfo = [...dataSheet.valueRanges[1].values]
   let dataSheetAirports = [...dataSheet.valueRanges[2].values]
   let dataSheetCompanies = [...dataSheet.valueRanges[3].values]
 
-  // inst
-  locationList = []
-  routeList = []
-  placeList = []
+  // inst some variables
+  let locationList = []
+  let routeList = []
+  let placeList = []
 
   //// generate list of Airports, Heliports, etc
-  locationObjectObject = {}
+  let locationObjectObject = {}
 
-  //convert data sheet airports into something easier to use
+  //convert raw data sheet airports into something easier to use
   dataSheetAirportsObject = {}
   dataSheetAirports.forEach((airport, i) => {
     dataSheetAirportsObject[airport[0]] = {
-      "code": airport[0],
+      "primaryID": airport[0],
       "displayName": airport[1],
       "keywords": airport[2],
       "transfers": airport[3]
@@ -94,8 +118,9 @@ function processSheets(transitSheet, dataSheet) {
 
   heliportsObject = {}
   heliports.forEach((heliport, i) => {
-    heliportsObject[(heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1]] = {
-      "primaryID": (heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1],
+    let primaryID = (heliport[1] == undefined || heliport[1] == "") ? heliport[0] : heliport[1];
+    heliportsObject[primaryID] = {
+      "primaryID": primaryID,
       "internalName": heliport[0],
       "code": heliport[1],
       "world": heliport[2],
@@ -103,11 +128,25 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
+  seaplanePortsObject = {}
+  seaplanePorts.forEach((seaplanePort, i) => {
+    let primaryID = (seaplanePort[1] == undefined || seaplanePort[1] == "") ? seaplanePort[0] : seaplanePort[1];
+    seaplanePortsObject[primaryID] = {
+      "primaryID": primaryID,
+      "internalName": seaplanePort[0],
+      "code": seaplanePort[1],
+      "world": seaplanePort[2],
+      "type": "Seaplane",
+    }
+  });
+
+
   //create an object for each airport and add it to list
   transitAirportsObject = {}
   transitAirports.forEach((airport, i) => {
-    transitAirportsObject[airport[1]] = {
-      "primaryID": airport[1],
+    let primaryID = (airport[1] == undefined || airport[1] == "") ? airport[0] : airport[1];
+    transitAirportsObject[primaryID] = {
+      "primaryID": primaryID,
       "code": airport[1],
       "internalName": airport[0],
       "world": airport[2],
@@ -115,9 +154,20 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
+  // //remove invalid places
+  // for (var i = placeList.length-1; i >= 0; i--) {
+  //   if (placeList[i].primaryID == null) {
+  //     if (placeList[i].code != null) {
+  //       console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
+  //     }
+  //     placeList.splice(i, 1)
+  //   }
+  // }
+
   //combine objects
   locationObjectObject = deepExtend(dataSheetAirportsObject, transitAirportsObject)
   locationObjectObject = deepExtend(heliportsObject, locationObjectObject)
+  locationObjectObject = deepExtend(seaplanePortsObject, locationObjectObject)
 
   //convert into array
   let locationKeys = Object.keys(locationObjectObject);
@@ -137,7 +187,7 @@ function processSheets(transitSheet, dataSheet) {
           airline.airlineFlights[number] = []
         }
         // add current airport to flight object
-        airline.airlineFlights[number].push(transitAirports[j][1])
+        airline.airlineFlights[number].push((transitAirports[j][1] == "" || transitAirports[j][1] == undefined) ? transitAirports[j][0] : transitAirports[j][1])
       });
     });
     airlines.push(airline)
@@ -160,6 +210,24 @@ function processSheets(transitSheet, dataSheet) {
       });
     });
     helilines.push(airline)
+  });
+
+  //and now seaplanes
+  let seaplaneLines = []
+  seaplaneCompanies.forEach((company, i) => {
+    let airline = {"airlineName": company, "airlineFlights": {}}
+    transitSeaplaneData[i].forEach((destination, j) => {
+      if (destination == "" || destination == undefined) return
+      destination.split(",").forEach((flight, k) => {
+        number = flight.trim()
+        if (airline.airlineFlights[number] == undefined) {
+          airline.airlineFlights[number] = []
+        }
+        // add current airport to flight object
+        airline.airlineFlights[number].push((seaplanePorts[j][1] == "" || seaplanePorts[j][1] == undefined) ? seaplanePorts[j][0] : seaplanePorts[j][1])
+      });
+    });
+    seaplaneLines.push(airline)
   });
 
   //now we use this flight data to actually generate routes
@@ -201,6 +269,30 @@ function processSheets(transitSheet, dataSheet) {
               "From": flights[number][j],
               "To": flights[number][k],
               "Type": "Heli",
+              "Company": airline.airlineName,
+              "Number": number
+            })
+          }
+        }
+      }
+    });
+  });
+
+  //and seaports is exactly the same but with a different type
+  seaplaneLines.forEach(airline => {
+    //get all flight numbers for airline
+    flights = airline.airlineFlights
+    if (flights == undefined) return
+    allNumbers = Object.keys(flights)
+    //generate all possible routes
+    allNumbers.forEach((number, i) => {
+      for (var j = 0; j < flights[number].length; j++) {
+        for (var k = 0; k < flights[number].length; k++) {
+          if (j != k) {
+            routeList.push({
+              "From": flights[number][j],
+              "To": flights[number][k],
+              "Type": "Seaplane",
               "Company": airline.airlineName,
               "Number": number
             })
@@ -327,18 +419,6 @@ function processSheets(transitSheet, dataSheet) {
 
     }
   });
-
-  //remove invalid places
-  for (var i = placeList.length-1; i >= 0; i--) {
-    if (placeList[i].primaryID == null) {
-      if (placeList[i].code != null) {
-        console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
-      }
-      placeList.splice(i, 1)
-    }
-  }
-
-  console.log(placeList)
 
   setItem("routeList", routeList)
   setItem("placeList", placeList)
@@ -499,10 +579,10 @@ function populateResults(results){
       let fromDisplay = places.find(x => x.primaryID === item.From).displayName
       let toDisplay = places.find(x => x.primaryID === item.To).displayName
 
-      if (fromDisplay == undefined) fromDisplay = places.find(x => x.primaryID === item.From).internalName
-      if (toDisplay == undefined) toDisplay = places.find(x => x.primaryID === item.To).internalName
+      if (fromDisplay == undefined || fromDisplay == "") fromDisplay = places.find(x => x.primaryID === item.From).internalName
+      if (toDisplay == undefined || fromDisplay == "") toDisplay = places.find(x => x.primaryID === item.To).internalName
 
-      if (item.Type == "Flight") {
+      if (item.Type == "Flight" || item.Type == "Seaplane") {
         currentDiv.append(`
           <div class="leg-blurb">
             Flight ${item.Number} by ${item.Company}
@@ -607,6 +687,10 @@ function initUI() {
       "children" : []
     },
     {
+      "text": "Seaplane",
+      "children" : []
+    },
+    {
       "text": "Old World",
       "children" : []
     }
@@ -615,7 +699,7 @@ function initUI() {
 
   for (var i = 0; i < placeList.length; i++) {
 
-    if (placeList[i] == null) {
+    if (placeList[i] == undefined || placeList[i].primaryID == undefined) {
       console.log("Misformed places at index " + i + ", discarding")
       continue
     }
@@ -627,7 +711,7 @@ function initUI() {
 
     let optionText = `${(placeList[i].code == undefined || placeList[i].code == "") ? "" : placeList[i].code + " - "}${name}`
     if (placeList[i]["world"] == "Old") {
-      selection[3]["children"].push({
+      selection[4]["children"].push({
           "id": placeList[i].primaryID,
           "text": optionText
       })
@@ -643,6 +727,11 @@ function initUI() {
       })
     } else if (placeList[i]["type"] == "Heliport") {
       selection[2]["children"].push({
+          "id": placeList[i].primaryID,
+          "text": optionText
+      })
+    } else if (placeList[i]["type"] == "Seaplane") {
+      selection[3]["children"].push({
           "id": placeList[i].primaryID,
           "text": optionText
       })
@@ -707,6 +796,9 @@ $('#from, #to').on('select2:select', function (e) {
   if ($("#heli-check").prop("checked") == false) {
     routes = routes.filter(route => route.Type !== "Heli");
   }
+  if ($("#seaplane-check").prop("checked") == false) {
+    routes = routes.filter(route => route.Type !== "Seaplane");
+  }
   worker.postMessage([$("#from").val(), $("#to").val(), getItem("placeList"), routes, $("#tp-check").prop("checked")])
 });
 
@@ -731,7 +823,11 @@ worker.onmessage = function(e) {
 var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
 
 function sortResults(results){
-  return results.sort((a,b) => {return (a.children.length > b.children.length) ? -1 : 1})
+  return results.sort((a,b) => {
+    if (a.children == null) return 1
+    if (b.children == null) return -1
+    return (a.children.length > b.children.length) ? -1 : 1
+  })
 }
 
 function customMatcher(params, data) {

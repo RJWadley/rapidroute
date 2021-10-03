@@ -150,7 +150,7 @@ function search(from, to, places, routes, allowTp, localSearching) {
     // because your computer will catch on fire
     nextvisited = []
   }
-  
+
   setTimeout(function(){sendResults(solutions, routes, localSearching)}, 1)
 }
 
@@ -166,17 +166,14 @@ function sendResults(solutions, routes, localSearching) {
       if (solution[i].hasToGateData) {
         gatesCount++;
       }
-      if (solution[i].Type != "Flight" && solution[i].Type != "Heli") {
+      if (solution[i].Type != "Flight" && solution[i].Type != "Heli" && solution[i].Type != "Seaplane") {
         gatesCount += 3; //don't penalize MRT and walk
       }
     });
 
-    let key = -(solution.length  - (gatesCount * 0.99 / (solution.length * 3)))
+    let key = Math.round(-(solution.length  - (gatesCount * 0.99 / (solution.length * 3))) * 10)
     sortKeys.push(key)
   });
-
-  solutions = mergeSort(solutions, sortKeys)[0]
-  solutionskeys = mergeSort(solutions, sortKeys)[0]
 
   if (searching == localSearching) {
     postMessage(solutions)
