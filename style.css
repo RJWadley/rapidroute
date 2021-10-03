@@ -412,6 +412,7 @@ select {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
+  font-size: 1.2em;
 }
 
 .leg-details div {
