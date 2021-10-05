@@ -643,24 +643,29 @@ function populateResults(results) {
       let fromCode = (item.From.length > 4) ? "—" : item.From
       let toCode = (item.To.length > 4) ? "—" : item.To
 
+      let modifiedStyle = ""
+        if (!logo) modifiedStyle = "style='display:block'"
+
       if (item.Type == "Flight" || item.Type == "Seaplane" || item.Type == "Heli") {
         currentDiv.append(`
           <div class="leg-blurb">
             ${blurbPrefix} ${item.Number} by ${item.Company}
           </div>
-          <div class="leg-summary">
+          <div class="leg-middle" ${modifiedStyle}>
             ${logo}
-            <div class="leg-code">${fromCode}</div>
-            <div class="leg-gate">
-              <div>Gate</div>
-              <div>${getGateData(item.Company, item.Number, item.From)}</div>
+            <div class="leg-summary">
+              <div class="leg-code">${fromCode}</div>
+              <div class="leg-gate">
+                <div>Gate</div>
+                <div>${getGateData(item.Company, item.Number, item.From)}</div>
+              </div>
+              <div class="leg-arrow">&#x2794;</div>
+              <div class="leg-gate">
+                <div>Gate:</div>
+                <div>${getGateData(item.Company, item.Number, item.To)}</div>
+              </div>
+              <div class="leg-code">${toCode}</div>
             </div>
-            <div class="leg-arrow">&#x2794;</div>
-            <div class="leg-gate">
-              <div>Gate:</div>
-              <div>${getGateData(item.Company, item.Number, item.To)}</div>
-            </div>
-            <div class="leg-code">${toCode}</div>
           </div>
           <div class="leg-details">
             <div>${fromDisplay}</div>
@@ -673,6 +678,26 @@ function populateResults(results) {
             <div class="leg-code">Walk to ${item.To}</div>
           </div>
           <div class="leg-details">
+            <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
+          </div>
+        `)
+      } else if (item.Type == "MRT") {
+        currentDiv.append(`
+          <div class="leg-blurb">
+            By the ${item.Type} ${item.lineName}
+          </div>
+            <div class="leg-middle">
+              <img style="
+      mix-blend-mode: normal;
+  " src="https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png">
+            <div class="leg-summary">
+              <div class="leg-code">${fromCode}</div>
+              <div class="leg-arrow">&#x2794;</div>
+              <div class="leg-code">${item.To}</div>
+            </div>
+          </div>
+          <div class="leg-details">
+            <div>${fromDisplay == undefined ? "Foobar" : fromDisplay}</div>
             <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
           </div>
         `)
