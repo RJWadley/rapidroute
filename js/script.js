@@ -596,8 +596,6 @@ function populateResults(results) {
         }
       }
 
-      console.log(item)
-
       //codeshared flights
       if (item.CodeShareBy) item.Company = item.CodeShareBy
 
