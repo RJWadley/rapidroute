@@ -62,6 +62,7 @@ $.ajax({
     "&ranges='MRT'!B24:D1133" + //mrt stop names
     "&ranges='Airports'!A2:D500" +
     "&ranges='Companies'!A2:E200" +
+    "&ranges='CodeSharing'!A3:E200" +
     "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
@@ -99,6 +100,7 @@ function processSheets(transitSheet, dataSheet) {
   let mrtStopInfo = [...dataSheet.valueRanges[1].values]
   let dataSheetAirports = [...dataSheet.valueRanges[2].values]
   let dataSheetCompanies = [...dataSheet.valueRanges[3].values]
+  let dataSheetCodeSharing = [...dataSheet.valueRanges[4].values]
 
   // inst some variables
   let locationList = []
@@ -157,15 +159,15 @@ function processSheets(transitSheet, dataSheet) {
     }
   });
 
-  // //remove invalid places
-  // for (var i = placeList.length-1; i >= 0; i--) {
-  //   if (placeList[i].primaryID == null) {
-  //     if (placeList[i].code != null) {
-  //       console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
-  //     }
-  //     placeList.splice(i, 1)
-  //   }
-  // }
+  //remove invalid places
+  for (var i = placeList.length - 1; i >= 0; i--) {
+    if (placeList[i].primaryID == null) {
+      if (placeList[i].code != null) {
+        console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
+      }
+      placeList.splice(i, 1)
+    }
+  }
 
   //combine objects
   locationObjectObject = deepExtend(dataSheetAirportsObject, transitAirportsObject)
@@ -176,6 +178,25 @@ function processSheets(transitSheet, dataSheet) {
   let locationKeys = Object.keys(locationObjectObject);
   locationKeys.forEach((locationKey) => {
     placeList.push(locationObjectObject[locationKey])
+  });
+
+  //generate list of codeshares
+  console.log(dataSheetCodeSharing)
+
+  let codeSharedFlights = {}
+
+  dataSheetCodeSharing.forEach((company, i) => {
+
+    let range = company[1]?.split("-") || [] //range.split
+    if (range.length < 2) return
+
+    colors[company[2]] = company[4] //colors[displayName] = color
+    logos[company[2]] = company[3] //logos[displayName] = logo
+
+    for (var i = range[0]; i <= range[1]; i++) {
+      //name + number = displayname
+      codeSharedFlights[company[0] + i] = company[2]
+    }
   });
 
   //generate list of flight routes data
@@ -242,8 +263,7 @@ function processSheets(transitSheet, dataSheet) {
     seaplaneLines.push(airline)
   });
 
-  //now we use this flight data to actually generate routes
-  airlines.forEach(airline => {
+  let genFlights = function(airline, type) {
     //get all flight numbers for airline
     flights = airline.airlineFlights
     if (flights == undefined) return
@@ -256,62 +276,30 @@ function processSheets(transitSheet, dataSheet) {
             routeList.push({
               "From": flights[number][j],
               "To": flights[number][k],
-              "Type": "Flight",
+              "Type": type,
               "Company": airline.airlineName,
-              "Number": number
+              "Number": number,
+              "CodeShareBy": codeSharedFlights[airline.airlineName + number]
             })
           }
         }
       }
     });
+  }
+
+  //now we use this flight data to actually generate routes
+  airlines.forEach(airline => {
+    genFlights(airline, "Flight")
   });
 
   //and helilines is exactly the same but with a different type
   helilines.forEach(airline => {
-    //get all flight numbers for airline
-    flights = airline.airlineFlights
-    if (flights == undefined) return
-    allNumbers = Object.keys(flights)
-    //generate all possible routes
-    allNumbers.forEach((number, i) => {
-      for (var j = 0; j < flights[number].length; j++) {
-        for (var k = 0; k < flights[number].length; k++) {
-          if (j != k) {
-            routeList.push({
-              "From": flights[number][j],
-              "To": flights[number][k],
-              "Type": "Heli",
-              "Company": airline.airlineName,
-              "Number": number
-            })
-          }
-        }
-      }
-    });
+    genFlights(airline, "Heli")
   });
 
   //and seaports is exactly the same but with a different type
   seaplaneLines.forEach(airline => {
-    //get all flight numbers for airline
-    flights = airline.airlineFlights
-    if (flights == undefined) return
-    allNumbers = Object.keys(flights)
-    //generate all possible routes
-    allNumbers.forEach((number, i) => {
-      for (var j = 0; j < flights[number].length; j++) {
-        for (var k = 0; k < flights[number].length; k++) {
-          if (j != k) {
-            routeList.push({
-              "From": flights[number][j],
-              "To": flights[number][k],
-              "Type": "Seaplane",
-              "Company": airline.airlineName,
-              "Number": number
-            })
-          }
-        }
-      }
-    });
+    genFlights(airline, "Seaplane")
   });
 
   //generate list of MRT stop routes
@@ -600,6 +588,11 @@ function populateResults(results) {
           return
         }
       }
+
+      console.log(item)
+
+      //codeshared flights
+      if (item.CodeShareBy) item.Company = item.CodeShareBy
 
       $("#results").children().last().append(`<div class='leg' style="background-color:${colors[item.Company]}"></div>`)
       currentDiv = $("#results").children().last().children().last();
