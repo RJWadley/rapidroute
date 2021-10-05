@@ -58,7 +58,7 @@ $.ajax({
 //data sheet
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
-    "ranges='MRT'!B2:F19" + //mrt info
+    "ranges='MRT'!B2:G19" + //mrt info
     "&ranges='MRT'!B24:D1133" + //mrt stop names
     "&ranges='Airports'!A2:D500" +
     "&ranges='Companies'!A2:E200" +
@@ -181,8 +181,6 @@ function processSheets(transitSheet, dataSheet) {
   });
 
   //generate list of codeshares
-  console.log(dataSheetCodeSharing)
-
   let codeSharedFlights = {}
 
   dataSheetCodeSharing.forEach((company, i) => {
@@ -195,7 +193,7 @@ function processSheets(transitSheet, dataSheet) {
 
     for (var i = range[0]; i <= range[1]; i++) {
       //name + number = displayname
-      codeSharedFlights[company[0] + i] = company[2]
+      codeSharedFlights[company[0] + i] = company[2] //
     }
   });
 
@@ -308,6 +306,11 @@ function processSheets(transitSheet, dataSheet) {
     let maxNW = 3;
     let nsew = 4;
     let lineCode = item[1]
+    let lineName = item[0]
+    let lineColor = item[5]
+
+    colors[lineName] = lineColor
+
     let line = [];
     //0: {Name: "Artic Line", Code: "A", Min-SE: "X", Max-NW: "53"}
     if (item[minSE] == "X") {
@@ -348,22 +351,24 @@ function processSheets(transitSheet, dataSheet) {
         routeList.push({
           "From": line[i],
           "To": line[i - 1],
-          "Type": "MRT"
+          "Type": "MRT",
+          "lineName": lineName
         })
       }
       if (i != line.length - 1) {
         routeList.push({
           "From": line[i],
           "To": line[i + 1],
-          "Type": "MRT"
+          "Type": "MRT",
+          "lineName": lineName
         })
       }
     }
   });
 
   //and generate stop names for place list
-
   mrtStopInfo.forEach((item, i) => {
+
     //add place
     if (item[0] == undefined) return
     placeList.push({
@@ -391,12 +396,14 @@ function processSheets(transitSheet, dataSheet) {
   routeList.push({
     "From": "C1",
     "To": "C119",
-    "Type": "MRT"
+    "Type": "MRT",
+    "lineName": "Circle Line"
   })
   routeList.push({
     "From": "C119",
     "To": "C1",
-    "Type": "MRT"
+    "Type": "MRT",
+    "lineName": "Circle Line"
   })
 
   //and don't forget to generate walking routes!
@@ -594,7 +601,14 @@ function populateResults(results) {
       //codeshared flights
       if (item.CodeShareBy) item.Company = item.CodeShareBy
 
-      $("#results").children().last().append(`<div class='leg' style="background-color:${colors[item.Company]}"></div>`)
+      let backgroundColor
+      if (item.Type == "MRT") {
+        backgroundColor = colors[item.lineName]
+      } else {
+        backgroundColor = colors[item.Company]
+      }
+
+      $("#results").children().last().append(`<div class='leg' style="background-color:${backgroundColor}"></div>`)
       currentDiv = $("#results").children().last().children().last();
 
       let fromDisplay = places.find(x => x.primaryID === item.From).displayName
@@ -626,6 +640,9 @@ function populateResults(results) {
 
       logo = logo || ""
 
+      let fromCode = (item.From.length > 4) ? "—" : item.From
+      let toCode = (item.To.length > 4) ? "—" : item.To
+
       if (item.Type == "Flight" || item.Type == "Seaplane" || item.Type == "Heli") {
         currentDiv.append(`
           <div class="leg-blurb">
@@ -633,7 +650,7 @@ function populateResults(results) {
           </div>
           <div class="leg-summary">
             ${logo}
-            <div class="leg-code">${(item.From.length > 4) ? "—" : item.From}</div>
+            <div class="leg-code">${fromCode}</div>
             <div class="leg-gate">
               <div>Gate</div>
               <div>${getGateData(item.Company, item.Number, item.From)}</div>
@@ -643,11 +660,20 @@ function populateResults(results) {
               <div>Gate:</div>
               <div>${getGateData(item.Company, item.Number, item.To)}</div>
             </div>
-            <div class="leg-code">${(item.To.length > 4) ? "—" : item.To}</div>
+            <div class="leg-code">${toCode}</div>
           </div>
           <div class="leg-details">
             <div>${fromDisplay}</div>
             <div>${toDisplay}</div>
+          </div>
+        `)
+      } else if (item.Type == "Walk") {
+        currentDiv.append(`
+          <div class="leg-summary">
+            <div class="leg-code">Walk to ${item.To}</div>
+          </div>
+          <div class="leg-details">
+            <div>${toDisplay == undefined ? "Foobar" : toDisplay}</div>
           </div>
         `)
       } else {
@@ -656,7 +682,7 @@ function populateResults(results) {
             By ${item.Type}
           </div>
           <div class="leg-summary">
-            <div class="leg-code">${item.From}</div>
+            <div class="leg-code">${fromCode}</div>
             <div class="leg-arrow">&#x2794;</div>
             <div class="leg-code">${item.To}</div>
           </div>
