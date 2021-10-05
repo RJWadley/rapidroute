@@ -2,7 +2,7 @@
 // a different version will force a reload on the client after load
 
 // welcome to the source code
-//enjoy your stay
+// enjoy your stay
 
 var version = 20211003
 var updating = false
@@ -13,13 +13,15 @@ var API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
 
 var needsInit = false;
 var holding = undefined
+let logos = {}
+let colors = {}
 
 //get hook values from sheet
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
-            "ranges='MRT Transit'!B3:B5" + //row info
-            "&ranges='MRT Transit'!F3:F5" + //column info
-            "&key=" + API_KEY,
+    "ranges='MRT Transit'!B3:B5" + //row info
+    "&ranges='MRT Transit'!F3:F5" + //column info
+    "&key=" + API_KEY,
   success: function(result) {
     let rows = result.valueRanges[0].values;
     let cols = result.valueRanges[1].values;
@@ -27,25 +29,26 @@ $.ajax({
     //now get transit sheet
     $.ajax({
       url: "https://sheets.googleapis.com/v4/spreadsheets/" + transitSheetID + "/values:batchGet?" +
-                //rows[0] is the last row and cols[0] is last column
-                `ranges='Airline Class Distribution'!A3:C${rows[0][0]}` + //airports
-                `&ranges='Airline Class Distribution'!E2:${cols[0][0]}2` + //company names
-                `&ranges='Airline Class Distribution'!E3:${cols[0][0]}${rows[0][0]}` + //actual flight numbers
-                //same scheme here
-                `&ranges='Helicopters'!A2:C${rows[2][0]}` + //heliports
-                `&ranges='Helicopters'!E1:${cols[2][0]}1` + //companynames
-                `&ranges='Helicopters'!E2:${cols[2][0]}${rows[2][0]}` + //actual flight numbers
-                //and seaplanes
-                `&ranges='Seaplane Class Distribution'!A3:C${rows[1][0]}` + //heliports
-                `&ranges='Seaplane Class Distribution'!D2:${cols[1][0]}2` + //companynames
-                `&ranges='Seaplane Class Distribution'!D3:${cols[1][0]}${rows[1][0]}` + //actual flight numbers
-                "&key=" + API_KEY,
+        //rows[0] is the last row and cols[0] is last column
+        `ranges='Airline Class Distribution'!A3:C${rows[0][0]}` + //airports
+        `&ranges='Airline Class Distribution'!E2:${cols[0][0]}2` + //company names
+        `&ranges='Airline Class Distribution'!E3:${cols[0][0]}${rows[0][0]}` + //actual flight numbers
+        //same scheme here
+        `&ranges='Helicopters'!A2:C${rows[2][0]}` + //heliports
+        `&ranges='Helicopters'!E1:${cols[2][0]}1` + //companynames
+        `&ranges='Helicopters'!E2:${cols[2][0]}${rows[2][0]}` + //actual flight numbers
+        //and seaplanes
+        `&ranges='Seaplane Class Distribution'!A3:C${rows[1][0]}` + //heliports
+        `&ranges='Seaplane Class Distribution'!D2:${cols[1][0]}2` + //companynames
+        `&ranges='Seaplane Class Distribution'!D3:${cols[1][0]}${rows[1][0]}` + //actual flight numbers
+        "&key=" + API_KEY,
       success: function(result, rows, cols) {
         if (holding == undefined) {
           holding = result
         } else {
           processSheets(result, holding)
-        }}
+        }
+      }
     });
 
 
@@ -55,11 +58,11 @@ $.ajax({
 //data sheet
 $.ajax({
   url: "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID + "/values:batchGet?" +
-            "ranges='MRT'!B2:F19" + //mrt info
-            "&ranges='MRT'!B24:D1133" + //mrt stop names
-            "&ranges='Airports'!A2:D500" +
-            "&ranges='Companies'!A2:C200" +
-            "&key=" + API_KEY,
+    "ranges='MRT'!B2:F19" + //mrt info
+    "&ranges='MRT'!B24:D1133" + //mrt stop names
+    "&ranges='Airports'!A2:D500" +
+    "&ranges='Companies'!A2:E200" +
+    "&key=" + API_KEY,
   success: function(result) {
     if (holding == undefined) {
       holding = result
@@ -178,7 +181,10 @@ function processSheets(transitSheet, dataSheet) {
   //generate list of flight routes data
   let airlines = []
   transitCompanies.forEach((company, i) => {
-    let airline = {"airlineName": company, "airlineFlights": {}}
+    let airline = {
+      "airlineName": company,
+      "airlineFlights": {}
+    }
     transitFlightData[i].forEach((destination, j) => {
       if (destination == "" || destination == undefined) return
       destination.split(",").forEach((flight, k) => {
@@ -196,7 +202,10 @@ function processSheets(transitSheet, dataSheet) {
   helilines = []
   //generate list of helicopter flights
   heliCompanies.forEach((company, i) => {
-    let airline = {"airlineName": company, "airlineFlights": {}}
+    let airline = {
+      "airlineName": company,
+      "airlineFlights": {}
+    }
     if (transitHeliData[i] == undefined) return //skip if empty
     transitHeliData[i].forEach((destination, j) => {
       if (destination == "" || destination == undefined) return
@@ -215,7 +224,10 @@ function processSheets(transitSheet, dataSheet) {
   //and now seaplanes
   let seaplaneLines = []
   seaplaneCompanies.forEach((company, i) => {
-    let airline = {"airlineName": company, "airlineFlights": {}}
+    let airline = {
+      "airlineName": company,
+      "airlineFlights": {}
+    }
     transitSeaplaneData[i].forEach((destination, j) => {
       if (destination == "" || destination == undefined) return
       destination.split(",").forEach((flight, k) => {
@@ -347,14 +359,14 @@ function processSheets(transitSheet, dataSheet) {
       if (i != 0) {
         routeList.push({
           "From": line[i],
-          "To": line[i-1],
+          "To": line[i - 1],
           "Type": "MRT"
         })
       }
-      if (i != line.length-1) {
+      if (i != line.length - 1) {
         routeList.push({
           "From": line[i],
-          "To": line[i+1],
+          "To": line[i + 1],
           "Type": "MRT"
         })
       }
@@ -405,20 +417,30 @@ function processSheets(transitSheet, dataSheet) {
       let dests = item["transfers"].split(",")
 
       dests.forEach((dest, j) => {
-          routeList.push({
-            "From": item.primaryID,
-            "To": dest,
-            "Type": "Walk"
-          })
-          routeList.push({
-            "From": dest,
-            "To": item.primaryID,
-            "Type": "Walk"
-          })
+        routeList.push({
+          "From": item.primaryID,
+          "To": dest,
+          "Type": "Walk"
+        })
+        routeList.push({
+          "From": dest,
+          "To": item.primaryID,
+          "Type": "Walk"
+        })
       });
 
     }
   });
+
+  //remove invalid places
+  for (var i = placeList.length - 1; i >= 0; i--) {
+    if (placeList[i].primaryID == null) {
+      if (placeList[i].code != null) {
+        console.log(`Item not found in MRT Transit sheet: ${JSON.stringify(placeList[i])}`);
+      }
+      placeList.splice(i, 1)
+    }
+  }
 
   setItem("routeList", routeList)
   setItem("placeList", placeList)
@@ -427,9 +449,15 @@ function processSheets(transitSheet, dataSheet) {
   //request new gate numbers
 
   let requestURL = "https://sheets.googleapis.com/v4/spreadsheets/" + dataSheetID +
-  "/values:batchGet?ranges='Legacy Gate Data'!A:D"
+    "/values:batchGet?ranges='Legacy Gate Data'!A:D"
 
   dataSheetCompanies.forEach((company, i) => {
+
+    if (company[3])
+      logos[company[0]] = company[3]
+    if (company[4])
+      colors[company[0]] = company[4]
+
     if (company.length > 1) {
       if (company[1] == "Yes") {
         requestURL += "&ranges='" + company[0] + "'!A:D"
@@ -440,8 +468,8 @@ function processSheets(transitSheet, dataSheet) {
   $.ajax({
     url: requestURL + "&key=" + API_KEY,
     success: function(result) {
-        processGateNumbers(result, dataSheetCompanies)
-      }
+      processGateNumbers(result, dataSheetCompanies)
+    }
   });
 
   if (needsInit == true) {
@@ -451,7 +479,7 @@ function processSheets(transitSheet, dataSheet) {
   }
 
   //if updating reload
-  if ( updating == true ) {
+  if (updating == true) {
     setItem("version", version)
     sessionStorage.clear();
     window.location.reload()
@@ -459,7 +487,7 @@ function processSheets(transitSheet, dataSheet) {
 
 }
 
-function processGateNumbers (result, companies) {
+function processGateNumbers(result, companies) {
   gateData = []
 
   sheets = result.valueRanges
@@ -517,7 +545,7 @@ function processGateNumbers (result, companies) {
 }
 
 
-function getGateData (company, flightNumber, airport) {
+function getGateData(company, flightNumber, airport) {
 
   gateData = getItem("gateData")
 
@@ -530,7 +558,7 @@ function getGateData (company, flightNumber, airport) {
   else return gate[3]
 }
 
-function populateResults(results){
+function populateResults(results) {
   let places = getItem("placeList")
 
   if (results == "Destination airport not supported") {
@@ -566,14 +594,14 @@ function populateResults(results){
     result.forEach((item, j) => {
 
       // collapse MRT routes
-      if (result[j+1] != undefined && item.Type == "MRT" && result[j+1].Type == "MRT") {
-        if (item.From.charAt(0) == result[j+1].To.charAt(0)) {
-          result[j+1].From = item.From;
+      if (result[j + 1] != undefined && item.Type == "MRT" && result[j + 1].Type == "MRT") {
+        if (item.From.charAt(0) == result[j + 1].To.charAt(0)) {
+          result[j + 1].From = item.From;
           return
         }
       }
 
-      $("#results").children().last().append("<div class='leg'></div>")
+      $("#results").children().last().append(`<div class='leg' style="background-color:${colors[item.Company]}"></div>`)
       currentDiv = $("#results").children().last().children().last();
 
       let fromDisplay = places.find(x => x.primaryID === item.From).displayName
@@ -582,35 +610,36 @@ function populateResults(results){
       if (fromDisplay == undefined || fromDisplay == "") fromDisplay = places.find(x => x.primaryID === item.From).internalName
       if (toDisplay == undefined || fromDisplay == "") toDisplay = places.find(x => x.primaryID === item.To).internalName
 
-      if (item.Type == "Flight" || item.Type == "Seaplane") {
+      let blurbPrefix
+      switch (item.Type) {
+        case "Flight":
+          blurbPrefix = "Flight"
+          break;
+        case "Seaplane":
+          blurbPrefix = "Seaplane flight"
+          break;
+        case "Heli":
+          blurbPrefix = "Helicopter flight"
+          break;
+        default:
+          blurbPrefix = "By"
+      }
+
+      let logo = (logos[item.Company])
+
+      if (logo) {
+        logo = `<img src="${logo}"/>`
+      }
+
+      logo = logo || ""
+
+      if (item.Type == "Flight" || item.Type == "Seaplane" || item.Type == "Heli") {
         currentDiv.append(`
           <div class="leg-blurb">
-            Flight ${item.Number} by ${item.Company}
+            ${blurbPrefix} ${item.Number} by ${item.Company}
           </div>
           <div class="leg-summary">
-            <div class="leg-code">${(item.From.length > 4) ? "—" : item.From}</div>
-            <div class="leg-gate">
-              <div>Gate</div>
-              <div>${getGateData(item.Company, item.Number, item.From)}</div>
-            </div>
-            <div class="leg-arrow">&#x2794;</div>
-            <div class="leg-gate">
-              <div>Gate:</div>
-              <div>${getGateData(item.Company, item.Number, item.To)}</div>
-            </div>
-            <div class="leg-code">${(item.To.length > 4) ? "—" : item.To}</div>
-          </div>
-          <div class="leg-details">
-            <div>${fromDisplay}</div>
-            <div>${toDisplay}</div>
-          </div>
-        `)
-      } else if (item.Type == "Heli") {
-        currentDiv.append(`
-          <div class="leg-blurb">
-            Helicopter Flight ${item.Number} by ${item.Company}
-          </div>
-          <div class="leg-summary">
+            ${logo}
             <div class="leg-code">${(item.From.length > 4) ? "—" : item.From}</div>
             <div class="leg-gate">
               <div>Gate</div>
@@ -673,26 +702,25 @@ function initUI() {
   //reset select boxes
   $('#to, #from').children().remove()
   $('#to, #from').append("<option></option>")
-  let selection = [
-    {
+  let selection = [{
       "text": "Airports",
-      "children" : []
+      "children": []
     },
     {
       "text": "MRT Stops",
-      "children" : []
+      "children": []
     },
     {
       "text": "Heliports",
-      "children" : []
+      "children": []
     },
     {
       "text": "Seaplane",
-      "children" : []
+      "children": []
     },
     {
       "text": "Old World",
-      "children" : []
+      "children": []
     }
   ]
 
@@ -705,40 +733,44 @@ function initUI() {
     }
 
     let name
-    if (placeList[i].displayName != undefined) {name = placeList[i].displayName}
-    else if (placeList[i].internalName != undefined) {name = placeList[i].internalName}
-    else {name = "Foobar"}
+    if (placeList[i].displayName != undefined) {
+      name = placeList[i].displayName
+    } else if (placeList[i].internalName != undefined) {
+      name = placeList[i].internalName
+    } else {
+      name = "Foobar"
+    }
 
     let optionText = `${(placeList[i].code == undefined || placeList[i].code == "") ? "" : placeList[i].code + " - "}${name}`
     if (placeList[i]["world"] == "Old") {
       selection[4]["children"].push({
-          "id": placeList[i].primaryID,
-          "text": optionText
+        "id": placeList[i].primaryID,
+        "text": optionText
       })
     } else if (placeList[i]["type"] == "Airport") {
       selection[0]["children"].push({
-          "id": placeList[i].primaryID,
-          "text": optionText
+        "id": placeList[i].primaryID,
+        "text": optionText
       })
     } else if (placeList[i]["type"] == "MRT") {
       selection[1]["children"].push({
-          "id": placeList[i].primaryID,
-          "text": optionText
+        "id": placeList[i].primaryID,
+        "text": optionText
       })
     } else if (placeList[i]["type"] == "Heliport") {
       selection[2]["children"].push({
-          "id": placeList[i].primaryID,
-          "text": optionText
+        "id": placeList[i].primaryID,
+        "text": optionText
       })
     } else if (placeList[i]["type"] == "Seaplane") {
       selection[3]["children"].push({
-          "id": placeList[i].primaryID,
-          "text": optionText
+        "id": placeList[i].primaryID,
+        "text": optionText
       })
     } else {
       selection.push({
-          "id": placeList[i].primaryID,
-          "text": optionText
+        "id": placeList[i].primaryID,
+        "text": optionText
       })
     }
 
@@ -767,10 +799,12 @@ function initUI() {
   //initial version check
   currVersion = getItem("version");
 
-  if ( currVersion != version ) {
+  if (currVersion != version) {
     console.log("Updating from version " + currVersion + " to " + version)
     updating = true;
-    setTimeout(function(){window.location.reload()}, 20 * 1000)
+    setTimeout(function() {
+      window.location.reload()
+    }, 20 * 1000)
     $("#results").append("<h2 style='text-align: center'>New version available. Updating...</h2>")
     $(".selection-container").remove()
   }
@@ -780,10 +814,12 @@ function initUI() {
 $("input").on("change", function(e) {
   $("#from").trigger("select2:select")
 })
-$('#from, #to').on('select2:select', function (e) {
+$('#from, #to').on('select2:select', function(e) {
 
   $("#results").html("")
-  if ($("#from").val() == "" || $("#to").val() == "") {return}
+  if ($("#from").val() == "" || $("#to").val() == "") {
+    return
+  }
   $("#searching").css("display", "block")
 
   routes = getItem("routeList")
@@ -822,8 +858,8 @@ worker.onmessage = function(e) {
 //custom matcher
 var defaultMatcher = $.fn.select2.defaults.defaults.matcher;
 
-function sortResults(results){
-  return results.sort((a,b) => {
+function sortResults(results) {
+  return results.sort((a, b) => {
     if (a.children == null) return 1
     if (b.children == null) return -1
     return (a.children.length > b.children.length) ? -1 : 1
@@ -852,7 +888,7 @@ function customMatcher(params, data) {
   var keywordChildren = [];
   var defaultChildren = [];
   var filteredChildren = [];
-  $.each(data.children, function (idx, child) {
+  $.each(data.children, function(idx, child) {
     let placeInfo = placeList.filter(x => x.primaryID == child.id)[0]
     //relevant search
     if (child.text.toUpperCase().indexOf(params.term.toUpperCase()) == 0) {
