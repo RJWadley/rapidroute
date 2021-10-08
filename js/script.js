@@ -597,6 +597,7 @@ function populateResults(results) {
       }
 
       //codeshared flights
+      let realName = item.Company
       if (item.CodeShareBy) item.Company = item.CodeShareBy
 
       let backgroundColor
@@ -642,7 +643,7 @@ function populateResults(results) {
       let toCode = (item.To.length > 4) ? "—" : item.To
 
       let modifiedStyle = ""
-        if (!logo) modifiedStyle = "style='display:block'"
+      if (!logo) modifiedStyle = "style='display:block'"
 
       if (item.Type == "Flight" || item.Type == "Seaplane" || item.Type == "Heli") {
         currentDiv.append(`
@@ -655,12 +656,12 @@ function populateResults(results) {
               <div class="leg-code">${fromCode}</div>
               <div class="leg-gate">
                 <div>Gate:</div>
-                <div>${getGateData(item.Company, item.Number, item.From)}</div>
+                <div>${getGateData(realName, item.Number, item.From)}</div>
               </div>
               <div class="leg-arrow">&#x2794;</div>
               <div class="leg-gate">
                 <div>Gate:</div>
-                <div>${getGateData(item.Company, item.Number, item.To)}</div>
+                <div>${getGateData(realName, item.Number, item.To)}</div>
               </div>
               <div class="leg-code">${toCode}</div>
             </div>
