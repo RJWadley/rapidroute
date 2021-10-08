@@ -1,0 +1,12 @@
+{
+  "include": ["src/util.ts", "src/calc.ts", "src/main.ts"],
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "lib": ["es2016", "dom"]
+  }
+}
