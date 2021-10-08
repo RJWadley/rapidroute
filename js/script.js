@@ -655,7 +655,7 @@ function populateResults(results) {
             <div class="leg-summary">
               <div class="leg-code">${fromCode}</div>
               <div class="leg-gate">
-                <div>Gate</div>
+                <div>Gate:</div>
                 <div>${getGateData(realName, item.Number, item.From)}</div>
               </div>
               <div class="leg-arrow">&#x2794;</div>
