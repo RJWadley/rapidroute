@@ -8,10 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const DATA_SHEET_ID = "1qVtW6cSIH-gjJZWrvqJXvQG17ZgRQ7sxXfUjZJcR2lE";
-const AIRLINE_GATE_SHEET_ID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8";
-const AIRPORT_GATE_SHEET_ID = "143ztIeSiTV1QPltYqS2__4SwEi7P2zOuccCTtLtsCus";
-const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps";
+const DATA_SHEET_ID = "1qVtW6cSIH-gjJZWrvqJXvQG17ZgRQ7sxXfUjZJcR2lE"; // 3 calls
+const AIRPORT_GATE_SHEET = "null"; //1 call
+const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"; //1 call
+const TOWN_SHEET_ID = "null";
 const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8";
 const VERSION = 0;
 //globals
@@ -20,6 +20,7 @@ let colors = {};
 let routes = getItem("routes") || [];
 let places = getItem("places") || [];
 let providers = getItem("providers") || [];
+let codeshares = getItem("codeshares") || {};
 function getTransitSheet() {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
@@ -62,8 +63,7 @@ function getDataSheet() {
             $.ajax({
                 url: "https://sheets.googleapis.com/v4/spreadsheets/" + DATA_SHEET_ID + "/values:batchGet?" +
                     "ranges='MRT'!B2:G19" + //mrt info
-                    "&ranges='MRT'!B24:D1133" + //mrt stop names
-                    "&ranges='Airports'!A2:D500" +
+                    "&ranges='Airports'!A3:F500" +
                     "&ranges='Companies'!A2:E200" +
                     "&ranges='CodeSharing'!A3:E200" +
                     "&key=" + API_KEY,
@@ -72,15 +72,6 @@ function getDataSheet() {
                 }
             });
         });
-    });
-}
-function getAirlineGates(companies) {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log(companies);
-    });
-}
-function getAirportGates() {
-    return __awaiter(this, void 0, void 0, function* () {
     });
 }
 function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
@@ -137,6 +128,133 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
     });
     routes.push(...flights);
     providers.push(...airlines);
+}
+function parseCodeshares(codesharesRaw) {
+    codesharesRaw.forEach((company, i) => {
+        var _a;
+        let range = ((_a = company[1]) === null || _a === void 0 ? void 0 : _a.split("-")) || []; //range.split
+        if (range.length < 2)
+            return;
+        colors[company[2]] = company[4]; //colors[displayName] = color
+        logos[company[2]] = company[3]; //logos[displayName] = logo
+        for (var i = parseInt(range[0]); i <= parseInt(range[1]); i++) {
+            //name + number = displayname
+            codeshares[company[0] + i] = company[2]; //
+        }
+    });
+}
+function processAirportMetadata(rawAirportData) {
+    rawAirportData.forEach(rawAirport => {
+        var _a;
+        let coords = rawAirport[5] ? parseCoordinates(rawAirport[5]) : undefined;
+        let id = (_a = rawAirport[1]) !== null && _a !== void 0 ? _a : rawAirport[0];
+        if (id == "")
+            id = rawAirport[0];
+        let world = rawAirport[2];
+        if (world != "New" && world != "Old")
+            world = "New";
+        let newPlace = {
+            id,
+            world
+        };
+        let shortName = rawAirport[1];
+        if (shortName != "" && shortName != undefined)
+            newPlace.shortName = shortName;
+        let longName = rawAirport[0];
+        if (longName != "" && longName != undefined)
+            newPlace.longName = longName;
+        let displayName = rawAirport[3];
+        if (displayName != "" && displayName != undefined)
+            newPlace.displayName = displayName;
+        let keywords = rawAirport[4];
+        if (keywords != "" && keywords != undefined)
+            newPlace.keywords = keywords;
+        if (coords != undefined) {
+            newPlace.x = coords[0];
+            newPlace.z = coords[1];
+        }
+        places.push(newPlace);
+    });
+}
+function parseCoordinates(coords) {
+    let split = coords.split(" ");
+    let out = [];
+    split.forEach((item, i) => {
+        out[i] = parseInt(item.replace(/,/g, ''));
+    });
+    if (out.length == 3) {
+        out[2] = out[3];
+        out.pop();
+    }
+    return out;
+}
+function processAirlineMetadata(rawAirlineData) {
+    return new Promise(resolve => {
+        //set legacy gate numbers and
+        //request new gate numbers
+        let requestURL = "https://sheets.googleapis.com/v4/spreadsheets/" + DATA_SHEET_ID +
+            "/values:batchGet?ranges='Legacy Gate Data'!A:D";
+        rawAirlineData.forEach((company) => {
+            if (company[3])
+                logos[company[0]] = company[3];
+            if (company[4])
+                colors[company[0]] = company[4];
+            if (company.length > 1) {
+                if (company[1] == "Yes") {
+                    requestURL += "&ranges='" + company[0] + "'!A:D";
+                }
+            }
+        });
+        $.ajax({
+            url: requestURL + "&key=" + API_KEY,
+            success: function (result) {
+                parseAirlineGateData(result, rawAirlineData, resolve);
+            }
+        });
+    });
+}
+function parseAirlineGateData(result, companies, resolve) {
+    let gateData = [];
+    let sheets = result.valueRanges;
+    let legacySheet = sheets.shift().values;
+    legacySheet.shift();
+    //process legacy gates
+    companies.forEach((company) => {
+        if (company.length > 1) {
+            if (company[1] == "Legacy") {
+                let flights = legacySheet.filter(x => x[0] == company[2]);
+                flights.forEach((item) => {
+                    item[0] = company[0];
+                });
+                gateData = [...gateData, ...flights];
+            }
+        }
+    });
+    //process other gates
+    sheets.forEach((sheet) => {
+        let companyName = "";
+        if (sheet.range.indexOf("'") == -1) {
+            companyName = sheet.range.split("!")[0];
+        }
+        else {
+            companyName = sheet.range.split("'")[1];
+        }
+        let flights = sheet.values;
+        flights.forEach((flight) => {
+            flight[0] = companyName;
+        });
+        gateData = [...gateData, ...flights];
+    });
+    //now add gate info to routes
+    routes.forEach((route, i) => {
+        if (gateData.filter(x => (x[0] == route.provider && x[1] == route.number && x[2] == route.from)).length > 0) {
+            routes[i]["hasFromGateData"] = true;
+        }
+        if (gateData.filter(x => (x[0] == route.provider && x[1] == route.number && x[2] == route.to)).length > 0) {
+            routes[i]["hasToGateData"] = true;
+        }
+    });
+    resolve(true);
 }
 function generateMrt(rawMRTInfo, rawStopInfo) {
     let routeList = [];
@@ -246,7 +364,6 @@ function generateMrtFromMarkers() {
             return response.json();
         }).then(data => {
             data = JSON.parse(data.contents);
-            console.log(data);
             resolve(true);
             let sets = data.sets;
             Object.keys(sets).forEach(lineName => {
@@ -323,8 +440,11 @@ function loadData() {
         parseRawFlightData("flight", transitSheet[0].values, transitSheet[1].values[0], transitSheet[2].values);
         parseRawFlightData("heli", transitSheet[3].values, transitSheet[4].values[0], transitSheet[5].values);
         parseRawFlightData("seaplane", transitSheet[6].values, transitSheet[7].values[0], transitSheet[8].values);
+        yield processAirlineMetadata(dataSheet[2].values);
+        processAirportMetadata(dataSheet[1].values);
+        parseCodeshares(dataSheet[3].values);
         combineData();
-        generateTimeMap();
+        generateTimeMaps(routes, places);
     });
 }
 loadData();

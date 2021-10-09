@@ -1,5 +1,5 @@
 {
-  "include": ["src/util.ts", "src/calc.ts", "src/main.ts"],
+  "include": ["src/util.ts", "src/calc.ts", "src/main.ts", "src/worker.ts"],
   "compileOnSave": true,
   "compilerOptions": {
     "target": "es6",
