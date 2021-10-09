@@ -168,6 +168,30 @@ function getNeighbors(currentNode: string, currentTime: number) {
 
 
 function calculateRoute(startNode: string, endNode: string, localCancelCode: number) {
+
+  if (startNode.substr(0, 1) == '#') {
+    let coords = startNode.substring(1, startNode.length).split("+")
+    timesMap!["walk"][startNode] = {}
+    for (let i in localPlaces) {
+      let place = localPlaces[i]
+      if (place.z != undefined && place.x != undefined) {
+        timesMap!["walk"][place.id][startNode] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk")
+        timesMap!["walk"][startNode][place.id] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk")
+      }
+    }
+  }
+  if (endNode.substr(0, 1) == '#') {
+    let coords = endNode.substring(1, startNode.length).split("+")
+    timesMap!["walk"][endNode] = {}
+    for (let i in localPlaces) {
+      let place = localPlaces[i]
+      if (place.z != undefined && place.x != undefined) {
+        timesMap!["walk"][place.id][endNode] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk")
+        timesMap!["walk"][endNode][place.id] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk")
+      }
+    }
+  }
+
   var startTime = performance.now()
 
   console.log(startNode, endNode, localCancelCode)
