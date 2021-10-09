@@ -1,6 +1,7 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
 
@@ -8,22 +9,94 @@
   <meta name="description" content="Minecart Rapid Transit route finder">
   <meta name="author" content="Scarycrumb45">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#86CD82"/>
+  <meta name="theme-color" content="#86CD82" />
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Manrope|Material+Icons">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Material+Icons">
   <link rel="stylesheet" href="style.css">
 
   <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/nextapps-de/flexsearch@0.7.2/dist/flexsearch.bundle.js"></script>
   <script defer src="libs/lz-string.min.js"></script>
   <script defer src="dist/util.js"></script>
   <script defer src="dist/calc.js"></script>
+  <script defer src="dist/search.js"></script>
   <script defer src="dist/main.js"></script>
 
 </head>
+
 <body>
 
-  DEVELOPMENT
+  <div class="title-container">
+    <div class="title">
+      <h1>
+        MRT RapidRoute
+      </h1>
+    </div>
+    <div>
+    </div>
+  </div>
 
+  <div class="selection-container">
+    <form id="selection">
+      <div>
+        <input class="search" id="from" type=text />
+      </div>
+      <div>
+        <input class="search" id="to" type=text />
+      </div>
+    </form>
+    <div class="search-results">
+    </div>
+    <div class="options">
+      <label>
+        <input type="checkbox" checked="true" id="airports-check">
+        <span class="check"></span>
+        <span class="checkbox-text">Flights</span>
+      </label>
+      <label>
+        <input type="checkbox" checked="true" id="mrt-check">
+        <span class="check"></span>
+        <span class="checkbox-text">MRT Lines</span>
+      </label>
+      <label>
+        <input type="checkbox" checked="true" id="heli-check">
+        <span class="check"></span>
+        <span class="checkbox-text">Helicopters</span>
+      </label>
+      <label>
+        <input type="checkbox" checked="true" id="seaplane-check">
+        <span class="check"></span>
+        <span class="checkbox-text">Seaplanes</span>
+      </label>
+      <label>
+        <input type="checkbox" checked="true" id="tp-check">
+        <span class="check"></span>
+        <span class="checkbox-text">Spawn Warps</span>
+      </label>
+    </div>
+  </div>
+
+  <a class="feedback" href="https://forms.gle/zi8hj3hB6nrBkYFM6">
+    <span class="material-icons">
+      feedback
+    </span>
+    <span class="feedback-text">Feedback</span>
+  </a>
+
+  <div id="searching" class="searching" style="display: none">
+    <h2>Searching</h2>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="initLoad" class="searching" style="display: none">
+    <h1>Welcome to RapidRoute!</h1>
+    <h2>We're compiling the route tables for the first time.
+      This could take a minute, but we only need to do it once.</h2>
+    <div class="spinner"></div>
+  </div>
+
+  <div id="results"></div>
 
 </body>
+
 </html>

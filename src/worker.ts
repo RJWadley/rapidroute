@@ -204,8 +204,21 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
   let finishTime = Infinity;
 
   //get max value
-  let maxTime = timesMap ?.["walk"][startNode][endNode] ?? Infinity
-  console.log("MAX TIME: ", maxTime)
+  let maxTime: number = Infinity
+  try {
+    maxTime = timesMap ?.["walk"][startNode][endNode] ?? Infinity
+    console.log("MAX TIME: ", maxTime)
+  } catch {
+    sendFailure()
+    throw new Error("Places not defined")
+  }
+
+  parents = {
+    [endNode]: {
+      time: maxTime,
+      parents: [startNode]
+    }
+  }
 
   // get starting values
   let startingValues = getNeighbors(startNode, 0)
@@ -380,4 +393,9 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
 function sendSuccess(dataToSend: any) {
   let message: SWCode = "complete"
   postMessage([message, dataToSend])
+}
+
+function sendFailure() {
+  let message: SWCode = "failed"
+  postMessage([message])
 }

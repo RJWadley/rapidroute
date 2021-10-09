@@ -1,7 +1,7 @@
-type SWCode = "calc" | "cancel" | "report" | "complete" | "exited" | "genTimeMaps"
+type SWCode = "calc" | "cancel" | "report" | "complete" | "exited" | "genTimeMaps" | "failed"
 
 async function findShortestPath(startNode: string, endNode: string, allowedModes: Array<Mode>, dataCallback: Function) {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve, reject) => {
     calculationWorker.postMessage(["calc", startNode, endNode, allowedModes])
     calculationWorker.onmessage = function(e) {
       let code = e.data[0]
@@ -12,6 +12,9 @@ async function findShortestPath(startNode: string, endNode: string, allowedModes
       if (code == "report") {
         e.data.shift()
         dataCallback(e.data)
+      }
+      if (code == "failed") {
+        reject()
       }
     }
   })

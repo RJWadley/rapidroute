@@ -445,6 +445,7 @@ function loadData() {
         parseCodeshares(dataSheet[3].values);
         combineData();
         generateTimeMaps(routes, places);
+        initSearch();
     });
 }
 loadData();

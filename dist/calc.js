@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 function findShortestPath(startNode, endNode, allowedModes, dataCallback) {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
             calculationWorker.postMessage(["calc", startNode, endNode, allowedModes]);
             calculationWorker.onmessage = function (e) {
                 let code = e.data[0];
@@ -21,6 +21,9 @@ function findShortestPath(startNode, endNode, allowedModes, dataCallback) {
                 if (code == "report") {
                     e.data.shift();
                     dataCallback(e.data);
+                }
+                if (code == "failed") {
+                    reject();
                 }
             };
         }));

@@ -564,6 +564,7 @@ async function loadData() {
 
   combineData()
   generateTimeMaps(routes, places)
+  initSearch()
 
 }
 

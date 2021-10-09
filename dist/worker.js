@@ -149,8 +149,21 @@ function calculateRoute(startNode, endNode, localCancelCode) {
     let parents = {};
     let finishTime = Infinity;
     //get max value
-    let maxTime = (_a = timesMap === null || timesMap === void 0 ? void 0 : timesMap["walk"][startNode][endNode]) !== null && _a !== void 0 ? _a : Infinity;
-    console.log("MAX TIME: ", maxTime);
+    let maxTime = Infinity;
+    try {
+        maxTime = (_a = timesMap === null || timesMap === void 0 ? void 0 : timesMap["walk"][startNode][endNode]) !== null && _a !== void 0 ? _a : Infinity;
+        console.log("MAX TIME: ", maxTime);
+    }
+    catch (_d) {
+        sendFailure();
+        throw new Error("Places not defined");
+    }
+    parents = {
+        [endNode]: {
+            time: maxTime,
+            parents: [startNode]
+        }
+    };
     // get starting values
     let startingValues = getNeighbors(startNode, 0);
     // map them into the path heap
@@ -299,5 +312,9 @@ function calculateRoute(startNode, endNode, localCancelCode) {
 function sendSuccess(dataToSend) {
     let message = "complete";
     postMessage([message, dataToSend]);
+}
+function sendFailure() {
+    let message = "failed";
+    postMessage([message]);
 }
 //# sourceMappingURL=worker.js.map
