@@ -35,3 +35,16 @@ if (window.Worker) {
   var calculationWorker = new Worker('./dist/worker.js');
 
 }
+
+
+function startSearch() {
+
+  let from = $("#from").attr("data")
+  let to = $("#to").attr("data")
+
+  if (from != undefined && to != undefined)
+
+  //@ts-ignore
+  findShortestPath(from, to).then(console.log())
+
+}

@@ -1,6 +1,6 @@
 // @ts-ignore
 var searchWorker = new FlexSearch.Index({
-  tokenize: "reverse",
+  tokenize: "reverse"
 });
 
 function normalize(str: string | undefined) {
@@ -25,22 +25,38 @@ function initSearch() {
     );
   })
 
+  $(".search").on("keydown", function(e) {
+    if (e.key == "Enter") {
+      e.preventDefault()
+      return
+    }
+  })
 
-  $(".search").on("input", function(this) {
+  $(".search").on("input", function() {
+
+    let content = $(this).html()
+    let id = $(this).attr("id")
+
     let results = searchWorker.search(
-      $(this).val(),
+      content,
       {
         suggest: true
       }
     )
-    updateSearchResults(results, $(this).attr("id"))
+
+    updateSearchResults(results, id)
   })
 
 }
 
 function updateSearchResults(results: Array<string>, jqid: string | undefined) {
   if (jqid == undefined) return
-  $(".search-results").html("")
+  $(".search-results").html("").fadeIn()
+
+  if (results.length == 0) {
+    $(".search-results").html("No places found")
+  }
+
   results.forEach(result => {
     let place = places.filter(x => x.id == result)[0]
     $(".search-results").append(`
@@ -57,27 +73,64 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 
   $("#" + jqid).on('keyup', function(e) {
     if (e.key === 'Enter') {
+      console.log("KEYUP")
       select(firstResult, jqid)
+      document.getElementById(jqid) ?.blur()
     }
   });
 
-  $("#" + jqid).on('blur', function(e) {
-    select(firstResult, jqid)
+  $("#" + jqid).on('blur', function() {
+    console.log("BLUR")
+    setTimeout(function() {
+      console.log($(".search-results").children().length)
+      if ($(".search-results").children().length > 0)
+        select(firstResult, jqid)
+    }, 100)
   })
-
 
 }
 
 function select(placeId: string, jqid: string) {
+  console.log("SELECT")
 
   let place = places.filter(x => x.id == placeId)[0]
 
   if (place == undefined) {
     $("#" + jqid).removeAttr("data")
-    $(".search-results").html("")
+    $(".search-results").html("").css("display", "none")
   } else {
-    $("#" + jqid).val(place.displayName ?? place.longName ?? place.id)
+    $("#" + jqid).html(place.displayName ?? place.longName ?? place.id)
     $("#" + jqid).attr("data", placeId)
-    $(".search-results").html("")
+    $(".search-results").html("").css("display", "none")
   }
+
+  startSearch()
 }
+
+$("#selection-swap").on("click", function() {
+
+  let from = $("#from")
+  let to = $("#to")
+
+  from.off('keyup')
+  from.off('blur')
+
+  to.off('keyup')
+  to.off('blur')
+
+  let fromid = from.attr("data") ?? ""
+  let toid = to.attr("data") ?? ""
+  let fromContent = from.html()
+  let toContent = to.html()
+
+  from.attr("data", toid)
+  to.attr("data", fromid)
+  from.html(toContent)
+  to.html(fromContent)
+
+})
+
+$("#air-toggle").on("click", function() {
+  $(".air-menu").toggleClass("menuIsVisible")
+  $("#air-toggle span").toggleClass("flip")
+})

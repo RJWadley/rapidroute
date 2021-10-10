@@ -1,7 +1,7 @@
 "use strict";
 // @ts-ignore
 var searchWorker = new FlexSearch.Index({
-    tokenize: "reverse",
+    tokenize: "reverse"
 });
 function normalize(str) {
     if (str == undefined)
@@ -18,17 +18,28 @@ function initSearch() {
             place.world);
         searchWorker.add(place.id, searchable);
     });
+    $(".search").on("keydown", function (e) {
+        if (e.key == "Enter") {
+            e.preventDefault();
+            return;
+        }
+    });
     $(".search").on("input", function () {
-        let results = searchWorker.search($(this).val(), {
+        let content = $(this).html();
+        let id = $(this).attr("id");
+        let results = searchWorker.search(content, {
             suggest: true
         });
-        updateSearchResults(results, $(this).attr("id"));
+        updateSearchResults(results, id);
     });
 }
 function updateSearchResults(results, jqid) {
     if (jqid == undefined)
         return;
-    $(".search-results").html("");
+    $(".search-results").html("").fadeIn();
+    if (results.length == 0) {
+        $(".search-results").html("No places found");
+    }
     results.forEach(result => {
         var _a;
         let place = places.filter(x => x.id == result)[0];
@@ -42,25 +53,56 @@ function updateSearchResults(results, jqid) {
     $("#" + jqid).off('keyup');
     $("#" + jqid).off('blur');
     $("#" + jqid).on('keyup', function (e) {
+        var _a;
         if (e.key === 'Enter') {
+            console.log("KEYUP");
             select(firstResult, jqid);
+            (_a = document.getElementById(jqid)) === null || _a === void 0 ? void 0 : _a.blur();
         }
     });
-    $("#" + jqid).on('blur', function (e) {
-        select(firstResult, jqid);
+    $("#" + jqid).on('blur', function () {
+        console.log("BLUR");
+        setTimeout(function () {
+            console.log($(".search-results").children().length);
+            if ($(".search-results").children().length > 0)
+                select(firstResult, jqid);
+        }, 100);
     });
 }
 function select(placeId, jqid) {
     var _a, _b;
+    console.log("SELECT");
     let place = places.filter(x => x.id == placeId)[0];
     if (place == undefined) {
         $("#" + jqid).removeAttr("data");
-        $(".search-results").html("");
+        $(".search-results").html("").css("display", "none");
     }
     else {
-        $("#" + jqid).val((_b = (_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName) !== null && _b !== void 0 ? _b : place.id);
+        $("#" + jqid).html((_b = (_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName) !== null && _b !== void 0 ? _b : place.id);
         $("#" + jqid).attr("data", placeId);
-        $(".search-results").html("");
+        $(".search-results").html("").css("display", "none");
     }
+    startSearch();
 }
+$("#selection-swap").on("click", function () {
+    var _a, _b;
+    let from = $("#from");
+    let to = $("#to");
+    from.off('keyup');
+    from.off('blur');
+    to.off('keyup');
+    to.off('blur');
+    let fromid = (_a = from.attr("data")) !== null && _a !== void 0 ? _a : "";
+    let toid = (_b = to.attr("data")) !== null && _b !== void 0 ? _b : "";
+    let fromContent = from.html();
+    let toContent = to.html();
+    from.attr("data", toid);
+    to.attr("data", fromid);
+    from.html(toContent);
+    to.html(fromContent);
+});
+$("#air-toggle").on("click", function () {
+    $(".air-menu").toggleClass("menuIsVisible");
+    $("#air-toggle span").toggleClass("flip");
+});
 //# sourceMappingURL=search.js.map

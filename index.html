@@ -27,54 +27,62 @@
 <body>
 
   <div class="title-container">
+    <img class="logo" src="./RapidRoute.png">
     <div class="title">
       <h1>
-        MRT RapidRoute
+        MRT <span>RapidRoute<span>
       </h1>
-    </div>
-    <div>
     </div>
   </div>
 
-  <div class="selection-container">
-    <form id="selection">
-      <div>
-        <input class="search" id="from" type=text />
-      </div>
-      <div>
-        <input class="search" id="to" type=text />
-      </div>
-    </form>
-    <div class="search-results">
-    </div>
-    <div class="options">
-      <label>
-        <input type="checkbox" checked="true" id="airports-check">
-        <span class="check"></span>
-        <span class="checkbox-text">Flights</span>
-      </label>
-      <label>
-        <input type="checkbox" checked="true" id="mrt-check">
-        <span class="check"></span>
-        <span class="checkbox-text">MRT Lines</span>
-      </label>
-      <label>
-        <input type="checkbox" checked="true" id="heli-check">
-        <span class="check"></span>
-        <span class="checkbox-text">Helicopters</span>
-      </label>
-      <label>
-        <input type="checkbox" checked="true" id="seaplane-check">
-        <span class="check"></span>
-        <span class="checkbox-text">Seaplanes</span>
-      </label>
-      <label>
-        <input type="checkbox" checked="true" id="tp-check">
-        <span class="check"></span>
-        <span class="checkbox-text">Spawn Warps</span>
-      </label>
-    </div>
+  <div class="lead">
+    <h1>Route Finder</h1>
   </div>
+  <div class="selection-container">
+    <div onclick="document.execCommand('selectAll',false,null)" contenteditable="true" spellcheck="false" data-ph="From" class="search" data-enable-grammarly="false" autocomplete="off" id="from" type=text></div>
+    <button id="selection-swap"><span class="material-icons">
+        swap_horiz
+      </span></button>
+    <div onclick="document.execCommand('selectAll',false,null)" contenteditable="true" spellcheck="false" data-ph="To" class="search" data-enable-grammarly="false" autocomplete="off" id="to" type=text></div>
+  </div>
+  <div class="search-results">
+  </div>
+
+  <div class="options">
+    <div>
+      <button id="air-toggle">Air&nbsp;Travel<span class="material-icons">
+          expand_more
+        </span></button>
+      <div class="air-menu menu">
+        <label>
+          <input type="checkbox" checked="true" id="airports-check">
+          <span class="check"></span>
+          <span class="checkbox-text">Flights</span>
+        </label>
+        <label>
+          <input type="checkbox" checked="true" id="heli-check">
+          <span class="check"></span>
+          <span class="checkbox-text">Helicopters</span>
+        </label>
+        <label>
+          <input type="checkbox" checked="true" id="seaplane-check">
+          <span class="check"></span>
+          <span class="checkbox-text">Seaplanes</span>
+        </label>
+      </div>
+    </div>
+    <label>
+      <input type="checkbox" checked="true" id="mrt-check">
+      <span class="check"></span>
+      <span class="checkbox-text">MRT&nbsp;Lines</span>
+    </label>
+    <label>
+      <input type="checkbox" checked="true" id="tp-check">
+      <span class="check"></span>
+      <span class="checkbox-text">Spawn&nbsp;Warps</span>
+    </label>
+  </div>
+
 
   <a class="feedback" href="https://forms.gle/zi8hj3hB6nrBkYFM6">
     <span class="material-icons">
