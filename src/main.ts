@@ -18,10 +18,13 @@ let routes: Array<Route> = getItem("routes") || []
 let places: Array<Place> = getItem("places") || []
 let providers: Array<Provider> = getItem("providers") || []
 let codeshares: {
-  [key: string]: string
+  [key: string]: {
+    [key: string]: string
+  }
 } = getItem("codeshares") || {}
 
 type Mode = "flight" | "seaplane" | "heli" | "MRT" | "walk"
+type PlaceType = "MRT" | "airport"
 type World = "New" | "Old"
 type Source = "data" | "transit" | "both" | "dynmap"
 
@@ -32,13 +35,14 @@ interface Route {
   provider?: string
   number?: string
   displayBy?: string
-  hasFromGateData?: boolean
-  hasToGateData?: boolean
+  fromGate?: string
+  toGate?: string
 }
 
 interface Place {
   id: string
   world: World
+  type: PlaceType
   shortName?: string
   longName?: string
   displayName?: string
@@ -51,8 +55,6 @@ interface Provider {
   name: string
   displayName?: string
   prefix?: string
-  logo?: string
-  color?: string
 }
 
 async function getTransitSheet() {
@@ -127,7 +129,8 @@ function parseRawFlightData(
       id: place[1] || place[0],
       world: world,
       shortName: place[1],
-      longName: place[0]
+      longName: place[0],
+      type: "airport"
     })
   })
 
@@ -192,9 +195,11 @@ function parseCodeshares(codesharesRaw: Array<Array<string>>) {
     colors[company[2]] = company[4] //colors[displayName] = color
     logos[company[2]] = company[3] //logos[displayName] = logo
 
+    codeshares[company[0]] = {}
+
     for (var i = parseInt(range[0]); i <= parseInt(range[1]); i++) {
       //name + number = displayname
-      codeshares[company[0] + i] = company[2] //
+      codeshares[company[0]][i] = company[2] //
     }
   });
 }
@@ -212,7 +217,8 @@ function processAirportMetadata(rawAirportData: Array<Array<string>>) {
 
     let newPlace: Place = {
       id,
-      world
+      world,
+      type: "airport"
     }
 
     let shortName = rawAirport[1]
@@ -326,11 +332,25 @@ function parseAirlineGateData(result: any, companies: Array<Array<string>>, reso
 
   //now add gate info to routes
   routes.forEach((route, i) => {
-    if (gateData.filter(x => (x[0] == route.provider && x[1] == route.number && x[2] == route.from)).length > 0) {
-      routes[i]["hasFromGateData"] = true
+
+    if (route.mode == "MRT") return
+
+    let fromGate = gateData.filter(x => (
+      x[0] == route.provider
+      && x[1] == route.number
+      && x[2] == route.from
+    ))[0]?.[3]
+    let toGate = gateData.filter(x => (
+      x[0] == route.provider
+      && x[1] == route.number
+      && x[2] == route.to
+    ))[0]?.[3]
+
+    if (fromGate) {
+      routes[i].fromGate = fromGate
     }
-    if (gateData.filter(x => (x[0] == route.provider && x[1] == route.number && x[2] == route.to)).length > 0) {
-      routes[i]["hasToGateData"] = true
+    if (toGate) {
+      routes[i].toGate = toGate
     }
   });
 
@@ -423,7 +443,8 @@ function generateMrt(rawMRTInfo: Array<Array<string>>, rawStopInfo: Array<Array<
     if (item[0] == undefined) return
     placeList.push({
       id: item[0],
-      world: "New"
+      world: "New",
+      type: "MRT"
     })
   })
 
@@ -491,7 +512,8 @@ function generateMrtFromMarkers() {
               shortName: currentId,
               longName: name,
               x: currentLine[stopCode].x,
-              z: currentLine[stopCode].z
+              z: currentLine[stopCode].z,
+              type: "MRT"
             })
 
           })

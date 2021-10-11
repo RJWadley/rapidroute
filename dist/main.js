@@ -86,7 +86,8 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
             id: place[1] || place[0],
             world: world,
             shortName: place[1],
-            longName: place[0]
+            longName: place[0],
+            type: "airport"
         });
     });
     places.push(...placeList); //add to global
@@ -137,9 +138,10 @@ function parseCodeshares(codesharesRaw) {
             return;
         colors[company[2]] = company[4]; //colors[displayName] = color
         logos[company[2]] = company[3]; //logos[displayName] = logo
+        codeshares[company[0]] = {};
         for (var i = parseInt(range[0]); i <= parseInt(range[1]); i++) {
             //name + number = displayname
-            codeshares[company[0] + i] = company[2]; //
+            codeshares[company[0]][i] = company[2]; //
         }
     });
 }
@@ -155,7 +157,8 @@ function processAirportMetadata(rawAirportData) {
             world = "New";
         let newPlace = {
             id,
-            world
+            world,
+            type: "airport"
         };
         let shortName = rawAirport[1];
         if (shortName != "" && shortName != undefined)
@@ -247,11 +250,20 @@ function parseAirlineGateData(result, companies, resolve) {
     });
     //now add gate info to routes
     routes.forEach((route, i) => {
-        if (gateData.filter(x => (x[0] == route.provider && x[1] == route.number && x[2] == route.from)).length > 0) {
-            routes[i]["hasFromGateData"] = true;
+        var _a, _b;
+        if (route.mode == "MRT")
+            return;
+        let fromGate = (_a = gateData.filter(x => (x[0] == route.provider
+            && x[1] == route.number
+            && x[2] == route.from))[0]) === null || _a === void 0 ? void 0 : _a[3];
+        let toGate = (_b = gateData.filter(x => (x[0] == route.provider
+            && x[1] == route.number
+            && x[2] == route.to))[0]) === null || _b === void 0 ? void 0 : _b[3];
+        if (fromGate) {
+            routes[i].fromGate = fromGate;
         }
-        if (gateData.filter(x => (x[0] == route.provider && x[1] == route.number && x[2] == route.to)).length > 0) {
-            routes[i]["hasToGateData"] = true;
+        if (toGate) {
+            routes[i].toGate = toGate;
         }
     });
     resolve(true);
@@ -339,7 +351,8 @@ function generateMrt(rawMRTInfo, rawStopInfo) {
             return;
         placeList.push({
             id: item[0],
-            world: "New"
+            world: "New",
+            type: "MRT"
         });
     });
     //and C is a ring line, so add those
@@ -397,7 +410,8 @@ function generateMrtFromMarkers() {
                         shortName: currentId,
                         longName: name,
                         x: currentLine[stopCode].x,
-                        z: currentLine[stopCode].z
+                        z: currentLine[stopCode].z,
+                        type: "MRT"
                     });
                 });
             });

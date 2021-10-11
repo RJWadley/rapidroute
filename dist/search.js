@@ -55,13 +55,11 @@ function updateSearchResults(results, jqid) {
     $("#" + jqid).on('keyup', function (e) {
         var _a;
         if (e.key === 'Enter') {
-            console.log("KEYUP");
             select(firstResult, jqid);
             (_a = document.getElementById(jqid)) === null || _a === void 0 ? void 0 : _a.blur();
         }
     });
     $("#" + jqid).on('blur', function () {
-        console.log("BLUR");
         setTimeout(function () {
             console.log($(".search-results").children().length);
             if ($(".search-results").children().length > 0)
@@ -71,7 +69,6 @@ function updateSearchResults(results, jqid) {
 }
 function select(placeId, jqid) {
     var _a, _b;
-    console.log("SELECT");
     let place = places.filter(x => x.id == placeId)[0];
     if (place == undefined) {
         $("#" + jqid).removeAttr("data");
@@ -100,9 +97,18 @@ $("#selection-swap").on("click", function () {
     to.attr("data", fromid);
     from.html(toContent);
     to.html(fromContent);
+    startSearch();
 });
 $("#air-toggle").on("click", function () {
     $(".air-menu").toggleClass("menuIsVisible");
     $("#air-toggle span").toggleClass("flip");
+    if (!$(".air-menu").hasClass("menuIsVisible")) {
+        startSearch();
+    }
+});
+$(".search").on("focus", function () {
+    setTimeout(function () {
+        document.execCommand('selectAll', false, undefined);
+    }, 10);
 });
 //# sourceMappingURL=search.js.map

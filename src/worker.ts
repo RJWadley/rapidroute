@@ -7,7 +7,7 @@ onmessage = function(e) {
 
   if (code == "calc") {
     cancelCode++
-    calculateRoute(data[0], data[1], cancelCode)
+    calculateRoute(data[0], data[1], cancelCode, data[2])
   }
 
   if (code == "genTimeMaps") {
@@ -100,6 +100,8 @@ function workerGenerateTimeMaps(routesParam: any, placesParam: any) {
   })
 
   console.log("time maps generated")
+  let msg: SWCode = "genTimeMaps"
+  postMessage([msg])
 }
 
 function getTravelTime(x1: number, y1: number, x2: number, y2: number, mode: Mode) {
@@ -108,7 +110,8 @@ function getTravelTime(x1: number, y1: number, x2: number, y2: number, mode: Mod
   let distance = Math.ceil(Math.sqrt(x * x + y * y))
 
   if (mode == "walk") {
-    return Math.max(distance / WALKING_SPEED, 10)
+    // add 10 ensures that it will always be faster to walk in a straight line
+    return distance / WALKING_SPEED + 10
   } else if (mode == "MRT") {
     return distance / MINECART_SPEED
   } else {
@@ -137,37 +140,40 @@ function routeTime(route: Route) {
 
 }
 
-function getNeighbors(currentNode: string, currentTime: number) {
+function getNeighbors(currentNode: string, currentTime: number, allowedModes: Array<Mode>) {
   let nearestNodes: Nodes = {}
   currentTime = parseFloat(currentTime as unknown as string)
 
-  if (timesMap == undefined) throw new Error("Times map is not defined")
+  if (timesMap == undefined) {
+    console.log("SENDING FOR GEN")
+    let msg: SWCode = "timeMapsNeeded"
+    postMessage([msg])
+    return undefined
+  }
 
-  //TODO only keep shortest time
+  allowedModes.forEach(mode => {
+    let currentMap = timesMap ?.[mode] ?.[currentNode]
 
-  Object.assign(nearestNodes, timesMap["walk"][currentNode])
-  Object.assign(nearestNodes, timesMap["MRT"][currentNode])
-  Object.assign(nearestNodes, timesMap["heli"][currentNode])
-  Object.assign(nearestNodes, timesMap["seaplane"][currentNode])
-  Object.assign(nearestNodes, timesMap["flight"][currentNode])
+    for (let place in currentMap) {
+
+      if (nearestNodes[place] == undefined) {
+        nearestNodes[place] = currentMap[place]
+      } else {
+        nearestNodes[place] = Math.min(currentMap[place], nearestNodes[place])
+      }
+    }
+
+  })
 
   for (let i in nearestNodes) {
     nearestNodes[i] += currentTime;
   }
 
-  // let possibleRoutes = routes.filter(x => x.from == currentNode)
-  //
-  // for (let i in possibleRoutes) {
-  //   let current = possibleRoutes[i]
-  //   let time = routeTimeTODORENAME(current) + currentTime
-  //   nearestNodes[current.to] = Math.min(time)
-  // }
-
   return nearestNodes
 }
 
 
-function calculateRoute(startNode: string, endNode: string, localCancelCode: number) {
+async function calculateRoute(startNode: string, endNode: string, localCancelCode: number, allowedModes: Array<Mode>) {
 
   if (startNode.substr(0, 1) == '#') {
     let coords = startNode.substring(1, startNode.length).split("+")
@@ -221,7 +227,10 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
   }
 
   // get starting values
-  let startingValues = getNeighbors(startNode, 0)
+  let startingValues = getNeighbors(startNode, 0, allowedModes)
+
+  if (startingValues == undefined) return
+
   // map them into the path heap
   for (let i in startingValues) {
     if (startingValues[i] < maxTime) {
@@ -243,10 +252,19 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
   //get starting path and node
   let currentNode = nodeHeap[0]
 
+  let pauseCounter = 0
+
   //while searching
   while (currentNode && nodeHeap.length > 0) {
 
-    // console.log("PING ", currentNode)
+    if (pauseCounter > 100) {
+      pauseCounter = 0
+      await new Promise(resolve => {
+        console.log("WAITING")
+        setTimeout(resolve, 1)
+      })
+    }
+    pauseCounter++
 
     if (localCancelCode < cancelCode) {
       return
@@ -257,11 +275,15 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
     if (currentNode == undefined) continue
     let currentTime = currentNode.time
 
+    let status: SWCode = "report";
+    postMessage([status, currentTime, maxTime])
+
     // if we've reached the last node we're done
     if (currentNode.name == endNode) {
       console.log("FOUND FINISH")
       finishTime = currentTime
     }
+    console.log("PING")
 
     //allow for multiple solutions
     if (currentTime > finishTime + EXTRA_TIME || nodeHeap.length == 0) {
@@ -303,7 +325,7 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
     }
 
     //if the route is already failing, stop
-    if (currentNode.name in visited && currentTime > visited[currentNode.name]) continue
+    if (currentNode.name in visited && currentTime >= visited[currentNode.name]) continue
     if (currentTime > maxTime + EXTRA_TIME) continue
 
     // update Max Value
@@ -317,7 +339,7 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
     }
 
     // take the last node of path and generate all possible next steps
-    let nextSteps = getNeighbors(currentNode.name, currentTime)
+    let nextSteps = getNeighbors(currentNode.name, currentTime, allowedModes)
     for (let nextNode in nextSteps) {
 
       if (nextNode == startNode) continue
@@ -388,6 +410,7 @@ function calculateRoute(startNode: string, endNode: string, localCancelCode: num
   }
 
   console.log("EXITED")
+  sendFailure()
 }
 
 function sendSuccess(dataToSend: any) {

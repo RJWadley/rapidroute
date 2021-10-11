@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 let cancelCode = 0;
 onmessage = function (e) {
     console.log("MESSAGE RECIEVED");
@@ -6,7 +15,7 @@ onmessage = function (e) {
     let code = data.shift();
     if (code == "calc") {
         cancelCode++;
-        calculateRoute(data[0], data[1], cancelCode);
+        calculateRoute(data[0], data[1], cancelCode, data[2]);
     }
     if (code == "genTimeMaps") {
         workerGenerateTimeMaps(data[0], data[1]);
@@ -60,13 +69,16 @@ function workerGenerateTimeMaps(routesParam, placesParam) {
         timesMap[route.mode][route.from][route.to] = time;
     });
     console.log("time maps generated");
+    let msg = "genTimeMaps";
+    postMessage([msg]);
 }
 function getTravelTime(x1, y1, x2, y2, mode) {
     let y = x2 - x1;
     let x = y2 - y1;
     let distance = Math.ceil(Math.sqrt(x * x + y * y));
     if (mode == "walk") {
-        return Math.max(distance / WALKING_SPEED, 10);
+        // add 10 ensures that it will always be faster to walk in a straight line
+        return distance / WALKING_SPEED + 10;
     }
     else if (mode == "MRT") {
         return distance / MINECART_SPEED;
@@ -94,220 +106,239 @@ function routeTime(route) {
     else
         return 60 * 5; //TODO CHANGE
 }
-function getNeighbors(currentNode, currentTime) {
+function getNeighbors(currentNode, currentTime, allowedModes) {
     let nearestNodes = {};
     currentTime = parseFloat(currentTime);
-    if (timesMap == undefined)
-        throw new Error("Times map is not defined");
-    //TODO only keep shortest time
-    Object.assign(nearestNodes, timesMap["walk"][currentNode]);
-    Object.assign(nearestNodes, timesMap["MRT"][currentNode]);
-    Object.assign(nearestNodes, timesMap["heli"][currentNode]);
-    Object.assign(nearestNodes, timesMap["seaplane"][currentNode]);
-    Object.assign(nearestNodes, timesMap["flight"][currentNode]);
+    if (timesMap == undefined) {
+        console.log("SENDING FOR GEN");
+        let msg = "timeMapsNeeded";
+        postMessage([msg]);
+        return undefined;
+    }
+    allowedModes.forEach(mode => {
+        var _a;
+        let currentMap = (_a = timesMap === null || timesMap === void 0 ? void 0 : timesMap[mode]) === null || _a === void 0 ? void 0 : _a[currentNode];
+        for (let place in currentMap) {
+            if (nearestNodes[place] == undefined) {
+                nearestNodes[place] = currentMap[place];
+            }
+            else {
+                nearestNodes[place] = Math.min(currentMap[place], nearestNodes[place]);
+            }
+        }
+    });
     for (let i in nearestNodes) {
         nearestNodes[i] += currentTime;
     }
-    // let possibleRoutes = routes.filter(x => x.from == currentNode)
-    //
-    // for (let i in possibleRoutes) {
-    //   let current = possibleRoutes[i]
-    //   let time = routeTimeTODORENAME(current) + currentTime
-    //   nearestNodes[current.to] = Math.min(time)
-    // }
     return nearestNodes;
 }
-function calculateRoute(startNode, endNode, localCancelCode) {
+function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
     var _a, _b, _c;
-    if (startNode.substr(0, 1) == '#') {
-        let coords = startNode.substring(1, startNode.length).split("+");
-        timesMap["walk"][startNode] = {};
-        for (let i in localPlaces) {
-            let place = localPlaces[i];
-            if (place.z != undefined && place.x != undefined) {
-                timesMap["walk"][place.id][startNode] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
-                timesMap["walk"][startNode][place.id] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
+    return __awaiter(this, void 0, void 0, function* () {
+        if (startNode.substr(0, 1) == '#') {
+            let coords = startNode.substring(1, startNode.length).split("+");
+            timesMap["walk"][startNode] = {};
+            for (let i in localPlaces) {
+                let place = localPlaces[i];
+                if (place.z != undefined && place.x != undefined) {
+                    timesMap["walk"][place.id][startNode] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
+                    timesMap["walk"][startNode][place.id] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
+                }
             }
         }
-    }
-    if (endNode.substr(0, 1) == '#') {
-        let coords = endNode.substring(1, startNode.length).split("+");
-        timesMap["walk"][endNode] = {};
-        for (let i in localPlaces) {
-            let place = localPlaces[i];
-            if (place.z != undefined && place.x != undefined) {
-                timesMap["walk"][place.id][endNode] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
-                timesMap["walk"][endNode][place.id] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
+        if (endNode.substr(0, 1) == '#') {
+            let coords = endNode.substring(1, startNode.length).split("+");
+            timesMap["walk"][endNode] = {};
+            for (let i in localPlaces) {
+                let place = localPlaces[i];
+                if (place.z != undefined && place.x != undefined) {
+                    timesMap["walk"][place.id][endNode] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
+                    timesMap["walk"][endNode][place.id] = getTravelTime(place.x, place.z, parseInt(coords[0]), parseInt(coords[1]), "walk");
+                }
             }
         }
-    }
-    var startTime = performance.now();
-    console.log(startNode, endNode, localCancelCode);
-    let visited = { [startNode]: 0 }; //visited
-    let knownMinTimes = { [startNode]: 0 };
-    let nodeHeap = []; //path heap
-    let parents = {};
-    let finishTime = Infinity;
-    //get max value
-    let maxTime = Infinity;
-    try {
-        maxTime = (_a = timesMap === null || timesMap === void 0 ? void 0 : timesMap["walk"][startNode][endNode]) !== null && _a !== void 0 ? _a : Infinity;
-        console.log("MAX TIME: ", maxTime);
-    }
-    catch (_d) {
-        sendFailure();
-        throw new Error("Places not defined");
-    }
-    parents = {
-        [endNode]: {
-            time: maxTime,
-            parents: [startNode]
+        var startTime = performance.now();
+        console.log(startNode, endNode, localCancelCode);
+        let visited = { [startNode]: 0 }; //visited
+        let knownMinTimes = { [startNode]: 0 };
+        let nodeHeap = []; //path heap
+        let parents = {};
+        let finishTime = Infinity;
+        //get max value
+        let maxTime = Infinity;
+        try {
+            maxTime = (_a = timesMap === null || timesMap === void 0 ? void 0 : timesMap["walk"][startNode][endNode]) !== null && _a !== void 0 ? _a : Infinity;
+            console.log("MAX TIME: ", maxTime);
         }
-    };
-    // get starting values
-    let startingValues = getNeighbors(startNode, 0);
-    // map them into the path heap
-    for (let i in startingValues) {
-        if (startingValues[i] < maxTime) {
-            parents[i] = {
-                time: startingValues[i],
+        catch (_d) {
+            sendFailure();
+            throw new Error("Places not defined");
+        }
+        parents = {
+            [endNode]: {
+                time: maxTime,
                 parents: [startNode]
-            };
-            nodeHeap.push({
-                name: i,
-                time: startingValues[i]
-            });
-        }
-    }
-    // sort the heap
-    nodeHeap.sort((a, b) => (a.time > b.time) ? 1 : -1);
-    //get starting path and node
-    let currentNode = nodeHeap[0];
-    //while searching
-    while (currentNode && nodeHeap.length > 0) {
-        // console.log("PING ", currentNode)
-        if (localCancelCode < cancelCode) {
+            }
+        };
+        // get starting values
+        let startingValues = getNeighbors(startNode, 0, allowedModes);
+        if (startingValues == undefined)
             return;
-        }
-        // for the shortest path in Paths
-        currentNode = (_b = nodeHeap.shift()) !== null && _b !== void 0 ? _b : nodeHeap[0];
-        if (currentNode == undefined)
-            continue;
-        let currentTime = currentNode.time;
-        // if we've reached the last node we're done
-        if (currentNode.name == endNode) {
-            console.log("FOUND FINISH");
-            finishTime = currentTime;
-        }
-        //allow for multiple solutions
-        if (currentTime > finishTime + EXTRA_TIME || nodeHeap.length == 0) {
-            console.log("success", parents);
-            var endTime = performance.now();
-            console.log("Took", endTime - startTime);
-            let paths = [[endNode]];
-            let doneCounter = 0;
-            for (let i = 0; i < 10000; i++) {
-                if (doneCounter > paths.length) {
-                    i = 100000;
-                }
-                if (paths[0][0] == startNode) {
-                    paths.push(paths.shift());
-                    doneCounter++;
-                    continue;
-                }
-                doneCounter = 0;
-                let currentPath = paths.shift();
-                if (currentPath == undefined)
-                    continue;
-                let currentParents = parents[currentPath[0]].parents;
-                currentParents.forEach(node => {
-                    paths.push([node, ...currentPath]);
+        // map them into the path heap
+        for (let i in startingValues) {
+            if (startingValues[i] < maxTime) {
+                parents[i] = {
+                    time: startingValues[i],
+                    parents: [startNode]
+                };
+                nodeHeap.push({
+                    name: i,
+                    time: startingValues[i]
                 });
             }
-            console.log(paths);
-            console.log("sending success");
-            sendSuccess(paths);
-            return;
         }
-        //if the route is already failing, stop
-        if (currentNode.name in visited && currentTime > visited[currentNode.name])
-            continue;
-        if (currentTime > maxTime + EXTRA_TIME)
-            continue;
-        // update Max Value
-        let newMax = currentTime + ((_c = timesMap === null || timesMap === void 0 ? void 0 : timesMap["walk"][currentNode.name][endNode]) !== null && _c !== void 0 ? _c : Infinity); //TODO shortest time map?
-        if (newMax < maxTime) {
-            maxTime = newMax;
-            //let indexToCut = sortedIndex(heap, maxTime * 1.5)
-            //heap = heap.slice(0, indexToCut)
-            console.log("NEW MAX");
-            nodeHeap = nodeHeap.filter(x => x.time <= maxTime + EXTRA_TIME);
-        }
-        // take the last node of path and generate all possible next steps
-        let nextSteps = getNeighbors(currentNode.name, currentTime);
-        for (let nextNode in nextSteps) {
-            if (nextNode == startNode)
+        // sort the heap
+        nodeHeap.sort((a, b) => (a.time > b.time) ? 1 : -1);
+        //get starting path and node
+        let currentNode = nodeHeap[0];
+        let pauseCounter = 0;
+        //while searching
+        while (currentNode && nodeHeap.length > 0) {
+            if (pauseCounter > 100) {
+                pauseCounter = 0;
+                yield new Promise(resolve => {
+                    console.log("WAITING");
+                    setTimeout(resolve, 1);
+                });
+            }
+            pauseCounter++;
+            if (localCancelCode < cancelCode) {
+                return;
+            }
+            // for the shortest path in Paths
+            currentNode = (_b = nodeHeap.shift()) !== null && _b !== void 0 ? _b : nodeHeap[0];
+            if (currentNode == undefined)
                 continue;
-            let nextTime = nextSteps[nextNode];
-            // discard any that are longer than max time
-            // console.log("discarding too long node  ", nextNode)
-            if (nextTime > maxTime + EXTRA_TIME)
+            let currentTime = currentNode.time;
+            let status = "report";
+            postMessage([status, currentTime, maxTime]);
+            // if we've reached the last node we're done
+            if (currentNode.name == endNode) {
+                console.log("FOUND FINISH");
+                finishTime = currentTime;
+            }
+            console.log("PING");
+            //allow for multiple solutions
+            if (currentTime > finishTime + EXTRA_TIME || nodeHeap.length == 0) {
+                console.log("success", parents);
+                var endTime = performance.now();
+                console.log("Took", endTime - startTime);
+                let paths = [[endNode]];
+                let doneCounter = 0;
+                for (let i = 0; i < 10000; i++) {
+                    if (doneCounter > paths.length) {
+                        i = 100000;
+                    }
+                    if (paths[0][0] == startNode) {
+                        paths.push(paths.shift());
+                        doneCounter++;
+                        continue;
+                    }
+                    doneCounter = 0;
+                    let currentPath = paths.shift();
+                    if (currentPath == undefined)
+                        continue;
+                    let currentParents = parents[currentPath[0]].parents;
+                    currentParents.forEach(node => {
+                        paths.push([node, ...currentPath]);
+                    });
+                }
+                console.log(paths);
+                console.log("sending success");
+                sendSuccess(paths);
+                return;
+            }
+            //if the route is already failing, stop
+            if (currentNode.name in visited && currentTime >= visited[currentNode.name])
                 continue;
-            //don't revisit nodes unless distance is same
-            if (nextNode in visited) {
-                if (visited[nextNode] + EXTRA_TIME < currentTime) {
-                    // console.log("discarding visited node  ", nextNode)
+            if (currentTime > maxTime + EXTRA_TIME)
+                continue;
+            // update Max Value
+            let newMax = currentTime + ((_c = timesMap === null || timesMap === void 0 ? void 0 : timesMap["walk"][currentNode.name][endNode]) !== null && _c !== void 0 ? _c : Infinity); //TODO shortest time map?
+            if (newMax < maxTime) {
+                maxTime = newMax;
+                //let indexToCut = sortedIndex(heap, maxTime * 1.5)
+                //heap = heap.slice(0, indexToCut)
+                console.log("NEW MAX");
+                nodeHeap = nodeHeap.filter(x => x.time <= maxTime + EXTRA_TIME);
+            }
+            // take the last node of path and generate all possible next steps
+            let nextSteps = getNeighbors(currentNode.name, currentTime, allowedModes);
+            for (let nextNode in nextSteps) {
+                if (nextNode == startNode)
                     continue;
-                }
-            }
-            //console.log(nextNode, nextTime, maxTime, nodeHeap.length)
-            //also check known times
-            if (knownMinTimes[nextNode] == undefined || nextTime <= knownMinTimes[nextNode]) {
-                knownMinTimes[nextNode] = nextTime;
-                // console.log("shortest time found for ", nextNode)
-            }
-            else if (nextTime > knownMinTimes[nextNode] + EXTRA_TIME) {
-                // console.log("node longer than shortest known time ", nextNode, knownMinTimes[nextNode], nextTime)
-                continue;
-            }
-            // console.log("adding ", nextNode)
-            //take note of parents
-            if (parents[nextNode] == undefined) {
-                // console.log("creating parent for ", currentNode, nextNode)
-                parents[nextNode] = {
-                    time: nextTime,
-                    parents: [currentNode.name]
-                };
-            }
-            else {
-                let fastestTime = parents[nextNode].time;
-                if (nextTime + EXTRA_TIME < fastestTime) {
-                    // console.log("shorter parent found for ", currentNode, nextNode, nextTime, fastestTime)
-                    parents[nextNode] = {
-                        parents: [currentNode.name],
-                        time: nextTime
-                    };
-                }
-                else if (nextTime < fastestTime + EXTRA_TIME) {
-                    if (!parents[nextNode].parents.includes(currentNode.name)) {
-                        parents[nextNode].parents.push(currentNode.name);
-                        // console.log("equal parent found for ", currentNode, nextNode, nextTime)
+                let nextTime = nextSteps[nextNode];
+                // discard any that are longer than max time
+                // console.log("discarding too long node  ", nextNode)
+                if (nextTime > maxTime + EXTRA_TIME)
+                    continue;
+                //don't revisit nodes unless distance is same
+                if (nextNode in visited) {
+                    if (visited[nextNode] + EXTRA_TIME < currentTime) {
+                        // console.log("discarding visited node  ", nextNode)
+                        continue;
                     }
                 }
+                //console.log(nextNode, nextTime, maxTime, nodeHeap.length)
+                //also check known times
+                if (knownMinTimes[nextNode] == undefined || nextTime <= knownMinTimes[nextNode]) {
+                    knownMinTimes[nextNode] = nextTime;
+                    // console.log("shortest time found for ", nextNode)
+                }
+                else if (nextTime > knownMinTimes[nextNode] + EXTRA_TIME) {
+                    // console.log("node longer than shortest known time ", nextNode, knownMinTimes[nextNode], nextTime)
+                    continue;
+                }
+                // console.log("adding ", nextNode)
+                //take note of parents
+                if (parents[nextNode] == undefined) {
+                    // console.log("creating parent for ", currentNode, nextNode)
+                    parents[nextNode] = {
+                        time: nextTime,
+                        parents: [currentNode.name]
+                    };
+                }
+                else {
+                    let fastestTime = parents[nextNode].time;
+                    if (nextTime + EXTRA_TIME < fastestTime) {
+                        // console.log("shorter parent found for ", currentNode, nextNode, nextTime, fastestTime)
+                        parents[nextNode] = {
+                            parents: [currentNode.name],
+                            time: nextTime
+                        };
+                    }
+                    else if (nextTime < fastestTime + EXTRA_TIME) {
+                        if (!parents[nextNode].parents.includes(currentNode.name)) {
+                            parents[nextNode].parents.push(currentNode.name);
+                            // console.log("equal parent found for ", currentNode, nextNode, nextTime)
+                        }
+                    }
+                }
+                // console.log("queueing new node ", nextNode)
+                // add them to the stack in order of quickness
+                let newNode = {
+                    name: nextNode,
+                    time: nextTime
+                };
+                let indexToAddAt = sortedIndex(nodeHeap, nextTime);
+                nodeHeap.splice(indexToAddAt, 0, newNode);
             }
-            // console.log("queueing new node ", nextNode)
-            // add them to the stack in order of quickness
-            let newNode = {
-                name: nextNode,
-                time: nextTime
-            };
-            let indexToAddAt = sortedIndex(nodeHeap, nextTime);
-            nodeHeap.splice(indexToAddAt, 0, newNode);
+            //mark current node as visited
+            visited[currentNode.name] = currentTime;
         }
-        //mark current node as visited
-        visited[currentNode.name] = currentTime;
-    }
-    console.log("EXITED");
+        console.log("EXITED");
+        sendFailure();
+    });
 }
 function sendSuccess(dataToSend) {
     let message = "complete";

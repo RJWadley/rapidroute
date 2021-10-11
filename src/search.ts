@@ -73,14 +73,12 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 
   $("#" + jqid).on('keyup', function(e) {
     if (e.key === 'Enter') {
-      console.log("KEYUP")
       select(firstResult, jqid)
       document.getElementById(jqid) ?.blur()
     }
   });
 
   $("#" + jqid).on('blur', function() {
-    console.log("BLUR")
     setTimeout(function() {
       console.log($(".search-results").children().length)
       if ($(".search-results").children().length > 0)
@@ -91,7 +89,6 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 }
 
 function select(placeId: string, jqid: string) {
-  console.log("SELECT")
 
   let place = places.filter(x => x.id == placeId)[0]
 
@@ -128,9 +125,22 @@ $("#selection-swap").on("click", function() {
   from.html(toContent)
   to.html(fromContent)
 
+  startSearch()
+
 })
 
 $("#air-toggle").on("click", function() {
   $(".air-menu").toggleClass("menuIsVisible")
   $("#air-toggle span").toggleClass("flip")
+  if (!$(".air-menu").hasClass("menuIsVisible")) {
+    startSearch()
+  }
+
+})
+
+
+$(".search").on("focus", function() {
+  setTimeout(function() {
+    document.execCommand('selectAll', false, undefined)
+  }, 10)
 })
