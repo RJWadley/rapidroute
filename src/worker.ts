@@ -291,6 +291,9 @@ async function calculateRoute(startNode: string, endNode: string, localCancelCod
       var endTime = performance.now()
       console.log("Took", endTime - startTime)
 
+      let status: SWCode = "report";
+      postMessage([status, currentTime, currentTime])
+
       let paths: Array<Array<string>> = [[endNode]]
       let doneCounter = 0;
 

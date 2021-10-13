@@ -8,7 +8,8 @@ html, body {
   --theme-red: #F25759;
   --theme-yellow: #FFCB47;
   --theme-green: #48DB5B;
-  --border-radius: 8px
+  --border-radius: 8px;
+  --box-shadow: 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 20%)
 }
 
 .title-container {
@@ -20,7 +21,7 @@ html, body {
   padding: 10px;
   animation: descend 1s;
   font-size: 20px;
-  box-shadow: 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 20%);
+  box-shadow: var(--box-shadow)
 }
 
 .title {
@@ -67,14 +68,14 @@ html, body {
 }
 
 .meter {
-    position: absolute;
-    width: 100%;
-    height: 100% !important;
-    padding: 0  !important;
-    border: none  !important;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    pointer-events: none;
+  position: absolute;
+  width: 100%;
+  height: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .meter div {
@@ -83,15 +84,14 @@ html, body {
   background-color: #48DB5B22;
   transition: transform 0.5s;
   -webkit-appearance: none;
-   appearance: none;
+  appearance: none;
 }
-
 
 .selection-container {
   background-color: white;
   border-radius: var(--border-radius);
   margin: 20px auto 5px auto;
-  box-shadow: 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 20%);
+  box-shadow: var(--box-shadow);
   max-width: min(1000px, 90vw);
   animation: descend 0.8s;
   display: grid;
@@ -354,7 +354,7 @@ html, body {
   z-index: 10;
   display: none;
   flex-direction: column;
-  box-shadow: 0 1px 10px 0 rgb(0 0 0 / 12%), 0 2px 4px -1px rgb(0 0 0 / 20%);
+  box-shadow: var(--box-shadow);
   border-radius: var(--border-radius);
 }
 
@@ -553,11 +553,11 @@ html, body {
 }
 
 .walk-details {
-    font-size: 1.2em;
-    text-align: right;
+  font-size: 1.2em;
+  text-align: right;
 }
 
-.leg-middle {
+.leg-middle, {
   display: grid;
   grid-template-columns: 50px 1fr;
   grid-gap: 5px;
@@ -571,7 +571,7 @@ html, body {
 }
 
 .leg-summary .material-icons {
-    font-size: 40px;
+  font-size: 40px;
 }
 
 .leg-middle img {
@@ -610,4 +610,12 @@ html, body {
 
 .leg-details div:nth-child(2) {
   text-align: right;
+}
+
+.multiflight {
+  display: flex;
+}
+
+.multiflight img {
+  max-width: 40px;
 }

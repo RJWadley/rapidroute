@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+let approxRouteTime;
 function findShortestPath(startNode, endNode, allowedModes, dataCallback) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -84,12 +85,18 @@ function startSearch() {
     }
     let from = (_a = $("#from").attr("data")) !== null && _a !== void 0 ? _a : "";
     let to = (_b = $("#to").attr("data")) !== null && _b !== void 0 ? _b : "";
+    if (from == to) {
+        $("#results").html("");
+        return;
+    }
     if (from != "" && to != "") {
         console.log("starting search");
         $("#results").html("");
         $("#searching").fadeIn();
         $("#progress-bar").fadeIn();
         findShortestPath(from, to, allowedModes, function (data) {
+            if (data[0] == data[1])
+                approxRouteTime = data[0];
             let progress = Math.round(data[0] / data[1] * 100);
             console.log("progress ", progress);
             $("#progress-bar").css("transform", "scaleX(" + progress * 2 + ")");
@@ -128,6 +135,7 @@ function populateResults(results) {
     }, 500);
     results = deTransferIfy(results);
     results = deTransferIfy(results);
+    results = deTransferIfy(results);
     if (results.length == 0) {
         $("#results").append("<div class='route'>Something went wrong</div>");
     }
@@ -140,9 +148,7 @@ function populateResults(results) {
             if (j + 2 > result.length)
                 return;
             let possibleRoutes = routes.filter(x => x.from == placeId && x.to == result[j + 1]);
-            console.log(possibleRoutes);
             possibleRoutes = possibleRoutes.filter(x => allowedModes.includes(x.mode));
-            console.log(possibleRoutes);
             let from = places.filter(x => x.id == placeId)[0];
             let to = places.filter(x => x.id == result[j + 1])[0];
             if (possibleRoutes.length == 0) {
@@ -218,8 +224,12 @@ function render(type, from, to, route) {
         if (route.number != undefined)
             codeshare = (_a = codeshares === null || codeshares === void 0 ? void 0 : codeshares[route.provider]) === null || _a === void 0 ? void 0 : _a[route.number];
         let logo = logos[codeshare !== null && codeshare !== void 0 ? codeshare : route.provider];
-        if (logo)
+        if (logo) {
             logo = `<img src="${logo}"/>`;
+        }
+        else {
+            logo = "<div></div>";
+        }
         //change stuff if we don't have an image
         let modifiedStyle;
         if (!logo)
@@ -350,4 +360,5 @@ transfer_within_a_station
 $(".checkbox").on("change", function () {
     startSearch();
 });
+startSearch();
 //# sourceMappingURL=calc.js.map

@@ -252,7 +252,7 @@ function parseCoordinates(coords: string) {
   })
 
   if (out.length == 3) {
-    out[2] = out[3]
+    out[1] = out[2]
     out.pop()
   }
 

@@ -233,6 +233,8 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                 console.log("success", parents);
                 var endTime = performance.now();
                 console.log("Took", endTime - startTime);
+                let status = "report";
+                postMessage([status, currentTime, currentTime]);
                 let paths = [[endNode]];
                 let doneCounter = 0;
                 for (let i = 0; i < 10000; i++) {

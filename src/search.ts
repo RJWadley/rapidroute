@@ -25,17 +25,18 @@ function initSearch() {
     );
   })
 
-  $(".search").on("keydown", function(e) {
-    if (e.key == "Enter") {
-      e.preventDefault()
-      return
-    }
-  })
+  $(".search").on("input click", function() {
 
-  $(".search").on("input", function() {
 
     let content = $(this).html()
     let id = $(this).attr("id")
+
+    let parser = new DOMParser()
+    let doc = parser.parseFromString(content, "text/html")
+
+    content = doc.body.textContent ?? ""
+
+    console.log(content)
 
     let results = searchWorker.search(
       content,
@@ -43,6 +44,13 @@ function initSearch() {
         suggest: true
       }
     )
+
+    // if (content == "") {
+    //   places.forEach(place =>  {
+    //     results.push(place.id)
+    //   })
+    // }
+
 
     updateSearchResults(results, id)
   })
@@ -73,22 +81,25 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 
   $("#" + jqid).on('keyup', function(e) {
     if (e.key === 'Enter') {
-      select(firstResult, jqid)
+      select(firstResult, jqid, "ENTER")
       document.getElementById(jqid) ?.blur()
     }
   });
 
   $("#" + jqid).on('blur', function() {
     setTimeout(function() {
+      $(".search-results").css("display", "none")
       console.log($(".search-results").children().length)
       if ($(".search-results").children().length > 0)
-        select(firstResult, jqid)
+        select(firstResult, jqid, "BLUR")
     }, 100)
   })
 
 }
 
-function select(placeId: string, jqid: string) {
+function select(placeId: string, jqid: string, source:string) {
+
+  console.log("SELECT from", source, placeId, jqid)
 
   let place = places.filter(x => x.id == placeId)[0]
 
@@ -96,7 +107,7 @@ function select(placeId: string, jqid: string) {
     $("#" + jqid).removeAttr("data")
     $(".search-results").html("").css("display", "none")
   } else {
-    $("#" + jqid).html(place.displayName ?? place.longName ?? place.id)
+    $("#" + jqid).html(place.id + " - " + (place.displayName ?? place.longName ?? place.id))
     $("#" + jqid).attr("data", placeId)
     $(".search-results").html("").css("display", "none")
   }

@@ -18,18 +18,22 @@ function initSearch() {
             place.world);
         searchWorker.add(place.id, searchable);
     });
-    $(".search").on("keydown", function (e) {
-        if (e.key == "Enter") {
-            e.preventDefault();
-            return;
-        }
-    });
-    $(".search").on("input", function () {
+    $(".search").on("input click", function () {
+        var _a;
         let content = $(this).html();
         let id = $(this).attr("id");
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(content, "text/html");
+        content = (_a = doc.body.textContent) !== null && _a !== void 0 ? _a : "";
+        console.log(content);
         let results = searchWorker.search(content, {
             suggest: true
         });
+        // if (content == "") {
+        //   places.forEach(place =>  {
+        //     results.push(place.id)
+        //   })
+        // }
         updateSearchResults(results, id);
     });
 }
@@ -55,27 +59,29 @@ function updateSearchResults(results, jqid) {
     $("#" + jqid).on('keyup', function (e) {
         var _a;
         if (e.key === 'Enter') {
-            select(firstResult, jqid);
+            select(firstResult, jqid, "ENTER");
             (_a = document.getElementById(jqid)) === null || _a === void 0 ? void 0 : _a.blur();
         }
     });
     $("#" + jqid).on('blur', function () {
         setTimeout(function () {
+            $(".search-results").css("display", "none");
             console.log($(".search-results").children().length);
             if ($(".search-results").children().length > 0)
-                select(firstResult, jqid);
+                select(firstResult, jqid, "BLUR");
         }, 100);
     });
 }
-function select(placeId, jqid) {
+function select(placeId, jqid, source) {
     var _a, _b;
+    console.log("SELECT from", source, placeId, jqid);
     let place = places.filter(x => x.id == placeId)[0];
     if (place == undefined) {
         $("#" + jqid).removeAttr("data");
         $(".search-results").html("").css("display", "none");
     }
     else {
-        $("#" + jqid).html((_b = (_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName) !== null && _b !== void 0 ? _b : place.id);
+        $("#" + jqid).html(place.id + " - " + ((_b = (_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName) !== null && _b !== void 0 ? _b : place.id));
         $("#" + jqid).attr("data", placeId);
         $(".search-results").html("").css("display", "none");
     }

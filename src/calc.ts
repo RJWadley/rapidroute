@@ -3,6 +3,8 @@ type SWCode = "calc" | "cancel" | "report" | "complete" | "exited"
 type renderTypes = "flightHeader" | "largeFlight" | "smallFlight"
   | "MRT" | "walk" | "transfer"
 
+let approxRouteTime
+
 async function findShortestPath(startNode: string, endNode: string, allowedModes: Array<Mode>, dataCallback: Function): Promise<Array<Array<string>>> {
   return new Promise(async (resolve, reject) => {
     let hasGen = false
@@ -86,6 +88,11 @@ function startSearch() {
   let from = $("#from").attr("data") ?? ""
   let to = $("#to").attr("data") ?? ""
 
+  if (from == to) {
+    $("#results").html("")
+    return
+  }
+
   if (from != "" && to != "") {
 
     console.log("starting search")
@@ -95,6 +102,8 @@ function startSearch() {
 
     $("#progress-bar").fadeIn()
     findShortestPath(from, to, allowedModes, function(data: any) {
+      if (data[0] == data[1])
+        approxRouteTime = data[0]
       let progress = Math.round(data[0] / data[1] * 100)
       console.log("progress ", progress)
       $("#progress-bar").css("transform", "scaleX(" + progress * 2 + ")")
@@ -145,6 +154,8 @@ function populateResults(results: Array<Array<string>>) {
 
   results = deTransferIfy(results)
   results = deTransferIfy(results)
+  results = deTransferIfy(results)
+
 
   if (results.length == 0) {
     $("#results").append("<div class='route'>Something went wrong</div>")
@@ -160,9 +171,7 @@ function populateResults(results: Array<Array<string>>) {
 
       if (j + 2 > result.length) return
       let possibleRoutes = routes.filter(x => x.from == placeId && x.to == result[j + 1])
-      console.log(possibleRoutes)
       possibleRoutes = possibleRoutes.filter(x => allowedModes.includes(x.mode))
-      console.log(possibleRoutes)
 
       let from = places.filter(x => x.id == placeId)[0]
       let to = places.filter(x => x.id == result[j + 1])[0]
@@ -266,8 +275,11 @@ function render(type: renderTypes, from: Place, to: Place, route: Route | undefi
       codeshare = codeshares ?.[route.provider] ?.[route.number]
 
     let logo = logos[codeshare ?? route.provider]
-    if (logo)
+    if (logo) {
       logo = `<img src="${logo}"/>`
+    } else {
+      logo = "<div></div>"
+    }
 
     //change stuff if we don't have an image
     let modifiedStyle
@@ -401,6 +413,8 @@ transfer_within_a_station
 
 }
 
-$(".checkbox").on("change", function(){
+$(".checkbox").on("change", function() {
   startSearch()
 })
+
+startSearch()
