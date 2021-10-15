@@ -24,18 +24,23 @@ let codeshares = getItem("codeshares") || {};
 let spawnWarps = getItem("spawnWarps") || [];
 function getTransitSheet() {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             $.ajax({
-                url: "https://sheets.googleapis.com/v4/spreadsheets/" + DATA_SHEET_ID + "/values:batchGet?" +
+                url: "https://sheets.googleapis.com/v4/spreadsheets/" +
+                    DATA_SHEET_ID +
+                    "/values:batchGet?" +
                     "ranges='MRT Transit'!B3:B5" + //row info
                     "&ranges='MRT Transit'!F3:F5" + //column info
-                    "&key=" + API_KEY,
+                    "&key=" +
+                    API_KEY,
                 success: function (result) {
                     let rows = result.valueRanges[0].values;
                     let cols = result.valueRanges[1].values;
                     //now get transit sheet
                     $.ajax({
-                        url: "https://sheets.googleapis.com/v4/spreadsheets/" + TRANSIT_SHEET_ID + "/values:batchGet?" +
+                        url: "https://sheets.googleapis.com/v4/spreadsheets/" +
+                            TRANSIT_SHEET_ID +
+                            "/values:batchGet?" +
                             //rows[0] is the last row and cols[0] is last column
                             `ranges='Airline Class Distribution'!A3:C${rows[0][0]}` + //airports
                             `&ranges='Airline Class Distribution'!E2:${cols[0][0]}2` + //company names
@@ -48,43 +53,50 @@ function getTransitSheet() {
                             `&ranges='Seaplane Class Distribution'!A3:C${rows[1][0]}` + //heliports
                             `&ranges='Seaplane Class Distribution'!D2:${cols[1][0]}2` + //companynames
                             `&ranges='Seaplane Class Distribution'!D3:${cols[1][0]}${rows[1][0]}` + //actual flight numbers
-                            "&key=" + API_KEY,
+                            "&key=" +
+                            API_KEY,
                         success: function (result) {
                             resolve(result);
-                        }
+                        },
                     });
-                }
+                },
             });
         });
     });
 }
 function getDataSheet() {
     return __awaiter(this, void 0, void 0, function* () {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             $.ajax({
-                url: "https://sheets.googleapis.com/v4/spreadsheets/" + DATA_SHEET_ID + "/values:batchGet?" +
+                url: "https://sheets.googleapis.com/v4/spreadsheets/" +
+                    DATA_SHEET_ID +
+                    "/values:batchGet?" +
                     "ranges='MRT'!B2:G19" + //mrt info
                     "&ranges='Airports'!A3:F500" +
                     "&ranges='Companies'!A2:E200" +
                     "&ranges='CodeSharing'!A3:E200" +
-                    "&key=" + API_KEY,
+                    "&key=" +
+                    API_KEY,
                 success: function (result) {
                     resolve(result);
-                }
+                },
             });
         });
     });
 }
 function getTowns() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         $.ajax({
-            url: "https://sheets.googleapis.com/v4/spreadsheets/" + TOWN_SHEET_ID + "/values:batchGet?" +
+            url: "https://sheets.googleapis.com/v4/spreadsheets/" +
+                TOWN_SHEET_ID +
+                "/values:batchGet?" +
                 "ranges='New World'!A2:G1000" +
-                "&key=" + API_KEY,
+                "&key=" +
+                API_KEY,
             success: function (result) {
                 console.log(result);
                 let towns = result.valueRanges[0].values;
-                towns.forEach(town => {
+                towns.forEach((town) => {
                     let placeObject = {
                         id: town[0],
                         world: "New",
@@ -93,7 +105,7 @@ function getTowns() {
                         longName: town[0],
                         x: parseInt(town[4]),
                         z: parseInt(town[6]),
-                        keywords: town[1] + " " + town[2] + " " + town[3]
+                        keywords: town[1] + " " + town[2] + " " + town[3],
                     };
                     places.push(placeObject);
                     if (town[1] == "Premier") {
@@ -101,14 +113,14 @@ function getTowns() {
                     }
                 });
                 resolve(result);
-            }
+            },
         });
     });
 }
 function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
     //first parse the places
     let placeList = [];
-    placesRaw.forEach(place => {
+    placesRaw.forEach((place) => {
         let world = place[2]; //default to new
         if (world != "Old" && world != "New") {
             world = "New";
@@ -118,7 +130,7 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
             world: world,
             shortName: place[1],
             longName: place[0],
-            type: "airport"
+            type: "airport",
         });
     });
     places.push(...placeList); //add to global
@@ -131,9 +143,11 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
         airlines.push({ name: airline });
         let flightsByNumber = {};
         (_a = routesRaw[i]) === null || _a === void 0 ? void 0 : _a.forEach((cell, j) => {
+            //for each cell
             if (cell == "" || cell == undefined)
                 return; //skip if empty
             cell.split(",").forEach((flight) => {
+                //for each flight number in cell
                 // add to flightsByNumber
                 flight = flight.trim();
                 if (flightsByNumber[flight] == undefined) {
@@ -145,9 +159,9 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
         if (i == 27) {
             console.log(routesRaw[i]);
         }
-        Object.keys(flightsByNumber).forEach(flightNumber => {
-            flightsByNumber[flightNumber].forEach(destinationA => {
-                flightsByNumber[flightNumber].forEach(destinationB => {
+        Object.keys(flightsByNumber).forEach((flightNumber) => {
+            flightsByNumber[flightNumber].forEach((destinationA) => {
+                flightsByNumber[flightNumber].forEach((destinationB) => {
                     if (destinationA == destinationB)
                         return;
                     flights.push({
@@ -155,7 +169,7 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
                         to: destinationB.id,
                         mode: mode,
                         provider: airline,
-                        number: flightNumber
+                        number: flightNumber,
                     });
                 });
             });
@@ -180,7 +194,7 @@ function parseCodeshares(codesharesRaw) {
     });
 }
 function processAirportMetadata(rawAirportData) {
-    rawAirportData.forEach(rawAirport => {
+    rawAirportData.forEach((rawAirport) => {
         var _a;
         let coords = rawAirport[5] ? parseCoordinates(rawAirport[5]) : undefined;
         let id = (_a = rawAirport[1]) !== null && _a !== void 0 ? _a : rawAirport[0];
@@ -192,7 +206,7 @@ function processAirportMetadata(rawAirportData) {
         let newPlace = {
             id,
             world,
-            type: "airport"
+            type: "airport",
         };
         let shortName = rawAirport[1];
         if (shortName != "" && shortName != undefined)
@@ -217,7 +231,7 @@ function parseCoordinates(coords) {
     let split = coords.split(" ");
     let out = [];
     split.forEach((item, i) => {
-        out[i] = parseInt(item.replace(/,/g, ''));
+        out[i] = parseInt(item.replace(/,/g, ""));
     });
     if (out.length == 3) {
         out[1] = out[2];
@@ -226,10 +240,11 @@ function parseCoordinates(coords) {
     return out;
 }
 function processAirlineMetadata(rawAirlineData) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         //set legacy gate numbers and
         //request new gate numbers
-        let requestURL = "https://sheets.googleapis.com/v4/spreadsheets/" + DATA_SHEET_ID +
+        let requestURL = "https://sheets.googleapis.com/v4/spreadsheets/" +
+            DATA_SHEET_ID +
             "/values:batchGet?ranges='Legacy Gate Data'!A:D";
         rawAirlineData.forEach((company) => {
             if (company[3])
@@ -246,7 +261,7 @@ function processAirlineMetadata(rawAirlineData) {
             url: requestURL + "&key=" + API_KEY,
             success: function (result) {
                 parseAirlineGateData(result, rawAirlineData, resolve);
-            }
+            },
         });
     });
 }
@@ -259,7 +274,7 @@ function parseAirlineGateData(result, companies, resolve) {
     companies.forEach((company) => {
         if (company.length > 1) {
             if (company[1] == "Legacy") {
-                let flights = legacySheet.filter(x => x[0] == company[2]);
+                let flights = legacySheet.filter((x) => x[0] == company[2]);
                 flights.forEach((item) => {
                     item[0] = company[0];
                 });
@@ -287,12 +302,8 @@ function parseAirlineGateData(result, companies, resolve) {
         var _a, _b;
         if (route.mode == "MRT")
             return;
-        let fromGate = (_a = gateData.filter(x => (x[0] == route.provider
-            && x[1] == route.number
-            && x[2] == route.from))[0]) === null || _a === void 0 ? void 0 : _a[3];
-        let toGate = (_b = gateData.filter(x => (x[0] == route.provider
-            && x[1] == route.number
-            && x[2] == route.to))[0]) === null || _b === void 0 ? void 0 : _b[3];
+        let fromGate = (_a = gateData.filter((x) => x[0] == route.provider && x[1] == route.number && x[2] == route.from)[0]) === null || _a === void 0 ? void 0 : _a[3];
+        let toGate = (_b = gateData.filter((x) => x[0] == route.provider && x[1] == route.number && x[2] == route.to)[0]) === null || _b === void 0 ? void 0 : _b[3];
         if (fromGate) {
             routes[i].fromGate = fromGate;
         }
@@ -386,7 +397,7 @@ function generateMrt(rawMRTInfo, rawStopInfo) {
         placeList.push({
             id: item[0],
             world: "New",
-            type: "MRT"
+            type: "MRT",
         });
     });
     //and C is a ring line, so add those
@@ -405,26 +416,30 @@ function generateMrt(rawMRTInfo, rawStopInfo) {
     routes.push(...routeList);
 }
 function generateMrtFromMarkers() {
-    return new Promise(resolve => {
-        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json')}`)
-            .then(response => {
+    return new Promise((resolve) => {
+        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent("https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json")}`)
+            .then((response) => {
             return response.json();
-        }).then(data => {
+        })
+            .then((data) => {
             data = JSON.parse(data.contents);
             resolve(true);
             let sets = data.sets;
-            Object.keys(sets).forEach(lineName => {
-                if (lineName == "roads.a" || lineName == "roads.b" ||
-                    lineName == "worldborder.markerset" || lineName == "cities"
-                    || lineName == "markers" || lineName == "old")
+            Object.keys(sets).forEach((lineName) => {
+                if (lineName == "roads.a" ||
+                    lineName == "roads.b" ||
+                    lineName == "worldborder.markerset" ||
+                    lineName == "cities" ||
+                    lineName == "markers" ||
+                    lineName == "old")
                     return;
                 let currentLine = sets[lineName].markers;
                 let displayName = sets[lineName].label;
                 providers.push({
                     name: lineName,
-                    displayName
+                    displayName,
                 });
-                Object.keys(currentLine).forEach(stopCode => {
+                Object.keys(currentLine).forEach((stopCode) => {
                     let currentId = stopCode.toUpperCase();
                     //fix id mistakes
                     if (currentId == "WN34 STATION")
@@ -445,7 +460,7 @@ function generateMrtFromMarkers() {
                         longName: name,
                         x: currentLine[stopCode].x,
                         z: currentLine[stopCode].z,
-                        type: "MRT"
+                        type: "MRT",
                     });
                 });
             });
@@ -456,8 +471,8 @@ function combineData() {
     let newProviders = [];
     while (providers.length > 0) {
         let current = providers[0].name;
-        let find = providers.filter(x => x.name == current);
-        providers = providers.filter(x => x.name != current);
+        let find = providers.filter((x) => x.name == current);
+        providers = providers.filter((x) => x.name != current);
         let newObject = find[0];
         Object.assign(newObject, ...find);
         newProviders.push(newObject);
@@ -466,8 +481,8 @@ function combineData() {
     let newPlaces = [];
     while (places.length > 0) {
         let current = places[0].id;
-        let find = places.filter(x => x.id == current);
-        places = places.filter(x => x.id != current);
+        let find = places.filter((x) => x.id == current);
+        places = places.filter((x) => x.id != current);
         let newObject = find[0];
         Object.assign(newObject, ...find);
         newPlaces.unshift(newObject);

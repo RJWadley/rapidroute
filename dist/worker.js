@@ -29,7 +29,7 @@ let localRoutes;
 function sortedIndex(array, value) {
     var low = 0, high = array.length;
     while (low < high) {
-        var mid = low + high >>> 1;
+        var mid = (low + high) >>> 1;
         if (array[mid].time < value)
             low = mid + 1;
         else
@@ -62,7 +62,7 @@ function workerGenerateTimeMaps(routesParam, placesParam) {
             }
         }
     }
-    localRoutes.forEach(route => {
+    localRoutes.forEach((route) => {
         if ((timesMap === null || timesMap === void 0 ? void 0 : timesMap[route.mode][route.from]) == undefined)
             timesMap[route.mode][route.from] = {};
         let time = routeTime(route);
@@ -91,10 +91,12 @@ function manhattanDistance(x1, y1, x2, y2) {
     return Math.abs(x1 - x2 + y1 - y2);
 }
 function routeTime(route) {
-    if (route.mode == "flight" || route.mode == "seaplane" || route.mode == "heli")
+    if (route.mode == "flight" ||
+        route.mode == "seaplane" ||
+        route.mode == "heli")
         return 60 * 5;
-    let from = localPlaces.filter(x => x.id == route.from)[0];
-    let to = localPlaces.filter(x => x.id == route.to)[0];
+    let from = localPlaces.filter((x) => x.id == route.from)[0];
+    let to = localPlaces.filter((x) => x.id == route.to)[0];
     if (from == undefined || to == undefined)
         return Infinity;
     if (from.x == undefined || from.z == undefined)
@@ -115,7 +117,7 @@ function getNeighbors(currentNode, currentTime, allowedModes) {
         postMessage([msg]);
         return undefined;
     }
-    allowedModes.forEach(mode => {
+    allowedModes.forEach((mode) => {
         var _a;
         let currentMap = (_a = timesMap === null || timesMap === void 0 ? void 0 : timesMap[mode]) === null || _a === void 0 ? void 0 : _a[currentNode];
         for (let place in currentMap) {
@@ -135,7 +137,7 @@ function getNeighbors(currentNode, currentTime, allowedModes) {
 function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
-        if (startNode.substr(0, 1) == '#') {
+        if (startNode.substr(0, 1) == "#") {
             let coords = startNode.substring(1, startNode.length).split("+");
             timesMap["walk"][startNode] = {};
             for (let i in localPlaces) {
@@ -146,7 +148,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                 }
             }
         }
-        if (endNode.substr(0, 1) == '#') {
+        if (endNode.substr(0, 1) == "#") {
             let coords = endNode.substring(1, startNode.length).split("+");
             timesMap["walk"][endNode] = {};
             for (let i in localPlaces) {
@@ -177,8 +179,8 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
         parents = {
             [endNode]: {
                 time: maxTime,
-                parents: [startNode]
-            }
+                parents: [startNode],
+            },
         };
         // get starting values
         let startingValues = getNeighbors(startNode, 0, allowedModes);
@@ -189,16 +191,16 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
             if (startingValues[i] < maxTime) {
                 parents[i] = {
                     time: startingValues[i],
-                    parents: [startNode]
+                    parents: [startNode],
                 };
                 nodeHeap.push({
                     name: i,
-                    time: startingValues[i]
+                    time: startingValues[i],
                 });
             }
         }
         // sort the heap
-        nodeHeap.sort((a, b) => (a.time > b.time) ? 1 : -1);
+        nodeHeap.sort((a, b) => (a.time > b.time ? 1 : -1));
         //get starting path and node
         let currentNode = nodeHeap[0];
         let pauseCounter = 0;
@@ -206,7 +208,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
         while (currentNode && nodeHeap.length > 0) {
             if (pauseCounter > 100) {
                 pauseCounter = 0;
-                yield new Promise(resolve => {
+                yield new Promise((resolve) => {
                     console.log("WAITING");
                     setTimeout(resolve, 1);
                 });
@@ -251,7 +253,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                     if (currentPath == undefined)
                         continue;
                     let currentParents = parents[currentPath[0]].parents;
-                    currentParents.forEach(node => {
+                    currentParents.forEach((node) => {
                         paths.push([node, ...currentPath]);
                     });
                     console.log("PATHS", paths);
@@ -272,7 +274,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                 //let indexToCut = sortedIndex(heap, maxTime * 1.5)
                 //heap = heap.slice(0, indexToCut)
                 console.log("NEW MAX");
-                nodeHeap = nodeHeap.filter(x => x.time <= maxTime + EXTRA_TIME);
+                nodeHeap = nodeHeap.filter((x) => x.time <= maxTime + EXTRA_TIME);
             }
             // take the last node of path and generate all possible next steps
             let nextSteps = getNeighbors(currentNode.name, currentTime, allowedModes);
@@ -293,7 +295,8 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                 }
                 //console.log(nextNode, nextTime, maxTime, nodeHeap.length)
                 //also check known times
-                if (knownMinTimes[nextNode] == undefined || nextTime <= knownMinTimes[nextNode]) {
+                if (knownMinTimes[nextNode] == undefined ||
+                    nextTime <= knownMinTimes[nextNode]) {
                     knownMinTimes[nextNode] = nextTime;
                     // console.log("shortest time found for ", nextNode)
                 }
@@ -307,7 +310,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                     // console.log("creating parent for ", currentNode, nextNode)
                     parents[nextNode] = {
                         time: nextTime,
-                        parents: [currentNode.name]
+                        parents: [currentNode.name],
                     };
                 }
                 else {
@@ -316,7 +319,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                         // console.log("shorter parent found for ", currentNode, nextNode, nextTime, fastestTime)
                         parents[nextNode] = {
                             parents: [currentNode.name],
-                            time: nextTime
+                            time: nextTime,
                         };
                     }
                     else if (nextTime < fastestTime + EXTRA_TIME) {
@@ -330,7 +333,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                 // add them to the stack in order of quickness
                 let newNode = {
                     name: nextNode,
-                    time: nextTime
+                    time: nextTime,
                 };
                 let indexToAddAt = sortedIndex(nodeHeap, nextTime);
                 nodeHeap.splice(indexToAddAt, 0, newNode);
