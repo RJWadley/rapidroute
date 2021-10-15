@@ -42,7 +42,7 @@ type TimesMap = {
 const WALKING_SPEED = 2
 const MINECART_SPEED = 8
 
-const EXTRA_TIME = 5
+const EXTRA_TIME = 10
 
 let localPlaces: Array<Place>;
 let localRoutes: Array<Route>;
@@ -287,7 +287,7 @@ async function calculateRoute(startNode: string, endNode: string, localCancelCod
 
     //allow for multiple solutions
     if (currentTime > finishTime + EXTRA_TIME || nodeHeap.length == 0) {
-      console.log("success", parents)
+      console.log("ANOTHER FOUND", parents)
       var endTime = performance.now()
       console.log("Took", endTime - startTime)
 
@@ -316,10 +316,9 @@ async function calculateRoute(startNode: string, endNode: string, localCancelCod
         currentParents.forEach(node => {
           paths.push([node, ...currentPath!])
         });
+        console.log("PATHS", paths)
 
       }
-
-      console.log(paths)
 
       console.log("sending success")
       sendSuccess(paths)
@@ -417,6 +416,9 @@ async function calculateRoute(startNode: string, endNode: string, localCancelCod
 }
 
 function sendSuccess(dataToSend: any) {
+
+  console.log("SENDING SUCCESS MESSAGE", dataToSend)
+
   let message: SWCode = "complete"
   postMessage([message, dataToSend])
 }

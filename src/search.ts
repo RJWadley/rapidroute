@@ -69,7 +69,7 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
     let place = places.filter(x => x.id == result)[0]
     $(".search-results").append(`
       <div onclick="select('${place.id}', '${jqid}')">
-        ${place.id} - ${place.displayName ?? place.longName}
+        ${place.shortName ?? place.id} - ${place.displayName ?? place.longName}
       </div>
     `)
   });
@@ -107,7 +107,7 @@ function select(placeId: string, jqid: string, source:string) {
     $("#" + jqid).removeAttr("data")
     $(".search-results").html("").css("display", "none")
   } else {
-    $("#" + jqid).html(place.id + " - " + (place.displayName ?? place.longName ?? place.id))
+    $("#" + jqid).html((place.shortName ?? place.id) + " - " + (place.displayName ?? place.longName ?? place.id))
     $("#" + jqid).attr("data", placeId)
     $(".search-results").html("").css("display", "none")
   }

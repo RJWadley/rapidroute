@@ -110,6 +110,8 @@ html, body {
   height: calc(100% - 20px);
   padding: 10px 20px;
   overflow-wrap: break-word;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .search:focus {
@@ -523,7 +525,7 @@ html, body {
 
 #results {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-gap: 30px;
   max-width: min(1000px, 90vw);
   margin: 0 auto;
@@ -533,10 +535,10 @@ html, body {
 .route {
   padding: 10px;
   text-align: center;
-  background-color: whitesmoke;
   border-radius: 10px;
   font-size: 2em;
   animation: fadein 1s;
+  box-shadow: var(--box-shadow)
 }
 
 .leg {
@@ -574,7 +576,7 @@ html, body {
   font-size: 40px;
 }
 
-.leg-middle img {
+.leg-middle img, .multiflight img {
   width: 40px;
   height: 40px;
   margin: 5px;
@@ -613,9 +615,23 @@ html, body {
 }
 
 .multiflight {
-  display: flex;
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr 1fr;
+  font-size: 1.1em
 }
 
-.multiflight img {
-  max-width: 40px;
+.multiflight img, .multiflight div:first-child {
+  grid-row: span 2
+}
+
+.multiflight-provider {
+  grid-column: span 3
+}
+
+.multiflight-to {
+  text-align: right
+}
+
+.multiflight-arrow {
+  text-align: center
 }

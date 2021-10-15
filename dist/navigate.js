@@ -8,8 +8,11 @@ const NAV_WALKING_SPEED = 2;
 const NAV_MINECART_SPEED = 8;
 function startNavigation(inRoute) {
     var _a, _b, _c, _d, _e, _f;
-    speakText("Starting navigation");
     inRoute = inRoute !== null && inRoute !== void 0 ? inRoute : ['WN43', 'WN44', 'WN45', 'A56', 'A55', 'A53'];
+    route = inRoute;
+    phrases = [];
+    progress = 0;
+    speakText("Starting navigation");
     let firstPlace = places.filter(x => x.id == inRoute[0])[0];
     let secondPlace = places.filter(x => x.id == inRoute[1])[0];
     let firstRoute = routes.filter(x => x.from == inRoute[0] && x.to == inRoute[1])[0];
@@ -18,23 +21,26 @@ function startNavigation(inRoute) {
         let direction = getDirection(firstPlace.x, firstPlace.z, secondPlace.x, secondPlace.z);
         if (direction)
             direction += "bound";
-        speakText("Proceed to " + firstPlace.id + ", " + ((_a = firstPlace.displayName) !== null && _a !== void 0 ? _a : firstPlace.longName) + ", then take the " +
-            ((_c = (_b = firstProvider.displayName) !== null && _b !== void 0 ? _b : firstProvider.name) !== null && _c !== void 0 ? _c : "") + ", " +
-            (direction !== null && direction !== void 0 ? direction : "") + " towards " + secondPlace.id + ", " +
-            ((_e = (_d = secondPlace.displayName) !== null && _d !== void 0 ? _d : secondPlace.longName) !== null && _e !== void 0 ? _e : ""));
+        speakText("Proceed to " + firstPlace.id + ", " + ((_a = firstPlace.displayName) !== null && _a !== void 0 ? _a : firstPlace.longName));
+        phrases.push({
+            place: firstPlace.id,
+            distance: 500,
+            spoken: false,
+            phrase: "Take the " +
+                ((_c = (_b = firstProvider.displayName) !== null && _b !== void 0 ? _b : firstProvider.name) !== null && _c !== void 0 ? _c : "") + ", " +
+                (direction !== null && direction !== void 0 ? direction : "") + " towards " + secondPlace.id + ", " +
+                ((_e = (_d = secondPlace.displayName) !== null && _d !== void 0 ? _d : secondPlace.longName) !== null && _e !== void 0 ? _e : "")
+        });
     }
     else {
         speakText("Proceed to " + firstPlace.id + ", " + ((_f = firstPlace.displayName) !== null && _f !== void 0 ? _f : firstPlace.longName));
     }
-    route = inRoute;
-    phrases = [];
-    progress = 0;
-    let mrtPassAlong = undefined;
     route.forEach((placeId, i) => {
-        var _a, _b, _c, _d, _e, _f, _g;
-        if (i + 2 > route.length) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
+        if (i + 1 == route.length) {
             let place = places.filter(x => x.id == placeId)[0];
             if (place.type == "MRT" && route[i - 1].substr(0, 1) == route[i].substr(0, 1)) {
+                //phrases for reaching the end of a route via MRT
                 phrases.push({
                     place: place.id,
                     distance: 1000,
@@ -54,6 +60,7 @@ function startNavigation(inRoute) {
                     phrase: "You have reached your destination, " + place.id + ", " + ((_b = (_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName) !== null && _b !== void 0 ? _b : "")
                 });
             }
+            //flight and walk endings are generated during the second to last place
             console.log("DEST");
             return;
         }
@@ -121,42 +128,186 @@ function startNavigation(inRoute) {
                 console.log("transfer", from, to);
                 return;
             }
+            if (from.type == "MRT" && to.type == "airport") {
+                let nextRoutes = routes.filter(x => x.from == to.id && x.to == route[i + 2]);
+                let nextPlace = places.filter(x => x.id == route[i + 2])[0];
+                let then = "";
+                if (nextRoutes.length > 0) {
+                    if (nextRoutes.length == 1) {
+                        let nextRoute = nextRoutes[0];
+                        //get blurb
+                        let blurbPrefix;
+                        switch (nextRoute.mode) {
+                            case "flight":
+                                blurbPrefix = "Flight";
+                                break;
+                            case "seaplane":
+                                blurbPrefix = "Seaplane flight";
+                                break;
+                            case "heli":
+                                blurbPrefix = "Helicopter flight";
+                                break;
+                            default:
+                                blurbPrefix = "";
+                        }
+                        let codeshare;
+                        if (nextRoute.number != undefined && nextRoute.provider != undefined)
+                            codeshare = (_f = codeshares === null || codeshares === void 0 ? void 0 : codeshares[nextRoute.provider]) === null || _f === void 0 ? void 0 : _f[nextRoute.number];
+                        then = ", then take " + (codeshare !== null && codeshare !== void 0 ? codeshare : nextRoute.provider) + ", "
+                            + blurbPrefix + " " + nextRoute.number + ", to " + ((_g = nextPlace.shortName) !== null && _g !== void 0 ? _g : "") + ", "
+                            + ((_j = (_h = nextPlace.displayName) !== null && _h !== void 0 ? _h : nextPlace.longName) !== null && _j !== void 0 ? _j : "");
+                        console.log("NEXTROUTE", nextRoute);
+                        if (nextRoute.fromGate != undefined && nextRoute.fromGate != "") {
+                            then += ", at Gate " + nextRoute.fromGate;
+                        }
+                        console.log("THEN", then);
+                    }
+                    else {
+                        then = ", then take a flight to " + ((_k = nextPlace.shortName) !== null && _k !== void 0 ? _k : "") + ", "
+                            + ((_m = (_l = nextPlace.displayName) !== null && _l !== void 0 ? _l : nextPlace.longName) !== null && _m !== void 0 ? _m : "")
+                            + ". You have multiple flight options. ";
+                        nextRoutes.forEach((flight, i) => {
+                            var _a;
+                            if (i == nextRoutes.length - 1) {
+                                then += " and ";
+                            }
+                            //get blurb
+                            let blurbPrefix;
+                            switch (flight.mode) {
+                                case "flight":
+                                    blurbPrefix = "Flight";
+                                    break;
+                                case "seaplane":
+                                    blurbPrefix = "Seaplane flight";
+                                    break;
+                                case "heli":
+                                    blurbPrefix = "Helicopter flight";
+                                    break;
+                                default:
+                                    blurbPrefix = "";
+                            }
+                            let codeshare;
+                            if (flight.number != undefined && flight.provider != undefined)
+                                codeshare = (_a = codeshares === null || codeshares === void 0 ? void 0 : codeshares[flight.provider]) === null || _a === void 0 ? void 0 : _a[flight.number];
+                            then += (codeshare !== null && codeshare !== void 0 ? codeshare : flight.provider) + ", " + blurbPrefix + " " + flight.number;
+                            console.log("MULTIFLIGHT", flight);
+                            if (flight.fromGate != undefined && flight.fromGate != "") {
+                                then += ", at Gate " + flight.fromGate;
+                            }
+                            then += "... ";
+                            //done
+                        });
+                    }
+                    console.log(from, to);
+                }
+                let phrase = "walk to " + ((_o = to.shortName) !== null && _o !== void 0 ? _o : "") + ", " + ((_p = to.displayName) !== null && _p !== void 0 ? _p : to.longName);
+                phrases.push({
+                    place: from.id,
+                    distance: 1000,
+                    spoken: false,
+                    phrase: "In two minutes, " + phrase + then
+                });
+                phrases.push({
+                    place: from.id,
+                    distance: 300,
+                    spoken: false,
+                    phrase: "At the next stop, " + phrase
+                });
+                phrases.push({
+                    place: from.id,
+                    distance: 50,
+                    spoken: false,
+                    phrase: phrase + then
+                });
+                return;
+            }
             console.log("walk", from, to, undefined);
             return;
         }
-        // collapse MRT routes
-        let nextPossibleRoutes = routes.filter(x => x.from == route[i + 1] && x.to == route[i + 2]);
-        if (((_f = possibleRoutes[0]) === null || _f === void 0 ? void 0 : _f.mode) == "MRT" && ((_g = nextPossibleRoutes[0]) === null || _g === void 0 ? void 0 : _g.mode) == "MRT") {
-            if (placeId.charAt(0) == route[i + 2].charAt(0)) {
-                if (mrtPassAlong == undefined)
-                    mrtPassAlong = placeId;
-                return;
+        else {
+            //possibleRoutes
+            if (from.type == "airport" && to.type == "airport") {
+                let nextRoutes = routes.filter(x => x.from == to.id && x.to == route[i + 2]);
+                let nextPlace = places.filter(x => x.id == route[i + 2])[0];
+                let then = "";
+                if (nextRoutes.length > 0) {
+                    if (nextRoutes.length == 1) {
+                        let nextRoute = nextRoutes[0];
+                        //get blurb
+                        let blurbPrefix;
+                        switch (nextRoute.mode) {
+                            case "flight":
+                                blurbPrefix = "Flight";
+                                break;
+                            case "seaplane":
+                                blurbPrefix = "Seaplane flight";
+                                break;
+                            case "heli":
+                                blurbPrefix = "Helicopter flight";
+                                break;
+                            default:
+                                blurbPrefix = "";
+                        }
+                        let codeshare;
+                        if (nextRoute.number != undefined && nextRoute.provider != undefined)
+                            codeshare = (_q = codeshares === null || codeshares === void 0 ? void 0 : codeshares[nextRoute.provider]) === null || _q === void 0 ? void 0 : _q[nextRoute.number];
+                        then = "take " + (codeshare !== null && codeshare !== void 0 ? codeshare : nextRoute.provider) + ", "
+                            + blurbPrefix + " " + nextRoute.number + ", to " + ((_r = nextPlace.shortName) !== null && _r !== void 0 ? _r : "") + ", "
+                            + ((_t = (_s = nextPlace.displayName) !== null && _s !== void 0 ? _s : nextPlace.longName) !== null && _t !== void 0 ? _t : "");
+                        console.log("NEXTROUTE", nextRoute);
+                        if (nextRoute.fromGate != undefined && nextRoute.fromGate != "") {
+                            then += ", at Gate " + nextRoute.fromGate;
+                        }
+                        console.log("THEN", then);
+                    }
+                    else {
+                        then = "take a flight to " + ((_u = nextPlace.shortName) !== null && _u !== void 0 ? _u : "") + ", "
+                            + ((_w = (_v = nextPlace.displayName) !== null && _v !== void 0 ? _v : nextPlace.longName) !== null && _w !== void 0 ? _w : "")
+                            + ". You have multiple flight options. ";
+                        nextRoutes.forEach((flight, i) => {
+                            var _a;
+                            if (i == nextRoutes.length - 1) {
+                                then += " and ";
+                            }
+                            //get blurb
+                            let blurbPrefix;
+                            switch (flight.mode) {
+                                case "flight":
+                                    blurbPrefix = "Flight";
+                                    break;
+                                case "seaplane":
+                                    blurbPrefix = "Seaplane flight";
+                                    break;
+                                case "heli":
+                                    blurbPrefix = "Helicopter flight";
+                                    break;
+                                default:
+                                    blurbPrefix = "";
+                            }
+                            let codeshare;
+                            if (flight.number != undefined && flight.provider != undefined)
+                                codeshare = (_a = codeshares === null || codeshares === void 0 ? void 0 : codeshares[flight.provider]) === null || _a === void 0 ? void 0 : _a[flight.number];
+                            then += (codeshare !== null && codeshare !== void 0 ? codeshare : flight.provider) + ", " + blurbPrefix + " " + flight.number;
+                            console.log("MULTIFLIGHT", flight);
+                            if (flight.fromGate != undefined && flight.fromGate != "") {
+                                then += ", at Gate " + flight.fromGate;
+                            }
+                            then += "... ";
+                            //done
+                        });
+                    }
+                    console.log(from, to);
+                }
+                let phrase = "Welcome to " + ((_y = (_x = to.displayName) !== null && _x !== void 0 ? _x : to.longName) !== null && _y !== void 0 ? _y : to.shortName) + "... ";
+                phrases.push({
+                    place: from.id,
+                    distance: -1,
+                    spoken: false,
+                    phrase: phrase + then
+                });
+                console.log("flight");
             }
         }
-        if (mrtPassAlong != undefined) {
-            let route = possibleRoutes[0];
-            from = places.filter(x => x.id == mrtPassAlong)[0];
-            console.log("MRT (passed)", from, to, route);
-            mrtPassAlong = undefined;
-            return;
-        }
-        if (possibleRoutes[0].mode == "MRT") {
-            let route = possibleRoutes[0];
-            //MRT Stops always have coords
-            console.log("MRT (single)", from, to, route);
-            return;
-        }
-        if (possibleRoutes.length == 1) {
-            let route = possibleRoutes[0];
-            if (route == undefined || from == undefined || to == undefined)
-                throw new Error("Cannot navigate flight");
-            console.log("largeFlight", from, to, route);
-            return;
-        }
-        console.log("flightHeader", from, to);
-        possibleRoutes.forEach(flight => {
-            console.log("smallFlight", from, to, flight);
-        });
     });
     console.log("START");
     navigationLoop();
@@ -243,6 +394,7 @@ function getDirection(x1, z1, x2, z2) {
     }
     return "West";
 }
+let lastPlayer;
 function navigationLoop() {
     console.log("loop");
     fetch(`https://thingproxy.freeboard.io/fetch/https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json`)
@@ -276,13 +428,39 @@ function navigationLoop() {
             if (shouldSkip)
                 return;
             let place = places.filter(x => x.id == phrase.place)[0];
-            if (place.x == undefined || place.z == undefined)
-                return;
-            let distance = getDistance(player.x, player.z, place.x, place.z);
-            console.log(distance);
-            if (distance < phrase.distance && phrase.spoken == false) {
-                speakText(phrase.phrase);
-                phrase.spoken = true;
+            if (phrase.distance == -1) {
+                if (lastPlayer == undefined)
+                    return;
+                let distanceMoved = getDistance(player.x, player.z, lastPlayer.x, lastPlayer.z);
+                if (distanceMoved > 2000) {
+                    console.log("MOVED A LOT, TRIGGERING PHRASE");
+                    if (place.x == undefined || place.z == undefined) {
+                        console.log("location not defined");
+                        speakText(phrase.phrase);
+                        phrase.spoken = true;
+                        shouldSkip = true;
+                    }
+                    else {
+                        console.log("location defined");
+                        let distance = getDistance(player.x, player.z, place.x, place.z);
+                        console.log(distance);
+                        if (distance < 2000) {
+                            speakText(phrase.phrase);
+                            phrase.spoken = true;
+                            shouldSkip = true;
+                        }
+                    }
+                }
+            }
+            else {
+                if (place.x == undefined || place.z == undefined)
+                    return;
+                let distance = getDistance(player.x, player.z, place.x, place.z);
+                if (distance < phrase.distance && phrase.spoken == false) {
+                    speakText(phrase.phrase);
+                    phrase.spoken = true;
+                    shouldSkip = true;
+                }
             }
             if (phrase.spoken == false)
                 shouldSkip = true;
@@ -295,6 +473,7 @@ function navigationLoop() {
         }
         // console.log(closestPlace)
         // readText("Closest place is " + closestPlace.id + ", " + (closestPlace.displayName ?? closestPlace.longName ?? ""))
+        lastPlayer = player;
     });
 }
 //# sourceMappingURL=navigate.js.map

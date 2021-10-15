@@ -1,7 +1,7 @@
 const DATA_SHEET_ID = "1qVtW6cSIH-gjJZWrvqJXvQG17ZgRQ7sxXfUjZJcR2lE" // 3 calls
 const AIRPORT_GATE_SHEET = "null" //1 call
 const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps" //1 call
-const TOWN_SHEET_ID = "null"
+const TOWN_SHEET_ID = "1JSmJtYkYrEx6Am5drhSet17qwJzOKDI7tE7FxPx4YNI"
 const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
 
 const VERSION = 0
@@ -22,9 +22,10 @@ let codeshares: {
     [key: string]: string
   }
 } = getItem("codeshares") || {}
+let spawnWarps: Array<string> = getItem("spawnWarps") || []
 
 type Mode = "flight" | "seaplane" | "heli" | "MRT" | "walk"
-type PlaceType = "MRT" | "airport"
+type PlaceType = "MRT" | "airport" | "town"
 type World = "New" | "Old"
 type Source = "data" | "transit" | "both" | "dynmap"
 
@@ -109,6 +110,43 @@ async function getDataSheet() {
   })
 }
 
+function getTowns() {
+  return new Promise(resolve => {
+    $.ajax({
+      url: "https://sheets.googleapis.com/v4/spreadsheets/" + TOWN_SHEET_ID + "/values:batchGet?" +
+        "ranges='New World'!A2:G1000" +
+        "&key=" + API_KEY,
+      success: function(result) {
+        console.log(result)
+
+        let towns = result.valueRanges[0].values as Array<string>
+
+        towns.forEach(town => {
+
+          let placeObject:Place = {
+            id: town[0],
+            world: "New",
+            type: "town",
+            shortName: town[1] + " City",
+            longName: town[0],
+            x: parseInt(town[4]),
+            z: parseInt(town[6]),
+            keywords: town[1] + " " + town[2] + " " + town[3]
+          }
+
+          places.push(placeObject)
+
+          if (town[1] == "Premier") {
+            spawnWarps.push(town[0])
+          }
+        })
+
+        resolve(result)
+      }
+    })
+  })
+}
+
 function parseRawFlightData(
   mode: Mode,
   placesRaw: Array<Array<string>>,
@@ -144,7 +182,6 @@ function parseRawFlightData(
   //for each airline
   providersRaw.forEach((airline, i) => {
 
-
     airlines.push({ name: airline })
     let flightsByNumber: {
       [key: string]: Array<Place>,
@@ -164,7 +201,9 @@ function parseRawFlightData(
       })
     });
 
-
+    if (i == 27) {
+      console.log(routesRaw[i])
+    }
 
     Object.keys(flightsByNumber).forEach(flightNumber => {
       flightsByNumber[flightNumber].forEach(destinationA => {
@@ -312,7 +351,6 @@ function parseAirlineGateData(result: any, companies: Array<Array<string>>, reso
   });
 
   //process other gates
-
   sheets.forEach((sheet: any) => {
 
     let companyName: string = ""
@@ -339,12 +377,12 @@ function parseAirlineGateData(result: any, companies: Array<Array<string>>, reso
       x[0] == route.provider
       && x[1] == route.number
       && x[2] == route.from
-    ))[0]?.[3]
+    ))[0] ?.[3]
     let toGate = gateData.filter(x => (
       x[0] == route.provider
       && x[1] == route.number
       && x[2] == route.to
-    ))[0]?.[3]
+    ))[0] ?.[3]
 
     if (fromGate) {
       routes[i].fromGate = fromGate
@@ -561,6 +599,9 @@ async function loadData() {
   let transitSheet: any = getTransitSheet()
   let dataSheet: any = getDataSheet()
   let markers: any = generateMrtFromMarkers()
+  let townsheet: any = getTowns()
+
+  console.log("Load 1")
 
   transitSheet = await transitSheet;
   dataSheet = await dataSheet;
@@ -579,10 +620,13 @@ async function loadData() {
   parseRawFlightData("seaplane",
     transitSheet[6].values, transitSheet[7].values[0], transitSheet[8].values)
 
+  console.log("Load 2")
   await processAirlineMetadata(dataSheet[2].values)
 
   processAirportMetadata(dataSheet[1].values)
   parseCodeshares(dataSheet[3].values)
+
+  await townsheet
 
   combineData()
   generateTimeMaps(routes, places)

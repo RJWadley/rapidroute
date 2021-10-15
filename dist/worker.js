@@ -23,7 +23,7 @@ onmessage = function (e) {
 };
 const WALKING_SPEED = 2;
 const MINECART_SPEED = 8;
-const EXTRA_TIME = 5;
+const EXTRA_TIME = 10;
 let localPlaces;
 let localRoutes;
 function sortedIndex(array, value) {
@@ -230,7 +230,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
             console.log("PING");
             //allow for multiple solutions
             if (currentTime > finishTime + EXTRA_TIME || nodeHeap.length == 0) {
-                console.log("success", parents);
+                console.log("ANOTHER FOUND", parents);
                 var endTime = performance.now();
                 console.log("Took", endTime - startTime);
                 let status = "report";
@@ -254,8 +254,8 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
                     currentParents.forEach(node => {
                         paths.push([node, ...currentPath]);
                     });
+                    console.log("PATHS", paths);
                 }
-                console.log(paths);
                 console.log("sending success");
                 sendSuccess(paths);
                 return;
@@ -343,6 +343,7 @@ function calculateRoute(startNode, endNode, localCancelCode, allowedModes) {
     });
 }
 function sendSuccess(dataToSend) {
+    console.log("SENDING SUCCESS MESSAGE", dataToSend);
     let message = "complete";
     postMessage([message, dataToSend]);
 }

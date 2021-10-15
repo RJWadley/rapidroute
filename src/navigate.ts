@@ -17,10 +17,13 @@ const NAV_MINECART_SPEED = 8;
 
 function startNavigation(inRoute: Array<string>) {
 
-  speakText("Starting navigation");
-
   inRoute = inRoute ?? ['WN43', 'WN44', 'WN45', 'A56', 'A55', 'A53']
 
+  route = inRoute
+  phrases = []
+  progress = 0
+
+  speakText("Starting navigation");
 
   let firstPlace = places.filter(x => x.id == inRoute[0])[0]
   let secondPlace = places.filter(x => x.id == inRoute[1])[0]
@@ -33,27 +36,32 @@ function startNavigation(inRoute: Array<string>) {
     if (direction) direction += "bound"
 
     speakText("Proceed to " + firstPlace.id + ", " + (firstPlace.displayName ??
-      firstPlace.longName) + ", then take the " +
-      (firstProvider.displayName ?? firstProvider.name ?? "") + ", " +
-      (direction ?? "") + " towards " + secondPlace.id + ", " +
-      (secondPlace.displayName ?? secondPlace.longName ?? ""))
+      firstPlace.longName))
+
+    phrases.push({
+      place: firstPlace.id,
+      distance: 500,
+      spoken: false,
+      phrase: "Take the " +
+        (firstProvider.displayName ?? firstProvider.name ?? "") + ", " +
+        (direction ?? "") + " towards " + secondPlace.id + ", " +
+        (secondPlace.displayName ?? secondPlace.longName ?? "")
+    })
+
   } else {
     speakText("Proceed to " + firstPlace.id + ", " + (firstPlace.displayName ??
       firstPlace.longName))
   }
 
-  route = inRoute
-  phrases = []
-  progress = 0
-
-  let mrtPassAlong: string | undefined = undefined;
   route.forEach((placeId, i) => {
 
-    if (i + 2 > route.length) {
+    if (i + 1 == route.length) {
 
       let place = places.filter(x => x.id == placeId)[0]
 
       if (place.type == "MRT" && route[i - 1].substr(0, 1) == route[i].substr(0, 1)) {
+
+        //phrases for reaching the end of a route via MRT
         phrases.push({
           place: place.id,
           distance: 1000,
@@ -74,8 +82,10 @@ function startNavigation(inRoute: Array<string>) {
           spoken: false,
           phrase: "You have reached your destination, " + place.id + ", " + (place.displayName ?? place.longName ?? "")
         })
+
       }
 
+      //flight and walk endings are generated during the second to last place
       console.log("DEST")
       return
     }
@@ -161,58 +171,236 @@ function startNavigation(inRoute: Array<string>) {
         return
       }
 
-      console.log("walk", from, to, undefined)
-      return
-    }
+      if (from.type == "MRT" && to.type == "airport") {
 
-    // collapse MRT routes
-    let nextPossibleRoutes = routes.filter(x => x.from == route[i + 1] && x.to == route[i + 2])
-    if (possibleRoutes[0] ?.mode == "MRT" && nextPossibleRoutes[0] ?.mode == "MRT") {
-      if (placeId.charAt(0) == route[i + 2].charAt(0)) {
-        if (mrtPassAlong == undefined)
-          mrtPassAlong = placeId
+        let nextRoutes = routes.filter(x => x.from == to.id && x.to == route[i + 2])
+        let nextPlace = places.filter(x => x.id == route[i + 2])[0]
+
+        let then = ""
+
+        if (nextRoutes.length > 0) {
+
+
+          if (nextRoutes.length == 1) {
+
+            let nextRoute = nextRoutes[0]
+
+            //get blurb
+            let blurbPrefix
+            switch (nextRoute.mode) {
+              case "flight":
+                blurbPrefix = "Flight"
+                break;
+              case "seaplane":
+                blurbPrefix = "Seaplane flight"
+                break;
+              case "heli":
+                blurbPrefix = "Helicopter flight"
+                break;
+              default:
+                blurbPrefix = ""
+            }
+
+            let codeshare
+            if (nextRoute.number != undefined && nextRoute.provider != undefined)
+              codeshare = codeshares ?.[nextRoute.provider] ?.[nextRoute.number]
+
+            then = ", then take " + (codeshare ?? nextRoute.provider) + ", "
+              + blurbPrefix + " " + nextRoute.number + ", to " + (nextPlace.shortName ?? "") + ", "
+              + (nextPlace.displayName ?? nextPlace.longName ?? "")
+
+            console.log("NEXTROUTE", nextRoute)
+
+            if (nextRoute.fromGate != undefined && nextRoute.fromGate != "") {
+              then += ", at Gate " + nextRoute.fromGate
+            }
+
+            console.log("THEN", then)
+          } else {
+            then = ", then take a flight to " + (nextPlace.shortName ?? "") + ", "
+              + (nextPlace.displayName ?? nextPlace.longName ?? "")
+              + ". You have multiple flight options. "
+
+            nextRoutes.forEach((flight, i) => {
+
+              if (i == nextRoutes.length - 1) {
+                then += " and "
+              }
+
+              //get blurb
+              let blurbPrefix
+              switch (flight.mode) {
+                case "flight":
+                  blurbPrefix = "Flight"
+                  break;
+                case "seaplane":
+                  blurbPrefix = "Seaplane flight"
+                  break;
+                case "heli":
+                  blurbPrefix = "Helicopter flight"
+                  break;
+                default:
+                  blurbPrefix = ""
+              }
+
+              let codeshare
+              if (flight.number != undefined && flight.provider != undefined)
+                codeshare = codeshares ?.[flight.provider] ?.[flight.number]
+
+              then += (codeshare ?? flight.provider) + ", " + blurbPrefix + " " + flight.number
+
+              console.log("MULTIFLIGHT", flight)
+
+              if (flight.fromGate != undefined && flight.fromGate != "") {
+                then += ", at Gate " + flight.fromGate
+              }
+
+              then += "... "
+              //done
+
+            })
+
+          }
+
+          console.log(from, to)
+        }
+
+        let phrase = "walk to " + (to.shortName ?? "") + ", " + (to.displayName ?? to.longName)
+
+        phrases.push({
+          place: from.id,
+          distance: 1000,
+          spoken: false,
+          phrase: "In two minutes, " + phrase + then
+        })
+
+        phrases.push({
+          place: from.id,
+          distance: 300,
+          spoken: false,
+          phrase: "At the next stop, " + phrase
+        })
+
+        phrases.push({
+          place: from.id,
+          distance: 50,
+          spoken: false,
+          phrase: phrase + then
+        })
+
         return
       }
-    }
 
-    if (mrtPassAlong != undefined) {
-
-      let route = possibleRoutes[0]
-
-      from = places.filter(x => x.id == mrtPassAlong)[0]
-
-      console.log("MRT (passed)", from, to, route)
-      mrtPassAlong = undefined
+      console.log("walk", from, to, undefined)
       return
+    } else {
+      //possibleRoutes
+      if (from.type == "airport" && to.type == "airport") {
+
+        let nextRoutes = routes.filter(x => x.from == to.id && x.to == route[i + 2])
+        let nextPlace = places.filter(x => x.id == route[i + 2])[0]
+
+        let then = ""
+
+        if (nextRoutes.length > 0) {
+
+          if (nextRoutes.length == 1) {
+
+            let nextRoute = nextRoutes[0]
+
+            //get blurb
+            let blurbPrefix
+            switch (nextRoute.mode) {
+              case "flight":
+                blurbPrefix = "Flight"
+                break;
+              case "seaplane":
+                blurbPrefix = "Seaplane flight"
+                break;
+              case "heli":
+                blurbPrefix = "Helicopter flight"
+                break;
+              default:
+                blurbPrefix = ""
+            }
+
+            let codeshare
+            if (nextRoute.number != undefined && nextRoute.provider != undefined)
+              codeshare = codeshares ?.[nextRoute.provider] ?.[nextRoute.number]
+
+                  then = "take " + (codeshare ?? nextRoute.provider) + ", "
+              + blurbPrefix + " " + nextRoute.number + ", to " + (nextPlace.shortName ?? "") + ", "
+              + (nextPlace.displayName ?? nextPlace.longName ?? "")
+
+            console.log("NEXTROUTE", nextRoute)
+
+            if (nextRoute.fromGate != undefined && nextRoute.fromGate != "") {
+              then += ", at Gate " + nextRoute.fromGate
+            }
+
+            console.log("THEN", then)
+          } else {
+            then = "take a flight to " + (nextPlace.shortName ?? "") + ", "
+              + (nextPlace.displayName ?? nextPlace.longName ?? "")
+              + ". You have multiple flight options. "
+
+            nextRoutes.forEach((flight, i) => {
+
+              if (i == nextRoutes.length - 1) {
+                then += " and "
+              }
+
+              //get blurb
+              let blurbPrefix
+              switch (flight.mode) {
+                case "flight":
+                  blurbPrefix = "Flight"
+                  break;
+                case "seaplane":
+                  blurbPrefix = "Seaplane flight"
+                  break;
+                case "heli":
+                  blurbPrefix = "Helicopter flight"
+                  break;
+                default:
+                  blurbPrefix = ""
+              }
+
+              let codeshare
+              if (flight.number != undefined && flight.provider != undefined)
+                codeshare = codeshares ?.[flight.provider] ?.[flight.number]
+
+                    then += (codeshare ?? flight.provider) + ", " + blurbPrefix + " " + flight.number
+
+              console.log("MULTIFLIGHT", flight)
+
+              if (flight.fromGate != undefined && flight.fromGate != "") {
+                then += ", at Gate " + flight.fromGate
+              }
+
+              then += "... "
+              //done
+
+            })
+
+          }
+
+          console.log(from, to)
+        }
+
+        let phrase = "Welcome to " + (to.displayName ?? to.longName ?? to.shortName) + "... "
+
+        phrases.push({
+          place: from.id,
+          distance: -1,
+          spoken: false,
+          phrase: phrase + then
+        })
+
+        console.log("flight")
+      }
+
     }
-
-    if (possibleRoutes[0].mode == "MRT") {
-
-      let route = possibleRoutes[0]
-
-      //MRT Stops always have coords
-
-      console.log("MRT (single)", from, to, route)
-      return
-    }
-
-    if (possibleRoutes.length == 1) {
-
-      let route = possibleRoutes[0]
-
-      if (route == undefined || from == undefined || to == undefined)
-        throw new Error("Cannot navigate flight")
-
-      console.log("largeFlight", from, to, route)
-      return
-    }
-
-    console.log("flightHeader", from, to)
-
-    possibleRoutes.forEach(flight => {
-      console.log("smallFlight", from, to, flight)
-
-    })
 
   });
 
@@ -251,13 +439,13 @@ function triggerSpeakQueue() {
 
   if (text == undefined) return
 
-  let speakInterval = setInterval(function(){
-    if  (isSpeaking == false) {
+  let speakInterval = setInterval(function() {
+    if (isSpeaking == false) {
       console.log("Has not spoken yet, retrying")
       speechSynthesis.cancel();
       triggerSpeakQueue()
     }
-  },3000)
+  }, 3000)
 
   voices = window.speechSynthesis.getVoices();
   voices = voices.filter(x => x.name.toLowerCase().indexOf("english") != -1)
@@ -325,6 +513,8 @@ function getDirection(x1: number | undefined, z1: number | undefined, x2: number
 
 }
 
+let lastPlayer: any
+
 function navigationLoop() {
 
   console.log("loop")
@@ -367,18 +557,44 @@ function navigationLoop() {
         if (shouldSkip) return
 
         let place = places.filter(x => x.id == phrase.place)[0]
-        if (place.x == undefined || place.z == undefined) return
-        let distance = getDistance(player.x, player.z, place.x, place.z)
 
-        console.log(distance)
+        if (phrase.distance == -1) {
 
-        if (distance < phrase.distance && phrase.spoken == false) {
-          speakText(phrase.phrase)
-          phrase.spoken = true
+          if (lastPlayer == undefined) return
+
+          let distanceMoved = getDistance(player.x, player.z, lastPlayer.x, lastPlayer.z)
+
+          if (distanceMoved > 2000) {
+            console.log("MOVED A LOT, TRIGGERING PHRASE")
+            if (place.x == undefined || place.z == undefined) {
+              console.log("location not defined")
+              speakText(phrase.phrase)
+              phrase.spoken = true
+              shouldSkip = true
+            } else {
+              console.log("location defined")
+              let distance = getDistance(player.x, player.z, place.x, place.z)
+              console.log(distance)
+              if (distance < 2000) {
+                speakText(phrase.phrase)
+                phrase.spoken = true
+                shouldSkip = true
+              }
+            }
+          }
+
+        } else {
+          if (place.x == undefined || place.z == undefined) return
+          let distance = getDistance(player.x, player.z, place.x, place.z)
+
+          if (distance < phrase.distance && phrase.spoken == false) {
+            speakText(phrase.phrase)
+            phrase.spoken = true
+            shouldSkip = true
+          }
         }
 
         if (phrase.spoken == false) shouldSkip = true
-
         if (phrase.spoken) phraseCount++
 
       })
@@ -390,6 +606,8 @@ function navigationLoop() {
 
       // console.log(closestPlace)
       // readText("Closest place is " + closestPlace.id + ", " + (closestPlace.displayName ?? closestPlace.longName ?? ""))
+
+      lastPlayer = player
 
     })
 

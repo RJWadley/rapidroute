@@ -45,11 +45,11 @@ function updateSearchResults(results, jqid) {
         $(".search-results").html("No places found");
     }
     results.forEach(result => {
-        var _a;
+        var _a, _b;
         let place = places.filter(x => x.id == result)[0];
         $(".search-results").append(`
       <div onclick="select('${place.id}', '${jqid}')">
-        ${place.id} - ${(_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName}
+        ${(_a = place.shortName) !== null && _a !== void 0 ? _a : place.id} - ${(_b = place.displayName) !== null && _b !== void 0 ? _b : place.longName}
       </div>
     `);
     });
@@ -73,7 +73,7 @@ function updateSearchResults(results, jqid) {
     });
 }
 function select(placeId, jqid, source) {
-    var _a, _b;
+    var _a, _b, _c;
     console.log("SELECT from", source, placeId, jqid);
     let place = places.filter(x => x.id == placeId)[0];
     if (place == undefined) {
@@ -81,7 +81,7 @@ function select(placeId, jqid, source) {
         $(".search-results").html("").css("display", "none");
     }
     else {
-        $("#" + jqid).html(place.id + " - " + ((_b = (_a = place.displayName) !== null && _a !== void 0 ? _a : place.longName) !== null && _b !== void 0 ? _b : place.id));
+        $("#" + jqid).html(((_a = place.shortName) !== null && _a !== void 0 ? _a : place.id) + " - " + ((_c = (_b = place.displayName) !== null && _b !== void 0 ? _b : place.longName) !== null && _c !== void 0 ? _c : place.id));
         $("#" + jqid).attr("data", placeId);
         $(".search-results").html("").css("display", "none");
     }

@@ -63,7 +63,7 @@ function generateTimeMaps(routes, places) {
     }));
 }
 if (window.Worker) {
-    var calculationWorker = new Worker('./dist/worker.js');
+    var calculationWorker = new Worker("./dist/worker.js");
 }
 let allowedModes = [];
 function startSearch() {
@@ -97,7 +97,7 @@ function startSearch() {
         findShortestPath(from, to, allowedModes, function (data) {
             if (data[0] == data[1])
                 approxRouteTime = data[0];
-            let progress = Math.round(data[0] / data[1] * 100);
+            let progress = Math.round((data[0] / data[1]) * 100);
             console.log("progress ", progress);
             $("#progress-bar").css("transform", "scaleX(" + progress * 2 + ")");
         }).then(populateResults);
@@ -105,21 +105,22 @@ function startSearch() {
 }
 function deTransferIfy(results) {
     results = results.sort((a, b) => {
-        let intersectionA = a.filter(x => !b.includes(x));
-        let intersectionB = b.filter(x => !a.includes(x));
-        return intersectionA[0] < intersectionB[0] ? 1 : -1;
+        let differenceA = a.filter((x) => !b.includes(x));
+        let differenceB = b.filter((x) => !a.includes(x));
+        return differenceA[0] < differenceB[0] ? 1 : -1;
     });
     for (let i = 0; i < results.length - 1; i++) {
         let a = results[i];
         let b = results[i + 1];
-        let intersectionA = a.filter(x => !b.includes(x));
-        let intersectionB = b.filter(x => !a.includes(x));
+        let intersectionA = a.filter((x) => !b.includes(x));
+        let intersectionB = b.filter((x) => !a.includes(x));
         if (intersectionA.length == 1 && intersectionB.length == 1) {
-            console.log("difference is same length", i);
             if (a.indexOf(intersectionA[0]) == b.indexOf(intersectionB[0])) {
-                console.log("difference is in same spot", i);
-                results.splice(i, 1);
-                i--;
+                let place = places.filter((x) => x.id == intersectionA[0])[0];
+                if (place.type == "MRT") {
+                    results.splice(i, 1);
+                    i--;
+                }
             }
         }
     }
@@ -139,18 +140,21 @@ function populateResults(results) {
     if (results.length == 0) {
         $("#results").append("<div class='route'>Something went wrong</div>");
     }
+    let differences = calcDifferences(results);
     results.forEach((result, i) => {
         let resultElem = $("<div class='route'>Option " + (i + 1) + "</div>");
         //add to dom
+        if (i == 0)
+            resultElem = $("<div class='route'>Fastest Route</div>");
         let mrtPassAlong = undefined;
         result.forEach((placeId, j) => {
             var _a, _b;
             if (j + 2 > result.length)
                 return;
-            let possibleRoutes = routes.filter(x => x.from == placeId && x.to == result[j + 1]);
-            possibleRoutes = possibleRoutes.filter(x => allowedModes.includes(x.mode));
-            let from = places.filter(x => x.id == placeId)[0];
-            let to = places.filter(x => x.id == result[j + 1])[0];
+            let possibleRoutes = routes.filter((x) => x.from == placeId && x.to == result[j + 1]);
+            possibleRoutes = possibleRoutes.filter((x) => allowedModes.includes(x.mode));
+            let from = places.filter((x) => x.id == placeId)[0];
+            let to = places.filter((x) => x.id == result[j + 1])[0];
             if (possibleRoutes.length == 0) {
                 if (from.type == "MRT" && to.type == "MRT") {
                     resultElem.append(render("transfer", from, to, undefined));
@@ -160,8 +164,9 @@ function populateResults(results) {
                 return;
             }
             // collapse MRT routes
-            let nextPossibleRoutes = routes.filter(x => x.from == result[j + 1] && x.to == result[j + 2]);
-            if (((_a = possibleRoutes[0]) === null || _a === void 0 ? void 0 : _a.mode) == "MRT" && ((_b = nextPossibleRoutes[0]) === null || _b === void 0 ? void 0 : _b.mode) == "MRT") {
+            let nextPossibleRoutes = routes.filter((x) => x.from == result[j + 1] && x.to == result[j + 2]);
+            if (((_a = possibleRoutes[0]) === null || _a === void 0 ? void 0 : _a.mode) == "MRT" &&
+                ((_b = nextPossibleRoutes[0]) === null || _b === void 0 ? void 0 : _b.mode) == "MRT") {
                 if (placeId.charAt(0) == result[j + 2].charAt(0)) {
                     if (mrtPassAlong == undefined)
                         mrtPassAlong = placeId;
@@ -170,7 +175,7 @@ function populateResults(results) {
             }
             if (mrtPassAlong != undefined) {
                 let route = possibleRoutes[0];
-                from = places.filter(x => x.id == mrtPassAlong)[0];
+                from = places.filter((x) => x.id == mrtPassAlong)[0];
                 resultElem.append(render("MRT", from, to, route));
                 mrtPassAlong = undefined;
                 return;
@@ -184,12 +189,15 @@ function populateResults(results) {
                 let route = possibleRoutes[0];
                 if (route == undefined || from == undefined || to == undefined)
                     throw new Error("Cannot render flight");
-                resultElem.append(render("largeFlight", from, to, route).prop('outerHTML'));
+                resultElem.append(render("largeFlight", from, to, route).prop("outerHTML"));
                 return;
             }
             resultElem.append(render("flightHeader", from, to, undefined));
-            possibleRoutes.forEach(flight => {
-                resultElem.children().last().append(render("smallFlight", from, to, flight));
+            possibleRoutes.forEach((flight) => {
+                resultElem
+                    .children()
+                    .last()
+                    .append(render("smallFlight", from, to, flight));
             });
         });
         $("#results").append(resultElem);
@@ -246,12 +254,12 @@ function render(type, from, to, route) {
         <div class="leg-summary">
           <div class="leg-code">${(_b = from.shortName) !== null && _b !== void 0 ? _b : "—"}</div>
           <div class="leg-gate">
-            <div>Gate:</div>
+            <div>Gate</div>
             <div>${(_c = route.fromGate) !== null && _c !== void 0 ? _c : "unk."}</div>
           </div>
           <div class="leg-arrow">-></div>
           <div class="leg-gate">
-            <div>Gate:</div>
+            <div>Gate</div>
             <div>${(_d = route.toGate) !== null && _d !== void 0 ? _d : "unk."}</div>
           </div>
           <div class="leg-code">${(_e = to.shortName) !== null && _e !== void 0 ? _e : "—"}</div>
@@ -281,7 +289,7 @@ directions_walk
             throw new Error("Route not defined");
         let color = colors[(_o = route.provider) !== null && _o !== void 0 ? _o : ""];
         currentDiv.css("background-color", color !== null && color !== void 0 ? color : "");
-        let provider = providers.filter(x => x.name == route.provider)[0];
+        let provider = providers.filter((x) => x.name == route.provider)[0];
         currentDiv.append(`
         <div class="leg-blurb">
         By the ${(_p = provider.displayName) !== null && _p !== void 0 ? _p : provider.name}
@@ -343,15 +351,19 @@ transfer_within_a_station
         if (route.number != undefined)
             codeshare = (_1 = codeshares === null || codeshares === void 0 ? void 0 : codeshares[route.provider]) === null || _1 === void 0 ? void 0 : _1[route.number];
         let logo = logos[codeshare !== null && codeshare !== void 0 ? codeshare : route.provider];
-        if (logo)
+        if (logo) {
             logo = `<img src="${logo}"/>`;
+        }
+        else {
+            logo = "<div></div>";
+        }
         currentDiv.append(`
       <div class="multiflight">
         ${logo !== null && logo !== void 0 ? logo : ""}
         <div class="multiflight-provider">By ${codeshare !== null && codeshare !== void 0 ? codeshare : route.provider}</div>
-        <div class="multiflight-from">${(_2 = route.fromGate) !== null && _2 !== void 0 ? _2 : "unk."}</div>
+        <div class="multiflight-from">Gate ${(_2 = route.fromGate) !== null && _2 !== void 0 ? _2 : "unk."}</div>
         <div class="multiflight-arrow">-></div>
-        <div class="multiflight-to">${(_3 = route.toGate) !== null && _3 !== void 0 ? _3 : "unk."}</div>
+        <div class="multiflight-to">Gate ${(_3 = route.toGate) !== null && _3 !== void 0 ? _3 : "unk."}</div>
       </div>
     `);
     }
@@ -360,5 +372,16 @@ transfer_within_a_station
 $(".checkbox").on("change", function () {
     startSearch();
 });
+function calcDifferences(results) {
+    let differences = [["Fastest Route"]];
+    let firstResult = results[0];
+    results.forEach((route, i) => {
+        if (i == 0)
+            return;
+        let diff = route.filter((x) => !firstResult.includes(x));
+        differences[i] = diff;
+    });
+    return differences;
+}
 startSearch();
 //# sourceMappingURL=calc.js.map
