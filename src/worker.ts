@@ -1,4 +1,5 @@
 let cancelCode = 0;
+let localSpawnWarps: Array<string> = [];
 
 onmessage = function (e) {
   console.log("MESSAGE RECIEVED");
@@ -12,6 +13,7 @@ onmessage = function (e) {
 
   if (code == "genTimeMaps") {
     workerGenerateTimeMaps(data[0], data[1]);
+    if (Array.isArray(localSpawnWarps)) localSpawnWarps = data[2];
   }
 };
 
@@ -73,6 +75,7 @@ function workerGenerateTimeMaps(routesParam: any, placesParam: any) {
     flight: {},
     heli: {},
     seaplane: {},
+    spawnWarp: {}, //shouldn't ever be defined
   };
 
   for (let i in localPlaces) {
@@ -126,6 +129,7 @@ function getTravelTime(
   } else if (mode == "MRT") {
     return distance / MINECART_SPEED;
   } else {
+    //should never be used really
     return 60 * 5;
   }
 }
@@ -139,9 +143,12 @@ function routeTime(route: Route) {
     route.mode == "flight" ||
     route.mode == "seaplane" ||
     route.mode == "heli"
-  )
-    return 60 * 5;
-
+  ) {
+    let time = 60 * 5;
+    if (route.fromGate == undefined) time += 1;
+    if (route.toGate == undefined) time += 1;
+    return time;
+  }
   let from = localPlaces.filter((x) => x.id == route.from)[0];
   let to = localPlaces.filter((x) => x.id == route.to)[0];
 
@@ -276,7 +283,7 @@ async function calculateRoute(
 
   // map them into the path heap
   for (let i in startingValues) {
-    if (startingValues[i] < maxTime) {
+    if (startingValues[i] < maxTime && startingValues[i] != Infinity) {
       parents[i] = {
         time: startingValues[i],
         parents: [startNode],
@@ -288,6 +295,25 @@ async function calculateRoute(
       });
     }
   }
+
+  if (allowedModes.includes("spawnWarp")) {
+    console.log("SPAWN WARPS ALLOWED");
+    localSpawnWarps.forEach((warp) => {
+      nodeHeap.push({
+        name: warp,
+        time: 2 * 60,
+      });
+
+      parents[warp] = {
+        time: 2 * 60,
+        parents: [startNode],
+      };
+    });
+  }
+
+  //prevent early exit because of blank nodes
+  if (nodeHeap.length == 1) nodeHeap = [nodeHeap[0], nodeHeap[0]];
+
   // sort the heap
   nodeHeap.sort((a, b) => (a.time > b.time ? 1 : -1));
 
@@ -328,12 +354,17 @@ async function calculateRoute(
 
     //allow for multiple solutions
     if (currentTime > finishTime + EXTRA_TIME || nodeHeap.length == 0) {
-      console.log("ANOTHER FOUND", parents);
+      console.log("DONE SEARCHING", parents);
       var endTime = performance.now();
       console.log("Took", endTime - startTime);
 
       let status: SWCode = "report";
       postMessage([status, currentTime, currentTime]);
+
+      if (parents[endNode].time == Infinity) {
+        postMessage(["failed"]);
+        return;
+      }
 
       let paths: Array<Array<string>> = [[endNode]];
       let doneCounter = 0;
@@ -360,7 +391,7 @@ async function calculateRoute(
       }
 
       console.log("sending success");
-      sendSuccess(paths);
+      sendSuccess(paths, allowedModes);
 
       return;
     }
@@ -370,9 +401,12 @@ async function calculateRoute(
       continue;
     if (currentTime > maxTime + EXTRA_TIME) continue;
 
+    console.log(currentNode.name, endNode);
+
     // update Max Value
     let newMax =
-      currentTime + (timesMap?.["walk"][currentNode.name][endNode] ?? Infinity); //TODO shortest time map?
+      currentTime +
+      (timesMap?.["walk"]?.[currentNode.name]?.[endNode] ?? Infinity);
     if (newMax < maxTime) {
       maxTime = newMax;
       //let indexToCut = sortedIndex(heap, maxTime * 1.5)
@@ -390,6 +424,9 @@ async function calculateRoute(
       // discard any that are longer than max time
       // console.log("discarding too long node  ", nextNode)
       if (nextTime > maxTime + EXTRA_TIME) continue;
+
+      //don't include Infinity
+      if (nextTime == Infinity) continue;
 
       //don't revisit nodes unless distance is same
       if (nextNode in visited) {
@@ -412,7 +449,7 @@ async function calculateRoute(
         continue;
       }
 
-      // console.log("adding ", nextNode)
+      // console.log("adding ", nextNode);
 
       //take note of parents
       if (parents[nextNode] == undefined) {
@@ -457,7 +494,32 @@ async function calculateRoute(
   sendFailure();
 }
 
-function sendSuccess(dataToSend: any) {
+function sumArray(array: Array<string>, allowedModes: Array<Mode>) {
+  let totalDistance: number = 0;
+
+  array.forEach((place, i) => {
+    if (i == 0) return;
+
+    totalDistance =
+      getNeighbors(array[i - 1], totalDistance, allowedModes)?.[place] ?? 0;
+  });
+
+  return totalDistance;
+}
+
+function sortResults(results: Array<Array<string>>, allowedModes: Array<Mode>) {
+  return results.sort((a, b) => {
+    return sumArray(a, allowedModes) > sumArray(b, allowedModes) ? 1 : -1;
+  });
+}
+
+function sendSuccess(dataToSend: any, allowedModes: Array<Mode>) {
+  console.log("SENDING SUCCESS MESSAGE", dataToSend);
+
+  dataToSend = sortResults(dataToSend, allowedModes);
+
+  console.log(dataToSend.map((x: Array<Mode>) => sumArray(x, allowedModes)));
+
   console.log("SENDING SUCCESS MESSAGE", dataToSend);
 
   let message: SWCode = "complete";

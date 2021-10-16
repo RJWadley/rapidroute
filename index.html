@@ -1,125 +1,228 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
 
-<head>
-  <meta charset="utf-8">
+    <title>MRT RapidRoute</title>
+    <meta name="description" content="Minecart Rapid Transit route finder" />
+    <meta name="author" content="Scarycrumb45" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#86CD82" />
 
-  <title>MRT RapidRoute</title>
-  <meta name="description" content="Minecart Rapid Transit route finder">
-  <meta name="author" content="Scarycrumb45">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#86CD82" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Material+Icons"
+    />
+    <link rel="stylesheet" href="style.css" />
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Material+Icons">
-  <link rel="stylesheet" href="style.css">
+    <script
+      defer
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/gh/nextapps-de/flexsearch@0.7.2/dist/flexsearch.bundle.js"></script>
+    <script defer src="libs/lz-string.min.js"></script>
+    <script defer src="dist/util.js"></script>
+    <script defer src="dist/calc.js"></script>
+    <script defer src="dist/search.js"></script>
+    <script defer src="dist/main.js"></script>
+    <script defer src="dist/navigate.js"></script>
 
-  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/nextapps-de/flexsearch@0.7.2/dist/flexsearch.bundle.js"></script>
-  <script defer src="libs/lz-string.min.js"></script>
-  <script defer src="dist/util.js"></script>
-  <script defer src="dist/calc.js"></script>
-  <script defer src="dist/search.js"></script>
-  <script defer src="dist/main.js"></script>
-  <script defer src="dist/navigate.js"></script>
+    <link
+      rel="apple-touch-icon"
+      sizes="57x57"
+      href="icon/apple-icon-57x57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="60x60"
+      href="icon/apple-icon-60x60.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="icon/apple-icon-72x72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="76x76"
+      href="icon/apple-icon-76x76.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href="icon/apple-icon-114x114.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="120x120"
+      href="icon/apple-icon-120x120.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="icon/apple-icon-144x144.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="icon/apple-icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="icon/apple-icon-180x180.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="icon/android-icon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="96x96"
+      href="icon/favicon-96x96.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="icon/manifest.json" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="msapplication-TileImage" content="icon/ms-icon-144x144.png" />
+    <meta name="theme-color" content="#ffffff" />
+  </head>
 
-  <link rel="apple-touch-icon" sizes="57x57" href="icon/apple-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="60x60" href="icon/apple-icon-60x60.png">
-  <link rel="apple-touch-icon" sizes="72x72" href="icon/apple-icon-72x72.png">
-  <link rel="apple-touch-icon" sizes="76x76" href="icon/apple-icon-76x76.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="icon/apple-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="icon/apple-icon-120x120.png">
-  <link rel="apple-touch-icon" sizes="144x144" href="icon/apple-icon-144x144.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="icon/apple-icon-152x152.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="icon/apple-icon-180x180.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon/android-icon-192x192.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="icon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="96x96" href="icon/favicon-96x96.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="icon/favicon-16x16.png">
-  <link rel="manifest" href="icon/manifest.json">
-  <meta name="msapplication-TileColor" content="#ffffff">
-  <meta name="msapplication-TileImage" content="icon/ms-icon-144x144.png">
-  <meta name="theme-color" content="#ffffff">
-
-</head>
-
-<body>
-
-  <div class="title-container">
-    <img class="logo" src="./icon/RapidRoute.png">
-    <div class="title">
-      <h1>
-        MRT <span>RapidRoute<span>
-      </h1>
-    </div>
-  </div>
-
-  <div class="lead">
-    <h1>Route Finder</h1>
-  </div>
-  <div class="selection-container">
-    <div class="meter">
-      <div id="progress-bar" style="display: none;"></div>
-    </div>
-    <div  tabindex="1" contenteditable="true" spellcheck="false" data-ph="From" class="search" data-enable-grammarly="false" autocomplete="off" id="from" type=text></div>
-    <button id="selection-swap"><span class="material-icons">
-        swap_horiz
-      </span></button>
-    <div  tabindex="1" contenteditable="true" spellcheck="false" data-ph="To" class="search" data-enable-grammarly="false" autocomplete="off" id="to" type=text></div>
-  </div>
-  <div class="search-results">
-  </div>
-
-  <div class="options">
-    <div>
-      <button id="air-toggle">Air&nbsp;Travel<span class="material-icons">
-          expand_more
-        </span></button>
-      <div class="air-menu menu">
-        <label>
-          <input type="checkbox" checked="true" class="checkbox" data-mode="flight">
-          <span class="check"></span>
-          <span class="checkbox-text">Flights</span>
-        </label>
-        <label>
-          <input type="checkbox" checked="true" class="checkbox" data-mode="heli">
-          <span class="check"></span>
-          <span class="checkbox-text">Helicopters</span>
-        </label>
-        <label>
-          <input type="checkbox" checked="true" class="checkbox" data-mode="seaplane">
-          <span class="check"></span>
-          <span class="checkbox-text">Seaplanes</span>
-        </label>
+  <body>
+    <div class="title-container">
+      <img class="logo" src="./icon/RapidRoute.png" />
+      <div class="title">
+        <h1>MRT <span>RapidRoute</span></h1>
       </div>
     </div>
-    <label>
-      <input type="checkbox" checked="true" class="checkbox" data-mode="MRT">
-      <span class="check"></span>
-      <span class="checkbox-text">MRT&nbsp;Lines</span>
-    </label>
-  </div>
 
-  <button onclick="alert(1);startNavigation()">STARTNAV</button>
-
-  <a class="feedback" href="https://forms.gle/zi8hj3hB6nrBkYFM6">
-    <span class="material-icons">
-      feedback
-    </span>
-    <span class="feedback-text">Feedback</span>
-  </a>
-
-  <div id="searching" class="searching" style="display: none">
-    <div class="loader">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+    <div class="lead">
+      <h1>Route Finder</h1>
     </div>
-  </div>
+    <div class="selection-container">
+      <div class="meter">
+        <div id="progress-bar" style="display: none;"></div>
+      </div>
+      <div
+        tabindex="1"
+        contenteditable="true"
+        spellcheck="false"
+        data-ph="From"
+        class="search"
+        data-enable-grammarly="false"
+        autocomplete="off"
+        id="from"
+        type="text"
+      ></div>
+      <button id="selection-swap">
+        <span class="material-icons">
+          swap_horiz
+        </span>
+      </button>
+      <div
+        tabindex="1"
+        contenteditable="true"
+        spellcheck="false"
+        data-ph="To"
+        class="search"
+        data-enable-grammarly="false"
+        autocomplete="off"
+        id="to"
+        type="text"
+      ></div>
+    </div>
+    <div class="search-results"></div>
 
-  <div id="results"></div>
+    <div class="options">
+      <div>
+        <button id="air-toggle">
+          Air&nbsp;Travel<span class="material-icons">
+            expand_more
+          </span>
+        </button>
+        <div class="air-menu menu">
+          <label>
+            <input
+              type="checkbox"
+              checked="true"
+              class="checkbox"
+              data-mode="flight"
+            />
+            <span class="check"></span>
+            <span class="checkbox-text">Flights</span>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked="true"
+              class="checkbox"
+              data-mode="heli"
+            />
+            <span class="check"></span>
+            <span class="checkbox-text">Helicopters</span>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              checked="true"
+              class="checkbox"
+              data-mode="seaplane"
+            />
+            <span class="check"></span>
+            <span class="checkbox-text">Seaplanes</span>
+          </label>
+        </div>
+      </div>
+      <label>
+        <input
+          type="checkbox"
+          checked="true"
+          class="checkbox"
+          data-mode="MRT"
+        />
+        <span class="check"></span>
+        <span class="checkbox-text">MRT&nbsp;Lines</span>
+      </label>
+      <label>
+        <input type="checkbox" class="checkbox" data-mode="spawnWarp" />
+        <span class="check"></span>
+        <span class="checkbox-text">Spawn&nbsp;Warps</span>
+      </label>
+    </div>
 
-</body>
+    <button onclick="alert(1);startNavigation()">STARTNAV</button>
 
+    <a class="feedback" href="https://forms.gle/zi8hj3hB6nrBkYFM6">
+      <span class="material-icons">
+        feedback
+      </span>
+      <span class="feedback-text">Feedback</span>
+    </a>
+
+    <div id="searching" class="searching" style="display: none;">
+      <div class="loader">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+
+    <div id="results"></div>
+  </body>
 </html>

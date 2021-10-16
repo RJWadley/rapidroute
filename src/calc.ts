@@ -13,7 +13,8 @@ type renderTypes =
   | "smallFlight"
   | "MRT"
   | "walk"
-  | "transfer";
+  | "transfer"
+  | "warp";
 
 let approxRouteTime;
 
@@ -41,7 +42,7 @@ async function findShortestPath(
       if (code == "failed") {
         $("#searching").css("display", "none");
         $("#progress-bar").fadeOut();
-        $("#results").append("<div class='route'>No routes found</div>");
+        $("#results").append("<div class='no-routes'>No Routes Found</div>");
         reject();
       }
       if (code == "timeMapsNeeded") {
@@ -66,7 +67,7 @@ async function findShortestPath(
 
 function generateTimeMaps(routes: Array<Route>, places: Array<Place>) {
   return new Promise(async (resolve) => {
-    calculationWorker.postMessage(["genTimeMaps", routes, places]);
+    calculationWorker.postMessage(["genTimeMaps", routes, places, spawnWarps]);
     calculationWorker.onmessage = function (e) {
       let code = e.data[0];
       if (code == "genTimeMaps") resolve(true);
@@ -117,7 +118,7 @@ function startSearch() {
     $("#progress-bar").fadeIn();
     findShortestPath(from, to, allowedModes, function (data: any) {
       if (data[0] == data[1]) approxRouteTime = data[0];
-      let progress = Math.round((data[0] / data[1]) * 100);
+      let progress = Math.round((data[0] / data[1]) * 105);
       console.log("progress ", progress);
       $("#progress-bar").css("transform", "scaleX(" + progress * 2 + ")");
     }).then(populateResults);
@@ -125,36 +126,119 @@ function startSearch() {
 }
 
 function deTransferIfy(results: Array<Array<string>>): Array<Array<string>> {
-  results = results.sort((a, b) => {
+  let hasBeenModified = false;
+
+  //remove double transfers
+  for (let i = 0; i < results.length; i++) {
+    let currentResult = results[i];
+    for (let j = 0; j + 2 < currentResult.length; j++) {
+      // get this place and next 2
+      let a = places.filter((x) => x.id == currentResult[j])[0];
+      let b = places.filter((x) => x.id == currentResult[j + 1])[0];
+      let c = places.filter((x) => x.id == currentResult[j + 2])[0];
+
+      //get route between
+      let routesA = routes.filter((x) => x.from == a.id && x.to == b.id);
+      let routesB = routes.filter((x) => x.from == b.id && x.to == c.id);
+
+      //remove if a double transfer or a double walk
+      if (
+        a.type == "MRT" &&
+        b.type == "MRT" &&
+        c.type == "MRT" &&
+        routesA.length == 0 &&
+        routesB.length == 0 &&
+        !spawnWarps.includes(b.id)
+      ) {
+        console.log("REMOVING DOUBLE TRANSFER");
+        results.splice(i, 1);
+        i--;
+        hasBeenModified = true;
+      }
+    }
+  }
+
+  //remove equivalent transfers
+  let resultsCopy = [...results];
+  resultsCopy = resultsCopy.sort((a, b) => {
     let differenceA = a.filter((x) => !b.includes(x));
     let differenceB = b.filter((x) => !a.includes(x));
-    return differenceA[0] < differenceB[0] ? 1 : -1;
+    return differenceA[0] > differenceB[0] ? 1 : -1;
   });
 
-  for (let i = 0; i < results.length - 1; i++) {
-    let a = results[i];
-    let b = results[i + 1];
+  console.log(...resultsCopy);
+
+  //check against neighors
+  for (let i = resultsCopy.length - 1; i > 0; i--) {
+    let a = resultsCopy[i];
+    let b = resultsCopy[i - 1];
 
     let intersectionA = a.filter((x) => !b.includes(x));
     let intersectionB = b.filter((x) => !a.includes(x));
 
+    console.log("CHECKING", intersectionA, intersectionB);
     if (intersectionA.length == 1 && intersectionB.length == 1) {
+      console.log("diff is same length");
       if (a.indexOf(intersectionA[0]) == b.indexOf(intersectionB[0])) {
+        console.log("diff is same spot");
         let place = places.filter((x) => x.id == intersectionA[0])[0];
 
         if (place.type == "MRT") {
-          results.splice(i, 1);
-          i--;
+          console.log("diff is mrt");
+          console.log("REMOVING EQUAL TRANSFER");
+          for (let j = 0; j < results.length; j++) {
+            //@ts-ignore ts doesn't recognize overload
+            if (results[j].equals(resultsCopy[i])) {
+              results.splice(i, 1);
+              hasBeenModified = true;
+            }
+          }
         }
       }
     }
   }
 
+  //check against second neighors (dupe code)
+  for (let i = resultsCopy.length - 1; i > 1; i--) {
+    let a = resultsCopy[i];
+    let b = resultsCopy[i - 2];
+
+    let intersectionA = a.filter((x) => !b.includes(x));
+    let intersectionB = b.filter((x) => !a.includes(x));
+
+    console.log("CHECKING", intersectionA, intersectionB);
+    if (intersectionA.length == 1 && intersectionB.length == 1) {
+      console.log("diff is same length");
+      if (a.indexOf(intersectionA[0]) == b.indexOf(intersectionB[0])) {
+        console.log("diff is same spot");
+        let place = places.filter((x) => x.id == intersectionA[0])[0];
+
+        if (place.type == "MRT") {
+          console.log("diff is mrt");
+          console.log("REMOVING EQUAL TRANSFER");
+          for (let j = 0; j < results.length; j++) {
+            //@ts-ignore ts doesn't recognize overload
+            if (results[j].equals(resultsCopy[i])) {
+              results.splice(i, 1);
+              hasBeenModified = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (hasBeenModified) {
+    console.log("Finished a round of detransfering, going again");
+    return deTransferIfy(results);
+  }
+
+  console.log(hasBeenModified, "DONE DETRANSFERING");
   return results;
 }
 
 function populateResults(results: Array<Array<string>>) {
-  $("#progress-bar").css("transform", "scaleX(200)");
+  $("#progress-bar").css("transform", "scaleX(210)");
   setTimeout(function () {
     $("#progress-bar").fadeOut(500);
     setTimeout(function () {
@@ -162,21 +246,29 @@ function populateResults(results: Array<Array<string>>) {
     }, 500);
   }, 500);
 
-  results = deTransferIfy(results);
-  results = deTransferIfy(results);
+  console.log("deTransferIfy");
   results = deTransferIfy(results);
 
+  $("#results").html("<div class='toggle-all'>Toggle All</div>");
   if (results.length == 0) {
     $("#results").append("<div class='route'>Something went wrong</div>");
   }
 
   let differences = calcDifferences(results);
+  console.log("Differences", differences);
 
   results.forEach((result, i) => {
-    let resultElem = $("<div class='route'>Option " + (i + 1) + "</div>");
+    let resultElem = $(
+      `<div class='route'>
+        <div class="route-header">
+        Via ${differences[i].join(", ")}
+        <span class="material-icons">
+          expand_more
+        </span>
+        </div>
+      </div>`
+    );
     //add to dom
-
-    if (i == 0) resultElem = $("<div class='route'>Fastest Route</div>");
 
     let mrtPassAlong: string | undefined = undefined;
     result.forEach((placeId, j) => {
@@ -192,9 +284,25 @@ function populateResults(results: Array<Array<string>>) {
       let to = places.filter((x) => x.id == result[j + 1])[0];
 
       if (possibleRoutes.length == 0) {
-        if (from.type == "MRT" && to.type == "MRT") {
-          resultElem.append(render("transfer", from, to, undefined));
+        console.log(from, to);
+
+        if (spawnWarps.includes(to.id)) {
+          resultElem.append(render("warp", from, to, undefined));
           return;
+        }
+
+        if (from.type == "MRT" && to.type == "MRT") {
+          if (
+            from.x != undefined &&
+            from.z != undefined &&
+            to.x != undefined &&
+            to.z != undefined
+          ) {
+            if (getDistance(from.x, from.z, to.x, to.z) < 250) {
+              resultElem.append(render("transfer", from, to, undefined));
+              return;
+            }
+          }
         }
 
         resultElem.append(render("walk", from, to, undefined));
@@ -246,16 +354,20 @@ function populateResults(results: Array<Array<string>>) {
 
       resultElem.append(render("flightHeader", from, to, undefined));
 
+      let multiflights = $("<div class='multiflight-container'></div>");
+
       possibleRoutes.forEach((flight) => {
-        resultElem
-          .children()
-          .last()
-          .append(render("smallFlight", from, to, flight));
+        multiflights.append(render("smallFlight", from, to, flight));
       });
+
+      resultElem.children().last().append(multiflights);
     });
 
     $("#results").append(resultElem);
   });
+
+  //make headers clickable
+  initHeaders();
 }
 
 function render(
@@ -300,31 +412,22 @@ function render(
       logo = "<div></div>";
     }
 
-    //change stuff if we don't have an image
-    let modifiedStyle;
-    if (!logo) modifiedStyle = "style='display:block'";
-
     //set color
     let color = colors[codeshare ?? route.provider];
     currentDiv.css("background-color", color ?? "");
 
     currentDiv.append(`
       <div class="leg-blurb">
-        ${blurbPrefix} ${route.number} by ${codeshare ?? route.provider}
-      </div>
-      <div class="leg-middle" ${modifiedStyle}>
         ${logo}
+        <div> ${codeshare ?? route.provider}</div>
+        <div>Gates</div>
+        <div>${blurbPrefix} ${route.number}</div>
+        <div>${route.fromGate ?? "unk."} -> ${route.toGate ?? "unk."}</div>
+      </div>
+      <div class="leg-middle">
         <div class="leg-summary">
           <div class="leg-code">${from.shortName ?? "—"}</div>
-          <div class="leg-gate">
-            <div>Gate</div>
-            <div>${route.fromGate ?? "unk."}</div>
-          </div>
           <div class="leg-arrow">-></div>
-          <div class="leg-gate">
-            <div>Gate</div>
-            <div>${route.toGate ?? "unk."}</div>
-          </div>
           <div class="leg-code">${to.shortName ?? "—"}</div>
         </div>
       </div>
@@ -334,11 +437,26 @@ function render(
       </div>
     `);
   } else if (type == "walk") {
+    currentDiv.addClass("no-shadow");
     currentDiv.append(`
-        <div class="leg-summary"><span class="material-icons">
+        <div class="leg-summary main-text"><span class="material-icons">
 directions_walk
 </span>
           <div class="leg-code">Walk to ${to.shortName ?? "--"}</div>
+        </div>
+        <div class="walk-details">
+          <div></div>
+          <div>${to.displayName ?? to.longName ?? "Foobar"}</div>
+        </div>
+      `);
+  } else if (type == "warp") {
+    currentDiv.addClass("no-shadow");
+    currentDiv.append(`
+        <div class="leg-summary main-text">
+          <span class="material-icons">
+            keyboard_double_arrow_right
+          </span>
+          <div class="leg-code">Warp to ${to.shortName ?? "--"}</div>
         </div>
         <div class="walk-details">
           <div></div>
@@ -355,12 +473,10 @@ directions_walk
 
     currentDiv.append(`
         <div class="leg-blurb">
-        By the ${provider.displayName ?? provider.name}
+          <img src="https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png">
+          <div>${provider.displayName ?? provider.name}</div>
         </div>
-          <div class="leg-middle">
-            <img style="
-    mix-blend-mode: normal;
-  " src="https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png">
+        <div class="leg-middle">
           <div class="leg-summary">
             <div class="leg-code">${from.shortName}</div>
             <div class="leg-arrow">-></div>
@@ -373,8 +489,9 @@ directions_walk
         </div>
       `);
   } else if (type == "transfer") {
+    currentDiv.addClass("no-shadow");
     currentDiv.append(`
-        <div class="leg-summary"><span class="material-icons">
+        <div class="leg-summary main-text"><span class="material-icons">
 transfer_within_a_station
 </span>
           <div class="leg-code">Transfer to ${to.shortName ?? "--"}</div>
@@ -396,14 +513,27 @@ transfer_within_a_station
           <div>${from.displayName ?? from.longName ?? "Foobar"}</div>
           <div>${to.displayName ?? to.longName ?? "Foobar"}</div>
         </div>
-        <div>
-        <p>Flight offered by:</p>
-        </div>
       `);
   } else if (type == "smallFlight") {
     if (route == undefined) throw new Error("Route not defined");
     if (route.provider == undefined) throw new Error("Provider not defined");
     currentDiv.removeClass("leg");
+
+    //get blurb
+    let blurbPrefix;
+    switch (route.mode) {
+      case "flight":
+        blurbPrefix = "Flight";
+        break;
+      case "seaplane":
+        blurbPrefix = "Seaplane flight";
+        break;
+      case "heli":
+        blurbPrefix = "Helicopter flight";
+        break;
+      default:
+        blurbPrefix = "By";
+    }
 
     //codeshared flights
     let codeshare;
@@ -417,15 +547,22 @@ transfer_within_a_station
       logo = "<div></div>";
     }
 
-    currentDiv.append(`
-      <div class="multiflight">
-        ${logo ?? ""}
-        <div class="multiflight-provider">By ${
-          codeshare ?? route.provider
-        }</div>
-        <div class="multiflight-from">Gate ${route.fromGate ?? "unk."}</div>
+    //set color
+    let color = colors[codeshare ?? route.provider];
+    currentDiv.css("background-color", color ?? "");
+
+    currentDiv.addClass("multiflight");
+    currentDiv.html(`
+      ${logo ?? ""}
+      <div class="multiflight-provider">
+        <div>${codeshare ?? route.provider}</div>
+        <div>${blurbPrefix} ${route.number}</div>
+      </div>
+      <div class="multiflight-gate">
+        <div>Gates</div>
+        <div class="multiflight-from">${route.fromGate ?? "unk."}</div>
         <div class="multiflight-arrow">-></div>
-        <div class="multiflight-to">Gate ${route.toGate ?? "unk."}</div>
+        <div class="multiflight-to">${route.toGate ?? "unk."}</div>
       </div>
     `);
   }
@@ -440,13 +577,79 @@ function calcDifferences(results: Array<Array<string>>) {
   let differences = [["Fastest Route"]];
   let firstResult = results[0];
 
+  if (results.length == 1) return differences;
+
   results.forEach((route, i) => {
-    if (i == 0) return;
+    if (i == 0) {
+      let diff = firstResult.filter((x) => !results[1].includes(x));
+      if (diff.length == 0) diff = ["Fastest Route"];
+      differences[i] = diff;
+      return;
+    }
     let diff = route.filter((x) => !firstResult.includes(x));
+
+    if (diff.length == 0) diff = ["Alternate Route"];
+
     differences[i] = diff;
   });
 
+  differences.forEach((difference, j) => {
+    console.log("difference", difference);
+    if (difference.length > 2) {
+      let newDiff: Array<string> = [];
+
+      let pass: string | undefined = undefined;
+      difference.forEach((place, i) => {
+        console.log("CHECKING", place, difference[i + 1]);
+        if (i == difference.length - 1) {
+          console.log("LAST", place, difference[i + 1]);
+          newDiff.push(pass ?? place.replace(/\d/g, ""));
+        } else if (
+          place.replace(/\d/g, "") == difference[i + 1].replace(/\d/g, "")
+        ) {
+          console.log("SAME", place, difference[i + 1]);
+          pass = place.replace(/\d/g, "");
+        } else {
+          console.log("NOT SAME", place, difference[i + 1]);
+          newDiff.push(pass ?? place.replace(/\d/g, ""));
+          pass = undefined;
+        }
+      });
+
+      differences[j] = newDiff;
+    }
+  });
+
   return differences;
+}
+
+function initHeaders() {
+  $(".route-header").on("click", function () {
+    $(this).children("span").toggleClass("flip");
+    let parent = $(this).parent();
+    parent.toggleClass("isVisible");
+
+    if (parent.hasClass("isVisible")) {
+      parent.css("max-height", "none");
+      let height = Math.round(parent.height() ?? 999999) + "px";
+      parent.css("max-height", "50px");
+      setTimeout(function () {
+        console.log("max-height", height);
+        parent.css("max-height", height);
+      }, 1);
+      setTimeout(function () {
+        parent.css("max-height", "none");
+      }, 100);
+    } else {
+      parent.css("max-height", "50px");
+    }
+  });
+
+  $(".toggle-all").on("click", function () {
+    $(".route-header").click();
+  });
+
+  $(".route-header").first().click();
 }
 
 startSearch();

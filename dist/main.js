@@ -112,6 +112,16 @@ function getTowns() {
                         spawnWarps.push(town[0]);
                     }
                 });
+                places.push({
+                    id: "Spawn",
+                    world: "New",
+                    type: "town",
+                    shortName: "Spawn",
+                    longName: "Central City",
+                    x: -21,
+                    z: 48,
+                });
+                spawnWarps.push("Spawn");
                 resolve(result);
             },
         });
@@ -156,9 +166,6 @@ function parseRawFlightData(mode, placesRaw, providersRaw, routesRaw) {
                 flightsByNumber[flight].push(placeList[j]);
             });
         });
-        if (i == 27) {
-            console.log(routesRaw[i]);
-        }
         Object.keys(flightsByNumber).forEach((flightNumber) => {
             flightsByNumber[flightNumber].forEach((destinationA) => {
                 flightsByNumber[flightNumber].forEach((destinationB) => {
@@ -386,6 +393,10 @@ function generateMrt(rawMRTInfo, rawStopInfo) {
                     mode: "MRT",
                     provider: lineName,
                 });
+            }
+            //spawn warps
+            if ((i == 0 || i == line.length - 1) && lineName != "circle") {
+                spawnWarps.push(line[i]);
             }
         }
     });

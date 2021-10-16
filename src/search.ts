@@ -1,6 +1,13 @@
 // @ts-ignore
 var searchWorker = new FlexSearch.Index({
   tokenize: "reverse",
+  charset: "latin:advanced",
+});
+
+// @ts-ignore
+var strictSearchWorker = new FlexSearch.Index({
+  tokenize: "strict",
+  charset: "latin:advanced",
 });
 
 function normalize(str: string | undefined) {
@@ -23,6 +30,7 @@ function initSearch() {
     );
 
     searchWorker.add(place.id, searchable);
+    strictSearchWorker.add(place.id, searchable);
   });
 
   $(".search").on("input click", function () {
@@ -36,19 +44,41 @@ function initSearch() {
 
     console.log(content);
 
-    let results = searchWorker.search(content, {
+    let strictResults = strictSearchWorker.search(content, {
       suggest: true,
+      limit: 200,
     });
 
+    let results = searchWorker.search(content, {
+      suggest: false,
+      limit: 200,
+    });
+
+    results = [...strictResults, ...results];
+    results = [...new Set(results)];
+
+    results = results.sort((x: string) => {
+      return places.filter((z) => z.id == x)[0].type == "town" ? -1 : 0;
+    });
+
+    results = results.sort((x: string) => {
+      return x.toUpperCase() === content.toUpperCase() ? -1 : 0;
+    });
+
+    console.log(results, results.length);
+
     // if (content == "") {
-    //   places.forEach(place =>  {
-    //     results.push(place.id)
-    //   })
+    //   places.forEach((place) => {
+    //     results.push(place.id);
+    //   });
     // }
 
     updateSearchResults(results, id);
   });
 }
+
+let highlightedResult: string | undefined = undefined;
+let highlightedIndex: number = -1;
 
 function updateSearchResults(results: Array<string>, jqid: string | undefined) {
   if (jqid == undefined) return;
@@ -61,7 +91,8 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
   results.forEach((result) => {
     let place = places.filter((x) => x.id == result)[0];
     $(".search-results").append(`
-      <div onclick="select('${place.id}', '${jqid}')">
+      <div data-placeId="${place.id}"
+           onclick="select('${place.id}', '${jqid}')">
         ${place.shortName ?? place.id} - ${place.displayName ?? place.longName}
       </div>
     `);
@@ -70,12 +101,60 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
   let firstResult = results[0];
 
   $("#" + jqid).off("keyup");
+  $("#" + jqid).off("keydown");
   $("#" + jqid).off("blur");
 
   $("#" + jqid).on("keyup", function (e) {
     if (e.key === "Enter") {
-      select(firstResult, jqid, "ENTER");
+      console.log("HIGHLIGHTED", highlightedResult, highlightedIndex);
+      select(highlightedResult ?? firstResult, jqid, "ENTER");
       document.getElementById(jqid)?.blur();
+    }
+  });
+
+  $("#" + jqid).on("keydown", function (e) {
+    console.log(e.key);
+    if (e.key === "ArrowDown") {
+      highlightedIndex++;
+      console.log(highlightedIndex);
+    } else if (e.key === "ArrowUp") {
+      highlightedIndex--;
+      console.log(highlightedIndex);
+    }
+
+    if (highlightedIndex < -1) {
+      console.log("WRAPD");
+      highlightedIndex = results.length - 1;
+      console.log(highlightedIndex);
+    }
+
+    if (highlightedIndex > results.length - 1) {
+      console.log("WRAPU");
+      highlightedIndex = -1;
+    }
+
+    if (highlightedIndex >= 0) {
+      $(".search-results").children().removeClass("isHighlighted");
+      $(".search-results")
+        .children()
+        .eq(highlightedIndex)
+        .addClass("isHighlighted");
+      highlightedResult = $(".isHighlighted").attr("data-placeId");
+      console.log(highlightedResult);
+      // $(".isHighlighted")[0].scrollIntoView(false);
+      $("html, body").animate(
+        {
+          scrollTop: -(
+            window.innerHeight / 2 -
+            ($(".isHighlighted").offset()?.top ?? 0)
+          ),
+        },
+        50
+      );
+    } else {
+      $(".search-results").children().removeClass("isHighlighted");
+      highlightedResult = undefined;
+      window.scrollTo(0, 0);
     }
   });
 
@@ -84,8 +163,8 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
       $(".search-results").css("display", "none");
       console.log($(".search-results").children().length);
       if ($(".search-results").children().length > 0)
-        select(firstResult, jqid, "BLUR");
-    }, 100);
+        select(highlightedResult ?? firstResult, jqid, "BLUR");
+    }, 300);
   });
 }
 

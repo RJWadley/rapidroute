@@ -24,7 +24,7 @@ let codeshares: {
 } = getItem("codeshares") || {};
 let spawnWarps: Array<string> = getItem("spawnWarps") || [];
 
-type Mode = "flight" | "seaplane" | "heli" | "MRT" | "walk";
+type Mode = "flight" | "seaplane" | "heli" | "MRT" | "walk" | "spawnWarp";
 type PlaceType = "MRT" | "airport" | "town";
 type World = "New" | "Old";
 type Source = "data" | "transit" | "both" | "dynmap";
@@ -156,6 +156,17 @@ function getTowns() {
           }
         });
 
+        places.push({
+          id: "Spawn",
+          world: "New",
+          type: "town",
+          shortName: "Spawn",
+          longName: "Central City",
+          x: -21,
+          z: 48,
+        });
+        spawnWarps.push("Spawn");
+
         resolve(result);
       },
     });
@@ -213,10 +224,6 @@ function parseRawFlightData(
         flightsByNumber[flight].push(placeList[j]);
       });
     });
-
-    if (i == 27) {
-      console.log(routesRaw[i]);
-    }
 
     Object.keys(flightsByNumber).forEach((flightNumber) => {
       flightsByNumber[flightNumber].forEach((destinationA) => {
@@ -479,6 +486,11 @@ function generateMrt(
           mode: "MRT",
           provider: lineName,
         });
+      }
+
+      //spawn warps
+      if ((i == 0 || i == line.length - 1) && lineName != "circle") {
+        spawnWarps.push(line[i]);
       }
     }
   });

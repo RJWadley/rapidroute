@@ -2,6 +2,12 @@
 // @ts-ignore
 var searchWorker = new FlexSearch.Index({
     tokenize: "reverse",
+    charset: "latin:advanced",
+});
+// @ts-ignore
+var strictSearchWorker = new FlexSearch.Index({
+    tokenize: "strict",
+    charset: "latin:advanced",
 });
 function normalize(str) {
     if (str == undefined)
@@ -21,6 +27,7 @@ function initSearch() {
             " " +
             place.world);
         searchWorker.add(place.id, searchable);
+        strictSearchWorker.add(place.id, searchable);
     });
     $(".search").on("input click", function () {
         var _a;
@@ -30,17 +37,33 @@ function initSearch() {
         let doc = parser.parseFromString(content, "text/html");
         content = (_a = doc.body.textContent) !== null && _a !== void 0 ? _a : "";
         console.log(content);
-        let results = searchWorker.search(content, {
+        let strictResults = strictSearchWorker.search(content, {
             suggest: true,
+            limit: 200,
         });
+        let results = searchWorker.search(content, {
+            suggest: false,
+            limit: 200,
+        });
+        results = [...strictResults, ...results];
+        results = [...new Set(results)];
+        results = results.sort((x) => {
+            return places.filter((z) => z.id == x)[0].type == "town" ? -1 : 0;
+        });
+        results = results.sort((x) => {
+            return x.toUpperCase() === content.toUpperCase() ? -1 : 0;
+        });
+        console.log(results, results.length);
         // if (content == "") {
-        //   places.forEach(place =>  {
-        //     results.push(place.id)
-        //   })
+        //   places.forEach((place) => {
+        //     results.push(place.id);
+        //   });
         // }
         updateSearchResults(results, id);
     });
 }
+let highlightedResult = undefined;
+let highlightedIndex = -1;
 function updateSearchResults(results, jqid) {
     if (jqid == undefined)
         return;
@@ -52,19 +75,62 @@ function updateSearchResults(results, jqid) {
         var _a, _b;
         let place = places.filter((x) => x.id == result)[0];
         $(".search-results").append(`
-      <div onclick="select('${place.id}', '${jqid}')">
+      <div data-placeId="${place.id}"
+           onclick="select('${place.id}', '${jqid}')">
         ${(_a = place.shortName) !== null && _a !== void 0 ? _a : place.id} - ${(_b = place.displayName) !== null && _b !== void 0 ? _b : place.longName}
       </div>
     `);
     });
     let firstResult = results[0];
     $("#" + jqid).off("keyup");
+    $("#" + jqid).off("keydown");
     $("#" + jqid).off("blur");
     $("#" + jqid).on("keyup", function (e) {
         var _a;
         if (e.key === "Enter") {
-            select(firstResult, jqid, "ENTER");
+            console.log("HIGHLIGHTED", highlightedResult, highlightedIndex);
+            select(highlightedResult !== null && highlightedResult !== void 0 ? highlightedResult : firstResult, jqid, "ENTER");
             (_a = document.getElementById(jqid)) === null || _a === void 0 ? void 0 : _a.blur();
+        }
+    });
+    $("#" + jqid).on("keydown", function (e) {
+        var _a, _b;
+        console.log(e.key);
+        if (e.key === "ArrowDown") {
+            highlightedIndex++;
+            console.log(highlightedIndex);
+        }
+        else if (e.key === "ArrowUp") {
+            highlightedIndex--;
+            console.log(highlightedIndex);
+        }
+        if (highlightedIndex < -1) {
+            console.log("WRAPD");
+            highlightedIndex = results.length - 1;
+            console.log(highlightedIndex);
+        }
+        if (highlightedIndex > results.length - 1) {
+            console.log("WRAPU");
+            highlightedIndex = -1;
+        }
+        if (highlightedIndex >= 0) {
+            $(".search-results").children().removeClass("isHighlighted");
+            $(".search-results")
+                .children()
+                .eq(highlightedIndex)
+                .addClass("isHighlighted");
+            highlightedResult = $(".isHighlighted").attr("data-placeId");
+            console.log(highlightedResult);
+            // $(".isHighlighted")[0].scrollIntoView(false);
+            $("html, body").animate({
+                scrollTop: -(window.innerHeight / 2 -
+                    ((_b = (_a = $(".isHighlighted").offset()) === null || _a === void 0 ? void 0 : _a.top) !== null && _b !== void 0 ? _b : 0)),
+            }, 50);
+        }
+        else {
+            $(".search-results").children().removeClass("isHighlighted");
+            highlightedResult = undefined;
+            window.scrollTo(0, 0);
         }
     });
     $("#" + jqid).on("blur", function () {
@@ -72,8 +138,8 @@ function updateSearchResults(results, jqid) {
             $(".search-results").css("display", "none");
             console.log($(".search-results").children().length);
             if ($(".search-results").children().length > 0)
-                select(firstResult, jqid, "BLUR");
-        }, 100);
+                select(highlightedResult !== null && highlightedResult !== void 0 ? highlightedResult : firstResult, jqid, "BLUR");
+        }, 300);
     });
 }
 function select(placeId, jqid, source) {
