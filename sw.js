@@ -25,7 +25,7 @@ self.addEventListener("fetch", function (evt) {
 // to the cache. Return a promise resolving when all the assets are added.
 function precache() {
   return caches.open(CACHE).then(function (cache) {
-    return cache.addAll(["*"]);
+    return cache.addAll(["./"]);
   });
 }
 
