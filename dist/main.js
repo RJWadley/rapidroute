@@ -632,6 +632,19 @@ $(".close-settings").on("click", function () {
 let theme = (_a = getItem("theme")) !== null && _a !== void 0 ? _a : "system";
 $("#" + theme).addClass("settings-active");
 $("html").attr("data-theme", theme);
+if ((window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
+    getItem("theme") == "dark") {
+    $("html").attr("data-theme", "dark");
+}
+window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+    if (getItem("theme") == "system" || getItem("theme") == null) {
+        const newColorScheme = e.matches ? "dark" : "light";
+        $("html").attr("data-theme", newColorScheme);
+    }
+});
 $(".settings-theme button").on("click", function () {
     var _a;
     $(".settings-theme button").removeClass("settings-active");

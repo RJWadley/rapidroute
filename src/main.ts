@@ -792,6 +792,23 @@ let theme = getItem("theme") ?? "system";
 $("#" + theme).addClass("settings-active");
 $("html").attr("data-theme", theme);
 
+if (
+  (window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
+  getItem("theme") == "dark"
+) {
+  $("html").attr("data-theme", "dark");
+}
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    if (getItem("theme") == "system" || getItem("theme") == null) {
+      const newColorScheme = e.matches ? "dark" : "light";
+      $("html").attr("data-theme", newColorScheme);
+    }
+  });
+
 $(".settings-theme button").on("click", function () {
   $(".settings-theme button").removeClass("settings-active");
   $(this).addClass("settings-active");
