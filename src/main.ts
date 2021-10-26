@@ -790,6 +790,7 @@ $(".close-settings").on("click", function () {
 
 let theme = getItem("theme") ?? "system";
 $("#" + theme).addClass("settings-active");
+$("html").attr("data-theme", theme);
 
 $(".settings-theme button").on("click", function () {
   $(".settings-theme button").removeClass("settings-active");

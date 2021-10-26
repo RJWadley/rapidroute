@@ -119,23 +119,6 @@ function a11yClick(event: any) {
   }
 }
 
-if (
-  (window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
-  getItem("theme") == "dark"
-) {
-  $("html").attr("data-theme", "dark");
-}
-
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (e) => {
-    if (getItem("theme") == "system" || getItem("theme") == null) {
-      const newColorScheme = e.matches ? "dark" : "light";
-      $("html").attr("data-theme", newColorScheme);
-    }
-  });
-
 function safe(provider: string | undefined) {
   if (provider == undefined) return undefined;
   let result = provider.replace(/ /g, "-");
