@@ -105,3 +105,40 @@ Array.prototype.equals = function (array) {
 };
 // Hide method from for-in loops
 Object.defineProperty(Array.prototype, "equals", { enumerable: false });
+
+function a11yClick(event: any) {
+  if (event.type === "click") {
+    return true;
+  } else if (event.type === "keypress") {
+    var code = event.charCode || event.keyCode;
+    if (code === 32 || code === 13) {
+      return true;
+    }
+  } else {
+    return false;
+  }
+}
+
+if (
+  (window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
+  getItem("theme") == "dark"
+) {
+  $("html").attr("data-theme", "dark");
+}
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    if (getItem("theme") == "system" || getItem("theme") == null) {
+      const newColorScheme = e.matches ? "dark" : "light";
+      $("html").attr("data-theme", newColorScheme);
+    }
+  });
+
+function safe(provider: string | undefined) {
+  if (provider == undefined) return undefined;
+  let result = provider.replace(/ /g, "-");
+  result = result.replace(/[^a-zA-Z0-9-]/g, "");
+  return result;
+}

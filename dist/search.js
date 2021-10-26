@@ -36,7 +36,20 @@ function initSearch() {
         let parser = new DOMParser();
         let doc = parser.parseFromString(content, "text/html");
         content = (_a = doc.body.textContent) !== null && _a !== void 0 ? _a : "";
-        console.log(content);
+        // @ts-ignore
+        // the following line does absolutely nothing at all
+        if (nothing)
+            nothing(content);
+        if (content == "") {
+            $(this).attr("data-dest", "");
+            $(".search-results").html("Start typing...").fadeIn();
+            $(this).on("blur", function () {
+                setTimeout(function () {
+                    $(".search-results").css("display", "none");
+                }, 300);
+            });
+            return;
+        }
         let strictResults = strictSearchWorker.search(content, {
             suggest: true,
             limit: 200,
@@ -53,7 +66,6 @@ function initSearch() {
         results = results.sort((x) => {
             return x.toUpperCase() === content.toUpperCase() ? -1 : 0;
         });
-        console.log(results, results.length);
         // if (content == "") {
         //   places.forEach((place) => {
         //     results.push(place.id);
@@ -88,29 +100,22 @@ function updateSearchResults(results, jqid) {
     $("#" + jqid).on("keyup", function (e) {
         var _a;
         if (e.key === "Enter") {
-            console.log("HIGHLIGHTED", highlightedResult, highlightedIndex);
             select(highlightedResult !== null && highlightedResult !== void 0 ? highlightedResult : firstResult, jqid, "ENTER");
             (_a = document.getElementById(jqid)) === null || _a === void 0 ? void 0 : _a.blur();
         }
     });
     $("#" + jqid).on("keydown", function (e) {
         var _a, _b;
-        console.log(e.key);
         if (e.key === "ArrowDown") {
             highlightedIndex++;
-            console.log(highlightedIndex);
         }
         else if (e.key === "ArrowUp") {
             highlightedIndex--;
-            console.log(highlightedIndex);
         }
         if (highlightedIndex < -1) {
-            console.log("WRAPD");
             highlightedIndex = results.length - 1;
-            console.log(highlightedIndex);
         }
         if (highlightedIndex > results.length - 1) {
-            console.log("WRAPU");
             highlightedIndex = -1;
         }
         if (highlightedIndex >= 0) {
@@ -120,7 +125,6 @@ function updateSearchResults(results, jqid) {
                 .eq(highlightedIndex)
                 .addClass("isHighlighted");
             highlightedResult = $(".isHighlighted").attr("data-placeId");
-            console.log(highlightedResult);
             // $(".isHighlighted")[0].scrollIntoView(false);
             $("html, body").animate({
                 scrollTop: -(window.innerHeight / 2 -
@@ -136,7 +140,6 @@ function updateSearchResults(results, jqid) {
     $("#" + jqid).on("blur", function () {
         setTimeout(function () {
             $(".search-results").css("display", "none");
-            console.log($(".search-results").children().length);
             if ($(".search-results").children().length > 0)
                 select(highlightedResult !== null && highlightedResult !== void 0 ? highlightedResult : firstResult, jqid, "BLUR");
         }, 300);
@@ -144,17 +147,16 @@ function updateSearchResults(results, jqid) {
 }
 function select(placeId, jqid, source) {
     var _a, _b, _c;
-    console.log("SELECT from", source, placeId, jqid);
     let place = places.filter((x) => x.id == placeId)[0];
     if (place == undefined) {
-        $("#" + jqid).removeAttr("data");
+        $("#" + jqid).removeAttr("data-dest");
         $(".search-results").html("").css("display", "none");
     }
     else {
         $("#" + jqid).html(((_a = place.shortName) !== null && _a !== void 0 ? _a : place.id) +
             " - " +
             ((_c = (_b = place.displayName) !== null && _b !== void 0 ? _b : place.longName) !== null && _c !== void 0 ? _c : place.id));
-        $("#" + jqid).attr("data", placeId);
+        $("#" + jqid).attr("data-dest", placeId);
         $(".search-results").html("").css("display", "none");
     }
     startSearch();
@@ -167,12 +169,12 @@ $("#selection-swap").on("click", function () {
     from.off("blur");
     to.off("keyup");
     to.off("blur");
-    let fromid = (_a = from.attr("data")) !== null && _a !== void 0 ? _a : "";
-    let toid = (_b = to.attr("data")) !== null && _b !== void 0 ? _b : "";
+    let fromid = (_a = from.attr("data-dest")) !== null && _a !== void 0 ? _a : "";
+    let toid = (_b = to.attr("data-dest")) !== null && _b !== void 0 ? _b : "";
     let fromContent = from.html();
     let toContent = to.html();
-    from.attr("data", toid);
-    to.attr("data", fromid);
+    from.attr("data-dest", toid);
+    to.attr("data-dest", fromid);
     from.html(toContent);
     to.html(fromContent);
     startSearch();

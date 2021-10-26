@@ -28,10 +28,8 @@ async function findShortestPath(
     let hasGen = false;
     calculationWorker.postMessage(["calc", startNode, endNode, allowedModes]);
     calculationWorker.onmessage = async function (e) {
-      console.log("MESSAGE FROM WORKER", e.data);
       let code = e.data[0];
       if (code == "complete") {
-        console.log("COMPLETE");
         $("#searching").css("display", "none");
         resolve(e.data[1]);
       }
@@ -46,17 +44,13 @@ async function findShortestPath(
         reject();
       }
       if (code == "timeMapsNeeded") {
-        console.log("REQUEST FOR GEN RECIEVED");
-
         if (hasGen == false) {
           hasGen = true;
           await generateTimeMaps(routes, places);
-          console.log("GEN COMPLETE");
           findShortestPath(startNode, endNode, allowedModes, dataCallback).then(
             resolve
           );
         } else {
-          console.log("REQUEST FOR GEN RECIEVED TWICE, FAILING");
           $("#searching").css("display", "none");
           reject();
         }
@@ -95,14 +89,12 @@ function startSearch() {
     return;
   }
 
-  console.log("ALLOWED MODES", allowedModes);
-
   if (allowedModes.length == 0) {
     return;
   }
 
-  let from = $("#from").attr("data") ?? "";
-  let to = $("#to").attr("data") ?? "";
+  let from = $("#from").attr("data-dest") ?? "";
+  let to = $("#to").attr("data-dest") ?? "";
 
   if (from == to) {
     $("#results").html("");
@@ -110,8 +102,6 @@ function startSearch() {
   }
 
   if (from != "" && to != "") {
-    console.log("starting search");
-
     $("#results").html("");
     $("#searching").fadeIn();
 
@@ -119,7 +109,6 @@ function startSearch() {
     findShortestPath(from, to, allowedModes, function (data: any) {
       if (data[0] == data[1]) approxRouteTime = data[0];
       let progress = Math.round((data[0] / data[1]) * 105);
-      console.log("progress ", progress);
       $("#progress-bar").css("transform", "scaleX(" + progress * 2 + ")");
     }).then(populateResults);
   }
@@ -150,7 +139,6 @@ function deTransferIfy(results: Array<Array<string>>): Array<Array<string>> {
         routesB.length == 0 &&
         !spawnWarps.includes(b.id)
       ) {
-        console.log("REMOVING DOUBLE TRANSFER");
         results.splice(i, 1);
         i--;
         hasBeenModified = true;
@@ -166,8 +154,6 @@ function deTransferIfy(results: Array<Array<string>>): Array<Array<string>> {
     return differenceA[0] > differenceB[0] ? 1 : -1;
   });
 
-  console.log(...resultsCopy);
-
   //check against neighors
   for (let i = resultsCopy.length - 1; i > 0; i--) {
     let a = resultsCopy[i];
@@ -176,16 +162,11 @@ function deTransferIfy(results: Array<Array<string>>): Array<Array<string>> {
     let intersectionA = a.filter((x) => !b.includes(x));
     let intersectionB = b.filter((x) => !a.includes(x));
 
-    console.log("CHECKING", intersectionA, intersectionB);
     if (intersectionA.length == 1 && intersectionB.length == 1) {
-      console.log("diff is same length");
       if (a.indexOf(intersectionA[0]) == b.indexOf(intersectionB[0])) {
-        console.log("diff is same spot");
         let place = places.filter((x) => x.id == intersectionA[0])[0];
 
         if (place.type == "MRT") {
-          console.log("diff is mrt");
-          console.log("REMOVING EQUAL TRANSFER");
           for (let j = 0; j < results.length; j++) {
             //@ts-ignore ts doesn't recognize overload
             if (results[j].equals(resultsCopy[i])) {
@@ -206,16 +187,11 @@ function deTransferIfy(results: Array<Array<string>>): Array<Array<string>> {
     let intersectionA = a.filter((x) => !b.includes(x));
     let intersectionB = b.filter((x) => !a.includes(x));
 
-    console.log("CHECKING", intersectionA, intersectionB);
     if (intersectionA.length == 1 && intersectionB.length == 1) {
-      console.log("diff is same length");
       if (a.indexOf(intersectionA[0]) == b.indexOf(intersectionB[0])) {
-        console.log("diff is same spot");
         let place = places.filter((x) => x.id == intersectionA[0])[0];
 
         if (place.type == "MRT") {
-          console.log("diff is mrt");
-          console.log("REMOVING EQUAL TRANSFER");
           for (let j = 0; j < results.length; j++) {
             //@ts-ignore ts doesn't recognize overload
             if (results[j].equals(resultsCopy[i])) {
@@ -229,11 +205,9 @@ function deTransferIfy(results: Array<Array<string>>): Array<Array<string>> {
   }
 
   if (hasBeenModified) {
-    console.log("Finished a round of detransfering, going again");
     return deTransferIfy(results);
   }
 
-  console.log(hasBeenModified, "DONE DETRANSFERING");
   return results;
 }
 
@@ -246,21 +220,19 @@ function populateResults(results: Array<Array<string>>) {
     }, 500);
   }, 500);
 
-  console.log("deTransferIfy");
   results = deTransferIfy(results);
 
-  $("#results").html("<div class='toggle-all'>Toggle All</div>");
+  $("#results").html("<div tabindex=0 class='toggle-all'>Toggle All</div>");
   if (results.length == 0) {
     $("#results").append("<div class='route'>Something went wrong</div>");
   }
 
   let differences = calcDifferences(results);
-  console.log("Differences", differences);
 
   results.forEach((result, i) => {
     let resultElem = $(
       `<div class='route'>
-        <div class="route-header">
+        <div class="route-header" tabindex="0">
         Via ${differences[i].join(", ")}
         <span class="material-icons">
           expand_more
@@ -284,13 +256,6 @@ function populateResults(results: Array<Array<string>>) {
       let to = places.filter((x) => x.id == result[j + 1])[0];
 
       if (possibleRoutes.length == 0) {
-        console.log(from, to);
-
-        if (spawnWarps.includes(to.id)) {
-          resultElem.append(render("warp", from, to, undefined));
-          return;
-        }
-
         if (from.type == "MRT" && to.type == "MRT") {
           if (
             from.x != undefined &&
@@ -303,6 +268,19 @@ function populateResults(results: Array<Array<string>>) {
               return;
             }
           }
+        }
+
+        if (
+          spawnWarps.includes(to.id) &&
+          allowedModes.includes("spawnWarp") &&
+          from.x != undefined &&
+          from.z != undefined &&
+          to.x != undefined &&
+          to.z != undefined &&
+          getDistance(from.x, from.z, to.x, to.z) > 250
+        ) {
+          resultElem.append(render("warp", from, to, undefined));
+          return;
         }
 
         resultElem.append(render("walk", from, to, undefined));
@@ -363,6 +341,12 @@ function populateResults(results: Array<Array<string>>) {
       resultElem.children().last().append(multiflights);
     });
 
+    resultElem.append(
+      `<button class="nav-start" onclick='startNavigation(${JSON.stringify(
+        result
+      )}, ${i})'>Start Navigation</button>`
+    );
+
     $("#results").append(resultElem);
   });
 
@@ -377,6 +361,8 @@ function render(
   route: Route | undefined
 ) {
   let currentDiv = $("<div class='leg'></div>");
+
+  currentDiv.attr("data-place", to.id);
 
   if (type == "largeFlight") {
     if (route == undefined) throw new Error("Route not defined");
@@ -411,9 +397,8 @@ function render(
     } else {
       logo = "<div></div>";
     }
-
     //set color
-    let color = colors[codeshare ?? route.provider];
+    let color = `var(--provider-${safe(codeshare) ?? safe(route.provider)})`;
     currentDiv.css("background-color", color ?? "");
 
     currentDiv.append(`
@@ -466,7 +451,7 @@ directions_walk
   } else if (type == "MRT") {
     if (route == undefined) throw new Error("Route not defined");
 
-    let color = colors[route.provider ?? ""];
+    let color = `var(--provider-${safe(route.provider)})`;
     currentDiv.css("background-color", color ?? "");
 
     let provider = providers.filter((x) => x.name == route.provider)[0];
@@ -548,7 +533,7 @@ transfer_within_a_station
     }
 
     //set color
-    let color = colors[codeshare ?? route.provider];
+    let color = `var(--provider-${safe(codeshare) ?? safe(route.provider)})`;
     currentDiv.css("background-color", color ?? "");
 
     currentDiv.addClass("multiflight");
@@ -594,23 +579,18 @@ function calcDifferences(results: Array<Array<string>>) {
   });
 
   differences.forEach((difference, j) => {
-    console.log("difference", difference);
     if (difference.length > 2) {
       let newDiff: Array<string> = [];
 
       let pass: string | undefined = undefined;
       difference.forEach((place, i) => {
-        console.log("CHECKING", place, difference[i + 1]);
         if (i == difference.length - 1) {
-          console.log("LAST", place, difference[i + 1]);
           newDiff.push(pass ?? place.replace(/\d/g, ""));
         } else if (
           place.replace(/\d/g, "") == difference[i + 1].replace(/\d/g, "")
         ) {
-          console.log("SAME", place, difference[i + 1]);
           pass = place.replace(/\d/g, "");
         } else {
-          console.log("NOT SAME", place, difference[i + 1]);
           newDiff.push(pass ?? place.replace(/\d/g, ""));
           pass = undefined;
         }
@@ -624,7 +604,8 @@ function calcDifferences(results: Array<Array<string>>) {
 }
 
 function initHeaders() {
-  $(".route-header").on("click", function () {
+  $(".route-header").on("click keypress", function (event) {
+    if (a11yClick(event) !== true) return;
     $(this).children("span").toggleClass("flip");
     let parent = $(this).parent();
     parent.toggleClass("isVisible");
@@ -634,18 +615,15 @@ function initHeaders() {
       let height = Math.round(parent.height() ?? 999999) + "px";
       parent.css("max-height", "50px");
       setTimeout(function () {
-        console.log("max-height", height);
         parent.css("max-height", height);
       }, 1);
-      setTimeout(function () {
-        parent.css("max-height", "none");
-      }, 100);
     } else {
       parent.css("max-height", "50px");
     }
   });
 
-  $(".toggle-all").on("click", function () {
+  $(".toggle-all").on("click keypress", function (event) {
+    if (a11yClick(event) !== true) return;
     $(".route-header").click();
   });
 

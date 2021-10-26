@@ -1,8 +1,8 @@
-const DATA_SHEET_ID = "1qVtW6cSIH-gjJZWrvqJXvQG17ZgRQ7sxXfUjZJcR2lE"; // 3 calls
+const DATA_SHEET_ID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"; // 3 calls
 const AIRPORT_GATE_SHEET = "null"; //1 call
 const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"; //1 call
-const TOWN_SHEET_ID = "1JSmJtYkYrEx6Am5drhSet17qwJzOKDI7tE7FxPx4YNI";
-const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8";
+const TOWN_SHEET_ID = "1JSmJtYkYrEx6Am5drhSet17qwJzOKDI7tE7FxPx4YNI"; // 1 call
+const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"; //1 call
 
 const VERSION = 0;
 
@@ -10,9 +10,14 @@ const VERSION = 0;
 let logos: {
   [key: string]: string;
 } = {};
-let colors: {
+let lightColors: {
   [key: string]: string;
-} = {};
+} = getItem("lightColors") || {};
+let darkColors: {
+  [key: string]: string;
+} = getItem("darkColors") || {};
+
+let ignoredPlaces: Array<string> = [];
 
 let routes: Array<Route> = getItem("routes") || [];
 let places: Array<Place> = getItem("places") || [];
@@ -22,12 +27,16 @@ let codeshares: {
     [key: string]: string;
   };
 } = getItem("codeshares") || {};
-let spawnWarps: Array<string> = getItem("spawnWarps") || [];
+let spawnWarps: Array<string> = getItem("spawnWarps") || [
+  "C1",
+  "C33",
+  "C61",
+  "C89",
+];
 
 type Mode = "flight" | "seaplane" | "heli" | "MRT" | "walk" | "spawnWarp";
 type PlaceType = "MRT" | "airport" | "town";
 type World = "New" | "Old";
-type Source = "data" | "transit" | "both" | "dynmap";
 
 interface Route {
   from: string;
@@ -67,11 +76,17 @@ async function getTransitSheet() {
         "/values:batchGet?" +
         "ranges='MRT Transit'!B3:B5" + //row info
         "&ranges='MRT Transit'!F3:F5" + //column info
+        "&ranges='MRT Transit'!A13:A100" + //airports to ignore
         "&key=" +
         API_KEY,
       success: function (result) {
         let rows = result.valueRanges[0].values;
         let cols = result.valueRanges[1].values;
+        ignoredPlaces = result.valueRanges[2].values;
+
+        ignoredPlaces.forEach((place, i) => {
+          ignoredPlaces[i] = place[0];
+        });
 
         //now get transit sheet
         $.ajax({
@@ -109,10 +124,10 @@ async function getDataSheet() {
         "https://sheets.googleapis.com/v4/spreadsheets/" +
         DATA_SHEET_ID +
         "/values:batchGet?" +
-        "ranges='MRT'!B2:G19" + //mrt info
-        "&ranges='Airports'!A3:F500" +
-        "&ranges='Companies'!A2:E200" +
-        "&ranges='CodeSharing'!A3:E200" +
+        "ranges='MRT'!B2:H19" + //mrt info
+        "&ranges='Airports2'!A3:F500" +
+        "&ranges='Companies'!A2:F200" +
+        "&ranges='CodeSharing'!A3:F200" +
         "&key=" +
         API_KEY,
       success: function (result) {
@@ -133,8 +148,6 @@ function getTowns() {
         "&key=" +
         API_KEY,
       success: function (result) {
-        console.log(result);
-
         let towns = result.valueRanges[0].values as Array<string>;
 
         towns.forEach((town) => {
@@ -162,8 +175,8 @@ function getTowns() {
           type: "town",
           shortName: "Spawn",
           longName: "Central City",
-          x: -21,
-          z: 48,
+          x: 1,
+          z: 1,
         });
         spawnWarps.push("Spawn");
 
@@ -250,7 +263,8 @@ function parseCodeshares(codesharesRaw: Array<Array<string>>) {
     let range = company[1]?.split("-") || []; //range.split
     if (range.length < 2) return;
 
-    colors[company[2]] = company[4]; //colors[displayName] = color
+    lightColors[company[2]] = company[4]; //colors[displayName] = color
+    darkColors[company[2]] = company[5]; //colors[displayName] = color
     logos[company[2]] = company[3]; //logos[displayName] = logo
 
     codeshares[company[0]] = {};
@@ -313,6 +327,19 @@ function parseCoordinates(coords: string) {
     out.pop();
   }
 
+  if (out.length != 2) {
+    split = coords.split(",");
+    out = [];
+    split.forEach((item, i) => {
+      out[i] = parseInt(item.trim());
+    });
+  }
+
+  if (out.length == 3) {
+    out[1] = out[2];
+    out.pop();
+  }
+
   return out;
 }
 
@@ -327,7 +354,8 @@ function processAirlineMetadata(rawAirlineData: Array<Array<string>>) {
 
     rawAirlineData.forEach((company) => {
       if (company[3]) logos[company[0]] = company[3];
-      if (company[4]) colors[company[0]] = company[4];
+      if (company[4]) lightColors[company[0]] = company[4];
+      if (company[5]) darkColors[company[0]] = company[5];
 
       if (company.length > 1) {
         if (company[1] == "Yes") {
@@ -424,9 +452,11 @@ function generateMrt(
     let nsew = 4;
     let lineCode = item[1];
     let lineName = item[0];
-    let lineColor = item[5];
+    let lightLineColor = item[5];
+    let darkLineColor = item[6];
 
-    colors[lineName] = lineColor;
+    lightColors[lineName] = lightLineColor;
+    darkColors[lineName] = darkLineColor;
 
     let line = [];
     //0: {Name: "Artic Line", Code: "A", Min-SE: "X", Max-NW: "53"}
@@ -520,6 +550,21 @@ function generateMrt(
     provider: "circle",
   });
 
+  //mrt marina shuttle
+  routeList.push({
+    from: "XE8",
+    to: "XEM",
+    mode: "MRT",
+    provider: "expo",
+  });
+
+  routeList.push({
+    from: "XEM",
+    to: "XE8",
+    mode: "MRT",
+    provider: "expo",
+  });
+
   routes.push(...routeList);
 }
 
@@ -607,6 +652,7 @@ function combineData() {
 
   while (places.length > 0) {
     let current = places[0].id;
+
     let find = places.filter((x) => x.id == current);
     places = places.filter((x) => x.id != current);
 
@@ -617,20 +663,57 @@ function combineData() {
     newPlaces.unshift(newObject);
   }
 
+  newPlaces = newPlaces.filter((x) => !ignoredPlaces.includes(x.id));
+
   places = newPlaces;
 }
 
+function generateColors() {
+  var style = document.createElement("style");
+  let styleText = ":root {";
+
+  for (let provider in lightColors) {
+    styleText += `--provider-${safe(provider)}: ${lightColors[provider]};`;
+  }
+
+  styleText += `} html[data-theme="dark"] {`;
+
+  for (let provider in darkColors) {
+    styleText += `--provider-${safe(provider)}: ${darkColors[provider]};`;
+  }
+
+  styleText += `}`;
+
+  style.type = "text/css";
+
+  //@ts-ignore
+  if (style.styleSheet) {
+    //@ts-ignore
+    style.styleSheet.cssText = styleText;
+  } else {
+    style.appendChild(document.createTextNode(styleText));
+  }
+  document.getElementsByTagName("head")[0].appendChild(style);
+}
+
 async function loadData() {
+  routes = [];
+  places = [];
+  providers = [];
+  codeshares = {};
+  spawnWarps = ["C1", "C33", "C61", "C89"];
+  lightColors = {};
+  darkColors = {};
+
   let transitSheet: any = getTransitSheet();
   let dataSheet: any = getDataSheet();
   let markers: any = generateMrtFromMarkers();
   let townsheet: any = getTowns();
 
-  console.log("Load 1");
-
   transitSheet = await transitSheet;
   dataSheet = await dataSheet;
   markers = await markers;
+  await townsheet;
 
   dataSheet = dataSheet.valueRanges;
 
@@ -657,17 +740,87 @@ async function loadData() {
     transitSheet[8].values
   );
 
-  console.log("Load 2");
   await processAirlineMetadata(dataSheet[2].values);
 
   processAirportMetadata(dataSheet[1].values);
   parseCodeshares(dataSheet[3].values);
-
-  await townsheet;
-
   combineData();
   generateTimeMaps(routes, places);
   initSearch();
+  generateColors();
+
+  setItem("routes", routes);
+  setItem("places", places);
+  setItem("providers", providers);
+  setItem("codeshares", codeshares);
+  setItem("spawnWarps", spawnWarps);
+  setItem("lightColors", lightColors);
+  setItem("darkColors", darkColors);
 }
 
 loadData();
+try {
+  initSearch();
+  generateTimeMaps(routes, places);
+  generateColors();
+} catch {
+  console.log("unable to init, waiting");
+}
+
+$(".open-settings").on("click", function () {
+  $(".settings-container").css("display", "grid");
+});
+
+$(".close-settings").on("click", function () {
+  $(".settings-container").css("display", "none");
+});
+
+let theme = getItem("theme") ?? "system";
+$("#" + theme).addClass("settings-active");
+
+$(".settings-theme button").on("click", function () {
+  $(".settings-theme button").removeClass("settings-active");
+  $(this).addClass("settings-active");
+
+  setItem("theme", $(this).attr("id"));
+  $("html").attr("data-theme", $(this).attr("id") ?? "");
+
+  const prefersColorSchemeDark = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  );
+  if (prefersColorSchemeDark.matches && $(this).attr("id") == "system") {
+    $("html").attr("data-theme", "dark");
+  }
+});
+
+$(".settings input").on("input", function () {
+  setItem("playername", $(this).val());
+});
+
+$(".settings input").val(getItem("playername") ?? "");
+
+function auditListPlaces() {
+  let csv = "";
+  places.forEach((place) => {
+    if (place.type != "airport") return;
+    csv += place.id;
+    csv += ",";
+    csv += place.longName;
+    csv += ",";
+    csv += place.shortName ?? "";
+    csv += ",";
+    csv += place.world ?? "";
+    csv += ",";
+    csv += place.displayName ?? "";
+    csv += ",";
+    csv += place.keywords ?? "";
+    csv += ",";
+    if (place.x != undefined) csv += place.x + " " + place.z;
+    csv += ",";
+    csv +=
+      routes.filter((x) => x.from == place.id).length +
+      routes.filter((x) => x.to == place.id).length;
+    csv += "<br>";
+  });
+  return csv;
+}

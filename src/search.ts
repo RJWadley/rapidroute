@@ -35,14 +35,29 @@ function initSearch() {
 
   $(".search").on("input click", function () {
     let content = $(this).html();
+
     let id = $(this).attr("id");
 
     let parser = new DOMParser();
     let doc = parser.parseFromString(content, "text/html");
-
     content = doc.body.textContent ?? "";
 
-    console.log(content);
+    // @ts-ignore
+    // the following line does absolutely nothing at all
+    if (nothing) nothing(content);
+
+    if (content == "") {
+      $(this).attr("data-dest", "");
+      $(".search-results").html("Start typing...").fadeIn();
+
+      $(this).on("blur", function () {
+        setTimeout(function () {
+          $(".search-results").css("display", "none");
+        }, 300);
+      });
+
+      return;
+    }
 
     let strictResults = strictSearchWorker.search(content, {
       suggest: true,
@@ -64,8 +79,6 @@ function initSearch() {
     results = results.sort((x: string) => {
       return x.toUpperCase() === content.toUpperCase() ? -1 : 0;
     });
-
-    console.log(results, results.length);
 
     // if (content == "") {
     //   places.forEach((place) => {
@@ -106,30 +119,23 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 
   $("#" + jqid).on("keyup", function (e) {
     if (e.key === "Enter") {
-      console.log("HIGHLIGHTED", highlightedResult, highlightedIndex);
       select(highlightedResult ?? firstResult, jqid, "ENTER");
       document.getElementById(jqid)?.blur();
     }
   });
 
   $("#" + jqid).on("keydown", function (e) {
-    console.log(e.key);
     if (e.key === "ArrowDown") {
       highlightedIndex++;
-      console.log(highlightedIndex);
     } else if (e.key === "ArrowUp") {
       highlightedIndex--;
-      console.log(highlightedIndex);
     }
 
     if (highlightedIndex < -1) {
-      console.log("WRAPD");
       highlightedIndex = results.length - 1;
-      console.log(highlightedIndex);
     }
 
     if (highlightedIndex > results.length - 1) {
-      console.log("WRAPU");
       highlightedIndex = -1;
     }
 
@@ -140,7 +146,6 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
         .eq(highlightedIndex)
         .addClass("isHighlighted");
       highlightedResult = $(".isHighlighted").attr("data-placeId");
-      console.log(highlightedResult);
       // $(".isHighlighted")[0].scrollIntoView(false);
       $("html, body").animate(
         {
@@ -161,7 +166,6 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
   $("#" + jqid).on("blur", function () {
     setTimeout(function () {
       $(".search-results").css("display", "none");
-      console.log($(".search-results").children().length);
       if ($(".search-results").children().length > 0)
         select(highlightedResult ?? firstResult, jqid, "BLUR");
     }, 300);
@@ -169,12 +173,10 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 }
 
 function select(placeId: string, jqid: string, source: string) {
-  console.log("SELECT from", source, placeId, jqid);
-
   let place = places.filter((x) => x.id == placeId)[0];
 
   if (place == undefined) {
-    $("#" + jqid).removeAttr("data");
+    $("#" + jqid).removeAttr("data-dest");
     $(".search-results").html("").css("display", "none");
   } else {
     $("#" + jqid).html(
@@ -182,7 +184,7 @@ function select(placeId: string, jqid: string, source: string) {
         " - " +
         (place.displayName ?? place.longName ?? place.id)
     );
-    $("#" + jqid).attr("data", placeId);
+    $("#" + jqid).attr("data-dest", placeId);
     $(".search-results").html("").css("display", "none");
   }
 
@@ -199,13 +201,13 @@ $("#selection-swap").on("click", function () {
   to.off("keyup");
   to.off("blur");
 
-  let fromid = from.attr("data") ?? "";
-  let toid = to.attr("data") ?? "";
+  let fromid = from.attr("data-dest") ?? "";
+  let toid = to.attr("data-dest") ?? "";
   let fromContent = from.html();
   let toContent = to.html();
 
-  from.attr("data", toid);
-  to.attr("data", fromid);
+  from.attr("data-dest", toid);
+  to.attr("data-dest", fromid);
   from.html(toContent);
   to.html(fromContent);
 

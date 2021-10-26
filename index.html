@@ -7,7 +7,10 @@
     <title>MRT RapidRoute</title>
     <meta name="description" content="Minecart Rapid Transit route finder" />
     <meta name="author" content="Scarycrumb45" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
     <meta name="theme-color" content="#86CD82" />
 
     <link
@@ -109,6 +112,18 @@
       <div class="title">
         <h1>MRT <span>RapidRoute</span></h1>
       </div>
+      <div class="top-buttons">
+        <a class="feedback" href="https://forms.gle/zi8hj3hB6nrBkYFM6">
+          <span class="material-icons">
+            feedback
+          </span>
+        </a>
+        <button class="open-settings">
+          <span class="material-icons">
+            settings
+          </span>
+        </button>
+      </div>
     </div>
 
     <div class="lead">
@@ -155,38 +170,6 @@
             expand_more
           </span>
         </button>
-        <div class="air-menu menu">
-          <label>
-            <input
-              type="checkbox"
-              checked="true"
-              class="checkbox"
-              data-mode="flight"
-            />
-            <span class="check"></span>
-            <span class="checkbox-text">Flights</span>
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked="true"
-              class="checkbox"
-              data-mode="heli"
-            />
-            <span class="check"></span>
-            <span class="checkbox-text">Helicopters</span>
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked="true"
-              class="checkbox"
-              data-mode="seaplane"
-            />
-            <span class="check"></span>
-            <span class="checkbox-text">Seaplanes</span>
-          </label>
-        </div>
       </div>
       <label>
         <input
@@ -204,15 +187,40 @@
         <span class="checkbox-text">Spawn&nbsp;Warps</span>
       </label>
     </div>
-
-    <button onclick="alert(1);startNavigation()">STARTNAV</button>
-
-    <a class="feedback" href="https://forms.gle/zi8hj3hB6nrBkYFM6">
-      <span class="material-icons">
-        feedback
-      </span>
-      <span class="feedback-text">Feedback</span>
-    </a>
+    <div class="options dropdowns">
+      <div class="air-menu menu">
+        <label>
+          <input
+            type="checkbox"
+            checked="true"
+            class="checkbox"
+            data-mode="flight"
+          />
+          <span class="check"></span>
+          <span class="checkbox-text">Flights</span>
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked="true"
+            class="checkbox"
+            data-mode="heli"
+          />
+          <span class="check"></span>
+          <span class="checkbox-text">Helicopters</span>
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked="true"
+            class="checkbox"
+            data-mode="seaplane"
+          />
+          <span class="check"></span>
+          <span class="checkbox-text">Seaplanes</span>
+        </label>
+      </div>
+    </div>
 
     <div id="searching" class="searching" style="display: none;">
       <div class="loader">
@@ -224,5 +232,46 @@
     </div>
 
     <div id="results"></div>
+
+    <div class="nav-container">
+      <div class="title-container">
+        <button class="exit-nav">&times</button>
+        <img class="logo" src="./icon/RapidRoute.png" />
+        <div class="title">
+          <h1>MRT <span>Navigator</span></h1>
+        </div>
+      </div>
+      <div class="iframeContainer">
+        <iframe id="dynmap"></iframe>
+      </div>
+
+      <div class="nav-summary">
+        <div class="playerhead">
+          <img
+            onerror="this.src='https://crafatar.com/avatars/8667ba71-b85a-4004-af54-457a9734eed7?overlay=true'"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-container">
+      <div class="settings">
+        <button class="close-settings">&times</button>
+        <h2>Options</h2>
+        <label>
+          <div>
+            Player Name
+            <p class="settings-hint">Case Sensitive</p>
+          </div>
+          <input type="text"
+        /></label>
+        <div class="settings-theme">
+          <p>Theme</p>
+          <button id="system">Follow System</button>
+          <button id="dark">Dark</button>
+          <button id="light">Light</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
