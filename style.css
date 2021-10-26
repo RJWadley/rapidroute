@@ -1015,6 +1015,7 @@ iframe {
   flex-direction: column;
   align-items: left;
   position: relative;
+  box-shadow: var(--box-shadow);
 }
 
 .close-settings {
