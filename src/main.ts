@@ -280,9 +280,9 @@ function parseCodeshares(codesharesRaw: Array<Array<string>>) {
     darkColors[company[2]] = company[5]; //colors[displayName] = color
     logos[company[2]] = company[3]; //logos[displayName] = logo
 
-    codeshares[company[0]] = {};
+    if (codeshares[company[0]] == undefined) codeshares[company[0]] = {};
 
-    for (var i = parseInt(range[0]); i <= parseInt(range[1]); i++) {
+    for (let i = parseInt(range[0]); i <= parseInt(range[1]); i++) {
       //name + number = displayname
       codeshares[company[0]][i] = company[2]; //
     }
