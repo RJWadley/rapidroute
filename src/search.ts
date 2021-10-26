@@ -40,6 +40,7 @@ function initSearch() {
 
     let parser = new DOMParser();
     let doc = parser.parseFromString(content, "text/html");
+
     content = doc.body.textContent ?? "";
 
     // @ts-ignore

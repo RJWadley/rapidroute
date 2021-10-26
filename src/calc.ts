@@ -342,7 +342,7 @@ function populateResults(results: Array<Array<string>>) {
     });
 
     resultElem.append(
-      `<button class="nav-start" onclick='startNavigation(${JSON.stringify(
+      `<button class="nav-start" tabindex="-1" onclick='startNavigation(${JSON.stringify(
         result
       )}, ${i})'>Start Navigation</button>`
     );
@@ -611,6 +611,7 @@ function initHeaders() {
     parent.toggleClass("isVisible");
 
     if (parent.hasClass("isVisible")) {
+      parent.children(".nav-start").attr("tabindex", "0");
       parent.css("max-height", "none");
       let height = Math.round(parent.height() ?? 999999) + "px";
       parent.css("max-height", "50px");
@@ -619,6 +620,7 @@ function initHeaders() {
       }, 1);
     } else {
       parent.css("max-height", "50px");
+      parent.children(".nav-start").attr("tabindex", "-1");
     }
   });
 

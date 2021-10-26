@@ -269,7 +269,7 @@ function populateResults(results) {
             });
             resultElem.children().last().append(multiflights);
         });
-        resultElem.append(`<button class="nav-start" onclick='startNavigation(${JSON.stringify(result)}, ${i})'>Start Navigation</button>`);
+        resultElem.append(`<button class="nav-start" tabindex="-1" onclick='startNavigation(${JSON.stringify(result)}, ${i})'>Start Navigation</button>`);
         $("#results").append(resultElem);
     });
     //make headers clickable
@@ -519,6 +519,7 @@ function initHeaders() {
         let parent = $(this).parent();
         parent.toggleClass("isVisible");
         if (parent.hasClass("isVisible")) {
+            parent.children(".nav-start").attr("tabindex", "0");
             parent.css("max-height", "none");
             let height = Math.round((_a = parent.height()) !== null && _a !== void 0 ? _a : 999999) + "px";
             parent.css("max-height", "50px");
@@ -528,6 +529,7 @@ function initHeaders() {
         }
         else {
             parent.css("max-height", "50px");
+            parent.children(".nav-start").attr("tabindex", "-1");
         }
     });
     $(".toggle-all").on("click keypress", function (event) {
