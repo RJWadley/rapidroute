@@ -790,12 +790,12 @@ $(".close-settings").on("click", function () {
 
 let theme = getItem("theme") ?? "system";
 $("#" + theme).addClass("settings-active");
-$("html").attr("data-theme", theme);
 
 if (
-  (window.matchMedia &&
+  (theme == "system" &&
+    window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches) ||
-  getItem("theme") == "dark"
+  theme == "dark"
 ) {
   $("html").attr("data-theme", "dark");
 }
