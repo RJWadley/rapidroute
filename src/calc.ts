@@ -630,6 +630,9 @@ function initHeaders() {
   });
 
   $(".route-header").first().click();
+  setTimeout(function () {
+    $(".route").first().css("max-height", "none");
+  }, 10);
 }
 
 startSearch();

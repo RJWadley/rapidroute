@@ -538,6 +538,9 @@ function initHeaders() {
         $(".route-header").click();
     });
     $(".route-header").first().click();
+    setTimeout(function () {
+        $(".route").first().css("max-height", "none");
+    }, 10);
 }
 startSearch();
 //# sourceMappingURL=calc.js.map
