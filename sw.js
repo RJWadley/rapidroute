@@ -1,56 +1,38 @@
-var CACHE = "network-or-cache";
+// [Working example](/serviceworker-cookbook/offline-fallback/).
 
-// On install, cache some resource.
-self.addEventListener("install", function (evt) {
-  console.log("The service worker is being installed.");
-
-  // Ask the service worker to keep installing until the returning promise
-  // resolves.
-  evt.waitUntil(precache());
-});
-
-// On fetch, use cache but update the entry with the latest contents
-// from the server.
-self.addEventListener("fetch", function (evt) {
-  console.log("The service worker is serving the asset.");
-  // Try network and if it fails, go for the cached copy.
-  evt.respondWith(
-    fromNetwork(evt.request, 400).catch(function () {
-      return fromCache(evt.request);
+self.addEventListener("install", function (event) {
+  // Put `offline.html` page into cache
+  var offlineRequest = new Request("offline.html");
+  event.waitUntil(
+    fetch(offlineRequest).then(function (response) {
+      return caches.open("offline").then(function (cache) {
+        console.log("[oninstall] Cached offline page", response.url);
+        return cache.put(offlineRequest, response);
+      });
     })
   );
 });
 
-// Open a cache and use `addAll()` with an array of assets to add all of them
-// to the cache. Return a promise resolving when all the assets are added.
-function precache() {
-  return caches.open(CACHE).then(function (cache) {
-    return cache.addAll(["./"]);
-  });
-}
-
-// Time limited network request. If the network fails or the response is not
-// served before timeout, the promise is rejected.
-function fromNetwork(request, timeout) {
-  return new Promise(function (fulfill, reject) {
-    // Reject in case of timeout.
-    var timeoutId = setTimeout(reject, timeout);
-    // Fulfill in case of success.
-    fetch(request).then(function (response) {
-      clearTimeout(timeoutId);
-      fulfill(response);
-      // Reject also if network fetch rejects.
-    }, reject);
-  });
-}
-
-// Open the cache where the assets were stored and search for the requested
-// resource. Notice that in case of no matching, the promise still resolves
-// but it does with `undefined` as value.
-function fromCache(request) {
-  return caches.open(CACHE).then(function (cache) {
-    return cache.match(request).then(function (matching) {
-      return matching || Promise.reject("no-match");
-    });
-  });
-}
+self.addEventListener("fetch", function (event) {
+  // Only fall back for HTML documents.
+  var request = event.request;
+  // && request.headers.get('accept').includes('text/html')
+  if (request.method === "GET") {
+    // `fetch()` will use the cache when possible, to this examples
+    // depends on cache-busting URL parameter to avoid the cache.
+    event.respondWith(
+      fetch(request).catch(function (error) {
+        // `fetch()` throws an exception when the server is unreachable but not
+        // for valid HTTP responses, even `4xx` or `5xx` range.
+        console.error(
+          "[onfetch] Failed. Serving cached offline fallback " + error
+        );
+        return caches.open("offline").then(function (cache) {
+          return cache.match("offline.html");
+        });
+      })
+    );
+  }
+  // Any other handlers come here. Without calls to `event.respondWith()` the
+  // request will be handled without the ServiceWorker.
+});
