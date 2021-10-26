@@ -1,17 +1,22 @@
 {
-  "name": "RapidRoute",
-  "short_name": "RR",
-  "icons": [{
-    "src": "./android-chrome-192x192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }, {
-    "src": "./android-chrome-512x512.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }],
-  "theme_color": "#86CD82",
-  "Scope": "/rapidroute/",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "short_name": "RapidRoute",
+  "name": "MRT RapidRoute",
+  "icons": [
+    {
+      "src": "assets/manifest-icon-192.maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "assets/manifest-icon-512.maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "description": "Weather forecast information"
 }

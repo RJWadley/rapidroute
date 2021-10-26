@@ -1,9 +1,7 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-
     <title>MRT RapidRoute</title>
     <meta name="description" content="Minecart Rapid Transit route finder" />
     <meta name="author" content="Scarycrumb45" />
@@ -11,77 +9,26 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1"
     />
-    <meta name="theme-color" content="#86CD82" />
+
+    <link rel="manifest" href="site.webmanifest" />
 
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Material+Icons"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Material+Icons"
     />
     <link rel="stylesheet" href="style.css" />
-
     <script
-      defer
+      defer=""
       src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
     ></script>
     <script src="https://cdn.jsdelivr.net/gh/nextapps-de/flexsearch@0.7.2/dist/flexsearch.bundle.js"></script>
-    <script defer src="libs/lz-string.min.js"></script>
-    <script defer src="dist/util.js"></script>
-    <script defer src="dist/calc.js"></script>
-    <script defer src="dist/search.js"></script>
-    <script defer src="dist/main.js"></script>
-    <script defer src="dist/navigate.js"></script>
+    <script defer="" src="libs/lz-string.min.js"></script>
+    <script defer="" src="dist/util.js"></script>
+    <script defer="" src="dist/calc.js"></script>
+    <script defer="" src="dist/search.js"></script>
+    <script defer="" src="dist/main.js"></script>
+    <script defer="" src="dist/navigate.js"></script>
 
-    <link
-      rel="apple-touch-icon"
-      sizes="57x57"
-      href="icon/apple-icon-57x57.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="60x60"
-      href="icon/apple-icon-60x60.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="72x72"
-      href="icon/apple-icon-72x72.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="76x76"
-      href="icon/apple-icon-76x76.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="114x114"
-      href="icon/apple-icon-114x114.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="120x120"
-      href="icon/apple-icon-120x120.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="144x144"
-      href="icon/apple-icon-144x144.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="152x152"
-      href="icon/apple-icon-152x152.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="icon/apple-icon-180x180.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="192x192"
-      href="icon/android-icon-192x192.png"
-    />
     <link
       rel="icon"
       type="image/png"
@@ -91,24 +38,146 @@
     <link
       rel="icon"
       type="image/png"
-      sizes="96x96"
-      href="icon/favicon-96x96.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
       sizes="16x16"
       href="icon/favicon-16x16.png"
     />
-    <link rel="manifest" href="icon/manifest.json" />
-    <meta name="msapplication-TileColor" content="#ffffff" />
-    <meta name="msapplication-TileImage" content="icon/ms-icon-144x144.png" />
-    <meta name="theme-color" content="#ffffff" />
-  </head>
 
+    <link rel="apple-touch-icon" href="assets/apple-icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2048-2732.jpg"
+      media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2732-2048.jpg"
+      media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1668-2388.jpg"
+      media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2388-1668.jpg"
+      media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1536-2048.jpg"
+      media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2048-1536.jpg"
+      media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1668-2224.jpg"
+      media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2224-1668.jpg"
+      media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1620-2160.jpg"
+      media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2160-1620.jpg"
+      media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1284-2778.jpg"
+      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2778-1284.jpg"
+      media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1170-2532.jpg"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2532-1170.jpg"
+      media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1125-2436.jpg"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2436-1125.jpg"
+      media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1242-2688.jpg"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2688-1242.jpg"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-828-1792.jpg"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1792-828.jpg"
+      media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1242-2208.jpg"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-2208-1242.jpg"
+      media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-750-1334.jpg"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1334-750.jpg"
+      media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-640-1136.jpg"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      href="assets/apple-splash-1136-640.jpg"
+      media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)"
+    />
+  </head>
   <body>
     <div class="title-container">
-      <img class="logo" src="./icon/RapidRoute.png" />
+      <img class="logo" alt="RapidRoute Logo" src="./icon/rapidroute.svg" />
       <div class="title">
         <h1>MRT <span>RapidRoute</span></h1>
       </div>
@@ -125,7 +194,6 @@
         </button>
       </div>
     </div>
-
     <div class="lead">
       <h1>Route Finder</h1>
     </div>
@@ -162,7 +230,6 @@
       ></div>
     </div>
     <div class="search-results"></div>
-
     <div class="options">
       <div>
         <button id="air-toggle">
@@ -221,7 +288,6 @@
         </label>
       </div>
     </div>
-
     <div id="searching" class="searching" style="display: none;">
       <div class="loader">
         <div></div>
@@ -230,13 +296,11 @@
         <div></div>
       </div>
     </div>
-
     <div id="results"></div>
-
     <div class="nav-container">
       <div class="title-container">
-        <button class="exit-nav">&times</button>
-        <img class="logo" src="./icon/RapidRoute.png" />
+        <button class="exit-nav">×</button>
+        <img class="logo" src="./icon/navigator.svg" />
         <div class="title">
           <h1>MRT <span>Navigator</span></h1>
         </div>
@@ -244,7 +308,6 @@
       <div class="iframeContainer">
         <iframe id="dynmap"></iframe>
       </div>
-
       <div class="nav-summary">
         <div class="playerhead">
           <img
@@ -253,18 +316,17 @@
         </div>
       </div>
     </div>
-
     <div class="settings-container">
       <div class="settings">
-        <button class="close-settings">&times</button>
+        <button class="close-settings">×</button>
         <h2>Options</h2>
         <label>
           <div>
             Player Name
             <p class="settings-hint">Case Sensitive</p>
           </div>
-          <input type="text"
-        /></label>
+          <input type="text" />
+        </label>
         <div class="settings-theme">
           <p>Theme</p>
           <button id="system">Follow System</button>
@@ -273,5 +335,11 @@
         </div>
       </div>
     </div>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
   </body>
 </html>
