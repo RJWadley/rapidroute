@@ -38,6 +38,15 @@ function initSearch() {
 
     let id = $(this).attr("id");
 
+    highlightedIndex = -1;
+
+    if (window.innerWidth < 500 && highlightedIndex == -1) {
+      let elmnt = document.getElementsByClassName("selection-container")[0];
+      console.log(elmnt);
+      elmnt?.scrollIntoView({ behavior: "smooth" });
+      $(".spacer").css("height", "1000px");
+    }
+
     let parser = new DOMParser();
     let doc = parser.parseFromString(content, "text/html");
 
@@ -157,7 +166,7 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
         },
         50
       );
-    } else {
+    } else if (window.innerWidth >= 500) {
       $(".search-results").children().removeClass("isHighlighted");
       highlightedResult = undefined;
       window.scrollTo(0, 0);
@@ -174,6 +183,7 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 }
 
 function select(placeId: string, jqid: string, source: string) {
+  $("spacer").css("height", "0");
   let place = places.filter((x) => x.id == placeId)[0];
 
   if (place == undefined) {

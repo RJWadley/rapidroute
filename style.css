@@ -104,6 +104,17 @@ body {
   left: 1px;
 }
 
+@media only screen and (max-width: 500px) {
+  .title,
+  .logo {
+    transform: scale(0.9);
+  }
+
+  .title {
+    margin-left: -20px;
+  }
+}
+
 .lead {
   width: 100%;
   overflow: hidden;
@@ -1006,17 +1017,34 @@ iframe {
   display: none;
 }
 
+.settings h2 {
+  margin: 0;
+  margin-bottom: 20px;
+  height: 50px;
+}
+
 .settings {
   background-color: var(--base-color);
   border-radius: var(--border-radius);
-  min-width: min(500px, 90vw);
-  min-height: min(500px, 90vh);
   padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: flex-start;
   position: relative;
   box-shadow: var(--box-shadow);
+  width: min(500px, calc(80vw - 40px));
+  height: min(500px, calc(80vh - 40px));
+}
+
+.cookie {
+  word-wrap: break-word;
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
+  height: 100%;
+  color: var(--light-text-color);
+  display: flex;
+  align-items: flex-end;
 }
 
 .close-settings {
@@ -1031,6 +1059,7 @@ iframe {
   justify-content: space-between;
   align-items: center;
   padding: 10px;
+  width: calc(100% - 20px);
 }
 
 .settings-hint {
@@ -1049,12 +1078,14 @@ iframe {
   background-color: var(--base-color);
   color: var(--text-color);
   font-family: Manrope;
+  margin: 10px 0;
 }
 
 .settings-theme {
-  display: flex;
-  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
   padding: 10px;
+  width: calc(100% - 20px);
 }
 
 .settings-theme p {
@@ -1095,4 +1126,18 @@ iframe {
 
 #light {
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+@media only screen and (max-width: 500px) {
+  .settings label {
+    flex-direction: column;
+  }
+  .settings-theme {
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+  .settings p {
+    grid-column: span 3;
+    text-align: center;
+  }
 }

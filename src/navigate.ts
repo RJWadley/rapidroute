@@ -15,10 +15,7 @@ const NAV_MINECART_SPEED = 8;
 
 function startNavigation(route: Array<string>, resultId: number) {
   //@ts-ignore
-  if (mixpanel) {
-    //@ts-ignore
-    mixpanel.track("Navigate", { from: route[0], to: route[route.length - 1] });
-  }
+  mixpanel.track("Navigate", { from: route[0], to: route[route.length - 1] });
 
   console.log("GENERATING PHRASES");
   speakText("Starting navigation");

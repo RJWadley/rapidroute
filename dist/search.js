@@ -33,6 +33,13 @@ function initSearch() {
         var _a;
         let content = $(this).html();
         let id = $(this).attr("id");
+        highlightedIndex = -1;
+        if (window.innerWidth < 500 && highlightedIndex == -1) {
+            let elmnt = document.getElementsByClassName("selection-container")[0];
+            console.log(elmnt);
+            elmnt === null || elmnt === void 0 ? void 0 : elmnt.scrollIntoView({ behavior: "smooth" });
+            $(".spacer").css("height", "1000px");
+        }
         let parser = new DOMParser();
         let doc = parser.parseFromString(content, "text/html");
         content = (_a = doc.body.textContent) !== null && _a !== void 0 ? _a : "";
@@ -131,7 +138,7 @@ function updateSearchResults(results, jqid) {
                     ((_b = (_a = $(".isHighlighted").offset()) === null || _a === void 0 ? void 0 : _a.top) !== null && _b !== void 0 ? _b : 0)),
             }, 50);
         }
-        else {
+        else if (window.innerWidth >= 500) {
             $(".search-results").children().removeClass("isHighlighted");
             highlightedResult = undefined;
             window.scrollTo(0, 0);
@@ -147,6 +154,7 @@ function updateSearchResults(results, jqid) {
 }
 function select(placeId, jqid, source) {
     var _a, _b, _c;
+    $("spacer").css("height", "0");
     let place = places.filter((x) => x.id == placeId)[0];
     if (place == undefined) {
         $("#" + jqid).removeAttr("data-dest");
