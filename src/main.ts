@@ -762,6 +762,10 @@ async function loadData() {
   initSearch();
   generateColors();
 
+  // @ts-ignore
+  // prettier-ignore
+  window.mixpanel = window.mixpanel || {track:function(d,f){console.log(d,f)}}
+
   setItem("routes", routes);
   setItem("places", places);
   setItem("providers", providers);
