@@ -85,6 +85,19 @@ function startSearch() {
     }
     if (from != "" && to != "") {
         //@ts-ignore
+        if (typeof window.mixpanel == "undefined") {
+            console.log("rererere");
+            //@ts-ignore
+            window.mixpanel = {
+                track: function (d, f) {
+                    console.log(d, f);
+                },
+            };
+            document
+                .getElementsByClassName("cookie")[0]
+                .append("All tracking is currently disabled by your browser.");
+        }
+        //@ts-ignore
         mixpanel.track("Searched", { from: from, to: to });
         $("#results").html("");
         $("#searching").fadeIn();
