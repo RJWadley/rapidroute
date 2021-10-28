@@ -84,6 +84,9 @@ function startSearch() {
         return;
     }
     if (from != "" && to != "") {
+        //@ts-ignore
+        if (mixpanel)
+            mixpanel.track("Searched", { from: from, to: to });
         $("#results").html("");
         $("#searching").fadeIn();
         $("#progress-bar").fadeIn();
