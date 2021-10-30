@@ -13,7 +13,7 @@ var allFromResults = $("<div><div>Start Typing...</div></div>");
 // @ts-ignore
 var searchWorker = new FlexSearch.Index({
     tokenize: "reverse",
-    charset: "latin:advanced",
+    charset: "latin:simple",
 });
 // @ts-ignore
 var strictSearchWorker = new FlexSearch.Index({
