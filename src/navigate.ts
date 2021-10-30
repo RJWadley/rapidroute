@@ -1166,6 +1166,7 @@ $(".nav-summary").on(
 );
 
 $(".exit-nav").on("click", function () {
+  speechSynthesis.cancel();
   clearTimeout(loop);
   $(".nav-container").css("display", "none");
   $("body").css("overflow", "unset");
