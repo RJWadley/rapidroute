@@ -934,7 +934,7 @@ function populateVoices() {
     var _a;
     voices = speechSynthesis.getVoices();
     voices.forEach((voice, i) => {
-        $("#voice-select").append(`<option value="${i}">${voice.name}</option`);
+        $("#voice-select").append(`<option value="${i}">${voice.name}</option>`);
     });
     $("#voice-select").val((_a = getItem("voice")) !== null && _a !== void 0 ? _a : -1);
 }
