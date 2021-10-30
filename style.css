@@ -195,6 +195,7 @@ body {
 #to {
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
   padding-left: 35px;
+  order: 1;
 }
 
 [contentEditable="true"]:empty:not(:focus):before {

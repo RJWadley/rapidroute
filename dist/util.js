@@ -113,4 +113,9 @@ function safe(provider) {
     result = result.replace(/[^a-zA-Z0-9-]/g, "");
     return result;
 }
+function pause(time) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, time);
+    });
+}
 //# sourceMappingURL=util.js.map

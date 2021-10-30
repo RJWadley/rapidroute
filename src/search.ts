@@ -1,3 +1,6 @@
+var allToResults = $("<div><div>Start Typing...</div></div>");
+var allFromResults = $("<div><div>Start Typing...</div></div>");
+
 // @ts-ignore
 var searchWorker = new FlexSearch.Index({
   tokenize: "reverse",
@@ -31,9 +34,23 @@ function initSearch() {
 
     searchWorker.add(place.id, searchable);
     strictSearchWorker.add(place.id, searchable);
+
+    allToResults.append(`
+      <div data-placeId="${place.id}"
+           onmousedown="select('${place.id}', 'to', 'click')">
+        ${place.shortName ?? place.id} - ${place.displayName ?? place.longName}
+      </div>
+    `);
+
+    allFromResults.append(`
+      <div data-placeId="${place.id}"
+           onmousedown="select('${place.id}', 'from', 'click')">
+        ${place.shortName ?? place.id} - ${place.displayName ?? place.longName}
+      </div>
+    `);
   });
 
-  $(".search").on("input click", function () {
+  $(".search").on("input focus", function () {
     let content = $(this).html();
 
     let id = $(this).attr("id");
@@ -57,15 +74,7 @@ function initSearch() {
     if (nothing) nothing(content);
 
     if (content == "") {
-      $(this).attr("data-dest", "");
-      $(".search-results").html("Start typing...").fadeIn();
-
-      $(this).on("blur", function () {
-        setTimeout(function () {
-          $(".search-results").css("display", "none");
-        }, 300);
-      });
-
+      updateSearchResults(["ShowAllResults"], id);
       return;
     }
 
@@ -90,12 +99,6 @@ function initSearch() {
       return x.toUpperCase() === content.toUpperCase() ? -1 : 0;
     });
 
-    // if (content == "") {
-    //   places.forEach((place) => {
-    //     results.push(place.id);
-    //   });
-    // }
-
     updateSearchResults(results, id);
   });
 }
@@ -103,25 +106,53 @@ function initSearch() {
 let highlightedResult: string | undefined = undefined;
 let highlightedIndex: number = -1;
 
-function updateSearchResults(results: Array<string>, jqid: string | undefined) {
+async function updateSearchResults(
+  results: Array<string>,
+  jqid: string | undefined
+) {
   if (jqid == undefined) return;
-  $(".search-results").html("").fadeIn();
+  $(".search-results").fadeIn();
 
   if (results.length == 0) {
     $(".search-results").html("No places found");
+    return;
   }
 
-  results.forEach((result) => {
-    let place = places.filter((x) => x.id == result)[0];
-    $(".search-results").append(`
-      <div data-placeId="${place.id}"
-           onclick="select('${place.id}', '${jqid}')">
-        ${place.shortName ?? place.id} - ${place.displayName ?? place.longName}
-      </div>
-    `);
-  });
-
   let firstResult = results[0];
+
+  if (results[0] == "ShowAllResults") {
+    await pause(10);
+
+    if (document?.activeElement?.id != jqid) return;
+
+    firstResult = "";
+
+    $(jqid).attr("data-dest", "");
+    if (jqid == "from") {
+      $(".search-results")
+        .html("")
+        .append(allFromResults.clone().children())
+        .fadeIn();
+    } else {
+      $(".search-results")
+        .html("")
+        .append(allToResults.clone().children())
+        .fadeIn();
+    }
+  } else {
+    $(".search-results").html("");
+    results.forEach((result) => {
+      let place = places.filter((x) => x.id == result)[0];
+      $(".search-results").append(`
+        <div data-placeId="${place.id}"
+             onmousedown="select('${place.id}', '${jqid}', 'click')">
+          ${place.shortName ?? place.id} - ${
+        place.displayName ?? place.longName
+      }
+        </div>
+      `);
+    });
+  }
 
   $("#" + jqid).off("keyup");
   $("#" + jqid).off("keydown");
@@ -142,10 +173,10 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
     }
 
     if (highlightedIndex < -1) {
-      highlightedIndex = results.length - 1;
+      highlightedIndex = $(".search-results").children().length - 1;
     }
 
-    if (highlightedIndex > results.length - 1) {
+    if (highlightedIndex > $(".search-results").children().length - 1) {
       highlightedIndex = -1;
     }
 
@@ -175,15 +206,20 @@ function updateSearchResults(results: Array<string>, jqid: string | undefined) {
 
   $("#" + jqid).on("blur", function () {
     setTimeout(function () {
-      $(".search-results").css("display", "none");
       if ($(".search-results").children().length > 0)
         select(highlightedResult ?? firstResult, jqid, "BLUR");
-    }, 300);
+    }, 1);
+  });
+
+  $(".search-results div").on("mousedown", function () {
+    console.log("CLICKED");
   });
 }
 
 function select(placeId: string, jqid: string, source: string) {
+  console.log("select", placeId, source);
   $("spacer").css("height", "0");
+  $("#" + jqid).off("blur");
   let place = places.filter((x) => x.id == placeId)[0];
 
   if (place == undefined) {
@@ -236,5 +272,5 @@ $("#air-toggle").on("click", function () {
 $(".search").on("focus", function () {
   setTimeout(function () {
     document.execCommand("selectAll", false, undefined);
-  }, 10);
+  }, 100);
 });
