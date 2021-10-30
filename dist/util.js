@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 function setItem(name, value) {
     //stringify then compress
     let compressed = LZString.compressToUTF16(JSON.stringify(value));
@@ -116,6 +125,31 @@ function safe(provider) {
 function pause(time) {
     return new Promise((resolve) => {
         setTimeout(resolve, time);
+    });
+}
+function asyncSortPlaces() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((resolve) => {
+            function onmessage(e) {
+                let places = e.data[0];
+                let routes = e.data[1];
+                places = places.sort(function (a, b) {
+                    return routes.filter((x) => x.to == a.id).length +
+                        routes.filter((x) => x.to == a.id).length <
+                        routes.filter((x) => x.to == b.id).length +
+                            routes.filter((x) => x.to == b.id).length
+                        ? 1
+                        : -1;
+                });
+                postMessage(places);
+            }
+            let worker = new Worker(URL.createObjectURL(new Blob(["onmessage = " + onmessage.toString()])));
+            worker.onmessage = function (e) {
+                places = e.data;
+                resolve(places);
+            };
+            worker.postMessage([places, routes]);
+        });
     });
 }
 //# sourceMappingURL=util.js.map

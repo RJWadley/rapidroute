@@ -131,3 +131,33 @@ function pause(time: number) {
     setTimeout(resolve, time);
   });
 }
+
+async function asyncSortPlaces(): Promise<Array<Place>> {
+  return new Promise((resolve) => {
+    function onmessage(e: any) {
+      let places = e.data[0];
+      let routes = e.data[1];
+      places = places.sort(function (a: any, b: any) {
+        return routes.filter((x: any) => x.to == a.id).length +
+          routes.filter((x: any) => x.to == a.id).length <
+          routes.filter((x: any) => x.to == b.id).length +
+            routes.filter((x: any) => x.to == b.id).length
+          ? 1
+          : -1;
+      });
+
+      postMessage(places);
+    }
+
+    let worker = new Worker(
+      URL.createObjectURL(new Blob(["onmessage = " + onmessage.toString()]))
+    );
+
+    worker.onmessage = function (e) {
+      places = e.data;
+      resolve(places);
+    };
+
+    worker.postMessage([places, routes]);
+  });
+}

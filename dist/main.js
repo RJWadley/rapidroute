@@ -577,6 +577,10 @@ function generateColors() {
 }
 function loadData() {
     return __awaiter(this, void 0, void 0, function* () {
+        yield pause(500);
+        let shouldSort = true;
+        if (places.length == 0)
+            shouldSort = false;
         routes = [];
         places = [];
         providers = [];
@@ -603,6 +607,10 @@ function loadData() {
         parseCodeshares(dataSheet[3].values);
         combineData();
         generateTimeMaps(routes, places);
+        console.log("SORTING");
+        if (shouldSort)
+            places = yield asyncSortPlaces();
+        console.log("DONE SORTING");
         initSearch();
         generateColors();
         // @ts-ignore
@@ -628,6 +636,7 @@ catch (_c) {
 }
 $(".open-settings").on("click", function () {
     $(".settings-container").css("display", "grid");
+    populateVoices();
 });
 $(".close-settings").on("click", function () {
     $(".settings-container").css("display", "none");

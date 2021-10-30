@@ -930,20 +930,34 @@ function triggerSpeakQueue() {
   }, 3000);
 
   voices = window.speechSynthesis.getVoices();
-  voices = voices.filter((x) => x.name.toLowerCase().indexOf("english") != -1);
-  console.log(voices);
+  let voiceToUse;
+  if (getItem("voice") != null && getItem("voice") != -1) {
+    voiceToUse = voices[getItem("voice")];
+  } else {
+    voices = voices.filter(
+      (x) => x.name.toLowerCase().indexOf("english") != -1
+    );
+  }
+  console.log(voiceToUse);
   var msg = new SpeechSynthesisUtterance();
-  msg.voice = voices[6];
+  msg.voice = voiceToUse ?? voices[6];
   msg.volume = 1; // 0 to 1
   msg.rate = 1; // 0.1 to 10
   msg.pitch = 1; //0 to 2
   msg.text = text;
   msg.lang = "en-US";
+
+  let resumeInterval = setInterval(function () {
+    console.log("Speech taking longer than 14 seconds, resuming PREEMPTIVELY");
+    speechSynthesis.resume();
+  }, 14 * 1000);
+
   msg.onend = function (e) {
     console.log("Speak Finished in " + e.elapsedTime + " mseconds.");
     isSpeaking = false;
     speakQueue.shift();
     clearInterval(speakInterval);
+    clearInterval(resumeInterval);
     triggerSpeakQueue();
   };
   msg.onstart = function (e) {
@@ -1176,3 +1190,18 @@ $(".exit-nav").on("click", function () {
 
 let successSound = new Audio("audio/complete.mp3");
 let alertSound = new Audio("audio/alert.mp3");
+
+function populateVoices() {
+  voices = speechSynthesis.getVoices();
+
+  voices.forEach((voice, i) => {
+    $("#voice-select").append(`<option value="${i}">${voice.name}</option`);
+  });
+
+  $("#voice-select").val(getItem("voice") ?? -1);
+}
+
+$("#voice-select").on("change", function () {
+  setItem("voice", $("#voice-select").val());
+  speakText("This is a sample of speech.");
+});

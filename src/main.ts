@@ -710,6 +710,11 @@ function generateColors() {
 }
 
 async function loadData() {
+  await pause(500);
+
+  let shouldSort = true;
+  if (places.length == 0) shouldSort = false;
+
   routes = [];
   places = [];
   providers = [];
@@ -759,6 +764,9 @@ async function loadData() {
   parseCodeshares(dataSheet[3].values);
   combineData();
   generateTimeMaps(routes, places);
+  console.log("SORTING");
+  if (shouldSort) places = await asyncSortPlaces();
+  console.log("DONE SORTING");
   initSearch();
   generateColors();
 
@@ -786,6 +794,7 @@ try {
 
 $(".open-settings").on("click", function () {
   $(".settings-container").css("display", "grid");
+  populateVoices();
 });
 
 $(".close-settings").on("click", function () {

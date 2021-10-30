@@ -340,7 +340,8 @@ body {
 }
 
 .options button:hover,
-label:hover {
+label:hover,
+label:focus-within {
   background-color: var(--light-highlight);
 }
 
@@ -1015,6 +1016,7 @@ iframe {
   z-index: 201;
   display: grid;
   place-items: center;
+  padding: 20px;
   display: none;
 }
 
@@ -1035,6 +1037,7 @@ iframe {
   box-shadow: var(--box-shadow);
   width: min(500px, calc(80vw - 40px));
   height: min(500px, calc(80vh - 40px));
+  overflow-y: auto;
 }
 
 .cookie {
@@ -1118,7 +1121,7 @@ iframe {
 
 .settings-theme button:hover,
 .settings-theme button:focus {
-  background-color: var(--light-highlight);
+  background-color: var(--mid-highlight);
 }
 
 #system {
@@ -1129,9 +1132,74 @@ iframe {
   border-radius: 0 var(--border-radius) var(--border-radius) 0;
 }
 
+.settings-voice {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  margin: 20px 0px;
+}
+
+.settings-voice p {
+  margin-right: 10px;
+}
+
+select {
+  min-width: 70%;
+  min-height: 40px;
+  max-width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid #888;
+  border-radius: var(--border-radius);
+  margin: 0;
+  padding: 10px;
+  padding-right: 50px;
+  white-space: normal;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  width: 0;
+}
+
+select:hover,
+select:focus {
+  background-color: var(--mid-highlight);
+}
+
+.settings-voice::after {
+  content: "";
+  width: 15px;
+  height: 10px;
+  position: absolute;
+  right: 30px;
+  background-color: var(--light-text-color);
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  -webkit-clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  pointer-events: none;
+}
+
+option {
+  /* wrap text in compatible browsers */
+  -moz-white-space: pre-wrap;
+  -o-white-space: pre-wrap;
+  white-space: pre-wrap;
+  /* hide text that can't wrap with an ellipsis */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* add border after every option */
+  border-bottom: 1px solid #ddd;
+}
+
 @media only screen and (max-width: 500px) {
   .settings label {
-    flex-direction: column;
+    display: block;
+    text-align: center;
   }
   .settings-theme {
     display: grid;
