@@ -859,7 +859,7 @@ function initNavUI(route: Array<string>, resultId: number) {
 
   instructionArray = $(".route").eq(0).children(".leg").clone();
 
-  if (getItem("playername") == null) {
+  if (getItem("playername") == null || getItem("playername") == "") {
     setItem(
       "playername",
       prompt("Enter your Minecraft username (case-sensitive)")
