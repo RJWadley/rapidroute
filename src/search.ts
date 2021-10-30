@@ -10,7 +10,6 @@ var searchWorker = new FlexSearch.Index({
 // @ts-ignore
 var strictSearchWorker = new FlexSearch.Index({
   tokenize: "strict",
-  charset: "latin:advanced",
 });
 
 function normalize(str: string | undefined) {
@@ -84,7 +83,7 @@ function initSearch() {
     });
 
     let results = searchWorker.search(content, {
-      suggest: false,
+      suggest: true,
       limit: 200,
     });
 
