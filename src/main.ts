@@ -4,7 +4,7 @@ const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"; //1 cal
 const TOWN_SHEET_ID = "1JSmJtYkYrEx6Am5drhSet17qwJzOKDI7tE7FxPx4YNI"; // 1 call
 const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"; //1 call
 
-const VERSION = 20211026.1;
+const VERSION = 20211030;
 
 if (getItem("version") != null && getItem("version") < VERSION) {
   navigator.serviceWorker.getRegistrations().then(function (registrations) {

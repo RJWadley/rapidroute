@@ -16,8 +16,10 @@ self.addEventListener("install", function (event) {
 self.addEventListener("fetch", function (event) {
   // Only fall back for HTML documents.
   var request = event.request;
-  // && request.headers.get('accept').includes('text/html')
-  if (request.method === "GET") {
+  if (
+    request.method === "GET" &&
+    request.headers.get("accept").includes("text/html")
+  ) {
     // `fetch()` will use the cache when possible, to this examples
     // depends on cache-busting URL parameter to avoid the cache.
     event.respondWith(
@@ -32,6 +34,8 @@ self.addEventListener("fetch", function (event) {
         });
       })
     );
+  } else {
+    event.respondWith(fetch(request));
   }
   // Any other handlers come here. Without calls to `event.respondWith()` the
   // request will be handled without the ServiceWorker.
