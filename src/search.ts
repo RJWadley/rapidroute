@@ -199,7 +199,6 @@ async function updateSearchResults(
     } else if (window.innerWidth >= 500) {
       $(".search-results").children().removeClass("isHighlighted");
       highlightedResult = undefined;
-      window.scrollTo(0, 0);
     }
   });
 
