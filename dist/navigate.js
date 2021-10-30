@@ -910,6 +910,8 @@ $(".nav-summary").on("mousedown wheel DOMMouseScroll mousewheel keyup touchmove"
     }, 10 * 1000);
 });
 $(".exit-nav").on("click", function () {
+    phrases = [];
+    speakQueue = [];
     speechSynthesis.cancel();
     clearTimeout(loop);
     $(".nav-container").css("display", "none");

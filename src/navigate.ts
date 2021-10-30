@@ -1166,6 +1166,8 @@ $(".nav-summary").on(
 );
 
 $(".exit-nav").on("click", function () {
+  phrases = [];
+  speakQueue = [];
   speechSynthesis.cancel();
   clearTimeout(loop);
   $(".nav-container").css("display", "none");
