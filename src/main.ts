@@ -760,6 +760,10 @@ async function loadData() {
 
   await processAirlineMetadata(dataSheet[2].values);
 
+  // @ts-ignore
+  // prettier-ignore
+  window.mixpanel = window.mixpanel || {track:function(d,f){console.log(d,f)}}
+
   processAirportMetadata(dataSheet[1].values);
   parseCodeshares(dataSheet[3].values);
   combineData();
@@ -769,10 +773,6 @@ async function loadData() {
   console.log("DONE SORTING");
   initSearch();
   generateColors();
-
-  // @ts-ignore
-  // prettier-ignore
-  window.mixpanel = window.mixpanel || {track:function(d,f){console.log(d,f)}}
 
   setItem("routes", routes);
   setItem("places", places);

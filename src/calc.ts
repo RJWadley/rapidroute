@@ -103,7 +103,9 @@ function startSearch() {
 
   if (from != "" && to != "") {
     //@ts-ignore
-    mixpanel.track("Searched", { from: from, to: to });
+    if (typeof mixpanel != "undefined")
+      //@ts-ignore
+      mixpanel.track("Searched", { from: from, to: to });
 
     $("#results").html("");
     $("#searching").fadeIn();

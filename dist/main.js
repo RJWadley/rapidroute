@@ -603,6 +603,9 @@ function loadData() {
         parseRawFlightData("heli", transitSheet[3].values, transitSheet[4].values[0], transitSheet[5].values);
         parseRawFlightData("seaplane", transitSheet[6].values, transitSheet[7].values[0], transitSheet[8].values);
         yield processAirlineMetadata(dataSheet[2].values);
+        // @ts-ignore
+        // prettier-ignore
+        window.mixpanel = window.mixpanel || { track: function (d, f) { console.log(d, f); } };
         processAirportMetadata(dataSheet[1].values);
         parseCodeshares(dataSheet[3].values);
         combineData();
@@ -613,9 +616,6 @@ function loadData() {
         console.log("DONE SORTING");
         initSearch();
         generateColors();
-        // @ts-ignore
-        // prettier-ignore
-        window.mixpanel = window.mixpanel || { track: function (d, f) { console.log(d, f); } };
         setItem("routes", routes);
         setItem("places", places);
         setItem("providers", providers);
