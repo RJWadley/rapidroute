@@ -24,8 +24,7 @@
 html[data-theme="dark"] {
   --box-shadow-color-a: rgb(255 255 255 / 20%);
   --box-shadow-color-b: rgb(255 255 255 / 60%);
-  --box-shadow: 0 1px 20px 0 var(--box-shadow-color-a),
-    0 2px 8px -1px var(--box-shadow-color-b);
+  --box-shadow: none;
   /* background colors */
   --base-color: black;
   --light-highlight: #333;
@@ -36,7 +35,7 @@ html[data-theme="dark"] {
   --mid-text-color: #ddd;
   /* other UI stuff*/
   --button-border: #444;
-  --card-background: #222;
+  --card-background: #333;
 }
 
 html,
@@ -60,6 +59,7 @@ body {
   box-shadow: var(--box-shadow);
   position: relative;
   z-index: 2;
+  background-color: var(--card-background);
 }
 
 .title {
@@ -469,7 +469,7 @@ label:hover {
 
 .top-buttons button,
 .top-buttons a {
-  background-color: var(--base-color);
+  background-color: var(--card-background);
   border: none;
   border-radius: var(--border-radius);
   height: 50px;
@@ -874,7 +874,7 @@ label:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--base-color);
+  background-color: var(--card-background);
   color: var(--mid-text-color);
   border-radius: var(--border-radius);
   cursor: pointer;
@@ -1025,7 +1025,7 @@ iframe {
 }
 
 .settings {
-  background-color: var(--base-color);
+  background-color: var(--card-background);
   border-radius: var(--border-radius);
   padding: 20px;
   display: flex;
@@ -1076,7 +1076,7 @@ iframe {
   padding: 10px;
   border-radius: var(--border-radius);
   border: 1px solid gray;
-  background-color: var(--base-color);
+  background-color: var(--card-background);
   color: var(--text-color);
   font-family: Manrope;
   margin: 10px 0;
@@ -1096,7 +1096,7 @@ iframe {
 .settings-theme button {
   padding: 10px;
   border: 1px solid gray;
-  background-color: var(--base-color);
+  background-color: var(--card-background);
   color: var(--text-color);
   cursor: pointer;
   font-family: Manrope;
