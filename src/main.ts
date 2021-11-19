@@ -584,15 +584,13 @@ function generateMrt(
 function generateMrtFromMarkers() {
   return new Promise((resolve) => {
     fetch(
-      `https://api.allorigins.win/get?url=${encodeURIComponent(
-        "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
-      )}`
+      "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
     )
       .then((response) => {
         return response.json();
       })
       .then((data) => {
-        data = JSON.parse(data.contents);
+        console.log(data);
 
         resolve(true);
 

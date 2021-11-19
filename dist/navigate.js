@@ -811,7 +811,7 @@ function getDirection(x1, z1, x2, z2) {
 let lastPlayer;
 function navigationLoop() {
     console.log("loop");
-    fetch(`https://jsonp.afeld.me/?url=https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json`)
+    fetch(`https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json`)
         .then((response) => {
         return response.json();
     })
