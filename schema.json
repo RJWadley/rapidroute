@@ -1,0 +1,56 @@
+{
+  "companies": {
+    "random_id": {
+      "name": "Provider Name",
+      "numberPrefix": "PFX",
+      "description": "Provider Description",
+      "logo": "http://www.provider.com/logo.png",
+      "color": {
+        "light": "#ffffff",
+        "dark": "#000000"
+      },
+      "owner": "name",
+      "alias": {
+        "of": "provider_id",
+        "numberRange": {
+          "start": 0,
+          "end": 0
+        }
+      },
+      "enabled": true
+    }
+  },
+  "locations": {
+    "random_id": {
+      "name": "Location Name",
+      "MRT_TRANSIT_NAME": "MRT Name",
+      "IATA": "LOC",
+      "description": "Location Description",
+      "location": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "owner": "name",
+      "world": "world_id"
+    }
+  },
+  "routes": {
+    "random_id": {
+      "name": "Route Name",
+      "description": "Route Description",
+      "owner": "name",
+      "locations": {
+        "location_id_1": "gate_or_platform",
+        "location_id_2": "gate_or_platform",
+        "location_id_3": "gate_or_platform"
+      },
+      "type": "string"
+    }
+  },
+  "worlds": {
+    "New": {
+      "name": "World Name"
+    }
+  }
+}
