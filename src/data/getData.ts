@@ -1,28 +1,49 @@
 import { ref, onValue } from "firebase/database";
-import { Database, Locations, Providers, Routes, Worlds } from "../data";
+import {
+  DatabaseType,
+  Locations,
+  Providers,
+  Routes,
+  RoutesByLocation,
+  Worlds,
+} from "../data";
 import { database } from "./firebase";
 
 const rawCache = localStorage.getItem("databaseCache");
 const expirationCache = localStorage.getItem("databaseCacheExpiration");
 
-const databaseCache: Database = rawCache
-  ? JSON.parse(rawCache)
-  : {
-      locations: {},
-      providers: {},
-      routes: {},
-      worlds: {},
-    };
-const expiration: Record<string, number> = expirationCache
-  ? JSON.parse(expirationCache)
-  : {};
+interface CacheType extends DatabaseType {}
 
-export async function getPath(type: keyof Database, itemName: string) {
-  return new Promise<Database[keyof Database][string]>((resolve) => {
+let databaseCache: CacheType = {
+  locations: {},
+  providers: {},
+  routes: {},
+  worlds: {},
+  routesByLocation: {},
+};
+if (rawCache) {
+  databaseCache = JSON.parse(rawCache);
+}
+
+const expirationTemplate = {
+  allOf: {},
+  locations: {},
+  providers: {},
+  routes: {},
+  worlds: {},
+  calculatedRoutes: {},
+  routesByLocation: {},
+};
+const expiration: {
+  [Property in keyof typeof expirationTemplate]: Record<string, number>;
+} = expirationCache ? JSON.parse(expirationCache) : expirationTemplate;
+
+export async function getPath(type: keyof DatabaseType, itemName: string) {
+  return new Promise<DatabaseType[keyof DatabaseType][string]>((resolve) => {
     // if exists in cache and not expired, return cached value
     if (
       databaseCache[type][itemName] &&
-      expiration[type + itemName] > Date.now()
+      expiration[type][itemName] > Date.now()
     ) {
       resolve(databaseCache.routes[itemName]);
       return;
@@ -34,7 +55,7 @@ export async function getPath(type: keyof Database, itemName: string) {
       const data = snapshot.val();
       if (data) {
         databaseCache[type][itemName] = data;
-        expiration[type + itemName] = Date.now() + 1000 * 60 * 60 * 24; // 24 hours
+        expiration[type][itemName] = Date.now() + 1000 * 60 * 60 * 24; // 24 hours
         localStorage.setItem("databaseCache", JSON.stringify(databaseCache));
         localStorage.setItem(
           "databaseCacheExpiration",
@@ -46,7 +67,7 @@ export async function getPath(type: keyof Database, itemName: string) {
   });
 }
 
-type TypeName = keyof Database;
+type TypeName = keyof DatabaseType;
 type ObjectType<T> = T extends "providers"
   ? Providers
   : T extends "routes"
@@ -55,11 +76,13 @@ type ObjectType<T> = T extends "providers"
   ? Locations
   : T extends "worlds"
   ? Worlds
+  : T extends "routesByLocation"
+  ? RoutesByLocation
   : never;
 
 export function getAll<T extends TypeName>(type: T): Promise<ObjectType<T>> {
   return new Promise((resolve) => {
-    if (databaseCache[type] && expiration[type] > Date.now()) {
+    if (databaseCache[type] && expiration.allOf[type] > Date.now()) {
       resolve(databaseCache[type] as ObjectType<T>);
       return;
     }
@@ -70,11 +93,12 @@ export function getAll<T extends TypeName>(type: T): Promise<ObjectType<T>> {
       if (data) {
         resolve(data);
 
-        expiration[type] = Date.now() + 1000 * 60 * 60 * 24; // 24 hours
+        expiration.allOf[type] = Date.now() + 1000 * 60 * 60 * 24; // 24 hours
 
         Object.keys(data).forEach((itemName) => {
           databaseCache[type][itemName] = data[itemName];
-          expiration[type + itemName] = Date.now() + 1000 * 60 * 60 * 24; // 24 hours});
+          expiration[type as keyof DatabaseType][itemName] =
+            Date.now() + 1000 * 60 * 60 * 24; // 24 hours});
         });
 
         localStorage.setItem("databaseCache", JSON.stringify(databaseCache));

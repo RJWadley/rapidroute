@@ -9,8 +9,9 @@ import SwapButton from "./SwapButton";
 export default function Selection() {
   const [selectedLocationIndex, setSelectedLocationIndex] = useState(0);
   const [mostRecentRole, setMostRecentRole] = useState<"from" | "to">("from");
-  const { from, to, setTo, setFrom } = useContext(RoutingContext);
+  const { setTo, setFrom } = useContext(RoutingContext);
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
+  const [showSearchList, setShowSearchList] = useState(false);
 
   const runSearch = async (text: string) => {
     setSelectedLocationIndex(0);
@@ -26,10 +27,15 @@ export default function Selection() {
     setMostRecentRole(role);
 
     if (key === "Enter" || key === "Blur") {
+      setTimeout(() => setShowSearchList(false), 200);
       let selected: Location | null = filteredLocations[selectedLocationIndex];
       if (box?.current?.value === "") selected = null;
 
       updateSelected(selected);
+    }
+
+    if (key === "Focus") {
+      setTimeout(() => setShowSearchList(true), 200);
     }
 
     if (key === "ArrowDown") {
@@ -61,7 +67,6 @@ export default function Selection() {
   return (
     <div>
       <SwapButton />
-      FROM: {from?.shortName} {from?.name} <br /> TO: {to?.shortName} {to?.name}
       <SearchBox
         searchText={runSearch}
         sendKey={(a, b) => processKeyPress(a, b, "from")}
@@ -72,11 +77,13 @@ export default function Selection() {
         sendKey={(a, b) => processKeyPress(a, b, "to")}
         searchRole="to"
       />
-      <SearchList
-        locations={filteredLocations}
-        currentlySelected={selectedLocationIndex}
-        setSelectedIndex={selectionClick}
-      />
+      {showSearchList && (
+        <SearchList
+          locations={filteredLocations}
+          currentlySelected={selectedLocationIndex}
+          setSelectedIndex={selectionClick}
+        />
+      )}
     </div>
   );
 }
