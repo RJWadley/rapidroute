@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "airbnb",
+    "airbnb/hooks",
+    "airbnb-typescript",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    /**
+     *  Mandatory Rules
+     */
+
+    // prettier will conflict with gsap formatter
+    "prettier/prettier": "off",
+
+    // we define styled components at the bottom, which is better for readability but incompatible with this rule
+    "@typescript-eslint/no-use-before-define": "off",
+
+    // use inline default props instead of defaultProps
+    "react/require-default-props": [
+      "error",
+      {
+        "functions": "defaultArguments"
+      }
+    ]
+  },
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {} // this loads <rootdir>/tsconfig.json to eslint
+    }
+  }
+}

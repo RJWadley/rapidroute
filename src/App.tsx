@@ -1,7 +1,13 @@
 import React from "react";
+import { RoutingProvider } from "./components/Routing";
+import Selection from "./components/Selection";
 
 function App() {
-  return <div>test</div>;
+  return (
+    <RoutingProvider>
+      <Selection />
+    </RoutingProvider>
+  );
 }
 
 export default App;
