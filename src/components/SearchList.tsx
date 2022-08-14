@@ -16,10 +16,10 @@ export default function SearchList({
     <div>
       {locations.map((loc, i) => (
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-        <span key={loc.uniqueId} onClick={() => setSelectedIndex(i)}>
+        <div key={loc.uniqueId} onClick={() => setSelectedIndex(i)}>
           {i === currentlySelected && "Selected:"}
           {loc.name}
-        </span>
+        </div>
       ))}
     </div>
   );

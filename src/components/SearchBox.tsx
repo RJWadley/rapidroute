@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { getTextboxName } from "../data/search";
+import { RoutingContext } from "./Routing";
 
 interface SearchBoxProps {
   searchText: (text: string) => void;
   sendKey: (key: string, boxRef: React.RefObject<HTMLInputElement>) => void;
+  searchRole: "from" | "to";
 }
 
 export default function SearchBox({
   searchText,
   sendKey,
+  searchRole,
 }: SearchBoxProps): JSX.Element {
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const { to, from } = useContext(RoutingContext);
 
   const filterLocations = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value ?? "";
@@ -39,19 +44,28 @@ export default function SearchBox({
     }
   };
 
+  useEffect(() => {
+    if (searchRole === "from" && inputRef.current && from)
+      inputRef.current.value = getTextboxName(from);
+  }, [from, searchRole]);
+
+  useEffect(() => {
+    if (searchRole === "to" && inputRef.current && to)
+      inputRef.current.value = getTextboxName(to);
+  }, [to, searchRole]);
+
   return (
     <div>
       <input
         onChange={filterLocations}
         onKeyDown={checkForEnter}
-        onFocus={(e) => {
+        onFocus={() => {
           sendKey("Focus", inputRef);
-          searchText(e.target.value);
         }}
         onBlur={() => sendKey("Blur", inputRef)}
         ref={inputRef}
         type="text"
-        placeholder="Search"
+        placeholder={`Search ${searchRole}`}
       />
     </div>
   );
