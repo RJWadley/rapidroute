@@ -186,7 +186,7 @@ function getNeighbors(
   allowedModes: Array<Mode>
 ) {
   let nearestNodes: Nodes = {};
-  currentTime = parseFloat((currentTime as unknown) as string);
+  currentTime = parseFloat(currentTime as unknown as string);
 
   if (timesMap == undefined) {
     let msg: SWCode = "timeMapsNeeded";
