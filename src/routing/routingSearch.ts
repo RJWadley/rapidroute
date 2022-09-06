@@ -6,6 +6,7 @@ import { Location, Route } from "../data";
 import { getAll, getPath } from "../data/getData";
 import getRouteTime from "./getRouteTime";
 import PriorityQueue from "./PriorityQueue";
+import { throttle } from "./util";
 
 const allLocations = getAll("locations");
 
@@ -113,13 +114,11 @@ export default class Search {
     }
 
     while (!frontier.isEmpty()) {
+      await throttle();
       const current = frontier.dequeue();
       if (!current || current.to.uniqueId === this.end.uniqueId) {
         break;
       }
-      console.log(
-        `checking route from ${current.from.name} to ${current.to.name}`
-      );
       const edges = await getEdges(current.to);
       for (const next of edges) {
         const newCost = costSoFar[current.to.uniqueId] + next.cost;

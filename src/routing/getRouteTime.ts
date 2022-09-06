@@ -23,6 +23,7 @@ const timeMap: {
   [key: string]: {
     // to
     [key: string]: {
+      // mode
       [key in RouteMode]?: number;
     };
   };
@@ -64,6 +65,3 @@ export default function getRouteTime(
 
   return timeMap[start.uniqueId][end.uniqueId][mode] ?? Infinity;
 }
-
-// @ts-ignore
-window.getRouteTime = getRouteTime;
