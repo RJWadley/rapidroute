@@ -6,8 +6,6 @@ import {
   Providers,
   Routes,
   Route,
-  RoutesByLocation,
-  RouteByLocation,
   Worlds,
   Provider,
   World,
@@ -24,7 +22,6 @@ let databaseCache: CacheType = {
   providers: {},
   routes: {},
   worlds: {},
-  routesByLocation: {},
 };
 if (rawCache) {
   databaseCache = JSON.parse(rawCache);
@@ -52,8 +49,6 @@ type GetAll<T> = T extends "providers"
   ? Locations
   : T extends "worlds"
   ? Worlds
-  : T extends "routesByLocation"
-  ? RoutesByLocation
   : never;
 
 type GetOne<T> = T extends "providers"
@@ -64,8 +59,6 @@ type GetOne<T> = T extends "providers"
   ? Location
   : T extends "worlds"
   ? World
-  : T extends "routesByLocation"
-  ? RouteByLocation
   : never;
 
 export async function getPath<T extends DatabaseKeys>(
