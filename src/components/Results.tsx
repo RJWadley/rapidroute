@@ -1,22 +1,17 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import Search from "../routing/search";
+import React, { useContext, useEffect, useState } from "react";
+import Search from "../routing/routingSearch";
 import { RoutingContext } from "./Routing";
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext);
-
-  const message = useMemo(() => {
-    if (from && to)
-      return `DISPLAYING RESULTS FOR ${from?.name} TO ${to?.name}`;
-    return "";
-  }, [from, to]);
+  const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
     if (from && to) {
       const search = new Search(from, to);
 
       search.search().then((results) => {
-        console.log(
+        setMessage(
           results.path
             .map((node, i) =>
               i === 0
@@ -29,5 +24,5 @@ export default function Results() {
     }
   }, [from, to]);
 
-  return <div>HERE:{message}</div>;
+  return <div>HERE: {message}</div>;
 }
