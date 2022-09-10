@@ -9,8 +9,14 @@ export default class PriorityQueue<T> {
   }
 
   enqueue(element: T, priority: number): void {
-    this.nodes.push({ element, priority });
-    this.sort();
+    // insert the element in the correct position using binary search
+    const newNode = { element, priority };
+    const index = this.nodes.findIndex((node) => priority < node.priority);
+    if (index === -1) {
+      this.nodes.push(newNode);
+    } else {
+      this.nodes.splice(index, 0, newNode);
+    }
   }
 
   dequeue(): T | undefined {
@@ -19,9 +25,5 @@ export default class PriorityQueue<T> {
 
   isEmpty(): boolean {
     return !this.nodes.length;
-  }
-
-  sort(): void {
-    this.nodes.sort((a, b) => a.priority - b.priority);
   }
 }
