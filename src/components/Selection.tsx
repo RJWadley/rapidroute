@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Location } from "../data";
+import { Location } from "../types";
 import { search } from "../data/search";
 import { RoutingContext } from "./Routing";
 import SearchBox from "./SearchBox";

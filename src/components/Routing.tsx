@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Location } from "../data";
+import { Location } from "../types";
 
 // create a provider
 export const RoutingContext = React.createContext<{

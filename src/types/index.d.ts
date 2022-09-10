@@ -1,9 +1,9 @@
-import { Providers } from "./providers";
-import { Locations } from "./locations";
-import { Routes } from "./routes";
-import { Pathfinding } from "./pathfinding";
+import { Providers, Provider } from "./providers";
+import { Locations, Location } from "./locations";
+import { Routes, Route, RouteMode } from "./routes";
+import { Pathfinding, PathfindingEdge } from "./pathfinding";
 import { SearchIndex } from "./searchIndex";
-import { Worlds } from "./worlds";
+import { Worlds, World } from "./worlds";
 
 export interface DatabaseType {
   /**
@@ -31,3 +31,20 @@ export interface DatabaseType {
    */
   searchIndex: SearchIndex;
 }
+
+export type Hashes = Record<keyof DatabaseType, string | undefined>;
+
+export {
+  Provider,
+  Providers,
+  Location,
+  Locations,
+  Route,
+  Routes,
+  Pathfinding,
+  PathfindingEdge,
+  SearchIndex,
+  World,
+  Worlds,
+  RouteMode,
+};

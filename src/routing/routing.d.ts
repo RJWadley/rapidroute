@@ -1,4 +1,4 @@
-import { Location, RouteMode } from "../data";
+import { Location, RouteMode } from "../types";
 
 export interface NodeType {
   id: string;

@@ -1,4 +1,4 @@
-import { Location } from "../data";
+import { Location } from "../types";
 import { getAll } from "./getData";
 
 const allLocations = getAll("locations");

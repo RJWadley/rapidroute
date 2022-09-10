@@ -1,130 +1,83 @@
-import { ref, onValue } from "firebase/database";
-import {
-  DatabaseType,
-  Locations,
-  Location,
-  Providers,
-  Routes,
-  Route,
-  Worlds,
-  Provider,
-  World,
-} from "../data";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { ref, onValue, get } from "firebase/database";
+import { DatabaseType, Hashes } from "../types";
 import { database } from "./firebase";
 
-const rawCache = localStorage.getItem("databaseCache");
-const expirationCache = localStorage.getItem("databaseCacheExpiration");
+const rawcache = localStorage.getItem("databaseCache");
+const rawOneHash = localStorage.getItem("oneHash");
+const rawAllHash = localStorage.getItem("allHash");
 
-interface CacheType extends DatabaseType {}
+const databaseCache: DatabaseType = rawcache
+  ? JSON.parse(rawcache)
+  : {
+      locations: {},
+      pathfinding: {},
+      providers: {},
+      routes: {},
+      searchIndex: {},
+      worlds: {},
+    };
+const oneHashes: Hashes = rawOneHash ? JSON.parse(rawOneHash) : {};
+const allHashes: Hashes = rawAllHash ? JSON.parse(rawAllHash) : {};
 
-let databaseCache: CacheType = {
-  locations: {},
-  providers: {},
-  routes: {},
-  worlds: {},
-};
-if (rawCache) {
-  databaseCache = JSON.parse(rawCache);
-}
+type GetAll<T extends keyof DatabaseType> = DatabaseType[T];
 
-const expirationTemplate = {
-  allOf: {},
-  locations: {},
-  providers: {},
-  routes: {},
-  worlds: {},
-  calculatedRoutes: {},
-  routesByLocation: {},
-};
-const expiration: {
-  [Property in keyof typeof expirationTemplate]: Record<string, number>;
-} = expirationCache ? JSON.parse(expirationCache) : expirationTemplate;
-type DatabaseKeys = keyof DatabaseType;
+type GetOne<T extends keyof DatabaseType> = DatabaseType[T][string];
 
-type GetAll<T> = T extends "providers"
-  ? Providers
-  : T extends "routes"
-  ? Routes
-  : T extends "locations"
-  ? Locations
-  : T extends "worlds"
-  ? Worlds
-  : never;
-
-type GetOne<T> = T extends "providers"
-  ? Provider
-  : T extends "routes"
-  ? Route
-  : T extends "locations"
-  ? Location
-  : T extends "worlds"
-  ? World
-  : never;
-
-export async function getPath<T extends DatabaseKeys>(
+export async function getPath<T extends keyof DatabaseType>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
+  // first get the hash from the database
+  const hashRef = ref(database, `hashes/${type}`);
+  const snapshot = await get(hashRef);
+  const hash = snapshot.val();
+
+  // if the hash matches the one we have, return the cached value
+  if (hash === oneHashes[type] && databaseCache[type][itemName]) {
+    return databaseCache[type][itemName] as GetOne<T>;
+  }
+
+  // otherwise, get the value from the database
+  const itemRef = ref(database, `${type}/${itemName}`);
   return new Promise((resolve) => {
-    // if exists in cache and not expired, return cached value
-    if (
-      databaseCache[type]?.[itemName] !== undefined &&
-      expiration[type][itemName] > Date.now()
-    ) {
-      // console.log("returning cached value for", type, itemName);
-      resolve(databaseCache[type][itemName] as GetOne<T>);
-      return;
-    }
-    // console.log("no cached value for", type, itemName);
-
-    // otherwise, fetch from firebase
-    const routeRef = ref(database, `${type}/${itemName}`);
-    onValue(routeRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) data.uniqueId = itemName;
-
+    onValue(itemRef, (lowerSnapshot) => {
+      if (!lowerSnapshot.exists()) return resolve(null);
+      const data: GetOne<T> = lowerSnapshot.val();
       databaseCache[type][itemName] = data;
-      expiration[type as keyof DatabaseType][itemName] =
-        Date.now() + 1000 * 60 * 60 * 24; // 24 hours
+      oneHashes[type] = hash;
       localStorage.setItem("databaseCache", JSON.stringify(databaseCache));
-      localStorage.setItem(
-        "databaseCacheExpiration",
-        JSON.stringify(expiration)
-      );
-
-      resolve(data ?? null);
+      localStorage.setItem("oneHash", JSON.stringify(oneHashes));
+      return resolve(data);
     });
   });
 }
 
-export function getAll<T extends DatabaseKeys>(type: T): Promise<GetAll<T>> {
+export async function getAll<T extends keyof DatabaseType>(
+  type: T
+): Promise<GetAll<T>> {
+  // first get the hash from the database
+  const hashRef = ref(database, `hashes/${type}`);
+  const snapshot = await get(hashRef);
+  const currentHash = snapshot.val();
+
+  // if the hash matches the one we have, return the cached value
+  if (currentHash === allHashes[type] && databaseCache[type]) {
+    return databaseCache[type] as GetAll<T>;
+  }
+
+  // otherwise, get the value from the database
+  const itemRef = ref(database, type);
   return new Promise((resolve) => {
-    if (databaseCache[type] && expiration.allOf[type] > Date.now()) {
-      resolve(databaseCache[type] as GetAll<T>);
-      return;
-    }
-
-    const typeRef = ref(database, type);
-    onValue(typeRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        resolve(data);
-
-        expiration.allOf[type] = Date.now() + 1000 * 60 * 60 * 24; // 24 hours
-
-        Object.keys(data).forEach((itemName) => {
-          data[itemName].uniqueId = itemName;
-          databaseCache[type][itemName] = data[itemName];
-          expiration[type as keyof DatabaseType][itemName] =
-            Date.now() + 1000 * 60 * 60 * 24; // 24 hours});
-        });
-
-        localStorage.setItem("databaseCache", JSON.stringify(databaseCache));
-        localStorage.setItem(
-          "databaseCacheExpiration",
-          JSON.stringify(expiration)
-        );
-      }
+    onValue(itemRef, (lowerSnapshot) => {
+      const data: GetAll<T> = lowerSnapshot.val();
+      databaseCache[type] = data;
+      allHashes[type] = currentHash;
+      oneHashes[type] = currentHash;
+      localStorage.setItem("databaseCache", JSON.stringify(databaseCache));
+      localStorage.setItem("allHash", JSON.stringify(allHashes));
+      localStorage.setItem("oneHash", JSON.stringify(oneHashes));
+      return resolve(data);
     });
   });
 }

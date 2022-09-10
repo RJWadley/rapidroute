@@ -1,4 +1,4 @@
-import { Location } from "../data";
+import { Location } from "../types";
 import { PathHeap } from "./routing";
 
 let threadStarted = performance.now();

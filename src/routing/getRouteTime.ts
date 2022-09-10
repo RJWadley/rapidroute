@@ -1,4 +1,4 @@
-import { Location, RouteMode } from "../data";
+import { Location, RouteMode } from "../types";
 import { getDistance } from "./util";
 
 /**
@@ -35,7 +35,6 @@ export const ALL_MODES: RouteMode[] = [
   "heli",
   "MRT",
   "walk",
-  "spawnWarp",
 ];
 
 export default function getRouteTime(

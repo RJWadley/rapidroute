@@ -4,7 +4,7 @@ import { RoutingContext } from "./Routing";
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext);
-  const [message, setMessage] = useState("Loading...");
+  const [message, setMessage] = useState(["Loading..."]);
 
   useEffect(() => {
     if (from && to) {
@@ -12,17 +12,23 @@ export default function Results() {
 
       search.search().then((results) => {
         setMessage(
-          results.path
-            .map((node, i) =>
-              i === 0
-                ? `${node.from.shortName} -> ${node.to.shortName}`
-                : ` -> ${node.to.shortName}`
-            )
-            .join("")
+          results.map((result) =>
+            result.path.map((node) => `${node.shortName} ->`).join("")
+          )
         );
       });
+
+      return () => search.cancel();
     }
+    return () => {};
   }, [from, to]);
 
-  return <div>HERE: {message}</div>;
+  return (
+    <div>
+      HERE:
+      {message.map((m) => (
+        <div key={m}>{m}</div>
+      ))}
+    </div>
+  );
 }

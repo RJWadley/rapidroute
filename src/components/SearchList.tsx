@@ -1,5 +1,5 @@
 import React from "react";
-import { Location } from "../data";
+import { Location } from "../types";
 
 type SearchListProps = {
   locations: Location[];
