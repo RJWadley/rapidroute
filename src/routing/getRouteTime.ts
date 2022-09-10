@@ -1,5 +1,4 @@
-import { Location, RouteMode } from "../types";
-import { getDistance } from "./util";
+import { RouteMode } from "../types";
 
 /**
  * speed defined in meters per second
@@ -18,17 +17,6 @@ const STATIC_TIMES: Record<string, number> = {
   spawnWarp: 500,
 };
 
-const timeMap: {
-  // from
-  [key: string]: {
-    // to
-    [key: string]: {
-      // mode
-      [key in RouteMode]?: number;
-    };
-  };
-} = {};
-
 export const ALL_MODES: RouteMode[] = [
   "flight",
   "seaplane",
@@ -38,29 +26,18 @@ export const ALL_MODES: RouteMode[] = [
 ];
 
 export default function getRouteTime(
-  start: Location,
-  end: Location,
+  distance: number,
   mode: RouteMode
 ): number {
-  if (timeMap?.[start.uniqueId]?.[end.uniqueId]?.[mode]) {
-    return timeMap[start.uniqueId][end.uniqueId][mode] ?? Infinity;
+  if (distance < 0) return Infinity;
+
+  if (Object.keys(STATIC_TIMES).includes(mode)) {
+    return STATIC_TIMES[mode];
   }
 
-  // generate the route times if they don't exist
-  if (!timeMap[start.uniqueId]) timeMap[start.uniqueId] = {};
-  if (!timeMap[start.uniqueId][end.uniqueId])
-    timeMap[start.uniqueId][end.uniqueId] = {};
-  ALL_MODES.forEach((possibleMode) => {
-    if (Object.keys(STATIC_TIMES).includes(possibleMode)) {
-      timeMap[start.uniqueId][end.uniqueId][possibleMode] =
-        STATIC_TIMES[possibleMode];
-    }
+  if (Object.keys(SPEEDS).includes(mode)) {
+    return distance / SPEEDS[mode];
+  }
 
-    if (Object.keys(SPEEDS).includes(possibleMode)) {
-      timeMap[start.uniqueId][end.uniqueId][possibleMode] =
-        getDistance(start, end) / SPEEDS[possibleMode];
-    }
-  });
-
-  return timeMap[start.uniqueId][end.uniqueId][mode] ?? Infinity;
+  return Infinity;
 }

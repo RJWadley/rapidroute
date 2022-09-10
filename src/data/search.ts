@@ -1,23 +1,21 @@
-import { Location } from "../types";
 import { getAll } from "./getData";
 
-const allLocations = getAll("locations");
+const searchIndexRaw = getAll("searchIndex");
 
 export async function search(query: string) {
-  const results: Location[] = [];
-  const locations = await allLocations;
+  const results: string[] = [];
+  const searchIndex = await searchIndexRaw;
 
-  Object.keys(locations).forEach((key) => {
-    const location = locations[key];
-    if (getTextboxName(location).toLowerCase().includes(query.toLowerCase())) {
-      location.uniqueId = key;
-      results.push(location);
+  Object.keys(searchIndex).forEach((key) => {
+    const locationText = searchIndex[key];
+    if (locationText.toLowerCase().includes(query.toLowerCase())) {
+      results.push(key);
     }
   });
 
   return results;
 }
 
-export function getTextboxName(location: Location | null | undefined) {
-  return location ? `${location.shortName} - ${location.name}` : "";
+export function getTextboxName(location: string | null | undefined) {
+  return location ?? "???";
 }

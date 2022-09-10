@@ -12,7 +12,7 @@ export interface PathfindingEdge {
    */
   f: string;
   /**
-   * the b location of this edge
+   * the TO location of this edge
    */
   t: string;
   /**

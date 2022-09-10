@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import Search from "../routing/routingSearch";
+import Search from "../routing/pathfind";
 import { RoutingContext } from "./Routing";
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext);
-  const [message, setMessage] = useState(["Loading..."]);
+  const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
     if (from && to) {
@@ -12,13 +12,9 @@ export default function Results() {
 
       search.search().then((results) => {
         setMessage(
-          results.map((result) =>
-            result.path.map((node) => `${node.shortName} ->`).join("")
-          )
+          `${results.path[0].f}->${results.path.map((r) => r.t).join("->")}`
         );
       });
-
-      return () => search.cancel();
     }
     return () => {};
   }, [from, to]);
@@ -26,9 +22,7 @@ export default function Results() {
   return (
     <div>
       HERE:
-      {message.map((m) => (
-        <div key={m}>{m}</div>
-      ))}
+      <div>{message}</div>
     </div>
   );
 }

@@ -1,16 +1,17 @@
 import React, { useContext, useState } from "react";
-import { Location } from "../types";
 import { search } from "../data/search";
 import { RoutingContext } from "./Routing";
 import SearchBox from "./SearchBox";
 import SearchList from "./SearchList";
 import SwapButton from "./SwapButton";
 
+type LocationId = string;
+
 export default function Selection() {
   const [selectedLocationIndex, setSelectedLocationIndex] = useState(0);
   const [mostRecentRole, setMostRecentRole] = useState<"from" | "to">("from");
   const { setTo, setFrom } = useContext(RoutingContext);
-  const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
+  const [filteredLocations, setFilteredLocations] = useState<LocationId[]>([]);
   const [showSearchList, setShowSearchList] = useState(false);
 
   const runSearch = async (text: string) => {
@@ -28,7 +29,8 @@ export default function Selection() {
 
     if (key === "Enter" || key === "Blur") {
       setTimeout(() => setShowSearchList(false), 200);
-      let selected: Location | null = filteredLocations[selectedLocationIndex];
+      let selected: LocationId | null =
+        filteredLocations[selectedLocationIndex];
       if (box?.current?.value === "") selected = null;
 
       updateSelected(selected);
@@ -56,7 +58,7 @@ export default function Selection() {
     updateSelected(filteredLocations[index]);
   };
 
-  const updateSelected = (newSelection: Location | null) => {
+  const updateSelected = (newSelection: LocationId | null) => {
     if (mostRecentRole === "from") {
       setFrom(newSelection);
     } else {

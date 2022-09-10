@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from "react";
-import { Location } from "../types";
+
+type LocationId = string;
 
 // create a provider
 export const RoutingContext = React.createContext<{
-  from: Location | null;
-  to: Location | null;
-  setFrom: (from: Location | null) => void;
-  setTo: (to: Location | null) => void;
+  from: LocationId | null;
+  to: LocationId | null;
+  setFrom: (from: LocationId | null) => void;
+  setTo: (to: LocationId | null) => void;
 }>({
   from: null,
   to: null,
@@ -19,8 +20,8 @@ export function RoutingProvider({
 }: {
   children: React.ReactNode;
 }): JSX.Element {
-  const [from, setFrom] = useState<Location | null>(null);
-  const [to, setTo] = useState<Location | null>(null);
+  const [from, setFrom] = useState<LocationId | null>(null);
+  const [to, setTo] = useState<LocationId | null>(null);
 
   const value = useMemo(() => {
     return {

@@ -20,12 +20,18 @@ const databaseCache: DatabaseType = rawcache
 const oneHashes: Hashes = rawOneHash ? JSON.parse(rawOneHash) : {};
 const allHashes: Hashes = rawAllHash ? JSON.parse(rawAllHash) : {};
 
-let currentDBHashes: Promise<Hashes> = new Promise((resolve) => {
+let databaseHashes: Hashes = {
+  locations: "",
+  pathfinding: "",
+  providers: "",
+  routes: "",
+  searchIndex: "",
+  worlds: "",
+};
+const hashesExist = new Promise((resolve) => {
   onValue(ref(database, "hashes"), (snapshot) => {
-    resolve(snapshot.val() as Hashes);
-    currentDBHashes = new Promise((r2) => {
-      r2(snapshot.val() as Hashes);
-    });
+    databaseHashes = snapshot.val();
+    resolve(true);
   });
 });
 
@@ -37,8 +43,8 @@ export async function getPath<T extends keyof DatabaseType>(
   itemName: string
 ): Promise<GetOne<T> | null> {
   // first get the hash from the database
-  const hashes = await currentDBHashes;
-  const hash = hashes[type];
+  await hashesExist;
+  const hash = databaseHashes[type];
 
   // if the hash matches the one we have, return the cached value
   if (hash === oneHashes[type] && databaseCache[type][itemName]) {
@@ -51,6 +57,7 @@ export async function getPath<T extends keyof DatabaseType>(
     onValue(itemRef, (lowerSnapshot) => {
       if (!lowerSnapshot.exists()) return resolve(null);
       const data: GetOne<T> = lowerSnapshot.val();
+      if (typeof data === "object") data.uniqueId = itemName;
       databaseCache[type][itemName] = data;
       oneHashes[type] = hash;
       localStorage.setItem("databaseCache", JSON.stringify(databaseCache));
@@ -64,8 +71,8 @@ export async function getAll<T extends keyof DatabaseType>(
   type: T
 ): Promise<GetAll<T>> {
   // first get the hash from the database
-  const hashes = await currentDBHashes;
-  const hash = hashes[type];
+  await hashesExist;
+  const hash = databaseHashes[type];
 
   // if the hash matches the one we have, return the cached value
   if (hash === allHashes[type] && databaseCache[type]) {
@@ -77,6 +84,13 @@ export async function getAll<T extends keyof DatabaseType>(
   return new Promise((resolve) => {
     onValue(itemRef, (lowerSnapshot) => {
       const data: GetAll<T> = lowerSnapshot.val();
+
+      // for each item, add the uniqueId
+      Object.keys(data).forEach((key) => {
+        const item = data[key];
+        if (typeof item === "object") item.uniqueId = key;
+      });
+
       databaseCache[type] = data;
       allHashes[type] = hash;
       oneHashes[type] = hash;
