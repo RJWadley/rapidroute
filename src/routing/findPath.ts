@@ -30,6 +30,8 @@ const rawEdges = getAll("pathfinding").then((data) => {
 
       if (routes) {
         return Object.entries(routes).flatMap(([to, routeIds]) => {
+          if (to === from) return [];
+
           const x1 = data[from].x;
           const y1 = data[from].z;
           const x2 = data[to].x;
@@ -58,8 +60,24 @@ const rawEdges = getAll("pathfinding").then((data) => {
           x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity;
         return { to, distance };
       })
+      // only include locations which have at least one route availabe at them
+      .filter(({ to }) => {
+        const shortTypes = Object.keys(
+          shortHandMap
+        ) as (keyof typeof shortHandMap)[];
+        return shortTypes.some((routeTypeShort) => {
+          const routes = data[to][routeTypeShort];
+          return !!routes && !routes[from];
+        });
+      })
+      // filter out MRT stops on the same line unless the from is unused
+      .filter(({ to }) => {
+        if (!data[from].M) return true;
+        if (from.charAt(0) === to.charAt(0)) return false;
+        return true;
+      })
       .sort((a, b) => a.distance - b.distance)
-      .slice(0, 5)
+      .slice(0, 10)
       .map(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk");
         return { from, to, weight };
@@ -90,7 +108,8 @@ export default class Pathfinder {
     this.to = to;
   }
 
-  async findPath(): Promise<string[]> {
+  async findPath(preventReverse?: boolean): Promise<string[]> {
+    console.clear();
     const frontier = new PriorityQueue<string>();
     const cameFrom: Record<string, string> = {};
     const costSoFar: Record<string, number> = {};
@@ -115,6 +134,13 @@ export default class Pathfinder {
         costSoFar[current]
       );
 
+      console.log(
+        "Travelled",
+        Math.round(this.distanceTravelled),
+        "\tmax",
+        Math.round(this.maxCost) - this.EXTRA_TIME
+      );
+
       edges
         .filter((edge) => edge.from === current)
         .filter((edge) => costSoFar[current] + edge.weight < this.maxCost)
@@ -122,7 +148,9 @@ export default class Pathfinder {
           const newCost = costSoFar[current] + edge.weight;
           this.updateMaxCost(nodes, edge.to, newCost);
 
+          if (edge.to === this.from) return;
           if (newCost > this.maxCost) return;
+
           if (!costSoFar[edge.to] || newCost < costSoFar[edge.to]) {
             costSoFar[edge.to] = newCost;
             const priority = newCost;
@@ -130,6 +158,15 @@ export default class Pathfinder {
             cameFrom[edge.to] = current;
           }
         });
+    }
+
+    if (frontier.isEmpty()) {
+      if (preventReverse) return [];
+      const reversed = await new Pathfinder(this.to, this.from).findPath(true);
+
+      const end = performance.now();
+      console.log(`Pathfinding took ${end - start}ms`);
+      return reversed.reverse();
     }
 
     const path: string[] = [];
@@ -143,21 +180,21 @@ export default class Pathfinder {
     path.reverse();
 
     const end = performance.now();
-    console.log(`Pathfinding took ${end - start}ms`);
+    if (!preventReverse) console.log(`Pathfinding took ${end - start}ms`);
 
     return path;
   }
 
   updateMaxCost(nodes: Pathfinding, nodeId: string, costSoFar: number) {
     const distanceToTo = getDistance(
-      nodes[nodeId].x ?? Infinity,
-      nodes[nodeId].z ?? Infinity,
-      nodes[this.to].x ?? Infinity,
-      nodes[this.to].z ?? Infinity
+      nodes[nodeId]?.x ?? Infinity,
+      nodes[nodeId]?.z ?? Infinity,
+      nodes[this.to]?.x ?? Infinity,
+      nodes[this.to]?.z ?? Infinity
     );
     const timeToTo = getRouteTime(distanceToTo, "walk");
     const maxCost = costSoFar + timeToTo + this.EXTRA_TIME;
-    this.maxCost = Math.min(this.maxCost, maxCost);
+    if (maxCost) this.maxCost = Math.min(this.maxCost, maxCost);
   }
 
   cancel() {

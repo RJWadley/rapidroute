@@ -17,6 +17,15 @@ export default class PriorityQueue<T> {
     } else {
       this.nodes.splice(index, 0, newNode);
     }
+
+    // remove duplicates, keeping the one with the lowest priority
+    const duplicates = this.nodes.filter(
+      (node) => node.element === element && node.priority > priority
+    );
+    duplicates.forEach((duplicate) => {
+      const i = this.nodes.indexOf(duplicate);
+      this.nodes.splice(i, 1);
+    });
   }
 
   dequeue(): T | undefined {
