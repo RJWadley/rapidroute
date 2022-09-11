@@ -37,7 +37,7 @@ export interface Route {
   locations: RouteLocations;
 }
 
-export type RouteMode = "flight" | "seaplane" | "heli" | "MRT" | "walk";
+export type RouteMode = "flight" | "seaplane" | "heli" | "MRT";
 
 export interface RouteLocations {
   [key: string]: string;

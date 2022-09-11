@@ -17,13 +17,7 @@ const STATIC_TIMES: Record<string, number> = {
   spawnWarp: 500,
 };
 
-export const ALL_MODES: RouteMode[] = [
-  "flight",
-  "seaplane",
-  "heli",
-  "MRT",
-  "walk",
-];
+export const ALL_MODES: RouteMode[] = ["flight", "seaplane", "heli", "MRT"];
 
 export default function getRouteTime(
   distance: number,

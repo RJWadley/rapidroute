@@ -1,7 +1,7 @@
 import { Providers, Provider } from "./providers";
 import { Locations, Location } from "./locations";
 import { Routes, Route, RouteMode } from "./routes";
-import { Pathfinding, PathfindingEdge } from "./pathfinding";
+import { Pathfinding, PathingPlace } from "./pathfinding";
 import { SearchIndex } from "./searchIndex";
 import { Worlds, World } from "./worlds";
 
@@ -42,7 +42,7 @@ export {
   Route,
   Routes,
   Pathfinding,
-  PathfindingEdge,
+  PathingPlace as PathfindingEdge,
   SearchIndex,
   World,
   Worlds,

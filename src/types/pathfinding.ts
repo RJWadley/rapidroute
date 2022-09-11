@@ -1,37 +1,35 @@
 export interface Pathfinding {
-  [key: string]: PathfindingEdge;
+  [key: string]: PathingPlace;
 }
 
-export interface PathfindingEdge {
+export type PathingPlace = {
   /**
-   * should match the database key
+   * all locations reachable from this location via this mode of transport
+   *
+   * value key: route location
+   * value value: routeIds that can be used to get to that location
+   */
+  [key in keyof typeof shortHandMap]: Record<string, string[]>;
+} & {
+  /**
+   * should match the database key and the uniqueId of the location
    */
   uniqueId: string;
   /**
-   * the FROM location of this edge
+   * the X coordinate of the location
    */
-  f: string;
+  x: number | null;
   /**
-   * the TO location of this edge
+   * the Z coordinate of the location
    */
-  t: string;
-  /**
-   * the mode of this edge
-   */
-  m: keyof typeof shortHandMap;
-  /**
-   * the manhattan distance between the two locations
-   * if negative, one of the locations does not have a position and the distance should be treated as unknown
-   */
-  d: number;
-}
+  z: number | null;
+};
 
 export const shortHandMap = {
   F: "flight",
   S: "seaplane",
   H: "heli",
   M: "MRT",
-  W: "walk",
 } as const;
 
 export const reverseShortHandMap = {
@@ -39,5 +37,4 @@ export const reverseShortHandMap = {
   seaplane: "S",
   heli: "H",
   MRT: "M",
-  walk: "W",
 } as const;
