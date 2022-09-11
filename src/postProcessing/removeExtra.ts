@@ -1,23 +1,4 @@
-/**
- * given a list of results, return the diff
- *
- * for example, given [[a, b, d], [a, c, d]], return [b, c]
- *
- * @param results
- */
-export function resultDiffs(results: string[][]) {
-  // get list of items that are in all results
-  const common = results.reduce((acc, result) => {
-    return acc.filter((item) => result.includes(item));
-  });
-
-  // get the diff of each result
-  const diffs = results.map((result) => {
-    return result.filter((item) => !common.includes(item));
-  });
-
-  return diffs;
-}
+import resultDiffs from "./diff";
 
 /**
  * if, when comparing a route to the one before and after it, there is only a single difference
@@ -27,7 +8,7 @@ export function resultDiffs(results: string[][]) {
  * this is mainly designed to handle cases where you must transfer between two parallel lines, but the transfer
  * could be done at several similar points along the route. we only keep the first possible transfer point and the last.
  */
-export function removeDuplicateResults(results: string[][]) {
+export default function removeExtras(results: string[][]) {
   // compare each result to the next and previous
 
   const indexesToRemove: number[] = [];

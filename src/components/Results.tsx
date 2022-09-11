@@ -2,11 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 
 import styled, { keyframes } from "styled-components";
 
+import resultDiff from "../postProcessing/diff";
+import removeExtras from "../postProcessing/removeExtra";
 import FindPath from "../routing/findPath";
-import {
-  removeDuplicateResults,
-  resultDiffs as resultDiff,
-} from "../routing/routePostProcessing";
 import Route from "./Route";
 import { RoutingContext } from "./Routing";
 
@@ -19,7 +17,7 @@ export default function Results() {
       const findPath = new FindPath(from, to);
       setResults(null);
 
-      findPath.start().then((r) => setResults(removeDuplicateResults(r)));
+      findPath.start().then((r) => setResults(removeExtras(r)));
 
       return () => {
         findPath.cancel();
