@@ -30,6 +30,7 @@ export default function Route({ route, diff }: RouteProps) {
 
     Promise.all(promises).then((results) => {
       setLocations(results);
+      console.log(results);
 
       // for each set of locations, get the routes they have in common
       const routePromises = results.map((location, index) => {
@@ -41,8 +42,8 @@ export default function Route({ route, diff }: RouteProps) {
           return [Promise.resolve(null)];
         }
 
-        const commonRoutes = location.routes.filter((routeId) =>
-          previousLocation.routes.includes(routeId)
+        const commonRoutes = (location.routes || []).filter((routeId) =>
+          (previousLocation.routes || []).includes(routeId)
         );
 
         return commonRoutes.map((routeId) => getPath("routes", routeId));
