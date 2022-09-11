@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 /**
  * speed defined in meters per second
  */

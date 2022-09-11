@@ -3,6 +3,11 @@ import React, { useContext, useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 
 import FindPath from "../routing/findPath";
+import {
+  removeDuplicateResults,
+  resultDiffs as resultDiff,
+} from "../routing/routePostProcessing";
+import Route from "./Route";
 import { RoutingContext } from "./Routing";
 
 export default function Results() {
@@ -14,7 +19,7 @@ export default function Results() {
       const findPath = new FindPath(from, to);
       setResults(null);
 
-      findPath.start().then(setResults);
+      findPath.start().then((r) => setResults(removeDuplicateResults(r)));
 
       return () => {
         findPath.cancel();
@@ -23,18 +28,18 @@ export default function Results() {
     return undefined;
   }, [from, to]);
 
-  return (
-    <div>
-      HERE:
-      <div>
-        {results &&
-          results.map((result) => (
-            <div key={result.toString()}>{result.join(" -> ")}</div>
-          ))}
-      </div>
-      <Spinner />
-    </div>
-  );
+  if (results) {
+    const diff = resultDiff(results);
+    return (
+      <>
+        {results.map((result, i) => (
+          <Route key={result.toString()} route={result} diff={diff[i]} />
+        ))}
+      </>
+    );
+  }
+
+  return <Spinner />;
 }
 
 const spin = keyframes`
