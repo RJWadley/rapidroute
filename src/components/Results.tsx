@@ -7,15 +7,19 @@ import { RoutingContext } from "./Routing";
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext);
-  const [message, setMessage] = useState("Loading...");
+  const [message, setMessage] = useState<React.ReactNode>("Loading...");
 
   useEffect(() => {
     if (from && to) {
       const findPath = new FindPath(from, to);
       setMessage("Finding path...");
 
-      findPath.findPath().then((results) => {
-        setMessage(results.join(" -> "));
+      findPath.start().then((results) => {
+        setMessage(
+          results
+            .map((result) => result.join(" -> "))
+            .map((result) => <div>{result}</div>)
+        );
       });
 
       return () => {

@@ -23,7 +23,7 @@ export default function getRouteTime(distance: number, mode: Mode): number {
   if (distance < 0) return Infinity;
 
   if (inObject(mode, SPEEDS)) {
-    return distance / SPEEDS[mode];
+    return Math.max(30, distance / SPEEDS[mode]);
   }
 
   if (inObject(mode, STATIC_TIMES)) {
