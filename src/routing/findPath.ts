@@ -109,7 +109,7 @@ export default class Pathfinder {
         break;
       }
 
-      await this.updateMaxCost(nodes, current, costSoFar[current]);
+      this.updateMaxCost(nodes, current, costSoFar[current]);
       this.distanceTravelled = Math.max(
         this.distanceTravelled,
         costSoFar[current]
@@ -148,7 +148,7 @@ export default class Pathfinder {
     return path;
   }
 
-  async updateMaxCost(nodes: Pathfinding, nodeId: string, costSoFar: number) {
+  updateMaxCost(nodes: Pathfinding, nodeId: string, costSoFar: number) {
     const distanceToTo = getDistance(
       nodes[nodeId].x ?? Infinity,
       nodes[nodeId].z ?? Infinity,
