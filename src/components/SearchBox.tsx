@@ -47,16 +47,12 @@ export default function SearchBox({
 
   useEffect(() => {
     if (searchRole === "from" && inputRef.current && from)
-      getTextboxName(from).then((name) => {
-        if (inputRef.current) inputRef.current.value = name;
-      });
+      inputRef.current.value = getTextboxName(from);
   }, [from, searchRole]);
 
   useEffect(() => {
     if (searchRole === "to" && inputRef.current && to)
-      getTextboxName(to).then((name) => {
-        if (inputRef.current) inputRef.current.value = name;
-      });
+      inputRef.current.value = getTextboxName(to);
   }, [to, searchRole]);
 
   return (

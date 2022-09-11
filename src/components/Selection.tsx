@@ -17,7 +17,7 @@ export default function Selection() {
 
   const runSearch = async (text: string) => {
     setSelectedLocationIndex(0);
-    return setFilteredLocations(await search(text));
+    return setFilteredLocations(search(text));
   };
 
   const processKeyPress = (

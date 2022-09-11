@@ -1,22 +1,51 @@
+import FlexSearch from "flexsearch";
+
 import { getAll } from "./getData";
 
-const searchIndexRaw = getAll("searchIndex");
+const searchWorker = new FlexSearch.Index({
+  tokenize: "reverse",
+  charset: "latin:simple",
+});
+const strictSearchWorker = new FlexSearch.Index({
+  tokenize: "strict",
+});
 
-export async function search(query: string) {
-  const results: string[] = [];
-  const searchIndex = await searchIndexRaw;
+const displayLookup: Record<string, string> = {};
 
-  Object.keys(searchIndex).forEach((key) => {
-    const location = searchIndex[key];
-    if (location.i.toLowerCase().includes(query.toLowerCase())) {
-      results.push(key);
-    }
+getAll("searchIndex").then((data) => {
+  Object.keys(data).forEach((key) => {
+    searchWorker.add(key, data[key].i);
+    strictSearchWorker.add(key, data[key].i);
+    displayLookup[key] = data[key].d;
+  });
+});
+
+export function search(query: string) {
+  const strictResults = strictSearchWorker.search(query, {
+    suggest: true,
+    limit: 200,
   });
 
-  return results;
+  let results = searchWorker.search(query, {
+    suggest: true,
+    limit: 200,
+  });
+
+  results = [...strictResults, ...results];
+  results = [...new Set(results)];
+
+  results = results.sort((a, b) => {
+    if (typeof a === "string" && typeof b === "string") {
+      // prefer exact matches, ignoring case
+      if (a.toLowerCase() === query.toLowerCase()) return -1;
+      if (b.toLowerCase() === query.toLowerCase()) return 1;
+    }
+    return 0;
+  });
+
+  return results.map((x) => (typeof x === "number" ? x.toString() : x));
 }
 
-export async function getTextboxName(locationId: string) {
-  const searchIndex = await searchIndexRaw;
-  return searchIndex[locationId]?.d;
+export function getTextboxName(locationId: string) {
+  return displayLookup[locationId] ?? locationId;
 }
