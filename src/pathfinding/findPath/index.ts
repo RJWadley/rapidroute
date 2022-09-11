@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
-import { Pathfinding, shortHandMap } from "../types/pathfinding";
+import { Pathfinding, shortHandMap } from "types/pathfinding";
+
 import getRouteTime from "./getRouteTime";
 import { rawEdges, rawNodes } from "./mapEdges";
+import { getDistance, throttle } from "./pathUtil";
 import PriorityQueue from "./PriorityQueue";
-import { getDistance, throttle } from "./util";
 
 export default class Pathfinder {
   from: string;

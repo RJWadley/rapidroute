@@ -1,6 +1,7 @@
 import { ref, onValue } from "firebase/database";
 
-import { DatabaseType, Hashes } from "../types";
+import { DatabaseType, Hashes } from "types";
+
 import { database } from "./firebase";
 
 const rawcache = localStorage.getItem("databaseCache");

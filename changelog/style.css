@@ -1,14 +1,15 @@
-html, body {
+html,
+body {
   margin: 0;
   font-family: Rubik, sans-serif;
 }
 
 :root {
-  --light-mint: #A0EEC0;
-  --mint: #8AE9C1;
-  --main: #86CD82;
-  --forest: #72A276;
-  --dim-gray: #666B6A;
+  --light-mint: #a0eec0;
+  --mint: #8ae9c1;
+  --main: #86cd82;
+  --forest: #72a276;
+  --dim-gray: #666b6a;
 }
 
 .title-container {

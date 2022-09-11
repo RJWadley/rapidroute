@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 
-import describeDiff from "../postProcessing/describeDiff";
+import describeDiff from "pathfinding/postProcessing/describeDiff";
 
 interface RouteProps {
   route: string[];

@@ -1,7 +1,8 @@
-import { getAll } from "../data/getData";
-import { shortHandMap } from "../types/pathfinding";
+import { getAll } from "data/getData";
+import { shortHandMap } from "types/pathfinding";
+
 import getRouteTime from "./getRouteTime";
-import { getDistance } from "./util";
+import { getDistance } from "./pathUtil";
 
 export interface GraphEdge {
   from: string;

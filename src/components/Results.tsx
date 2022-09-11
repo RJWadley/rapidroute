@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 
 import styled, { keyframes } from "styled-components";
 
-import resultDiff from "../postProcessing/diff";
-import removeExtras from "../postProcessing/removeExtra";
-import FindPath from "../routing/findPath";
+import FindPath from "pathfinding/findPath";
+import resultDiff from "pathfinding/postProcessing/diff";
+import removeExtras from "pathfinding/postProcessing/removeExtra";
+
 import Route from "./Route";
 import { RoutingContext } from "./Routing";
 
