@@ -6,6 +6,7 @@
     "@types/node": "^16.11.47",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
+    "@types/styled-components": "^5.1.26",
     "eslint": "^8.21.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
@@ -39,6 +40,8 @@
     ]
   },
   "devDependencies": {
-    "eslint-import-resolver-typescript": "^3.4.0"
+    "@rjwadley/eslint-plugin-format-gsap": "^0.1.1",
+    "eslint-import-resolver-typescript": "^3.4.0",
+    "eslint-plugin-sort-styled-components": "^0.0.7"
   }
 }
