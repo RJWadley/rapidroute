@@ -88,7 +88,6 @@ export const handoffData = async (
               y: null,
             }
           : null,
-      MRT_TRANSIT_NAME: place.MRT_TRANSIT_NAME ?? null,
       ownerPlayer: null,
       keywords: place.keywords ?? null,
       world: place.world,

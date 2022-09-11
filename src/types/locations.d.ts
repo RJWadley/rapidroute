@@ -16,10 +16,6 @@ export interface Location {
    */
   shortName: string;
   /**
-   * name of the location as it appears in the MRT Transit spreadsheet
-   */
-  MRT_TRANSIT_NAME: null | string;
-  /**
    * THE IATA code of the location, if it is an airport
    */
   IATA: null | string;
