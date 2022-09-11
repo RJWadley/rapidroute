@@ -5,6 +5,7 @@ import { Route, Routes } from "../../src/types/routes";
 var serviceAccount = require("./serviceAccountKey.json");
 import admin from "firebase-admin";
 import { reverseShortHandMap } from "../../src/types/pathfinding";
+import { SearchIndex } from "../../src/types";
 
 export const saveDataToFirebase = async (
   routesToSave: Route[],
@@ -75,11 +76,14 @@ export const saveDataToFirebase = async (
       .then(() => console.log("Location saved: " + location.uniqueId));
 
     /* update this locations search index */
-    const searchIndex = `${location.name} ${location.shortName} ${
-      location.ownerPlayer instanceof Array
-        ? location.ownerPlayer.join(" ")
-        : location.ownerPlayer
-    } ${location.type}`;
+    const searchIndex: Omit<SearchIndex[string], "uniqueId"> = {
+      d: location.name,
+      i: `${location.name} ${location.shortName} ${
+        location.ownerPlayer instanceof Array
+          ? location.ownerPlayer.join(" ")
+          : location.ownerPlayer ?? ""
+      } ${location.keywords ?? ""}`,
+    };
     database
       .ref(`searchIndex/${location.uniqueId}`)
       .set(searchIndex)

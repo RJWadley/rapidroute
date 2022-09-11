@@ -7,8 +7,8 @@ export async function search(query: string) {
   const searchIndex = await searchIndexRaw;
 
   Object.keys(searchIndex).forEach((key) => {
-    const locationText = searchIndex[key];
-    if (locationText.toLowerCase().includes(query.toLowerCase())) {
+    const location = searchIndex[key];
+    if (location.i.toLowerCase().includes(query.toLowerCase())) {
       results.push(key);
     }
   });
@@ -16,6 +16,7 @@ export async function search(query: string) {
   return results;
 }
 
-export function getTextboxName(location: string | null | undefined) {
-  return location ?? "???";
+export async function getTextboxName(locationId: string) {
+  const searchIndex = await searchIndexRaw;
+  return searchIndex[locationId]?.d;
 }

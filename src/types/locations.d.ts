@@ -60,6 +60,10 @@ export interface Location {
    * what route ids are available at this location?
    */
   routes: string[];
+  /**
+   * search keywords for use in the index
+   */
+  keywords: null | string;
 }
 
 export type PlaceType = "City" | "Airport" | "MRT Station" | "Other";
