@@ -9,7 +9,7 @@ export type PathingPlace = {
    * value key: route location
    * value value: routeIds that can be used to get to that location
    */
-  [key in keyof typeof shortHandMap]: Record<string, string[]>;
+  [key in keyof typeof shortHandMap]: null | Record<string, string[]>;
 } & {
   /**
    * should match the database key and the uniqueId of the location

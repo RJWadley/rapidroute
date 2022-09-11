@@ -1,10 +1,7 @@
-import { Location } from "../types";
-import { PathHeap } from "./routing";
-
 let threadStarted = performance.now();
 export async function throttle() {
-  // if thread has been working for more than 2ms, await next thread
-  if (performance.now() - threadStarted > 4) {
+  // if thread has been working for more than 6ms, await next thread
+  if (performance.now() - threadStarted > 6) {
     await new Promise<void>((resolve) => {
       setTimeout(() => {
         resolve();
@@ -22,27 +19,9 @@ export function sleep(ms: number) {
   });
 }
 
-export function sortedIndex(array: PathHeap, value: number) {
-  let low = 0;
-  let high = array.length;
-
-  while (low < high) {
-    // eslint-disable-next-line no-bitwise
-    const mid = (low + high) >>> 1;
-    if (array[mid].time < value) low = mid + 1;
-    else high = mid;
-  }
-  return low;
-}
-
 /**
  * given two locations, return the manhattan distance between them
  */
-export function getDistance(from: Location, to: Location): number {
-  if (!from.location || !to.location) return Infinity;
-
-  return (
-    Math.abs(from.location.x - to.location.x) +
-    Math.abs(from.location.z - to.location.z)
-  );
+export function getDistance(x1: number, y1: number, x2: number, y2: number) {
+  return Math.abs(x1 - x2) + Math.abs(y1 - y2);
 }

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import Search from "../routing/pathfind";
+import FindPath from "../routing/findPath";
 import { RoutingContext } from "./Routing";
 
 export default function Results() {
@@ -8,15 +8,17 @@ export default function Results() {
 
   useEffect(() => {
     if (from && to) {
-      const search = new Search(from, to);
+      const findPath = new FindPath(from, to);
 
-      search.search().then((results) => {
-        setMessage(
-          `${results.path[0].f}->${results.path.map((r) => r.t).join("->")}`
-        );
+      findPath.findPath().then((results) => {
+        setMessage(results.join(" -> "));
       });
+
+      return () => {
+        findPath.cancel();
+      };
     }
-    return () => {};
+    return undefined;
   }, [from, to]);
 
   return (
