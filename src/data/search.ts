@@ -43,6 +43,16 @@ export function search(query: string) {
     return 0;
   });
 
+  if (/\d+, *\d+/g.test(query)) {
+    // add to beginning of results if it's a x,y coordinate
+    results.unshift(
+      `coordinate: ${
+        // only keep digits and commas
+        query.replace(/([^0-9,])/g, "")
+      }`
+    );
+  }
+
   return results.map((x) => (typeof x === "number" ? x.toString() : x));
 }
 

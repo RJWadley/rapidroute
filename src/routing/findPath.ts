@@ -1,89 +1,9 @@
 /* eslint-disable no-console */
-import { getAll } from "../data/getData";
 import { Pathfinding, shortHandMap } from "../types/pathfinding";
 import getRouteTime from "./getRouteTime";
+import { rawEdges, rawNodes } from "./mapEdges";
 import PriorityQueue from "./PriorityQueue";
 import { getDistance, throttle } from "./util";
-
-interface GraphEdge {
-  from: string;
-  to: string;
-  weight: number;
-  routes?: string[];
-}
-
-const rawEdges = getAll("pathfinding").then((data) => {
-  const edgeIds = Object.keys(data);
-
-  // for each route type in each nodes, generate edges to all listed nodes
-  const routeEdges: GraphEdge[] = edgeIds.flatMap((from) => {
-    const shortTypes = Object.keys(
-      shortHandMap
-    ) as (keyof typeof shortHandMap)[];
-    return shortTypes.flatMap((routeTypeShort) => {
-      const routes = data[from][routeTypeShort];
-
-      if (routes) {
-        return Object.entries(routes).flatMap(([to, routeIds]) => {
-          if (to === from) return [];
-
-          const x1 = data[from].x;
-          const y1 = data[from].z;
-          const x2 = data[to].x;
-          const y2 = data[to].z;
-          const distance =
-            x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity;
-          const weight = getRouteTime(distance, shortHandMap[routeTypeShort]);
-
-          return [{ from, to, weight, routes: routeIds }];
-        });
-      }
-      return [];
-    });
-  });
-
-  // for each node, generate 5 walking edges to the closest nodes
-  const walkingEdges: GraphEdge[] = edgeIds.flatMap((from) => {
-    const x1 = data[from].x;
-    const y1 = data[from].z;
-    const closestWalks = edgeIds
-      .filter((to) => to !== from)
-      .map((to) => {
-        const x2 = data[to].x;
-        const y2 = data[to].z;
-        const distance =
-          x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity;
-        return { to, distance };
-      })
-      // only include locations which have at least one route availabe at them
-      .filter(({ to }) => {
-        const shortTypes = Object.keys(
-          shortHandMap
-        ) as (keyof typeof shortHandMap)[];
-        return shortTypes.some((routeTypeShort) => {
-          const routes = data[to][routeTypeShort];
-          return !!routes && !routes[from];
-        });
-      })
-      // filter out MRT stops on the same line unless the from is out of service
-      .filter(({ to }) => {
-        if (!data[from].M) return true;
-        if (from.charAt(0) === to.charAt(0)) return false;
-        return true;
-      })
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, 5)
-      .map(({ to, distance }) => {
-        const weight = getRouteTime(distance, "walk");
-        return { from, to, weight };
-      });
-
-    return closestWalks;
-  });
-
-  return [...walkingEdges, ...routeEdges];
-});
-const rawNodes = getAll("pathfinding");
 
 export default class Pathfinder {
   from: string;
@@ -107,12 +27,40 @@ export default class Pathfinder {
     return this.distanceTravelled / (this.maxCost - this.EXTRA_TIME);
   }
 
-  async start(preventReverse?: boolean): Promise<string[][]> {
+  async start(preventReverse = false): Promise<string[][]> {
+    console.log("starting pathfinding from", this.from, "to", this.to);
     const frontier = new PriorityQueue<string>();
     const cameFrom: Record<string, string[]> = {};
     const costSoFar: Record<string, number> = {};
     const edges = await rawEdges;
     const nodes = await rawNodes;
+
+    // create coordinate edges if needed
+    // in the form coordinate: number, number
+    if (this.from.startsWith("coordinate: ")) {
+      const [x, z] = this.from
+        .replace("coordinate:", "")
+        .split(",")
+        .map((n) => Number(n));
+      const coordinateEdges = await Pathfinder.createCoordinateEdges(
+        this.from,
+        x,
+        z
+      );
+      edges.push(...coordinateEdges);
+    }
+    if (this.to.startsWith("coordinate:")) {
+      const [x, z] = this.to
+        .replace("coordinate:", "")
+        .split(",")
+        .map((n) => Number(n));
+      const coordinateEdges = await Pathfinder.createCoordinateEdges(
+        this.to,
+        x,
+        z
+      );
+      edges.push(...coordinateEdges);
+    }
 
     frontier.enqueue(this.from, 0);
     costSoFar[this.from] = 0;
@@ -161,11 +109,12 @@ export default class Pathfinder {
 
     if (frontier.isEmpty()) {
       if (preventReverse) return [];
+      console.log("COULD NOT FIND PATH, TRYING REVERSE");
       const reversed = await new Pathfinder(this.to, this.from).start(true);
 
       const end = performance.now();
       console.log(`Pathfinding took ${end - start}ms`);
-      return reversed.reverse();
+      return reversed.map((route) => route.reverse());
     }
 
     const paths = this.reconstructPaths(cameFrom, this.to);
@@ -222,10 +171,47 @@ export default class Pathfinder {
       if (results.length >= MAX_PATHS) break;
     }
 
-    return results;
+    return results.map((path) => path.reverse());
   }
 
   cancel() {
     this.cancelled = true;
+  }
+
+  static async createCoordinateEdges(id: string, x: number, z: number) {
+    const nodes = await rawNodes;
+    const nodeIds = Object.keys(nodes);
+    const walkingEdges = nodeIds
+      .map((nodeId) => {
+        const distance = getDistance(
+          x,
+          z,
+          nodes[nodeId].x ?? Infinity,
+          nodes[nodeId].z ?? Infinity
+        );
+        return { to: nodeId, distance };
+      })
+      .filter(({ to }) => {
+        const shortTypes = Object.keys(
+          shortHandMap
+        ) as (keyof typeof shortHandMap)[];
+        return shortTypes.some((routeTypeShort) => {
+          const routes = nodes[to][routeTypeShort];
+          return !!routes;
+        });
+      })
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 5)
+      .flatMap(({ to, distance }) => {
+        const weight = getRouteTime(distance, "walk");
+        return [
+          { from: id, to, weight },
+          { to: id, from: to, weight },
+        ];
+      });
+
+    console.log("created coordinate edges", walkingEdges);
+
+    return walkingEdges;
   }
 }
