@@ -18,7 +18,7 @@ export default function Results() {
         setMessage(
           results
             .map((result) => result.join(" -> "))
-            .map((result) => <div>{result}</div>)
+            .map((result) => <div key={result}>{result}</div>)
         );
       });
 

@@ -103,6 +103,10 @@ export default class Pathfinder {
     this.to = to;
   }
 
+  getPercentComplete() {
+    return this.distanceTravelled / (this.maxCost - this.EXTRA_TIME);
+  }
+
   async start(preventReverse?: boolean): Promise<string[][]> {
     const frontier = new PriorityQueue<string>();
     const cameFrom: Record<string, string[]> = {};
@@ -129,13 +133,6 @@ export default class Pathfinder {
       this.distanceTravelled = Math.max(
         this.distanceTravelled,
         costSoFar[current]
-      );
-
-      console.log(
-        "Travelled",
-        Math.round(this.distanceTravelled),
-        "\tmax",
-        Math.round(this.maxCost) - this.EXTRA_TIME
       );
 
       edges
