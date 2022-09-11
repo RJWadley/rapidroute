@@ -51,7 +51,7 @@ const rawEdges = getAll("pathfinding").then((data) => {
   const walkingEdges: GraphEdge[] = edgeIds.flatMap((from) => {
     const x1 = data[from].x;
     const y1 = data[from].z;
-    const distances = edgeIds
+    const closestWalks = edgeIds
       .filter((to) => to !== from)
       .map((to) => {
         const x2 = data[to].x;
@@ -70,20 +70,20 @@ const rawEdges = getAll("pathfinding").then((data) => {
           return !!routes && !routes[from];
         });
       })
-      // filter out MRT stops on the same line unless the from is unused
+      // filter out MRT stops on the same line unless the from is out of service
       .filter(({ to }) => {
         if (!data[from].M) return true;
         if (from.charAt(0) === to.charAt(0)) return false;
         return true;
       })
       .sort((a, b) => a.distance - b.distance)
-      .slice(0, 10)
+      .slice(0, 5)
       .map(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk");
         return { from, to, weight };
       });
 
-    return distances;
+    return closestWalks;
   });
 
   return [...walkingEdges, ...routeEdges];
@@ -109,7 +109,6 @@ export default class Pathfinder {
   }
 
   async findPath(preventReverse?: boolean): Promise<string[]> {
-    console.clear();
     const frontier = new PriorityQueue<string>();
     const cameFrom: Record<string, string> = {};
     const costSoFar: Record<string, number> = {};
@@ -120,7 +119,9 @@ export default class Pathfinder {
     costSoFar[this.from] = 0;
 
     const start = performance.now();
-    while (!frontier.isEmpty() && !this.cancelled) {
+    while (!frontier.isEmpty()) {
+      if (this.cancelled) return [];
+
       await throttle();
       const current = frontier.dequeue();
 
