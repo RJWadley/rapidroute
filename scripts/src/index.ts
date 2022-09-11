@@ -74,7 +74,7 @@ let codeshares: {
 } = {};
 let spawnWarps: Array<string> = ["C1", "C33", "C61", "C89"];
 
-type Mode = "flight" | "seaplane" | "heli" | "MRT" | "walk";
+type Mode = "flight" | "seaplane" | "heli" | "MRT";
 type PlaceType = "MRT" | "airport" | "town";
 type World = "New" | "Old";
 
