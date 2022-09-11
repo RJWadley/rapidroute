@@ -34,9 +34,9 @@ export default function SearchBox({
       // get the index of the input box in the siblings array
       const index = siblings.indexOf(inputRef.current);
 
-      // if the index is the last index in the array, focus the first input box on the page
+      // if the index is the last index in the array, blur the input box
       if (index === siblings.length - 1) {
-        siblings[0].focus();
+        inputRef.current.blur();
       }
       // otherwise, focus the next input box on the page
       else {
