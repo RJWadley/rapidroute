@@ -7,20 +7,14 @@ import { RoutingContext } from "./Routing";
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext);
-  const [message, setMessage] = useState<React.ReactNode>("Loading...");
+  const [results, setResults] = useState<string[][] | null>(null);
 
   useEffect(() => {
     if (from && to) {
       const findPath = new FindPath(from, to);
-      setMessage("Finding path...");
+      setResults(null);
 
-      findPath.start().then((results) => {
-        setMessage(
-          results
-            .map((result) => result.join(" -> "))
-            .map((result) => <div key={result}>{result}</div>)
-        );
-      });
+      findPath.start().then(setResults);
 
       return () => {
         findPath.cancel();
@@ -32,7 +26,12 @@ export default function Results() {
   return (
     <div>
       HERE:
-      <div>{message}</div>
+      <div>
+        {results &&
+          results.map((result) => (
+            <div key={result.toString()}>{result.join(" -> ")}</div>
+          ))}
+      </div>
       <Spinner />
     </div>
   );
