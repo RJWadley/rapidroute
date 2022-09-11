@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+
 import { RoutingContext } from "./Routing";
 
 export default function SwapButton() {
@@ -9,6 +10,9 @@ export default function SwapButton() {
     setTo(from);
   };
 
-  // eslint-disable-next-line react/button-has-type
-  return <button onClick={handleClick}>SWAP</button>;
+  return (
+    <button type="button" onClick={handleClick}>
+      SWAP
+    </button>
+  );
 }

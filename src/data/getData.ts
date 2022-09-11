@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { ref, onValue, get } from "firebase/database";
+import { ref, onValue } from "firebase/database";
+
 import { DatabaseType, Hashes } from "../types";
 import { database } from "./firebase";
 

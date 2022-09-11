@@ -1,10 +1,5 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
+/* eslint-disable no-console */
 import { getAll } from "../data/getData";
-import { PathfindingEdge } from "../types";
 import { Pathfinding, shortHandMap } from "../types/pathfinding";
 import getRouteTime from "./getRouteTime";
 import PriorityQueue from "./PriorityQueue";
@@ -122,6 +117,7 @@ export default class Pathfinder {
     while (!frontier.isEmpty()) {
       if (this.cancelled) return [];
 
+      // eslint-disable-next-line no-await-in-loop
       await throttle();
       const current = frontier.dequeue();
 

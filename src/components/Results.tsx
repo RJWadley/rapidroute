@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
+
 import styled, { keyframes } from "styled-components";
+
 import FindPath from "../routing/findPath";
 import { RoutingContext } from "./Routing";
 
