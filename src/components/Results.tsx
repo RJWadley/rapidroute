@@ -7,7 +7,7 @@ import resultDiff from "pathfinding/postProcessing/diff";
 import removeExtras from "pathfinding/postProcessing/removeExtra";
 
 import Route from "./Route";
-import { RoutingContext } from "./Routing";
+import { RoutingContext } from "./RoutingContext";
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext);

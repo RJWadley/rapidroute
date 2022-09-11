@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 
 import { getTextboxName } from "data/search";
 
-import { RoutingContext } from "./Routing";
+import { RoutingContext } from "../RoutingContext";
 
 interface SearchBoxProps {
   searchText: (text: string) => void;

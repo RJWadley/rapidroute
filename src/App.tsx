@@ -1,8 +1,8 @@
 import React from "react";
 
-import Results from "./components/Results";
-import { RoutingProvider } from "./components/Routing";
-import Selection from "./components/Selection";
+import Results from "components/Results";
+import { RoutingProvider } from "components/RoutingContext";
+import Selection from "components/Selection";
 
 function App() {
   return (

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 
+import { RoutingContext } from "components/RoutingContext";
 import { search } from "data/search";
 
-import { RoutingContext } from "./Routing";
 import SearchBox from "./SearchBox";
 import SearchList from "./SearchList";
 import SwapButton from "./SwapButton";
