@@ -75,9 +75,12 @@ export const rawEdges = getAll("pathfinding").then((data) => {
       })
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 5)
-      .map(({ to, distance }) => {
+      .flatMap(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk");
-        return { from, to, weight };
+        return [
+          { from, to, weight },
+          { to: from, from: to, weight },
+        ];
       });
 
     return closestWalks;

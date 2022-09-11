@@ -108,8 +108,10 @@ export default class Pathfinder {
         });
     }
 
-    if (frontier.isEmpty()) {
-      if (preventReverse) return [];
+    const paths = this.reconstructPaths(cameFrom, this.to);
+
+    console.log("paths", paths);
+    if (paths.length === 0 && !preventReverse) {
       console.log("COULD NOT FIND PATH, TRYING REVERSE");
       const reversed = await new Pathfinder(this.to, this.from).start(true);
 
@@ -117,8 +119,6 @@ export default class Pathfinder {
       console.log(`Pathfinding took ${end - start}ms`);
       return reversed.map((route) => route.reverse());
     }
-
-    const paths = this.reconstructPaths(cameFrom, this.to);
 
     const end = performance.now();
     if (!preventReverse) console.log(`Pathfinding took ${end - start}ms`);
