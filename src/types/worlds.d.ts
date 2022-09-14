@@ -1,8 +1,8 @@
 export interface Worlds {
-  [key: string]: World;
+  [key: string]: World
 }
 
 export interface World {
-  uniqueId: string;
-  name: string;
+  uniqueId: string
+  name: string
 }

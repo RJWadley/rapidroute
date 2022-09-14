@@ -3,14 +3,14 @@ export interface SearchIndex {
     /**
      * unique id of the item
      */
-    uniqueId: string;
+    uniqueId: string
     /**
      * display name of the item
      */
-    d: string;
+    d: string
     /**
      * search index for the item
      */
-    i: string;
-  };
+    i: string
+  }
 }

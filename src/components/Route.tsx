@@ -1,67 +1,65 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react"
 
-import { getPath } from "data/getData";
-import describeDiff from "pathfinding/postProcessing/describeDiff";
-import { Location, Route as RouteType } from "types";
+import { getPath } from "data/getData"
+import describeDiff from "pathfinding/postProcessing/describeDiff"
+import { Location, Route as RouteType } from "types"
 
-import createSegments, { SegmentType } from "./createSegments";
-import Segment from "./Segment";
+import createSegments, { SegmentType } from "./createSegments"
+import Segment from "./Segment"
 
 interface RouteProps {
-  route: string[];
-  diff: string[];
+  route: string[]
+  diff: string[]
 }
 
 export default function Route({ route, diff }: RouteProps) {
-  const [locations, setLocations] = useState<(Location | null)[] | null>(null);
-  const [routes, setRoutes] = useState<(RouteType | null)[][] | null>(null);
-  const [segments, setSegments] = useState<SegmentType[] | null>(null);
+  const [locations, setLocations] = useState<(Location | null)[] | null>(null)
+  const [routes, setRoutes] = useState<(RouteType | null)[][] | null>(null)
+  const [segments, setSegments] = useState<SegmentType[] | null>(null)
 
   useMemo(() => {
-    setRoutes(null);
-    setLocations(null);
-    setSegments(null);
+    setRoutes(null)
+    setLocations(null)
+    setSegments(null)
 
-    const promises = route.map((locationId) =>
-      getPath("locations", locationId)
-    );
+    const promises = route.map(locationId => getPath("locations", locationId))
 
-    Promise.all(promises).then((results) => {
-      setLocations(results);
+    Promise.all(promises).then(results => {
+      setLocations(results)
 
       // for each set of locations, get the routes they have in common
       const routePromises = results.map((location, index) => {
         if (index === 0) {
-          return [];
+          return []
         }
-        const previousLocation = results[index - 1];
+        const previousLocation = results[index - 1]
         if (!previousLocation || !location) {
-          return [Promise.resolve(null)];
+          return [Promise.resolve(null)]
         }
 
-        const commonRoutes = (location.routes || []).filter((routeId) =>
+        const commonRoutes = (location.routes || []).filter(routeId =>
           (previousLocation.routes || []).includes(routeId)
-        );
+        )
 
-        return commonRoutes.map((routeId) => getPath("routes", routeId));
-      });
+        return commonRoutes.map(routeId => getPath("routes", routeId))
+      })
 
       // wait for all promises to resolve
-      Promise.all(routePromises.map((p) => Promise.all(p))).then((objs) => {
-        objs.shift();
+      Promise.all(routePromises.map(p => Promise.all(p))).then(objs => {
+        objs.shift()
 
-        setRoutes(objs);
-      });
-    });
-  }, [route]);
+        setRoutes(objs)
+      })
+    })
+  }, [route])
 
   useMemo(() => {
     if (routes && locations) {
-      setSegments(createSegments(locations, routes));
+      setSegments(createSegments(locations, routes))
     }
-  }, [routes, locations]);
+  }, [routes, locations])
 
   return (
     <div>
@@ -70,5 +68,5 @@ export default function Route({ route, diff }: RouteProps) {
         <Segment key={segment.from.uniqueId} segment={segment} />
       ))}
     </div>
-  );
+  )
 }

@@ -1,26 +1,26 @@
-import { Location, Route } from "types";
+import { Location, Route } from "types"
 
 export interface SegmentType {
-  from: Location;
-  to: Location;
-  routes: (Route | null)[];
+  from: Location
+  to: Location
+  routes: (Route | null)[]
 }
 
 export default function createSegments(
   locations: (Location | null)[],
   routes: (Route | null)[][]
 ) {
-  const segments: SegmentType[] = [];
-  let passAlongMRT: Location | undefined;
+  const segments: SegmentType[] = []
+  let passAlongMRT: Location | undefined
 
   // for each pair of locations, create a segment
   locations.forEach((to, i) => {
-    if (i === 0) return;
-    const from = passAlongMRT ?? locations[i - 1];
-    const afterFrom = locations[i + 1];
+    if (i === 0) return
+    const from = passAlongMRT ?? locations[i - 1]
+    const afterFrom = locations[i + 1]
 
-    const segmentRoutes = routes[i - 1] ?? [];
-    const afterRoutes = routes[i] ?? [];
+    const segmentRoutes = routes[i - 1] ?? []
+    const afterRoutes = routes[i] ?? []
 
     if (
       from?.type === "MRT Station" &&
@@ -30,8 +30,8 @@ export default function createSegments(
       afterRoutes.length === 1
     ) {
       // if there is only one route, pass along the MRT
-      passAlongMRT = from;
-      return;
+      passAlongMRT = from
+      return
     }
 
     if (from && to)
@@ -39,9 +39,9 @@ export default function createSegments(
         from,
         to,
         routes: segmentRoutes,
-      });
-    passAlongMRT = undefined;
-  });
+      })
+    passAlongMRT = undefined
+  })
 
-  return segments;
+  return segments
 }

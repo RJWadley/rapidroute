@@ -1,30 +1,30 @@
-const DATA_SHEET_ID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8"; // 3 calls
-const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"; //1 call
-const TOWN_SHEET_ID = "1JSmJtYkYrEx6Am5drhSet17qwJzOKDI7tE7FxPx4YNI"; // 1 call
-const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"; //1 call
+const DATA_SHEET_ID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8" // 3 calls
+const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps" //1 call
+const TOWN_SHEET_ID = "1JSmJtYkYrEx6Am5drhSet17qwJzOKDI7tE7FxPx4YNI" // 1 call
+const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8" //1 call
 
 //fetch for node.js
-import fetch from "node-fetch";
+import fetch from "node-fetch"
 
-import { handoffData } from "./handoff";
+import { handoffData } from "./handoff"
 
 function transpose(a: Array<any>) {
   // Calculate the width and height of the Array
-  var w = a.length || 0;
+  var w = a.length || 0
 
   //calculate the max height of array
-  let maxHeight = 0;
-  a.forEach((item) => {
+  let maxHeight = 0
+  a.forEach(item => {
     if (item.length > maxHeight) {
-      maxHeight = item.length;
+      maxHeight = item.length
     }
-  });
+  })
 
-  var h = maxHeight;
+  var h = maxHeight
 
   // In case it is a zero matrix, no transpose routine needed.
   if (h === 0 || w === 0) {
-    return [];
+    return []
   }
 
   /**
@@ -34,91 +34,91 @@ function transpose(a: Array<any>) {
    */
   var i: number,
     j: number,
-    t: Array<any> = [];
+    t: Array<any> = []
 
   // Loop through every item in the outer array (height)
   for (i = 0; i < h; i++) {
     // Insert a new row (array)
-    t[i] = [];
+    t[i] = []
 
     // Loop through every item per item in outer array (width)
     for (j = 0; j < w; j++) {
       // Save transposed data.
-      t[i][j] = a[j][i];
+      t[i][j] = a[j][i]
     }
   }
 
-  return t;
+  return t
 }
 
 //globals
 let logos: {
-  [key: string]: string;
-} = {};
+  [key: string]: string
+} = {}
 let lightColors: {
-  [key: string]: string;
-} = {};
+  [key: string]: string
+} = {}
 let darkColors: {
-  [key: string]: string;
-} = {};
+  [key: string]: string
+} = {}
 
-let ignoredPlaces: Array<string> = [];
+let ignoredPlaces: Array<string> = []
 
-let routes: Array<LegacyRoute> = [];
-let places: Array<LegacyPlace> = [];
-let providers: Array<LegacyProvider> = [];
+let routes: Array<LegacyRoute> = []
+let places: Array<LegacyPlace> = []
+let providers: Array<LegacyProvider> = []
 let codeshares: {
   [key: string]: {
-    [key: string]: string;
-  };
-} = {};
-let spawnWarps: Array<string> = ["C1", "C33", "C61", "C89"];
+    [key: string]: string
+  }
+} = {}
+let spawnWarps: Array<string> = ["C1", "C33", "C61", "C89"]
 
-type Mode = "flight" | "seaplane" | "heli" | "MRT";
-type PlaceType = "MRT" | "airport" | "town";
-type World = "New" | "Old";
+type Mode = "flight" | "seaplane" | "heli" | "MRT"
+type PlaceType = "MRT" | "airport" | "town"
+type World = "New" | "Old"
 
 export interface Aliases {
-  actualProvider: string;
-  displayProvider: string;
-  start: number;
-  end: number;
+  actualProvider: string
+  displayProvider: string
+  start: number
+  end: number
 }
 
-const aliases: Aliases[] = [];
+const aliases: Aliases[] = []
 
 export interface LegacyRoute {
-  from: string;
-  to: string;
-  mode: Mode;
-  provider?: string;
-  number?: string;
-  displayBy?: string;
-  fromGate?: string;
-  toGate?: string;
+  from: string
+  to: string
+  mode: Mode
+  provider?: string
+  number?: string
+  displayBy?: string
+  fromGate?: string
+  toGate?: string
 }
 
 export interface LegacyPlace {
-  id: string;
-  world: World;
-  type: PlaceType;
-  shortName?: string;
-  longName?: string;
-  displayName?: string;
-  x?: number;
-  z?: number;
-  keywords?: string;
-  MRT_TRANSIT_NAME?: string;
+  id: string
+  world: World
+  type: PlaceType
+  shortName?: string
+  longName?: string
+  displayName?: string
+  x?: number
+  z?: number
+  keywords?: string
+  MRT_TRANSIT_NAME?: string
 }
 
 export interface LegacyProvider {
-  name: string;
-  displayName?: string;
-  prefix?: string;
+  name: string
+  displayName?: string
+  prefix?: string
 }
 
 async function getTransitSheet() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     fetch(
       "https://sheets.googleapis.com/v4/spreadsheets/" +
         DATA_SHEET_ID +
@@ -129,16 +129,16 @@ async function getTransitSheet() {
         "&key=" +
         API_KEY
     )
-      .then((res) => {
-        return res.json();
+      .then(res => {
+        return res.json()
       })
       .then((result: any) => {
-        let rows = result.valueRanges[0].values;
-        let cols = result.valueRanges[1].values;
-        ignoredPlaces = result.valueRanges[2].values;
+        let rows = result.valueRanges[0].values
+        let cols = result.valueRanges[1].values
+        ignoredPlaces = result.valueRanges[2].values
         ignoredPlaces.forEach((place, i) => {
-          ignoredPlaces[i] = place[0];
-        });
+          ignoredPlaces[i] = place[0]
+        })
         //now get transit sheet
         fetch(
           "https://sheets.googleapis.com/v4/spreadsheets/" +
@@ -159,18 +159,18 @@ async function getTransitSheet() {
             "&key=" +
             API_KEY
         )
-          .then((res) => {
-            return res.json();
+          .then(res => {
+            return res.json()
           })
-          .then((result) => {
-            resolve(result);
-          });
-      });
-  });
+          .then(result => {
+            resolve(result)
+          })
+      })
+  })
 }
 
 async function getDataSheet() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     fetch(
       "https://sheets.googleapis.com/v4/spreadsheets/" +
         DATA_SHEET_ID +
@@ -182,17 +182,17 @@ async function getDataSheet() {
         "&key=" +
         API_KEY
     )
-      .then((res) => {
-        return res.json();
+      .then(res => {
+        return res.json()
       })
-      .then((result) => {
-        resolve(result);
-      });
-  });
+      .then(result => {
+        resolve(result)
+      })
+  })
 }
 
 function getTowns() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     fetch(
       "https://sheets.googleapis.com/v4/spreadsheets/" +
         TOWN_SHEET_ID +
@@ -201,12 +201,12 @@ function getTowns() {
         "&key=" +
         API_KEY
     )
-      .then((res) => {
-        return res.json();
+      .then(res => {
+        return res.json()
       })
       .then((result: any) => {
-        let towns = result.valueRanges[0].values as Array<string>;
-        towns.forEach((town) => {
+        let towns = result.valueRanges[0].values as Array<string>
+        towns.forEach(town => {
           let placeObject: LegacyPlace = {
             id: town[0],
             world: "New",
@@ -216,12 +216,12 @@ function getTowns() {
             x: parseInt(town[4]),
             z: parseInt(town[6]),
             keywords: town[1] + " " + town[2] + " " + town[3],
-          };
-          places.push(placeObject);
-          if (town[1] == "Premier") {
-            spawnWarps.push(town[0]);
           }
-        });
+          places.push(placeObject)
+          if (town[1] == "Premier") {
+            spawnWarps.push(town[0])
+          }
+        })
         places.push({
           id: "Spawn",
           world: "New",
@@ -230,11 +230,11 @@ function getTowns() {
           longName: "Central City",
           x: 1,
           z: 1,
-        });
-        spawnWarps.push("Spawn");
-        resolve(result);
-      });
-  });
+        })
+        spawnWarps.push("Spawn")
+        resolve(result)
+      })
+  })
 }
 
 function parseRawFlightData(
@@ -244,11 +244,11 @@ function parseRawFlightData(
   routesRaw: Array<Array<string>>
 ) {
   //first parse the places
-  let placeList: Array<LegacyPlace> = [];
-  placesRaw.forEach((place) => {
-    let world = <World>place[2]; //default to new
+  let placeList: Array<LegacyPlace> = []
+  placesRaw.forEach(place => {
+    let world = <World>place[2] //default to new
     if (world != "Old" && world != "New") {
-      world = "New";
+      world = "New"
     }
 
     placeList.push({
@@ -258,72 +258,72 @@ function parseRawFlightData(
       longName: place[0],
       type: "airport",
       MRT_TRANSIT_NAME: place[1],
-    });
-  });
+    })
+  })
 
-  places.push(...placeList); //add to global
+  places.push(...placeList) //add to global
 
-  routesRaw = transpose(routesRaw); //routeData needs to be transposed
+  routesRaw = transpose(routesRaw) //routeData needs to be transposed
 
-  let airlines: Array<LegacyProvider> = [];
-  let flights: Array<LegacyRoute> = [];
+  let airlines: Array<LegacyProvider> = []
+  let flights: Array<LegacyRoute> = []
 
   //for each airline
   providersRaw.forEach((airline, i) => {
-    airlines.push({ name: airline });
+    airlines.push({ name: airline })
     let flightsByNumber: {
-      [key: string]: Array<LegacyPlace>;
-    } = {};
+      [key: string]: Array<LegacyPlace>
+    } = {}
 
     routesRaw[i]?.forEach((cell, j) => {
       //for each cell
-      if (cell == "" || cell == undefined) return; //skip if empty
-      cell.split(",").forEach((rawNum) => {
+      if (cell == "" || cell == undefined) return //skip if empty
+      cell.split(",").forEach(rawNum => {
         //for each flight number in cell
 
         // add to flightsByNumber
-        let flight = parseInt(rawNum.trim());
+        let flight = parseInt(rawNum.trim())
         if (flightsByNumber[flight] == undefined) {
-          flightsByNumber[flight] = [];
+          flightsByNumber[flight] = []
         }
-        flightsByNumber[flight].push(placeList[j]);
-      });
-    });
+        flightsByNumber[flight].push(placeList[j])
+      })
+    })
 
-    Object.keys(flightsByNumber).forEach((flightNumber) => {
-      flightsByNumber[flightNumber].forEach((destinationA) => {
-        flightsByNumber[flightNumber].forEach((destinationB) => {
-          if (destinationA == destinationB) return;
+    Object.keys(flightsByNumber).forEach(flightNumber => {
+      flightsByNumber[flightNumber].forEach(destinationA => {
+        flightsByNumber[flightNumber].forEach(destinationB => {
+          if (destinationA == destinationB) return
           flights.push({
             from: destinationA.id,
             to: destinationB.id,
             mode: mode,
             provider: airline,
             number: flightNumber,
-          });
-        });
-      });
-    });
-  });
+          })
+        })
+      })
+    })
+  })
 
-  routes.push(...flights);
-  providers.push(...airlines);
+  routes.push(...flights)
+  providers.push(...airlines)
 }
 
 function parseCodeshares(codesharesRaw: Array<Array<string>>) {
   codesharesRaw.forEach((company, i) => {
-    let range = company[1]?.split("-") || []; //range.split
-    if (range.length < 2) return;
+    let range = company[1]?.split("-") || [] //range.split
+    if (range.length < 2) return
 
-    lightColors[company[2]] = company[4]; //colors[displayName] = color
-    darkColors[company[2]] = company[5]; //colors[displayName] = color
-    logos[company[2]] = company[3]; //logos[displayName] = logo
+    lightColors[company[2]] = company[4] //colors[displayName] = color
+    darkColors[company[2]] = company[5] //colors[displayName] = color
+    logos[company[2]] = company[3] //logos[displayName] = logo
 
-    if (codeshares[company[0]] == undefined) codeshares[company[0]] = {};
+    if (codeshares[company[0]] == undefined) codeshares[company[0]] = {}
 
     for (let i = parseInt(range[0]); i <= parseInt(range[1]); i++) {
       //name + number = displayname
-      codeshares[company[0]][i] = company[2]; //
+      codeshares[company[0]][i] = company[2] //
     }
 
     aliases.push({
@@ -331,108 +331,108 @@ function parseCodeshares(codesharesRaw: Array<Array<string>>) {
       displayProvider: company[2],
       start: parseInt(range[0]),
       end: parseInt(range[1]),
-    });
+    })
 
     providers.push({
       name: company[2],
-    });
-  });
+    })
+  })
 }
 
 function processAirportMetadata(rawAirportData: Array<Array<string>>) {
-  rawAirportData.forEach((rawAirport) => {
-    let coords = rawAirport[5] ? parseCoordinates(rawAirport[5]) : undefined;
+  rawAirportData.forEach(rawAirport => {
+    let coords = rawAirport[5] ? parseCoordinates(rawAirport[5]) : undefined
 
-    let id = rawAirport[1] ?? rawAirport[0];
-    if (id == "") id = rawAirport[0];
+    let id = rawAirport[1] ?? rawAirport[0]
+    if (id == "") id = rawAirport[0]
 
-    let world = rawAirport[2] as World;
-    if (world != "New" && world != "Old") world = "New";
+    let world = rawAirport[2] as World
+    if (world != "New" && world != "Old") world = "New"
 
     let newPlace: LegacyPlace = {
       id,
       world,
       type: "airport",
-    };
-
-    let shortName = rawAirport[1];
-    if (shortName != "" && shortName != undefined)
-      newPlace.shortName = shortName;
-
-    let longName = rawAirport[0];
-    if (longName != "" && longName != undefined) newPlace.longName = longName;
-
-    let displayName = rawAirport[3];
-    if (displayName != "" && displayName != undefined)
-      newPlace.displayName = displayName;
-
-    let keywords = rawAirport[4];
-    if (keywords != "" && keywords != undefined) newPlace.keywords = keywords;
-
-    if (coords != undefined) {
-      newPlace.x = coords[0];
-      newPlace.z = coords[1];
     }
 
-    places.push(newPlace);
-  });
+    let shortName = rawAirport[1]
+    if (shortName != "" && shortName != undefined)
+      newPlace.shortName = shortName
+
+    let longName = rawAirport[0]
+    if (longName != "" && longName != undefined) newPlace.longName = longName
+
+    let displayName = rawAirport[3]
+    if (displayName != "" && displayName != undefined)
+      newPlace.displayName = displayName
+
+    let keywords = rawAirport[4]
+    if (keywords != "" && keywords != undefined) newPlace.keywords = keywords
+
+    if (coords != undefined) {
+      newPlace.x = coords[0]
+      newPlace.z = coords[1]
+    }
+
+    places.push(newPlace)
+  })
 }
 
 function parseCoordinates(coords: string) {
-  let split = coords.split(" ");
-  let out: Array<number> = [];
+  let split = coords.split(" ")
+  let out: Array<number> = []
   split.forEach((item, i) => {
-    out[i] = parseInt(item.replace(/,/g, ""));
-  });
+    out[i] = parseInt(item.replace(/,/g, ""))
+  })
 
   if (out.length == 3) {
-    out[1] = out[2];
-    out.pop();
+    out[1] = out[2]
+    out.pop()
   }
 
   if (out.length != 2) {
-    split = coords.split(",");
-    out = [];
+    split = coords.split(",")
+    out = []
     split.forEach((item, i) => {
-      out[i] = parseInt(item.trim());
-    });
+      out[i] = parseInt(item.trim())
+    })
   }
 
   if (out.length == 3) {
-    out[1] = out[2];
-    out.pop();
+    out[1] = out[2]
+    out.pop()
   }
 
-  return out;
+  return out
 }
 
 function processAirlineMetadata(rawAirlineData: Array<Array<string>>) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     //set legacy gate numbers and
     //request new gate numbers
     let requestURL =
       "https://sheets.googleapis.com/v4/spreadsheets/" +
       DATA_SHEET_ID +
-      "/values:batchGet?ranges='Legacy Gate Data'!A:D";
+      "/values:batchGet?ranges='Legacy Gate Data'!A:D"
 
-    rawAirlineData.forEach((company) => {
-      if (company[3]) logos[company[0]] = company[3];
-      if (company[4]) lightColors[company[0]] = company[4];
-      if (company[5]) darkColors[company[0]] = company[5];
+    rawAirlineData.forEach(company => {
+      if (company[3]) logos[company[0]] = company[3]
+      if (company[4]) lightColors[company[0]] = company[4]
+      if (company[5]) darkColors[company[0]] = company[5]
 
       if (company.length > 1) {
         if (company[1] == "Yes") {
-          requestURL += "&ranges='" + company[0] + "'!A:D";
+          requestURL += "&ranges='" + company[0] + "'!A:D"
         }
       }
-    });
+    })
 
     fetch(requestURL + "&key=" + API_KEY)
-      .then((response) => response.json())
-      .then((result) => {
-        parseAirlineGateData(result, rawAirlineData, resolve);
-      });
-  });
+      .then(response => response.json())
+      .then(result => {
+        parseAirlineGateData(result, rawAirlineData, resolve)
+      })
+  })
 }
 
 function parseAirlineGateData(
@@ -440,124 +440,123 @@ function parseAirlineGateData(
   companies: Array<Array<string>>,
   resolve: Function
 ) {
-  let gateData: Array<Array<string>> = [];
+  let gateData: Array<Array<string>> = []
 
-  let sheets = result.valueRanges;
+  let sheets = result.valueRanges
 
-  let legacySheet = sheets.shift().values as Array<Array<string>>;
-  legacySheet.shift();
+  let legacySheet = sheets.shift().values as Array<Array<string>>
+  legacySheet.shift()
 
   //process legacy gates
-  companies.forEach((company) => {
+  companies.forEach(company => {
     if (company.length > 1) {
       if (company[1] == "Legacy") {
-        let flights = legacySheet.filter((x) => x[0] == company[2]);
-        flights.forEach((item) => {
-          item[0] = company[0];
-        });
-        gateData = [...gateData, ...flights];
+        let flights = legacySheet.filter(x => x[0] == company[2])
+        flights.forEach(item => {
+          item[0] = company[0]
+        })
+        gateData = [...gateData, ...flights]
       }
     }
-  });
+  })
 
   //process other gates
   sheets.forEach((sheet: any) => {
-    let companyName: string = "";
+    let companyName: string = ""
     if (sheet.range.indexOf("'") == -1) {
-      companyName = sheet.range.split("!")[0];
+      companyName = sheet.range.split("!")[0]
     } else {
-      companyName = sheet.range.split("'")[1];
+      companyName = sheet.range.split("'")[1]
     }
 
-    let flights = sheet.values as Array<Array<string>>;
-    flights.forEach((flight) => {
-      flight[0] = companyName;
-    });
+    let flights = sheet.values as Array<Array<string>>
+    flights.forEach(flight => {
+      flight[0] = companyName
+    })
 
-    gateData = [...gateData, ...flights];
-  });
+    gateData = [...gateData, ...flights]
+  })
 
   //now add gate info to routes
   routes.forEach((route, i) => {
-    if (route.mode == "MRT") return;
+    if (route.mode == "MRT") return
 
     let fromGate = gateData.filter(
-      (x) =>
-        x[0] == route.provider && x[1] == route.number && x[2] == route.from
-    )[0]?.[3];
+      x => x[0] == route.provider && x[1] == route.number && x[2] == route.from
+    )[0]?.[3]
     let toGate = gateData.filter(
-      (x) => x[0] == route.provider && x[1] == route.number && x[2] == route.to
-    )[0]?.[3];
+      x => x[0] == route.provider && x[1] == route.number && x[2] == route.to
+    )[0]?.[3]
 
     if (fromGate) {
-      routes[i].fromGate = fromGate;
+      routes[i].fromGate = fromGate
     }
     if (toGate) {
-      routes[i].toGate = toGate;
+      routes[i].toGate = toGate
     }
-  });
+  })
 
-  resolve(true);
+  resolve(true)
 }
 
 function generateMrt(
   rawMRTInfo: Array<Array<string>>,
   rawStopInfo: Array<Array<string>>
 ) {
-  let routeList: Array<LegacyRoute> = [];
-  let placeList: Array<LegacyPlace> = [];
+  let routeList: Array<LegacyRoute> = []
+  let placeList: Array<LegacyPlace> = []
 
   //generate list of MRT stop routes
   rawMRTInfo.forEach((item, i) => {
-    let minSE = 2;
-    let maxNW = 3;
-    let nsew = 4;
-    let lineCode = item[1];
-    let lineName = item[0];
-    let lightLineColor = item[5];
-    let darkLineColor = item[6];
+    let minSE = 2
+    let maxNW = 3
+    let nsew = 4
+    let lineCode = item[1]
+    let lineName = item[0]
+    let lightLineColor = item[5]
+    let darkLineColor = item[6]
 
-    lightColors[lineName] = lightLineColor;
-    darkColors[lineName] = darkLineColor;
+    lightColors[lineName] = lightLineColor
+    darkColors[lineName] = darkLineColor
 
-    let line = [];
+    let line = []
     //0: {Name: "Artic Line", Code: "A", Min-SE: "X", Max-NW: "53"}
     if (item[minSE] == "X") {
-      line = [lineCode + "X"];
-      let max = item[maxNW] as unknown as number;
+      line = [lineCode + "X"]
+      let max = item[maxNW] as unknown as number
       for (var i = 0; i <= max; i++) {
-        line.push(lineCode + i);
+        line.push(lineCode + i)
       }
     } else if (item[minSE] == "XHW") {
-      line = [lineCode + "X", lineCode + "H", lineCode + "W"];
-      let max = item[maxNW] as unknown as number;
+      line = [lineCode + "X", lineCode + "H", lineCode + "W"]
+      let max = item[maxNW] as unknown as number
       for (var i = 1; i <= max; i++) {
-        line.push(lineCode + i);
+        line.push(lineCode + i)
       }
     } else if (item[nsew] == "NS") {
-      let min = item[minSE] as unknown as number;
+      let min = item[minSE] as unknown as number
       for (var i = min; i > 0; i--) {
-        line.push(lineCode + "S" + i);
+        line.push(lineCode + "S" + i)
       }
-      line.push(lineCode + "0");
-      let max = item[maxNW] as unknown as number;
+      line.push(lineCode + "0")
+      let max = item[maxNW] as unknown as number
       for (var i = 1; i <= max; i++) {
-        line.push(lineCode + "N" + i);
+        line.push(lineCode + "N" + i)
       }
     } else if (item[nsew] == "EW") {
-      let min = item[minSE] as unknown as number;
+      let min = item[minSE] as unknown as number
       for (var i = min; i > 0; i--) {
-        line.push(lineCode + "E" + i);
+        line.push(lineCode + "E" + i)
       }
-      line.push(lineCode + "0");
-      let max = item[maxNW] as unknown as number;
+      line.push(lineCode + "0")
+      let max = item[maxNW] as unknown as number
       for (var i = 1; i <= max; i++) {
-        line.push(lineCode + "W" + i);
+        line.push(lineCode + "W" + i)
       }
     } else {
-      let max = item[maxNW] as unknown as number;
+      let max = item[maxNW] as unknown as number
       for (var i = 1; i <= max; i++) {
-        line.push(lineCode + i);
+        line.push(lineCode + i)
       }
     }
 
@@ -569,7 +568,7 @@ function generateMrt(
           to: line[i - 1],
           mode: "MRT",
           provider: lineName,
-        });
+        })
       }
       if (i != line.length - 1) {
         routeList.push({
@@ -577,26 +576,26 @@ function generateMrt(
           to: line[i + 1],
           mode: "MRT",
           provider: lineName,
-        });
+        })
       }
 
       //spawn warps
       if ((i == 0 || i == line.length - 1) && lineName != "circle") {
-        spawnWarps.push(line[i]);
+        spawnWarps.push(line[i])
       }
     }
-  });
+  })
 
   //and generate stop names for place list
-  rawStopInfo.forEach((item) => {
+  rawStopInfo.forEach(item => {
     //add place
-    if (item[0] == undefined) return;
+    if (item[0] == undefined) return
     placeList.push({
       id: item[0],
       world: "New",
       type: "MRT",
-    });
-  });
+    })
+  })
 
   //and C is a ring line, so add those
   routeList.push({
@@ -604,13 +603,13 @@ function generateMrt(
     to: "C119",
     mode: "MRT",
     provider: "circle",
-  });
+  })
   routeList.push({
     from: "C119",
     to: "C1",
     mode: "MRT",
     provider: "circle",
-  });
+  })
 
   //mrt marina shuttle
   routeList.push({
@@ -618,32 +617,32 @@ function generateMrt(
     to: "XEM",
     mode: "MRT",
     provider: "expo",
-  });
+  })
 
   routeList.push({
     from: "XEM",
     to: "XE8",
     mode: "MRT",
     provider: "expo",
-  });
+  })
 
-  routes.push(...routeList);
+  routes.push(...routeList)
 }
 
 function generateMrtFromMarkers() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     fetch(
       "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
     )
-      .then((response) => {
-        return response.json();
+      .then(response => {
+        return response.json()
       })
       .then((data: any) => {
-        resolve(true);
+        resolve(true)
 
-        let sets = data.sets;
+        let sets = data.sets
 
-        Object.keys(sets).forEach((lineName) => {
+        Object.keys(sets).forEach(lineName => {
           if (
             lineName == "roads.a" ||
             lineName == "roads.b" ||
@@ -652,28 +651,28 @@ function generateMrtFromMarkers() {
             lineName == "markers" ||
             lineName == "old"
           )
-            return;
-          let currentLine = sets[lineName].markers;
+            return
+          let currentLine = sets[lineName].markers
 
-          let displayName = sets[lineName].label;
+          let displayName = sets[lineName].label
 
           providers.push({
             name: lineName,
             displayName,
-          });
+          })
 
-          Object.keys(currentLine).forEach((stopCode) => {
-            let currentId = stopCode.toUpperCase();
+          Object.keys(currentLine).forEach(stopCode => {
+            let currentId = stopCode.toUpperCase()
 
             //fix id mistakes
-            if (currentId == "WN34 STATION") currentId = "WN34";
-            if (currentId == "MS") currentId = "MH";
-            if (currentId == "M0") currentId = "MW";
-            if (currentId == "WH24") currentId = "WN24";
+            if (currentId == "WN34 STATION") currentId = "WN34"
+            if (currentId == "MS") currentId = "MH"
+            if (currentId == "M0") currentId = "MW"
+            if (currentId == "WH24") currentId = "WN24"
 
-            let name = currentLine[stopCode].label;
+            let name = currentLine[stopCode].label
             if (name.substr(name.length - 1, name.length) == ")")
-              name = name.substr(0, name.length - 3 - currentId.length);
+              name = name.substr(0, name.length - 3 - currentId.length)
 
             places.push({
               id: currentId,
@@ -683,98 +682,98 @@ function generateMrtFromMarkers() {
               x: currentLine[stopCode].x,
               z: currentLine[stopCode].z,
               type: "MRT",
-            });
-          });
-        });
-      });
-  });
+            })
+          })
+        })
+      })
+  })
 }
 
 function combineData() {
-  let newProviders: Array<LegacyProvider> = [];
+  let newProviders: Array<LegacyProvider> = []
 
   while (providers.length > 0) {
-    let current = providers[0].name;
-    let find = providers.filter((x) => x.name == current);
-    providers = providers.filter((x) => x.name != current);
+    let current = providers[0].name
+    let find = providers.filter(x => x.name == current)
+    providers = providers.filter(x => x.name != current)
 
-    let newObject = find[0];
+    let newObject = find[0]
 
-    Object.assign(newObject, ...find);
-    newProviders.push(newObject);
+    Object.assign(newObject, ...find)
+    newProviders.push(newObject)
   }
 
-  providers = newProviders;
+  providers = newProviders
 
-  let newPlaces: Array<LegacyPlace> = [];
+  let newPlaces: Array<LegacyPlace> = []
 
   while (places.length > 0) {
-    let current = places[0].id;
+    let current = places[0].id
 
-    let find = places.filter((x) => x.id == current);
-    places = places.filter((x) => x.id != current);
+    let find = places.filter(x => x.id == current)
+    places = places.filter(x => x.id != current)
 
-    let newObject = find[0];
+    let newObject = find[0]
 
-    Object.assign(newObject, ...find);
+    Object.assign(newObject, ...find)
 
-    newPlaces.unshift(newObject);
+    newPlaces.unshift(newObject)
   }
 
-  newPlaces = newPlaces.filter((x) => !ignoredPlaces.includes(x.id));
+  newPlaces = newPlaces.filter(x => !ignoredPlaces.includes(x.id))
 
-  places = newPlaces;
+  places = newPlaces
 }
 
 async function loadData() {
-  routes = [];
-  places = [];
-  providers = [];
-  codeshares = {};
-  spawnWarps = ["C1", "C33", "C61", "C89"];
-  lightColors = {};
-  darkColors = {};
+  routes = []
+  places = []
+  providers = []
+  codeshares = {}
+  spawnWarps = ["C1", "C33", "C61", "C89"]
+  lightColors = {}
+  darkColors = {}
 
-  let transitSheet: any = getTransitSheet();
-  let dataSheet: any = getDataSheet();
-  let markers: any = generateMrtFromMarkers();
-  let townsheet: any = getTowns();
+  let transitSheet: any = getTransitSheet()
+  let dataSheet: any = getDataSheet()
+  let markers: any = generateMrtFromMarkers()
+  let townsheet: any = getTowns()
 
-  transitSheet = await transitSheet;
-  dataSheet = await dataSheet;
-  markers = await markers;
-  await townsheet;
+  transitSheet = await transitSheet
+  dataSheet = await dataSheet
+  markers = await markers
+  await townsheet
 
-  dataSheet = dataSheet.valueRanges;
+  dataSheet = dataSheet.valueRanges
 
-  generateMrt(dataSheet[0].values, dataSheet[0].values);
+  generateMrt(dataSheet[0].values, dataSheet[0].values)
 
-  transitSheet = transitSheet.valueRanges;
+  transitSheet = transitSheet.valueRanges
 
   parseRawFlightData(
     "flight",
     transitSheet[0].values,
     transitSheet[1].values[0],
     transitSheet[2].values
-  );
+  )
   parseRawFlightData(
     "heli",
     transitSheet[3].values,
     transitSheet[4].values[0],
     transitSheet[5].values
-  );
+  )
   parseRawFlightData(
     "seaplane",
     transitSheet[6].values,
     transitSheet[7].values[0],
     transitSheet[8].values
-  );
+  )
 
-  await processAirlineMetadata(dataSheet[2].values);
+  await processAirlineMetadata(dataSheet[2].values)
 
-  processAirportMetadata(dataSheet[1].values);
-  parseCodeshares(dataSheet[3].values);
-  combineData();
+  processAirportMetadata(dataSheet[1].values)
+  parseCodeshares(dataSheet[3].values)
+  combineData()
 
   handoffData(
     routes,
@@ -785,7 +784,7 @@ async function loadData() {
     lightColors,
     darkColors,
     logos
-  );
+  )
 }
 
-loadData();
+loadData()

@@ -1,12 +1,12 @@
-import React from "react";
+import React from "react"
 
-type LocationId = string;
+type LocationId = string
 
 type SearchListProps = {
-  locations: LocationId[];
-  currentlySelected: number;
-  setSelectedIndex: (index: number) => void;
-};
+  locations: LocationId[]
+  currentlySelected: number
+  setSelectedIndex: (index: number) => void
+}
 
 export default function SearchList({
   locations,
@@ -23,5 +23,5 @@ export default function SearchList({
         </div>
       ))}
     </div>
-  );
+  )
 }

@@ -7,18 +7,18 @@
  */
 export default function resultDiffs(results: string[][]) {
   if (results.length === 0) {
-    return [];
+    return []
   }
 
   // get list of items that are in all results
   const common = results.reduce((acc, result) => {
-    return acc.filter((item) => result.includes(item));
-  });
+    return acc.filter(item => result.includes(item))
+  })
 
   // get the diff of each result
-  const diffs = results.map((result) => {
-    return result.filter((item) => !common.includes(item));
-  });
+  const diffs = results.map(result => {
+    return result.filter(item => !common.includes(item))
+  })
 
-  return diffs;
+  return diffs
 }

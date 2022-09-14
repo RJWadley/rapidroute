@@ -1,17 +1,17 @@
-import React from "react";
+import React from "react"
 
-import { SegmentType } from "../createSegments";
-import SingleRoute from "./SingleRoute";
+import { SegmentType } from "../createSegments"
+import SingleRoute from "./SingleRoute"
 
 interface SegmentProps {
-  segment: SegmentType;
+  segment: SegmentType
 }
 
 export default function Segment({ segment }: SegmentProps) {
-  const singleRoute = segment.routes.length === 1;
-  const walkingRoute = segment.routes.length === 0;
+  const singleRoute = segment.routes.length === 1
+  const walkingRoute = segment.routes.length === 0
 
-  if (walkingRoute) return <div />;
+  if (walkingRoute) return <div />
 
-  return singleRoute ? <SingleRoute segment={segment} /> : <div />;
+  return singleRoute ? <SingleRoute segment={segment} /> : <div />
 }

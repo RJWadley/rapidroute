@@ -1,5 +1,5 @@
 export interface Pathfinding {
-  [key: string]: PathingPlace;
+  [key: string]: PathingPlace
 }
 
 export type PathingPlace = {
@@ -9,32 +9,32 @@ export type PathingPlace = {
    * value key: route location
    * value value: routeIds that can be used to get to that location
    */
-  [key in keyof typeof shortHandMap]: null | Record<string, string[]>;
+  [key in keyof typeof shortHandMap]: null | Record<string, string[]>
 } & {
   /**
    * should match the database key and the uniqueId of the location
    */
-  uniqueId: string;
+  uniqueId: string
   /**
    * the X coordinate of the location
    */
-  x: number | null;
+  x: number | null
   /**
    * the Z coordinate of the location
    */
-  z: number | null;
-};
+  z: number | null
+}
 
 export const shortHandMap = {
   F: "flight",
   S: "seaplane",
   H: "heli",
   M: "MRT",
-} as const;
+} as const
 
 export const reverseShortHandMap = {
   flight: "F",
   seaplane: "S",
   heli: "H",
   MRT: "M",
-} as const;
+} as const
