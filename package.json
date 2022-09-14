@@ -1,49 +1,69 @@
 {
-  "name": "rapidroute",
-  "version": "3.0.0",
+  "name": "reform-gatsby-starter",
   "private": true,
+  "description": "Reform Collective Gatsby Starter",
+  "version": "0.1.0",
+  "author": "Reform Collective",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsbyjs/gatsby-starter-default"
+  },
+  "bugs": {
+    "url": "https://github.com/gatsbyjs/gatsby/issues"
+  },
   "dependencies": {
-    "@types/flexsearch": "^0.7.3",
-    "@types/node": "^16.11.47",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "@types/styled-components": "^5.1.26",
-    "eslint": "^8.21.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "firebase": "^9.9.2",
+    "firebase": "^9.9.4",
     "flexsearch": "^0.7.21",
-    "node-fetch": "^3.2.10",
-    "prettier": "^2.7.1",
+    "gatsby": "^4.21.1",
+    "gatsby-link": "^4.21.0",
+    "gatsby-plugin-image": "^2.21.0",
+    "gatsby-plugin-layout": "^3.21.0",
+    "gatsby-plugin-manifest": "^4.21.0",
+    "gatsby-plugin-netlify": "^5.0.1",
+    "gatsby-plugin-root-import": "^2.0.8",
+    "gatsby-plugin-sharp": "^4.21.0",
+    "gatsby-plugin-sitemap": "^5.21.0",
+    "gatsby-plugin-styled-components": "^5.21.0",
+    "gatsby-plugin-svgr": "^3.0.0-beta.0",
+    "gatsby-plugin-tsconfig-paths": "^1.0.5",
+    "gatsby-transformer-sharp": "^4.21.0",
+    "gsap": "npm:@gsap/shockingly@^3.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "styled-components": "^5.3.5",
-    "typescript": "^4.7.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "the-new-css-reset": "^1.7.3"
   },
   "devDependencies": {
     "@rjwadley/eslint-plugin-format-gsap": "^0.1.1",
-    "eslint-import-resolver-typescript": "^3.4.0",
-    "eslint-plugin-sort-styled-components": "^0.0.7"
+    "@types/flexsearch": "^0.7.3",
+    "@types/node": "^18.7.13",
+    "@types/react": "^18.0.17",
+    "@types/styled-components": "^5.1.26",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint": "^8.22.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-ssr-friendly": "^1.0.6",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
+  },
+  "keywords": [
+    "gatsby"
+  ],
+  "license": "0BSD",
+  "scripts": {
+    "build": "gatsby clean && gatsby build",
+    "develop": "gatsby develop",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\" && npx eslint . --fix",
+    "start": "gatsby develop -H 0.0.0.0",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
   }
 }

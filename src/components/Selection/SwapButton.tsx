@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 
-import { RoutingContext } from "components/RoutingContext";
+import { RoutingContext } from "components/Providers/RoutingContext";
 
 export default function SwapButton() {
   const { from, to, setFrom, setTo } = useContext(RoutingContext);

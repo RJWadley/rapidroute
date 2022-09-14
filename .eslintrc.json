@@ -1,6 +1,11 @@
 {
-  "plugins": ["@rjwadley/format-gsap", "sort-styled-components"],
+  "plugins": [
+    "@rjwadley/format-gsap",
+    "ssr-friendly",
+    "sort-styled-components"
+  ],
   "extends": [
+    "plugin:ssr-friendly/recommended",
     "airbnb",
     "airbnb/hooks",
     "airbnb-typescript",
@@ -71,6 +76,14 @@
         "skipComments": true
       }
     ]
+
+    /**
+     *  Temporary Rules
+     */
+
+    // i just know everyone would cry about these lmao
+    // "consistent-return": "off"
+    // "react/function-component-definition": "off"
   },
   "parserOptions": {
     "project": ["./tsconfig.json"]

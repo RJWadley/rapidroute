@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 
-import { RoutingContext } from "components/RoutingContext";
+import { RoutingContext } from "components/Providers/RoutingContext";
 import { search } from "data/search";
 
 import SearchBox from "./SearchBox";
