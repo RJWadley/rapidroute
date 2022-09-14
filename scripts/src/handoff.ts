@@ -120,7 +120,7 @@ export const handoffData = async (
   const mappedProviders: Provider[] = providers.map((provider) => {
     let newProvider: Provider = {
       uniqueId: makeSafe(provider.name),
-      name: provider.name,
+      name: provider.displayName ?? provider.name,
       alias: aliases
         .filter((x) => x.actualProvider === provider.name)
         .map((x) => ({

@@ -30,7 +30,6 @@ export default function Route({ route, diff }: RouteProps) {
 
     Promise.all(promises).then((results) => {
       setLocations(results);
-      console.log(results);
 
       // for each set of locations, get the routes they have in common
       const routePromises = results.map((location, index) => {
@@ -52,6 +51,7 @@ export default function Route({ route, diff }: RouteProps) {
       // wait for all promises to resolve
       Promise.all(routePromises.map((p) => Promise.all(p))).then((objs) => {
         objs.shift();
+
         setRoutes(objs);
       });
     });

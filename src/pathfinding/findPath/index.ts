@@ -110,7 +110,6 @@ export default class Pathfinder {
 
     const paths = this.reconstructPaths(cameFrom, this.to);
 
-    console.log("paths", paths);
     if (paths.length === 0 && !preventReverse) {
       console.log("COULD NOT FIND PATH, TRYING REVERSE");
       const reversed = await new Pathfinder(this.to, this.from).start(true);
