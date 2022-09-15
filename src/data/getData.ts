@@ -1,12 +1,15 @@
 import { ref, onValue } from "firebase/database"
 
 import { DatabaseType, Hashes } from "types"
+import { isBrowser } from "utils/functions"
 
 import { database } from "./firebase"
 
-const rawcache = localStorage.getItem("databaseCache")
-const rawOneHash = localStorage.getItem("oneHash")
-const rawAllHash = localStorage.getItem("allHash")
+const getItem = (itemName: string) =>
+  isBrowser() ? localStorage.getItem(itemName) : null
+const rawcache = getItem("databaseCache")
+const rawOneHash = getItem("oneHash")
+const rawAllHash = getItem("allHash")
 
 const databaseCache: DatabaseType = rawcache
   ? JSON.parse(rawcache)
