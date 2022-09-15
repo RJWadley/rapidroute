@@ -133,25 +133,3 @@ const GateNumber = styled.div`
   font-size: 20px;
   font-weight: normal;
 `
-
-const Symbols = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 48px;
-  font-weight: 700;
-
-  > div {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
-
-  > div:last-child {
-    text-align: right;
-  }
-`
-
-const LongNames = styled.div`
-  text-align: right;
-`

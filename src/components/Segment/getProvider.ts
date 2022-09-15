@@ -7,6 +7,7 @@ export default function getProvider(
 ) {
   if (route?.provider)
     getPath("providers", route.provider).then(newProvider => {
+      if (newProvider) setProvider(newProvider)
       if (newProvider?.alias) {
         const { number } = route
         newProvider.alias.forEach(alias => {
@@ -23,6 +24,6 @@ export default function getProvider(
             })
           }
         })
-      } else if (newProvider) setProvider(newProvider)
+      }
     })
 }
