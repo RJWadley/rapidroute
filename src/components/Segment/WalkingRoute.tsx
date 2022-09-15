@@ -19,7 +19,10 @@ export default function WalkingRoute({ segment }: SegmentProps) {
     >
       <WalkIcon>directions_walk</WalkIcon>
       <div>
-        <Name>Walk to {segment.to.shortName}</Name>
+        <Name>
+          Walk to{" "}
+          {segment.to.shortName || segment.to.name || "Untitled Location"}
+        </Name>
         <Number>{segment.to.name}</Number>
       </div>
     </Wrapper>

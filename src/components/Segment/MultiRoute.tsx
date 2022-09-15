@@ -23,9 +23,9 @@ export default function MultiRoute({ segment }: SegmentProps) {
         {segment.to.name}
       </LongNames>
       <Symbols>
-        <div>{segment.from.shortName}</div>
+        <div>{segment.from.shortName || "---"}</div>
         <div>-&gt;</div>
-        <div>{segment?.to?.shortName}</div>
+        <div>{segment?.to?.shortName || "---"}</div>
       </Symbols>
       {segment.routes.map(
         route =>

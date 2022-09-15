@@ -3,9 +3,10 @@ import React, { useMemo, useState } from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
-import { getPath } from "data/getData"
 import { Provider } from "types"
 import invertLightness from "utils/invertLightness"
+
+import getProvider from "./getProvider"
 
 interface SegmentProps {
   segment: SegmentType
@@ -16,10 +17,7 @@ export default function SingleRoute({ segment }: SegmentProps) {
   const route = segment.routes[0]
 
   useMemo(() => {
-    if (route?.provider)
-      getPath("providers", route.provider).then(newProvider => {
-        if (newProvider) setProvider(newProvider)
-      })
+    if (route) getProvider(route, setProvider)
   }, [route])
 
   const image =
@@ -80,13 +78,13 @@ export default function SingleRoute({ segment }: SegmentProps) {
 
       <Symbols>
         <div>
-          {segment.from.shortName}
+          {segment.from.shortName || "---"}
           {fromGate && <GateNumber>{expandedFromGate}</GateNumber>}
         </div>
         <div>-&gt;</div>
         <div>
           {fromGate && <GateNumber>{expandedToGate}</GateNumber>}
-          {segment?.to?.shortName}
+          {segment?.to?.shortName || "---"}
         </div>
       </Symbols>
     </Wrapper>

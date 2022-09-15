@@ -3,9 +3,10 @@ import React, { useMemo, useState } from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
-import { getPath } from "data/getData"
 import { Provider, Route } from "types"
 import invertLightness from "utils/invertLightness"
+
+import getProvider from "./getProvider"
 
 interface MultiSingleBitProps {
   segment: SegmentType
@@ -19,10 +20,7 @@ export default function MultiSingleBit({
   const [provider, setProvider] = useState<Provider | null>(null)
 
   useMemo(() => {
-    if (route?.provider)
-      getPath("providers", route.provider).then(newProvider => {
-        if (newProvider) setProvider(newProvider)
-      })
+    getProvider(route, setProvider)
   }, [route])
 
   const image =
