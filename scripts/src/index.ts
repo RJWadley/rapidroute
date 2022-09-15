@@ -5,6 +5,7 @@ const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8" //1 call
 
 //fetch for node.js
 import fetch from "node-fetch"
+import { Dynmap, Sets } from "./dynmap"
 
 import { handoffData } from "./handoff"
 
@@ -629,6 +630,15 @@ function generateMrt(
   routes.push(...routeList)
 }
 
+const placeLocations: Record<
+  string,
+  {
+    x: number
+    y: number
+    z: number
+  }
+> = {}
+
 function generateMrtFromMarkers() {
   return new Promise(resolve => {
     fetch(
@@ -637,21 +647,37 @@ function generateMrtFromMarkers() {
       .then(response => {
         return response.json()
       })
-      .then((data: any) => {
+      .then((data: Dynmap) => {
         resolve(true)
 
         let sets = data.sets
 
-        Object.keys(sets).forEach(lineName => {
+        ;(Object.keys(sets) as (keyof Sets)[]).forEach(lineName => {
+          if (lineName == "airports") {
+            let airports = sets.airports.markers
+
+            Object.keys(airports).forEach(airportId => {
+              let airport = airports[airportId]
+
+              placeLocations[airportId] = {
+                x: airport.x,
+                y: airport.y,
+                z: airport.z,
+              }
+            })
+          }
+
           if (
             lineName == "roads.a" ||
             lineName == "roads.b" ||
             lineName == "worldborder.markerset" ||
             lineName == "cities" ||
             lineName == "markers" ||
-            lineName == "old"
+            lineName == "old" ||
+            lineName == "airports"
           )
             return
+
           let currentLine = sets[lineName].markers
 
           let displayName = sets[lineName].label
@@ -783,7 +809,8 @@ async function loadData() {
     spawnWarps,
     lightColors,
     darkColors,
-    logos
+    logos,
+    placeLocations
   )
 }
 

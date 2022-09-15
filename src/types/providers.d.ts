@@ -6,7 +6,7 @@ export interface Provider {
   /**
    * should match the database key
    */
-  uniqueId?: string
+  uniqueId: string
   /**
    * The display name of the provider
    */

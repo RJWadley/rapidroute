@@ -19,7 +19,15 @@ export const handoffData = async (
   darkColors: {
     [key: string]: string
   },
-  logos: Record<string, string>
+  logos: Record<string, string>,
+  placeLocations: Record<
+    string,
+    {
+      x: number
+      y: number
+      z: number
+    }
+  >
 ) => {
   const routesToIgnore: string[] = []
   const mappedRoutes: Route[] = routes
@@ -69,6 +77,10 @@ export const handoffData = async (
     .flatMap(x => (x ? [x] : []))
 
   const mappedLocations: Location[] = places.map(place => {
+    let locationFromMap = place.shortName
+      ? placeLocations[place.shortName]
+      : null
+
     let location: Location = {
       uniqueId: makeSafe(place.id),
       name:
@@ -83,9 +95,9 @@ export const handoffData = async (
       location:
         place.x && place.z
           ? {
-              x: place.x,
-              z: place.z,
-              y: null,
+              x: locationFromMap?.x ?? place.x,
+              z: locationFromMap?.z ?? place.z,
+              y: locationFromMap?.y ?? null,
             }
           : null,
       ownerPlayer: null,
