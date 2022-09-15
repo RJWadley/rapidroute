@@ -1,10 +1,13 @@
+/* eslint-disable max-lines */
 import React from "react"
 
-import "./style.css"
+import { Link } from "gatsby"
+
+import Scoped from "./style"
 
 export default function Changelog() {
   return (
-    <>
+    <Scoped>
       <div className="title-container">
         <h1 className="title">Changelog</h1>
       </div>
@@ -32,9 +35,7 @@ export default function Changelog() {
             <li>Selectable map</li>
           </ul>
 
-          <a href="https://mrtrapidroute.com">
-            I love it, take me to RapidRoute
-          </a>
+          <Link to="/">I love it, take me to RapidRoute</Link>
         </div>
         <hr />
         <div>
@@ -78,9 +79,7 @@ export default function Changelog() {
               <p>It&apos;s pretty neat, give it a try!</p>
             </ul>
           </div>
-          <a href="https://mrtrapidroute.com">
-            I love it, take me to RapidRoute
-          </a>
+          <Link to="/">I love it, take me to RapidRoute</Link>
           <h3>Coming soon:</h3>
           <ul>New modes of transportation</ul>
         </div>
@@ -94,9 +93,7 @@ export default function Changelog() {
             <li>Support for airline code-sharing</li>
             <li>A few minor style and layout changes</li>
           </ul>
-          <a href="https://mrtrapidroute.com">
-            I love it, take me to RapidRoute
-          </a>
+          <Link to="/">I love it, take me to RapidRoute</Link>
           <h3>Coming soon:</h3>
           <ul>
             <li>Still in progress as previously mentioned:</li>
@@ -108,14 +105,7 @@ export default function Changelog() {
             <li>Significant backend changes focused on optimization</li>
             <li>Visual refresh</li>
             <li>
-              Work has begun on a very cool project I will be reffering to as
-              The Super Secret and Very Cool Project
-            </li>
-            <li>I won&apos;t tell you what it is yet</li>
-            <li>I will only confirm that it is super cool</li>
-            <li>
-              And I only started working on it today so it will be a while
-              before it releases
+              Work has begun on MRT Navigate, a voice navigation system for MRT
             </li>
           </ul>
         </div>
@@ -132,9 +122,7 @@ export default function Changelog() {
             <li>A few bug fixes</li>
             <li>Removed Herobrine</li>
           </ul>
-          <a href="https://mrtrapidroute.com">
-            I love it, take me to RapidRoute
-          </a>
+          <Link to="/">I love it, take me to RapidRoute</Link>
           <h3>Coming soon:</h3>
           <ul>
             <li>Spawn warps</li>
@@ -167,9 +155,7 @@ export default function Changelog() {
               over (cwazy)
             </li>
           </ul>
-          <a href="https://mrtrapidroute.com">
-            I love it, take me to RapidRoute
-          </a>
+          <Link to="/">I love it, take me to RapidRoute</Link>
           <h3>Coming soon:</h3>
           <ul>
             <li>Airline logos</li>
@@ -201,15 +187,13 @@ export default function Changelog() {
               app (probably). Isn&apos;t that fancy?
             </li>
           </ul>
-          <a href="https://mrtrapidroute.com">
-            I love it, take me to RapidRoute
-          </a>
+          <Link to="/">I love it, take me to RapidRoute</Link>
           <h3>Coming soon:</h3>
           <ul>
             <li>Helicopters? Helicopters.</li>
           </ul>
         </div>
       </div>
-    </>
+    </Scoped>
   )
 }
