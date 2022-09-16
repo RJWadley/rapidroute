@@ -1,4 +1,4 @@
-import { shortHandMap } from "@rapidroute/database-types/pathfinding"
+import { shortHandMap } from "@rapidroute/database-types"
 
 import { getAll } from "data/getData"
 

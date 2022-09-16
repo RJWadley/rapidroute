@@ -2,6 +2,8 @@
   "name": "@rapidroute/database-types",
   "version": "1.0.0",
   "scripts": {
-    "lint": ""
-  }
+    "lint": "",
+    "build": "tsc"
+  },
+  "main": "dist/index.js"
 }

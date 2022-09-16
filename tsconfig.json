@@ -16,11 +16,11 @@
       "path": "./packages/database-types"
     },
     {
-      "path": "./apps/rapidroute"
+      "path": "./packages/rapidroute"
     },
     {
-      "path": "./services/database-importer"
-    },
+      "path": "./packages/database-importer"
+    }
   ],
   "include": []
 }

@@ -8,7 +8,7 @@
   "engines": {
     "node": "16"
   },
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
     "@types/node-fetch": "^2.6.2",

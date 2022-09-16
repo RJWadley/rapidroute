@@ -1,8 +1,8 @@
 {
-    "compilerOptions": {
-        "incremental": true,
-    },
-    "include": [
-        "src/**/*"
-, "index.d.ts"   ],
+  "compilerOptions": {
+    "incremental": true,
+    "composite": true,
+    "outDir": "dist"
+  },
+  "include": ["src/**/*", "index.ts"]
 }

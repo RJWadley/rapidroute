@@ -1,8 +1,5 @@
 /* eslint-disable no-console */
-import {
-  Pathfinding,
-  shortHandMap,
-} from "@rapidroute/database-types/pathfinding"
+import { Pathfinding, shortHandMap } from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
 import { rawEdges, rawNodes } from "./mapEdges"
