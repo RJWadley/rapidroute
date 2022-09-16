@@ -1,9 +1,14 @@
-import { Locations, Location } from "./locations"
-import { Pathfinding, PathingPlace } from "./pathfinding"
-import { Providers, Provider } from "./providers"
-import { Routes, Route, RouteMode } from "./routes"
-import { SearchIndex } from "./searchIndex"
-import { Worlds, World } from "./worlds"
+import { Locations, Location } from "./src/locations"
+import {
+  Pathfinding,
+  PathingPlace,
+  reverseShortHandMap,
+  shortHandMap,
+} from "./src/pathfinding"
+import { Providers, Provider } from "./src/providers"
+import { Routes, Route, RouteMode, RouteLocations } from "./src/routes"
+import { SearchIndex } from "./src/searchIndex"
+import { Worlds, World } from "./src/worlds"
 
 export interface DatabaseType {
   /**
@@ -47,4 +52,7 @@ export {
   World,
   Worlds,
   RouteMode,
+  shortHandMap,
+  reverseShortHandMap,
+  RouteLocations,
 }

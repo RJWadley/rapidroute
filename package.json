@@ -6,5 +6,11 @@
     "packages/*",
     "apps/*",
     "services/*"
-  ]
+  ],
+  "dependencies": {
+    "prettier": "^2.7.1"
+  },
+  "scripts": {
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\" && npm run lint -workspaces"
+  }
 }
