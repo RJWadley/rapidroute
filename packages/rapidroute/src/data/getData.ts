@@ -55,6 +55,9 @@ export async function getPath<T extends keyof DatabaseType>(
     return databaseCache[type][itemName] as GetOne<T>
   }
 
+  // clear the cache
+  databaseCache[type] = {}
+
   // otherwise, get the value from the database
   const itemRef = ref(database, `${type}/${itemName}`)
   return new Promise(resolve => {
@@ -82,6 +85,9 @@ export async function getAll<T extends keyof DatabaseType>(
   if (hash === allHashes[type] && databaseCache[type]) {
     return databaseCache[type] as GetAll<T>
   }
+
+  // clear the cache
+  databaseCache[type] = {}
 
   // otherwise, get the value from the database
   const itemRef = ref(database, type)

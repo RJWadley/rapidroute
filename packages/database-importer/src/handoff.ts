@@ -19,10 +19,6 @@ const makeSafe = (str: string) => {
   return str.replace(/[.#$/[\]]/g, "_")
 }
 
-const parseRouteNumber = (routeNumber: string) => {
-  return parseInt(routeNumber, 10)
-}
-
 /**
  * take the old data format and convert it to the new format
  */
@@ -51,11 +47,13 @@ export default async function handoffData(
   const routesToIgnore: string[] = []
   const mappedRoutes: Route[] = routes
     .map(route => {
+      const routeNumber = route.number || null
+
       // first, we need an unique id for the route that will always be the same
       const placeA = route.from > route.to ? route.to : route.from
       const placeB = route.from > route.to ? route.from : route.to
       const routeId = makeSafe(
-        `${route.provider}-${route.number ?? placeA + placeB}`
+        `${route.provider}-${routeNumber ?? placeA + placeB}`
       )
 
       // if we've already seen this route, ignore it the second time
@@ -89,7 +87,7 @@ export default async function handoffData(
         locations,
         provider: makeSafe(route.provider ?? ""),
         type: route.mode,
-        number: route.number ? parseRouteNumber(route.number) || null : null,
+        number: routeNumber || null,
       }
       return mappedRoute
     })

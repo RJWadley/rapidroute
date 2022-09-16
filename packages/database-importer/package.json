@@ -2,7 +2,7 @@
   "name": "@rapidroute/database-importer",
   "scripts": {
     "build": "tsc",
-    "start": "(npx tsc || exit 0) && node lib/",
+    "start": "(npx tsc || exit 0) && node dist/src/index.js",
     "lint": "npx eslint . --fix"
   },
   "engines": {

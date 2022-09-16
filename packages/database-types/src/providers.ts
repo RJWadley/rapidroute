@@ -63,12 +63,12 @@ export interface NumberRange {
   /**
    * lower bound of the range
    */
-  start?: number
+  start?: string
   /**
    * upper bound of the range
    * can match the start value to indicate a single number
    */
-  end?: number
+  end?: string
 }
 
 /**

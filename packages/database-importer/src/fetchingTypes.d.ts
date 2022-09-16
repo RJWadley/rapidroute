@@ -1,8 +1,8 @@
 export interface Aliases {
   actualProvider: string
   displayProvider: string
-  start: number
-  end: number
+  start: string
+  end: string
 }
 export interface LegacyRoute {
   from: string

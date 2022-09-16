@@ -12,6 +12,20 @@ interface SegmentProps {
   segment: SegmentType
 }
 
+export const expandGate = (gateString: string | null | undefined) => {
+  const toGate = gateString === "none" ? null : gateString
+  if (!toGate) return null
+  if (
+    toGate?.toLowerCase().includes("terminal") ||
+    toGate?.toLowerCase().includes("gate")
+  )
+    return toGate
+  const expandedToGate = toGate.match(/Tt/g)
+    ? toGate.split(" ").join(" Gate ").replace(/Tt/g, "Terminal ")
+    : `Gate ${toGate}`
+  return expandedToGate
+}
+
 export default function SingleRoute({ segment }: SegmentProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
   const route = segment.routes[0]
@@ -25,17 +39,9 @@ export default function SingleRoute({ segment }: SegmentProps) {
       ? "https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png"
       : provider?.logo
   const themeColor = provider?.color?.light ?? "#eeeeee"
-  const rawFromGate = route?.locations[segment.from.uniqueId] ?? null
-  const fromGate = rawFromGate === "none" ? null : rawFromGate
-  const expandedFromGate = fromGate?.includes("T")
-    ? fromGate.split(" ").join(" Gate ").replace("T", "Terminal ")
-    : `Gate ${fromGate}`
 
-  const rawToGate = route?.locations[segment.to.uniqueId] ?? null
-  const toGate = rawToGate === "none" ? null : rawToGate
-  const expandedToGate = toGate?.includes("T")
-    ? toGate.split(" ").join(" Gate ").replace("T", "Terminal ")
-    : `Gate ${toGate}`
+  const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])
+  const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
 
   let routeNumberMessage = ""
   switch (route?.type) {
@@ -79,11 +85,11 @@ export default function SingleRoute({ segment }: SegmentProps) {
       <Symbols>
         <div>
           {segment.from.shortName || "---"}
-          {fromGate && <GateNumber>{expandedFromGate}</GateNumber>}
+          {expandedFromGate && <GateNumber>{expandedFromGate}</GateNumber>}
         </div>
         <div>-&gt;</div>
         <div>
-          {fromGate && <GateNumber>{expandedToGate}</GateNumber>}
+          {expandedToGate && <GateNumber>{expandedToGate}</GateNumber>}
           {segment?.to?.shortName || "---"}
         </div>
       </Symbols>

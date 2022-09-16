@@ -4,12 +4,11 @@
     "outDir": "dist",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017",
+    "target": "ES2021",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "composite": true
   },
-  "compileOnSave": true,
   "include": ["src/**/*", "src/serviceAccountKey.json"]
 }

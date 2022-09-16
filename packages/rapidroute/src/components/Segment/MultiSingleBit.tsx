@@ -7,6 +7,7 @@ import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
 
 import getProvider from "./getProvider"
+import { expandGate } from "./SingleRoute"
 
 interface MultiSingleBitProps {
   segment: SegmentType
@@ -28,11 +29,8 @@ export default function MultiSingleBit({
       ? "https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png"
       : provider?.logo
   const themeColor = provider?.color?.light ?? "#eeeeee"
-  const rawFromGate = route?.locations[segment.from.uniqueId] ?? null
-  const fromGate = rawFromGate === "none" ? null : rawFromGate
-  const expandedFromGate = fromGate?.includes("T")
-    ? fromGate.split(" ").join(" Gate ").replace("T", "Terminal ")
-    : `Gate ${fromGate}`
+
+  const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
 
   let routeNumberMessage = ""
   if (route.number)
@@ -68,7 +66,7 @@ export default function MultiSingleBit({
           <Name>{provider?.name}</Name>
           <Number>{routeNumberMessage}</Number>
         </div>
-        {fromGate && <GateNumber>{expandedFromGate}</GateNumber>}
+        {expandedFromGate && <GateNumber>{expandedFromGate}</GateNumber>}
       </ProviderName>
     </Wrapper>
   )

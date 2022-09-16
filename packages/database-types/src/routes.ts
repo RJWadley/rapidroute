@@ -22,7 +22,7 @@ export interface Route {
   /**
    * if available, the route number
    */
-  number: null | number
+  number: null | string
   /**
    * the provider of this route
    */

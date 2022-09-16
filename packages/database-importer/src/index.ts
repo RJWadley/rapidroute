@@ -240,7 +240,7 @@ function parseRawFlightData(
         // for each flight number in cell
 
         // add to flightsByNumber
-        const flight = parseInt(rawNum.trim(), 10)
+        const flight = rawNum.trim()
         if (flightsByNumber[flight] === undefined) {
           flightsByNumber[flight] = []
         }
@@ -288,8 +288,8 @@ function parseCodeshares(codesharesRaw: string[][]) {
     aliases.push({
       actualProvider: company[0],
       displayProvider: company[2],
-      start: parseInt(range[0], 10),
-      end: parseInt(range[1], 10),
+      start: range[0],
+      end: range[1],
     })
 
     providers.push({
