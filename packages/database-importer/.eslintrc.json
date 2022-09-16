@@ -1,0 +1,11 @@
+{
+  "extends": ["@rapidroute/eslint-config-base"],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {} // this loads <rootdir>/tsconfig.json to eslint
+    }
+  }
+}

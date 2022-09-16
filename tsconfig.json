@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "target": "es2019",
+    "module": "commonjs",
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "references": [
+    {
+      "path": "./packages/database-types"
+    },
+    {
+      "path": "./apps/rapidroute"
+    },
+    {
+      "path": "./services/database-importer"
+    },
+  ],
+  "include": []
+}
