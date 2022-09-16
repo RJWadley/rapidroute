@@ -2,7 +2,7 @@
   "name": "@rapidroute/database-importer",
   "scripts": {
     "build": "tsc",
-    "start": "(npx tsc || exit 0) && node lib/scripts/src/",
+    "start": "(npx tsc || exit 0) && node lib/",
     "lint": "npx eslint . --fix"
   },
   "engines": {
@@ -11,6 +11,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
+    "@types/node-fetch": "^2.6.2",
     "firebase-admin": "^11.0.1"
   },
   "devDependencies": {

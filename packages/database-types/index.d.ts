@@ -1,4 +1,4 @@
-import { Locations, Location } from "./src/locations"
+import { Locations, Location, PlaceType } from "./src/locations"
 import {
   Pathfinding,
   PathingPlace,
@@ -55,4 +55,5 @@ export {
   shortHandMap,
   reverseShortHandMap,
   RouteLocations,
+  PlaceType,
 }

@@ -1,5 +1,8 @@
 {
   "extends": ["@rapidroute/eslint-config-base"],
+  "rules": {
+    "max-lines": "off"
+  },
   "parserOptions": {
     "project": ["./tsconfig.json"]
   },
