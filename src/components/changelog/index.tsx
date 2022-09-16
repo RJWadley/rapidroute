@@ -23,6 +23,7 @@ export default function Changelog() {
               Routing to and from arbitrary coordinates, just type them into the
               search bar
             </li>
+            <li>Now pulling airport locations from dynmap</li>
           </ul>
           <h3>Planned Features</h3>
           <ul>

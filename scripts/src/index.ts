@@ -6,10 +6,11 @@ const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8" //1 call
 //fetch for node.js
 import fetch from "node-fetch"
 import { Dynmap, Sets } from "./dynmap"
+import { SheetResponse } from "./googleSheets"
 
 import { handoffData } from "./handoff"
 
-function transpose(a: Array<any>) {
+function transpose<T>(a: T[][]): T[][] {
   // Calculate the width and height of the Array
   var w = a.length || 0
 
@@ -35,7 +36,7 @@ function transpose(a: Array<any>) {
    */
   var i: number,
     j: number,
-    t: Array<any> = []
+    t: T[][] = []
 
   // Loop through every item in the outer array (height)
   for (i = 0; i < h; i++) {
@@ -63,17 +64,17 @@ let darkColors: {
   [key: string]: string
 } = {}
 
-let ignoredPlaces: Array<string> = []
+let ignoredPlaces: string[] = []
 
-let routes: Array<LegacyRoute> = []
-let places: Array<LegacyPlace> = []
-let providers: Array<LegacyProvider> = []
+let routes: LegacyRoute[] = []
+let places: LegacyPlace[] = []
+let providers: LegacyProvider[] = []
 let codeshares: {
   [key: string]: {
     [key: string]: string
   }
 } = {}
-let spawnWarps: Array<string> = ["C1", "C33", "C61", "C89"]
+let spawnWarps: string[] = ["C1", "C33", "C61", "C89"]
 
 type Mode = "flight" | "seaplane" | "heli" | "MRT"
 type PlaceType = "MRT" | "airport" | "town"
@@ -118,7 +119,7 @@ export interface LegacyProvider {
   prefix?: string
 }
 
-async function getTransitSheet() {
+async function getTransitSheet(): Promise<SheetResponse> {
   return new Promise(resolve => {
     fetch(
       "https://sheets.googleapis.com/v4/spreadsheets/" +
@@ -133,13 +134,10 @@ async function getTransitSheet() {
       .then(res => {
         return res.json()
       })
-      .then((result: any) => {
+      .then((result: SheetResponse) => {
         let rows = result.valueRanges[0].values
         let cols = result.valueRanges[1].values
-        ignoredPlaces = result.valueRanges[2].values
-        ignoredPlaces.forEach((place, i) => {
-          ignoredPlaces[i] = place[0]
-        })
+        ignoredPlaces = result.valueRanges[2].values.flat()
         //now get transit sheet
         fetch(
           "https://sheets.googleapis.com/v4/spreadsheets/" +
@@ -163,14 +161,14 @@ async function getTransitSheet() {
           .then(res => {
             return res.json()
           })
-          .then(result => {
+          .then((result: SheetResponse) => {
             resolve(result)
           })
       })
   })
 }
 
-async function getDataSheet() {
+async function getDataSheet(): Promise<SheetResponse> {
   return new Promise(resolve => {
     fetch(
       "https://sheets.googleapis.com/v4/spreadsheets/" +
@@ -186,7 +184,7 @@ async function getDataSheet() {
       .then(res => {
         return res.json()
       })
-      .then(result => {
+      .then((result: SheetResponse) => {
         resolve(result)
       })
   })
@@ -205,8 +203,8 @@ function getTowns() {
       .then(res => {
         return res.json()
       })
-      .then((result: any) => {
-        let towns = result.valueRanges[0].values as Array<string>
+      .then((result: SheetResponse) => {
+        let towns = result.valueRanges[0].values
         towns.forEach(town => {
           let placeObject: LegacyPlace = {
             id: town[0],
@@ -240,12 +238,12 @@ function getTowns() {
 
 function parseRawFlightData(
   mode: Mode,
-  placesRaw: Array<Array<string>>,
-  providersRaw: Array<string>,
-  routesRaw: Array<Array<string>>
+  placesRaw: string[][],
+  providersRaw: string[],
+  routesRaw: string[][]
 ) {
   //first parse the places
-  let placeList: Array<LegacyPlace> = []
+  let placeList: LegacyPlace[] = []
   placesRaw.forEach(place => {
     let world = <World>place[2] //default to new
     if (world != "Old" && world != "New") {
@@ -266,14 +264,14 @@ function parseRawFlightData(
 
   routesRaw = transpose(routesRaw) //routeData needs to be transposed
 
-  let airlines: Array<LegacyProvider> = []
-  let flights: Array<LegacyRoute> = []
+  let airlines: LegacyProvider[] = []
+  let flights: LegacyRoute[] = []
 
   //for each airline
   providersRaw.forEach((airline, i) => {
     airlines.push({ name: airline })
     let flightsByNumber: {
-      [key: string]: Array<LegacyPlace>
+      [key: string]: LegacyPlace[]
     } = {}
 
     routesRaw[i]?.forEach((cell, j) => {
@@ -311,7 +309,7 @@ function parseRawFlightData(
   providers.push(...airlines)
 }
 
-function parseCodeshares(codesharesRaw: Array<Array<string>>) {
+function parseCodeshares(codesharesRaw: string[][]) {
   codesharesRaw.forEach((company, i) => {
     let range = company[1]?.split("-") || [] //range.split
     if (range.length < 2) return
@@ -340,15 +338,15 @@ function parseCodeshares(codesharesRaw: Array<Array<string>>) {
   })
 }
 
-function processAirportMetadata(rawAirportData: Array<Array<string>>) {
+function processAirportMetadata(rawAirportData: string[][]) {
   rawAirportData.forEach(rawAirport => {
     let coords = rawAirport[5] ? parseCoordinates(rawAirport[5]) : undefined
 
     let id = rawAirport[1] ?? rawAirport[0]
     if (id == "") id = rawAirport[0]
 
-    let world = rawAirport[2] as World
-    if (world != "New" && world != "Old") world = "New"
+    let rawWorld = rawAirport[2]
+    let world: World = rawWorld != "New" && rawWorld != "Old" ? "New" : rawWorld
 
     let newPlace: LegacyPlace = {
       id,
@@ -381,7 +379,7 @@ function processAirportMetadata(rawAirportData: Array<Array<string>>) {
 
 function parseCoordinates(coords: string) {
   let split = coords.split(" ")
-  let out: Array<number> = []
+  let out: number[] = []
   split.forEach((item, i) => {
     out[i] = parseInt(item.replace(/,/g, ""))
   })
@@ -407,7 +405,7 @@ function parseCoordinates(coords: string) {
   return out
 }
 
-function processAirlineMetadata(rawAirlineData: Array<Array<string>>) {
+function processAirlineMetadata(rawAirlineData: string[][]) {
   return new Promise(resolve => {
     //set legacy gate numbers and
     //request new gate numbers
@@ -437,32 +435,32 @@ function processAirlineMetadata(rawAirlineData: Array<Array<string>>) {
 }
 
 function parseAirlineGateData(
-  result: any,
-  companies: Array<Array<string>>,
+  result: SheetResponse,
+  companies: string[][],
   resolve: Function
 ) {
-  let gateData: Array<Array<string>> = []
+  let gateData: string[][] = []
 
   let sheets = result.valueRanges
 
-  let legacySheet = sheets.shift().values as Array<Array<string>>
-  legacySheet.shift()
+  let legacySheet = sheets.shift()?.values
+  legacySheet?.shift()
 
   //process legacy gates
   companies.forEach(company => {
     if (company.length > 1) {
       if (company[1] == "Legacy") {
-        let flights = legacySheet.filter(x => x[0] == company[2])
-        flights.forEach(item => {
+        let flights = legacySheet?.filter(x => x[0] == company[2])
+        flights?.forEach(item => {
           item[0] = company[0]
         })
-        gateData = [...gateData, ...flights]
+        gateData = [...gateData, ...(flights ?? [])]
       }
     }
   })
 
   //process other gates
-  sheets.forEach((sheet: any) => {
+  sheets.forEach(sheet => {
     let companyName: string = ""
     if (sheet.range.indexOf("'") == -1) {
       companyName = sheet.range.split("!")[0]
@@ -470,7 +468,7 @@ function parseAirlineGateData(
       companyName = sheet.range.split("'")[1]
     }
 
-    let flights = sheet.values as Array<Array<string>>
+    let flights = sheet.values
     flights.forEach(flight => {
       flight[0] = companyName
     })
@@ -500,12 +498,9 @@ function parseAirlineGateData(
   resolve(true)
 }
 
-function generateMrt(
-  rawMRTInfo: Array<Array<string>>,
-  rawStopInfo: Array<Array<string>>
-) {
-  let routeList: Array<LegacyRoute> = []
-  let placeList: Array<LegacyPlace> = []
+function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
+  let routeList: LegacyRoute[] = []
+  let placeList: LegacyPlace[] = []
 
   //generate list of MRT stop routes
   rawMRTInfo.forEach((item, i) => {
@@ -524,38 +519,38 @@ function generateMrt(
     //0: {Name: "Artic Line", Code: "A", Min-SE: "X", Max-NW: "53"}
     if (item[minSE] == "X") {
       line = [lineCode + "X"]
-      let max = item[maxNW] as unknown as number
+      let max = parseInt(item[maxNW])
       for (var i = 0; i <= max; i++) {
         line.push(lineCode + i)
       }
     } else if (item[minSE] == "XHW") {
       line = [lineCode + "X", lineCode + "H", lineCode + "W"]
-      let max = item[maxNW] as unknown as number
+      let max = parseInt(item[maxNW])
       for (var i = 1; i <= max; i++) {
         line.push(lineCode + i)
       }
     } else if (item[nsew] == "NS") {
-      let min = item[minSE] as unknown as number
+      let min = parseInt(item[minSE])
       for (var i = min; i > 0; i--) {
         line.push(lineCode + "S" + i)
       }
       line.push(lineCode + "0")
-      let max = item[maxNW] as unknown as number
+      let max = parseInt(item[maxNW])
       for (var i = 1; i <= max; i++) {
         line.push(lineCode + "N" + i)
       }
     } else if (item[nsew] == "EW") {
-      let min = item[minSE] as unknown as number
+      let min = parseInt(item[minSE])
       for (var i = min; i > 0; i--) {
         line.push(lineCode + "E" + i)
       }
       line.push(lineCode + "0")
-      let max = item[maxNW] as unknown as number
+      let max = parseInt(item[maxNW])
       for (var i = 1; i <= max; i++) {
         line.push(lineCode + "W" + i)
       }
     } else {
-      let max = item[maxNW] as unknown as number
+      let max = parseInt(item[maxNW])
       for (var i = 1; i <= max; i++) {
         line.push(lineCode + i)
       }
@@ -639,7 +634,7 @@ const placeLocations: Record<
   }
 > = {}
 
-function generateMrtFromMarkers() {
+function generateMrtFromMarkers(): Promise<boolean> {
   return new Promise(resolve => {
     fetch(
       "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
@@ -716,7 +711,7 @@ function generateMrtFromMarkers() {
 }
 
 function combineData() {
-  let newProviders: Array<LegacyProvider> = []
+  let newProviders: LegacyProvider[] = []
 
   while (providers.length > 0) {
     let current = providers[0].name
@@ -731,7 +726,7 @@ function combineData() {
 
   providers = newProviders
 
-  let newPlaces: Array<LegacyPlace> = []
+  let newPlaces: LegacyPlace[] = []
 
   while (places.length > 0) {
     let current = places[0].id
@@ -760,21 +755,21 @@ async function loadData() {
   lightColors = {}
   darkColors = {}
 
-  let transitSheet: any = getTransitSheet()
-  let dataSheet: any = getDataSheet()
-  let markers: any = generateMrtFromMarkers()
-  let townsheet: any = getTowns()
+  let transitSheetProm = getTransitSheet()
+  let dataSheetProm = getDataSheet()
+  let markers = generateMrtFromMarkers()
+  let townsheet = getTowns()
 
-  transitSheet = await transitSheet
-  dataSheet = await dataSheet
-  markers = await markers
+  let transitSheetRaw = await transitSheetProm
+  let dataSheetRaw = await dataSheetProm
+  await markers
   await townsheet
 
-  dataSheet = dataSheet.valueRanges
+  let dataSheet = dataSheetRaw.valueRanges
 
   generateMrt(dataSheet[0].values, dataSheet[0].values)
 
-  transitSheet = transitSheet.valueRanges
+  let transitSheet = transitSheetRaw.valueRanges
 
   parseRawFlightData(
     "flight",
