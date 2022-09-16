@@ -1,5 +1,5 @@
 {
-  "name": "functions",
+  "name": "@rapidroute/database-importer",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
