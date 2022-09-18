@@ -5,7 +5,6 @@ export const Wrapper = styled.div<{
   textColor: string
   small: boolean
 }>`
-  font-family: Inter;
   ${({ backgroundColor, textColor }) => css`
     background-color: ${backgroundColor};
     color: ${textColor};
@@ -13,7 +12,7 @@ export const Wrapper = styled.div<{
   padding: 30px;
   border-radius: 30px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto auto;
   gap: 100px;
   align-items: center;
 
@@ -53,6 +52,7 @@ export const Logo = styled.div<{
   background-color: ${({ background }) => background};
   width: 60px;
   height: 60px;
+  min-width: 60px;
 
   img {
     ${props =>
@@ -63,6 +63,7 @@ export const Logo = styled.div<{
         : css`
             margin: 5px;
             width: 50px;
+            min-width: 50px;
             height: 50px;
             border-radius: 4px;
           `}
@@ -74,16 +75,20 @@ export const Logo = styled.div<{
       border-radius: 5px;
       width: 40px;
       height: 40px;
+      min-width: 40px;
 
       img {
         ${bigLogo
           ? css`
               border-radius: 5px;
+              width: 40px;
+              min-width: 40px;
             `
           : css`
               margin: 2.5px;
               width: 35px;
               height: 35px;
+              min-width: 35px;
               border-radius: 2px;
             `}
       }

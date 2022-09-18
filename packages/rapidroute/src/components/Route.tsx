@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 
 import { Location, Route as RouteType } from "@rapidroute/database-types"
 
@@ -8,8 +8,11 @@ import { getPath } from "data/getData"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
 
 import styled from "styled-components"
+import gsap from "gsap"
+import media from "utils/media"
 import createSegments, { SegmentType } from "./createSegments"
 import Segment from "./Segment"
+import RoundButton from "./RoundButton"
 
 interface RouteProps {
   route: string[]
@@ -63,12 +66,40 @@ export default function Route({ route, diff }: RouteProps) {
     }
   }, [routes, locations])
 
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownContent = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    gsap.to(dropdownContent.current, {
+      height: dropdownOpen ? "auto" : 0,
+      delay: dropdownOpen ? 0 : 0.5,
+    })
+
+    if (dropdownContent.current?.children.length)
+      gsap.to(dropdownContent.current.children, {
+        y: dropdownOpen ? 0 : 200,
+        stagger: dropdownOpen ? 0.1 : -0.1,
+        opacity: dropdownOpen ? 1 : 0,
+        ease: dropdownOpen ? "power3.out" : "power3.in",
+      })
+  }, [dropdownOpen])
+
   return (
     <Wrapper>
-      <div>Via {describeDiff(diff)}</div>
-      {segments?.map((segment, index) => (
-        <Segment key={segment.from.uniqueId} segment={segment} />
-      ))}
+      <Via>
+        <div>Via {describeDiff(diff)}</div>
+        <RoundButton
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          flipped={dropdownOpen}
+        >
+          expand_more
+        </RoundButton>
+      </Via>
+      <Dropdown ref={dropdownContent}>
+        {segments?.map(segment => (
+          <Segment key={segment.from.uniqueId} segment={segment} />
+        ))}
+      </Dropdown>
     </Wrapper>
   )
 }
@@ -77,5 +108,24 @@ const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
   display: grid;
+  gap: 30px;
+`
+
+const Via = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 10px 30px;
+  font-size: 40px;
+  @media (max-width: ${media.small}px) {
+    font-size: 20px;
+  }
+`
+
+const Dropdown = styled.div`
+  overflow: hidden;
+  display: grid;
   gap: 20px;
+  height: 0;
 `

@@ -1,3 +1,6 @@
+import React from "react"
+import styled from "styled-components"
+
 /**
  * group the array of strings by their common letters, ignoring numbers
  *
@@ -52,20 +55,34 @@ const describeGroups = (groups: string[][]) => {
 
 /**
  * join the array of strings with commas and the last one with "and"
+ * strings from the array should be bold
  *
  * if the array is empty, return "fastest route"
  */
 const listify = (arr: string[]) => {
   if (arr.length === 0) {
-    return "fastest route"
+    return <B>Fastest Route</B>
   }
   if (arr.length === 1) {
-    return arr[0]
+    return <B>{arr[0]}</B>
   }
   if (arr.length === 2) {
-    return `${arr[0]} and ${arr[1]}`
+    return (
+      <>
+        <B>{arr[0]}</B> and <B>{arr[1]}</B>
+      </>
+    )
   }
-  return `${arr.slice(0, -1).join(", ")}, and ${arr.slice(-1)}`
+  return (
+    <>
+      {arr.slice(0, -1).map(str => (
+        <React.Fragment key={str}>
+          <B>{str}</B>,{" "}
+        </React.Fragment>
+      ))}
+      and <B>{arr[arr.length - 1]}</B>
+    </>
+  )
 }
 
 export default function describeDiff(diff: string[]) {
@@ -73,3 +90,7 @@ export default function describeDiff(diff: string[]) {
   const descriptions = describeGroups(groups)
   return listify(descriptions)
 }
+
+const B = styled.strong`
+  font-weight: 600;
+`

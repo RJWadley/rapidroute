@@ -86,7 +86,6 @@ export const Wrapper = styled.div<{
   textColor: string
   small: boolean
 }>`
-  font-family: Inter;
   ${({ backgroundColor, textColor }) => css`
     background-color: ${backgroundColor};
     color: ${textColor};

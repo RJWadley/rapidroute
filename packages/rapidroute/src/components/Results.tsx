@@ -53,6 +53,7 @@ const spin = keyframes`
 const Spinner = styled.div`
   width: 200px;
   height: 200px;
+  margin: 100px;
   border: 10px solid #f3f;
   animation: ${spin} 2s linear infinite;
 `
