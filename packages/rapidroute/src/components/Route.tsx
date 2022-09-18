@@ -10,6 +10,7 @@ import describeDiff from "pathfinding/postProcessing/describeDiff"
 import styled from "styled-components"
 import gsap from "gsap"
 import media from "utils/media"
+import { sleep } from "utils/functions"
 import createSegments, { SegmentType } from "./createSegments"
 import Segment from "./Segment"
 import RoundButton from "./RoundButton"
@@ -17,14 +18,15 @@ import RoundButton from "./RoundButton"
 interface RouteProps {
   route: string[]
   diff: string[]
+  expandByDefault: boolean
 }
 
-export default function Route({ route, diff }: RouteProps) {
+export default function Route({ route, diff, expandByDefault }: RouteProps) {
   const [locations, setLocations] = useState<(Location | null)[] | null>(null)
   const [routes, setRoutes] = useState<(RouteType | null)[][] | null>(null)
   const [segments, setSegments] = useState<SegmentType[] | null>(null)
 
-  useMemo(() => {
+  useMemo(async () => {
     setRoutes(null)
     setLocations(null)
     setSegments(null)
@@ -109,6 +111,7 @@ const Wrapper = styled.div`
   margin: 0 auto;
   display: grid;
   gap: 30px;
+  opacity: 0;
 `
 
 const Via = styled.div`

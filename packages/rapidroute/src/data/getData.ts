@@ -1,5 +1,6 @@
 import { DatabaseType, Hashes } from "@rapidroute/database-types"
 import { ref, onValue } from "firebase/database"
+import { strictThrottle, throttle } from "pathfinding/findPath/pathUtil"
 
 import { isBrowser } from "utils/functions"
 
@@ -61,14 +62,17 @@ export async function getPath<T extends keyof DatabaseType>(
   // otherwise, get the value from the database
   const itemRef = ref(database, `${type}/${itemName}`)
   return new Promise(resolve => {
-    onValue(itemRef, lowerSnapshot => {
+    onValue(itemRef, async lowerSnapshot => {
+      await strictThrottle()
       if (!lowerSnapshot.exists()) return resolve(null)
       const data: GetOne<T> = lowerSnapshot.val()
       if (typeof data === "object") data.uniqueId = itemName
       databaseCache[type][itemName] = data
       oneHashes[type] = hash
+      await strictThrottle()
       localStorage.setItem("databaseCache", JSON.stringify(databaseCache))
       localStorage.setItem("oneHash", JSON.stringify(oneHashes))
+      await strictThrottle()
       return resolve(data)
     })
   })
@@ -92,7 +96,8 @@ export async function getAll<T extends keyof DatabaseType>(
   // otherwise, get the value from the database
   const itemRef = ref(database, type)
   return new Promise(resolve => {
-    onValue(itemRef, lowerSnapshot => {
+    onValue(itemRef, async lowerSnapshot => {
+      await throttle()
       const data: GetAll<T> = lowerSnapshot.val()
 
       // for each item, add the uniqueId

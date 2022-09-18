@@ -5,11 +5,29 @@ export async function throttle() {
     await new Promise<void>(resolve => {
       setTimeout(() => {
         resolve()
-        threadStarted = performance.now()
       }, 0)
     })
   }
 }
+
+export async function strictThrottle() {
+  // if thread has been working for more than 6ms, await next thread recursively
+  if (performance.now() - threadStarted > 6) {
+    await new Promise<void>(resolve => {
+      setTimeout(async () => {
+        await strictThrottle()
+        resolve()
+      }, 0)
+    })
+  }
+}
+
+// once per thread, update threadStarted
+const updateThreadStarted = () => {
+  threadStarted = performance.now()
+  setTimeout(updateThreadStarted, 0)
+}
+updateThreadStarted()
 
 export function sleep(ms: number) {
   return new Promise<void>(resolve => {
