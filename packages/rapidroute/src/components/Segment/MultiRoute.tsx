@@ -1,77 +1,59 @@
 import React from "react"
 
-import styled, { css } from "styled-components"
-
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
 
+import styled, { css } from "styled-components"
 import MultiSingleBit from "./MultiSingleBit"
+import { Left, LongNames, Symbols, Wrapper } from "./sharedComponents"
 
 interface SegmentProps {
   segment: SegmentType
+  variant: "mobile" | "desktop"
 }
 
-export default function MultiRoute({ segment }: SegmentProps) {
+export default function MultiRoute({ segment, variant }: SegmentProps) {
   const themeColor = "#eee"
   return (
     <Wrapper
       backgroundColor={themeColor}
       textColor={invertLightness(themeColor)}
+      small={variant === "mobile"}
     >
-      <LongNames>
-        {segment.from.name} to <br />
-        {segment.to.name}
-      </LongNames>
-      <Symbols>
-        <div>{segment.from.shortName || "---"}</div>
-        <div>-&gt;</div>
-        <div>{segment?.to?.shortName || "---"}</div>
-      </Symbols>
-      {segment.routes.map(
-        route =>
-          route && (
-            <MultiSingleBit
-              key={route?.uniqueId}
-              route={route}
-              segment={segment}
-            />
-          )
-      )}
+      <Left>
+        {segment.routes.map(
+          route =>
+            route && (
+              <MultiSingleBit
+                key={route?.uniqueId}
+                route={route}
+                segment={segment}
+                variant={variant}
+              />
+            )
+        )}
+      </Left>
+      <Right bumpToFront={variant === "mobile"}>
+        <Symbols singleLine={false}>
+          <div>{segment.from.shortName || "---"}</div>
+          <div>-&gt;</div>
+          <div>{segment?.to?.shortName || "---"}</div>
+        </Symbols>
+        <LongNames>
+          {segment.from.name} to <br />
+          {segment.to.name}
+        </LongNames>
+      </Right>
     </Wrapper>
   )
 }
 
-const Wrapper = styled.div<{
-  backgroundColor?: string
-  textColor?: string
-}>`
-  font-family: Inter;
-  ${({ backgroundColor, textColor }) => css`
-    background-color: ${backgroundColor};
-    color: ${textColor};
-  `}
-  padding: 50px;
-  border-radius: 50px;
-  display: grid;
-  gap: 20px;
-`
-
-const LongNames = styled.div``
-
-const Symbols = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 48px;
-  font-weight: 700;
-
-  > div {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
-
-  > div:last-child {
-    text-align: right;
-  }
+const Right = styled.div<{ bumpToFront?: boolean }>`
+  ${({ bumpToFront }) =>
+    bumpToFront &&
+    css`
+      order: -1;
+      display: grid;
+      gap: 10px;
+    `}
 `

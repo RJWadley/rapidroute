@@ -7,6 +7,7 @@ import { Location, Route as RouteType } from "@rapidroute/database-types"
 import { getPath } from "data/getData"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
 
+import styled from "styled-components"
 import createSegments, { SegmentType } from "./createSegments"
 import Segment from "./Segment"
 
@@ -63,11 +64,18 @@ export default function Route({ route, diff }: RouteProps) {
   }, [routes, locations])
 
   return (
-    <div>
+    <Wrapper>
       <div>Via {describeDiff(diff)}</div>
       {segments?.map((segment, index) => (
         <Segment key={segment.from.uniqueId} segment={segment} />
       ))}
-    </div>
+    </Wrapper>
   )
 }
+
+const Wrapper = styled.div`
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  gap: 20px;
+`

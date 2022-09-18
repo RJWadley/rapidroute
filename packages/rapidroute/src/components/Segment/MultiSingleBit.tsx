@@ -1,22 +1,25 @@
 import React, { useMemo, useState } from "react"
 
 import { Provider, Route } from "@rapidroute/database-types"
-import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
 
+import styled, { css } from "styled-components"
 import getProvider from "./getProvider"
 import { expandGate } from "./SingleRoute"
+import { Logo, Name, RouteNumber, GateNumber } from "./sharedComponents"
 
 interface MultiSingleBitProps {
   segment: SegmentType
   route: Route
+  variant: "mobile" | "desktop"
 }
 
 export default function MultiSingleBit({
   segment,
   route,
+  variant,
 }: MultiSingleBitProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
 
@@ -31,6 +34,7 @@ export default function MultiSingleBit({
   const themeColor = provider?.color?.light ?? "#eeeeee"
 
   const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
+  const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])
 
   let routeNumberMessage = ""
   if (route.number)
@@ -52,82 +56,50 @@ export default function MultiSingleBit({
     <Wrapper
       backgroundColor={themeColor}
       textColor={invertLightness(themeColor)}
+      small={variant === "mobile"}
     >
-      <ProviderName>
-        {image && (
-          <Image
-            bigLogo={route?.type === "MRT"}
-            background={invertLightness(themeColor)}
-          >
-            <img src={image} alt={`${provider?.name} logo`} />
-          </Image>
-        )}
+      {image && (
+        <Logo
+          bigLogo={route?.type === "MRT"}
+          background={invertLightness(themeColor)}
+          small={variant === "mobile"}
+        >
+          <img src={image} alt={`${provider?.name} logo`} />
+        </Logo>
+      )}
+      <div>
+        <Name>{provider?.name}</Name>
+        <RouteNumber>{routeNumberMessage}</RouteNumber>
+      </div>
+      {(expandedFromGate || expandedToGate) && (
         <div>
-          <Name>{provider?.name}</Name>
-          <Number>{routeNumberMessage}</Number>
+          <GateNumber>{expandedFromGate ?? "No Gate"}</GateNumber>
+          <GateNumber>{expandedToGate ?? "No Gate"}</GateNumber>
         </div>
-        {expandedFromGate && <GateNumber>{expandedFromGate}</GateNumber>}
-      </ProviderName>
+      )}
     </Wrapper>
   )
 }
 
-const Wrapper = styled.div<{
-  backgroundColor?: string
-  textColor?: string
+export const Wrapper = styled.div<{
+  backgroundColor: string
+  textColor: string
+  small: boolean
 }>`
   font-family: Inter;
   ${({ backgroundColor, textColor }) => css`
     background-color: ${backgroundColor};
     color: ${textColor};
   `}
-  padding: 20px;
-  border-radius: 30px;
+  padding: 10px;
+  border-radius: ${({ small }) => (small ? "15px" : "20px")};
   display: grid;
-  gap: 20px;
-`
-
-const ProviderName = styled.div`
-  display: grid;
-  align-items: center;
   grid-template-columns: auto 1fr auto;
-  gap: 20px;
-`
+  gap: 10px;
+  align-items: center;
 
-const Image = styled.div<{ bigLogo: boolean; background: string }>`
-  border-radius: 10px;
-  background-color: ${({ background }) => background};
-  width: 80px;
-  height: 80px;
-
-  img {
-    ${props =>
-      props.bigLogo
-        ? css`
-            border-radius: 10px;
-          `
-        : css`
-            margin: 5px;
-            width: 70px;
-            height: 70px;
-          `}
+  ${GateNumber} {
+    text-align: right;
+    font-size: ${({ small }) => (small ? "12px" : "16px")};
   }
-`
-
-const Name = styled.div`
-  font-family: "Inter";
-  font-weight: 700;
-  font-size: 32px;
-`
-
-const Number = styled.div`
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 24px;
-`
-
-const GateNumber = styled.div`
-  font-size: 20px;
-  font-weight: normal;
 `

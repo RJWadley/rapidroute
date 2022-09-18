@@ -1,15 +1,26 @@
 import React, { useMemo, useState } from "react"
 
 import { Provider } from "@rapidroute/database-types"
-import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
 
 import getProvider from "./getProvider"
+import {
+  Wrapper,
+  Left,
+  ProviderName,
+  Name,
+  LongNames,
+  Symbols,
+  GateNumber,
+  Logo,
+  RouteNumber,
+} from "./sharedComponents"
 
 interface SegmentProps {
   segment: SegmentType
+  variant: "mobile" | "desktop"
 }
 
 export const expandGate = (gateString: string | null | undefined) => {
@@ -26,7 +37,10 @@ export const expandGate = (gateString: string | null | undefined) => {
   return expandedToGate
 }
 
-export default function SingleRoute({ segment }: SegmentProps) {
+export default function SingleRoute({
+  segment,
+  variant,
+}: SegmentProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
   const route = segment.routes[0]
 
@@ -62,119 +76,40 @@ export default function SingleRoute({ segment }: SegmentProps) {
     <Wrapper
       backgroundColor={themeColor}
       textColor={invertLightness(themeColor)}
+      small={variant === "mobile"}
     >
-      <ProviderName>
-        {image && (
-          <Image
-            bigLogo={route?.type === "MRT"}
-            background={invertLightness(themeColor)}
-          >
-            <img src={image} alt={`${provider?.name} logo`} />
-          </Image>
-        )}
-        <div>
-          <Name>{provider?.name}</Name>
-          <Number>{routeNumberMessage}</Number>
-        </div>
+      <Left>
+        <ProviderName>
+          {image && (
+            <Logo
+              bigLogo={route?.type === "MRT"}
+              background={invertLightness(themeColor)}
+              small={variant === "mobile"}
+            >
+              <img src={image} alt={`${provider?.name} logo`} />
+            </Logo>
+          )}
+          <div>
+            <Name>{provider?.name}</Name>
+            <RouteNumber>{routeNumberMessage}</RouteNumber>
+          </div>
+        </ProviderName>
         <LongNames>
           {segment.from.name} to <br />
           {segment.to.name}
         </LongNames>
-      </ProviderName>
-
-      <Symbols>
+      </Left>
+      <Symbols singleLine={variant === "mobile"}>
         <div>
           {segment.from.shortName || "---"}
           {expandedFromGate && <GateNumber>{expandedFromGate}</GateNumber>}
         </div>
         <div>-&gt;</div>
         <div>
-          {expandedToGate && <GateNumber>{expandedToGate}</GateNumber>}
           {segment?.to?.shortName || "---"}
+          {expandedToGate && <GateNumber>{expandedToGate}</GateNumber>}
         </div>
       </Symbols>
     </Wrapper>
   )
 }
-
-const Wrapper = styled.div<{
-  backgroundColor?: string
-  textColor?: string
-}>`
-  font-family: Inter;
-  ${({ backgroundColor, textColor }) => css`
-    background-color: ${backgroundColor};
-    color: ${textColor};
-  `}
-  padding: 50px;
-  border-radius: 50px;
-  display: grid;
-  gap: 20px;
-`
-
-const ProviderName = styled.div`
-  display: grid;
-  align-items: center;
-  grid-template-columns: auto 1fr auto;
-  gap: 20px;
-`
-
-const Image = styled.div<{ bigLogo: boolean; background: string }>`
-  border-radius: 10px;
-  background-color: ${({ background }) => background};
-  width: 80px;
-  height: 80px;
-
-  img {
-    ${props =>
-      props.bigLogo
-        ? css`
-            border-radius: 10px;
-          `
-        : css`
-            margin: 5px;
-            width: 70px;
-            height: 70px;
-          `}
-  }
-`
-
-const Name = styled.div`
-  font-family: "Inter";
-  font-weight: 700;
-  font-size: 32px;
-`
-
-const Number = styled.div`
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 24px;
-`
-
-const LongNames = styled.div`
-  text-align: right;
-`
-
-const Symbols = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 48px;
-  font-weight: 700;
-
-  > div {
-    display: flex;
-    align-items: baseline;
-    gap: 10px;
-  }
-
-  > div:last-child {
-    text-align: right;
-  }
-`
-
-const GateNumber = styled.div`
-  font-size: 20px;
-  font-weight: normal;
-`

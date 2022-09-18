@@ -4,62 +4,48 @@ import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
+import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 
 interface SegmentProps {
   segment: SegmentType
+  variant: "mobile" | "desktop"
 }
 
-export default function WalkingRoute({ segment }: SegmentProps) {
+export default function WalkingRoute({
+  segment,
+  variant,
+}: SegmentProps) {
   const themeColor = "#eee"
 
   return (
-    <Wrapper
+    <WalkWrapper
       backgroundColor={themeColor}
       textColor={invertLightness(themeColor)}
+      small={variant === "mobile"}
     >
-      <WalkIcon>directions_walk</WalkIcon>
-      <div>
-        <Name>
-          Walk to{" "}
-          {segment.to.shortName || segment.to.name || "Untitled Location"}
-        </Name>
-        <Number>{segment.to.name}</Number>
-      </div>
-    </Wrapper>
+      <WalkIcon small={variant === "mobile"}>directions_walk</WalkIcon>
+      <Name>
+        Walk to {segment.to.shortName || segment.to.name || "Untitled Location"}
+      </Name>
+      <RouteNumber>{segment.to.name}</RouteNumber>
+    </WalkWrapper>
   )
 }
 
-const Wrapper = styled.div<{
-  backgroundColor?: string
-  textColor?: string
-}>`
-  font-family: Inter;
-  ${({ backgroundColor, textColor }) => css`
-    background-color: ${backgroundColor};
-    color: ${textColor};
-  `}
-  padding: 50px;
-  border-radius: 50px;
-  display: grid;
-  gap: 20px;
-  grid-template-columns: auto 1fr;
+const WalkWrapper = styled(Wrapper)`
+  grid-template-columns: min-content 1fr auto;
   align-items: center;
+  gap: 0 15px;
+
+  ${({ small }) =>
+    small &&
+    css`
+      grid-template-columns: min-content 1fr;
+    `}
 `
 
-const WalkIcon = styled.div`
+const WalkIcon = styled.div<{ small: boolean }>`
   font-family: "Material Icons";
-  font-size: 80px;
-`
-
-const Name = styled.div`
-  font-family: "Inter";
-  font-weight: 700;
-  font-size: 32px;
-`
-
-const Number = styled.div`
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 24px;
+  font-size: ${props => (props.small ? "40px" : "60px")};
+  grid-row: ${props => props.small && "span 2"};
 `

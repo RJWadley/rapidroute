@@ -13,11 +13,13 @@ export default function Segment({ segment }: SegmentProps) {
   const singleRoute = segment.routes.length === 1
   const walkingRoute = segment.routes.length === 0
 
-  if (walkingRoute) return <WalkingRoute segment={segment} />
+  const variant = "desktop"
+
+  if (walkingRoute) return <WalkingRoute segment={segment} variant={variant} />
 
   return singleRoute ? (
-    <SingleRoute segment={segment} />
+    <SingleRoute segment={segment} variant={variant} />
   ) : (
-    <MultiRoute segment={segment} />
+    <MultiRoute segment={segment} variant={variant} />
   )
 }
