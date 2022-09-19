@@ -4,7 +4,6 @@ import "the-new-css-reset/css/reset.css"
 import React from "react"
 
 import gsap from "gsap"
-import { ScrollSmoother } from "gsap/ScrollSmoother"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Flip from "gsap/Flip"
 
