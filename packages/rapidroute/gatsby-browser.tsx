@@ -10,7 +10,7 @@ import Flip from "gsap/Flip"
 import Providers from "components/Providers"
 import invertLightness from "utils/invertLightness"
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother, Flip)
+gsap.registerPlugin(ScrollTrigger, Flip)
 
 export const wrapRootElement = ({ element }: { element: React.ReactNode }) => {
   return <Providers>{element}</Providers>
