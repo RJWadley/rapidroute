@@ -110,6 +110,7 @@ export default function Results() {
               key={result.toString()}
               route={result}
               diff={diff[i]}
+              loadDelay={i * 0.1}
             />
           ))}
       </div>

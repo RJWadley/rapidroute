@@ -13,8 +13,8 @@ export const Wrapper = styled.div<{
   padding: 30px;
   border-radius: 30px;
   display: grid;
-  grid-template-columns: auto auto;
-  gap: 100px;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
   align-items: center;
 
   --small: 20px;
@@ -123,6 +123,8 @@ export const Symbols = styled.div<{
   align-items: center;
   font-size: var(--large);
   font-weight: 700;
+  white-space: pre;
+  gap: 10px;
 
   > div:last-child {
     text-align: right;
@@ -135,6 +137,7 @@ export const Symbols = styled.div<{
         display: flex;
         align-items: baseline;
         gap: 10px;
+        flex-wrap: wrap;
       }
 
       > div:last-child {

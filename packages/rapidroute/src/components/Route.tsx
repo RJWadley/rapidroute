@@ -19,9 +19,15 @@ interface RouteProps {
   route: string[]
   diff: string[]
   expandByDefault: boolean
+  loadDelay: number
 }
 
-export default function Route({ route, diff, expandByDefault }: RouteProps) {
+export default function Route({
+  route,
+  diff,
+  expandByDefault,
+  loadDelay,
+}: RouteProps) {
   const [locations, setLocations] = useState<(Location | null)[] | null>(null)
   const [routes, setRoutes] = useState<(RouteType | null)[][] | null>(null)
   const [segments, setSegments] = useState<SegmentType[] | null>(null)
@@ -32,7 +38,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
     setSegments(null)
 
     const promises = route.map(async locationId => {
-      await sleep(Math.random() * 100)
+      await sleep(loadDelay * 1000)
       return getPath("locations", locationId)
     })
 
@@ -54,7 +60,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
         )
 
         return commonRoutes.map(async routeId => {
-          await sleep(Math.random() * 100)
+          await sleep(loadDelay * 1000)
           return getPath("routes", routeId)
         })
       })
@@ -66,7 +72,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
         setRoutes(objs)
       })
     })
-  }, [route])
+  }, [loadDelay, route])
 
   useMemo(() => {
     if (routes && locations) {

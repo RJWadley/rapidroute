@@ -11,10 +11,7 @@ interface SegmentProps {
   variant: "mobile" | "desktop"
 }
 
-export default function WalkingRoute({
-  segment,
-  variant,
-}: SegmentProps) {
+export default function WalkingRoute({ segment, variant }: SegmentProps) {
   const themeColor = "#eee"
 
   return (
