@@ -131,5 +131,5 @@ const OutWrapper = styled.div`
 `
 
 const ResultsWrapper = styled.div`
-  margin-bottom: 500px;
+  margin-bottom: 100vh;
 `

@@ -16,7 +16,7 @@ export default function invertLightness(color: string) {
   }
 
   const [h, s, l] = hexToHSL(colorToInvert)
-  const newL = l > 0.5 ? 0.1 : 0.9
+  const newL = l > 0.5 ? 0.15 : 0.85
   return `hsl(${h * 360}, ${s * 100}%, ${newL * 100}%)`
 }
 

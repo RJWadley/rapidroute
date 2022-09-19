@@ -86,6 +86,14 @@ export default function SearchBox({
         ref={inputRef}
         id={searchRole}
         placeholder={`Search ${searchRole}`}
+        // disable spellcheck, autocorrect, and autocapitalize, grammarly, etc.
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
+        autoComplete="off"
+        data-gramm="false"
+        data-gramm_editor="false"
+        data-enable-grammarly="false"
       />
     </Label>
   )
