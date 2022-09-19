@@ -8,6 +8,8 @@ import { database } from "./firebase"
 
 const getItem = (itemName: string) =>
   isBrowser() ? localStorage.getItem(itemName) : null
+const setItem = (itemName: string, itemValue: string) =>
+  isBrowser() ? localStorage.setItem(itemName, itemValue) : null
 const rawcache = getItem("databaseCache")
 const rawOneHash = getItem("oneHash")
 const rawAllHash = getItem("allHash")
@@ -75,8 +77,8 @@ export async function getPath<T extends keyof DatabaseType>(
       if (typeof data === "object") data.uniqueId = itemName
       databaseCache[type][itemName] = data
       oneHashes[type] = hash
-      localStorage.setItem("databaseCache", JSON.stringify(databaseCache))
-      localStorage.setItem("oneHash", JSON.stringify(oneHashes))
+      setItem("databaseCache", JSON.stringify(databaseCache))
+      setItem("oneHash", JSON.stringify(oneHashes))
       return resolve(data)
     })
   })
@@ -119,9 +121,9 @@ export async function getAll<T extends keyof DatabaseType>(
       databaseCache[type] = data
       allHashes[type] = hash
       oneHashes[type] = hash
-      localStorage.setItem("databaseCache", JSON.stringify(databaseCache))
-      localStorage.setItem("allHash", JSON.stringify(allHashes))
-      localStorage.setItem("oneHash", JSON.stringify(oneHashes))
+      setItem("databaseCache", JSON.stringify(databaseCache))
+      setItem("allHash", JSON.stringify(allHashes))
+      setItem("oneHash", JSON.stringify(oneHashes))
       return resolve(data)
     })
   })
