@@ -3,11 +3,10 @@ import type { GatsbyConfig } from "gatsby"
 const path = require("path")
 
 const config: GatsbyConfig = {
-  // TODO add proper metadata
   siteMetadata: {
-    title: "Reform Starter",
-    description: "A starter for Gatsby",
-    siteUrl: "https://www.yourdomain.tld",
+    title: "RapidRoute",
+    description: "A route finder for the Minecart Rapid Transit Server",
+    siteUrl: "https://www.mrtrapidroute.com",
     image: "https://example.com/logo.png",
   },
   graphqlTypegen: true,
@@ -21,8 +20,8 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-plugin-manifest",
       options: {
-        name: "Reform Starter", // TODO add name
-        short_name: "Reform", // TODO add short name
+        name: "MRT RapidRoute", // TODO add name
+        short_name: "RapidRoute", // TODO add short name
         start_url: "/",
         background_color: "#ffffff", // TODO add theme color
         theme_color: "#ffffff",
