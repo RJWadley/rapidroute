@@ -1,20 +1,22 @@
-import React, { MouseEventHandler } from "react"
+import React, { MouseEventHandler, ReactNode } from "react"
 import styled from "styled-components"
 import media from "utils/media"
 
 interface RoundButtonProps {
   onClick: MouseEventHandler<HTMLButtonElement>
-  children: string
+  children: ReactNode
   flipped?: boolean
+  className?: string
 }
 
 export default function RoundButton({
   onClick,
   children,
   flipped = true,
+  className = "",
 }: RoundButtonProps) {
   return (
-    <StyledButton onClick={onClick} flipped={flipped}>
+    <StyledButton className={className} onClick={onClick} flipped={flipped}>
       <span>{children}</span>
     </StyledButton>
   )

@@ -3,6 +3,8 @@ import React, { useContext, useState } from "react"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { search } from "data/search"
 
+import styled from "styled-components"
+import media from "utils/media"
 import SearchBox from "./SearchBox"
 import SearchList from "./SearchList"
 import SwapButton from "./SwapButton"
@@ -23,7 +25,7 @@ export default function Selection() {
 
   const processKeyPress = (
     key: string,
-    box: React.RefObject<HTMLInputElement>,
+    box: React.RefObject<HTMLTextAreaElement>,
     role: "from" | "to"
   ) => {
     runSearch(box.current?.value ?? "")
@@ -69,24 +71,53 @@ export default function Selection() {
 
   return (
     <div>
-      <SwapButton />
-      <SearchBox
-        searchText={runSearch}
-        sendKey={(a, b) => processKeyPress(a, b, "from")}
-        searchRole="from"
-      />
-      <SearchBox
-        searchText={runSearch}
-        sendKey={(a, b) => processKeyPress(a, b, "to")}
-        searchRole="to"
-      />
-      {showSearchList && (
-        <SearchList
-          locations={filteredLocations}
-          currentlySelected={selectedLocationIndex}
-          setSelectedIndex={selectionClick}
+      <SearchContainer>
+        <SearchBox
+          searchText={runSearch}
+          sendKey={(a, b) => processKeyPress(a, b, "from")}
+          searchRole="from"
         />
-      )}
+        <SearchBox
+          searchText={runSearch}
+          sendKey={(a, b) => processKeyPress(a, b, "to")}
+          searchRole="to"
+        />
+        <SwapButton />
+      </SearchContainer>
+      <SearchList
+        locations={filteredLocations}
+        currentlySelected={selectedLocationIndex}
+        setSelectedIndex={selectionClick}
+        show={showSearchList}
+      />
     </div>
   )
 }
+
+const SearchContainer = styled.div`
+  background-color: #eee;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 100px;
+  border-radius: 30px;
+  grid-template-areas: "from swap to";
+
+  > label:nth-child(2) {
+    text-align: right;
+  }
+
+  @media (max-width: ${media.small}px) {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "from swap" "to swap";
+    height: 80px;
+    border-radius: 25px;
+    padding-right: 15px;
+
+    > label:nth-child(2) {
+      text-align: left;
+    }
+  }
+`

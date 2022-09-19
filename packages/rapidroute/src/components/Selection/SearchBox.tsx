@@ -2,11 +2,13 @@ import React, { useContext, useEffect } from "react"
 
 import { getTextboxName } from "data/search"
 
+import styled from "styled-components"
+import media from "utils/media"
 import { RoutingContext } from "../Providers/RoutingContext"
 
 interface SearchBoxProps {
   searchText: (text: string) => void
-  sendKey: (key: string, boxRef: React.RefObject<HTMLInputElement>) => void
+  sendKey: (key: string, boxRef: React.RefObject<HTMLTextAreaElement>) => void
   searchRole: "from" | "to"
 }
 
@@ -15,22 +17,22 @@ export default function SearchBox({
   sendKey,
   searchRole,
 }: SearchBoxProps): JSX.Element {
-  const inputRef = React.useRef<HTMLInputElement>(null)
+  const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const { to, from } = useContext(RoutingContext)
 
-  const filterLocations = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const filterLocations = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const input = e.target.value ?? ""
     searchText(input)
   }
 
-  const checkForEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const checkForEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     sendKey(e.key, inputRef)
 
     // focus the next input box on the page
     // if this is the last input box on the page, focus the first input box on the page
     if (e.key === "Enter" && inputRef.current) {
       // get all siblings of the input box
-      const siblings = Array.from(document.querySelectorAll("input") ?? [])
+      const siblings = Array.from(document.querySelectorAll("textarea") ?? [])
 
       // get the index of the input box in the siblings array
       const index = siblings.indexOf(inputRef.current)
@@ -56,19 +58,60 @@ export default function SearchBox({
       inputRef.current.value = getTextboxName(to)
   }, [to, searchRole])
 
+  // automatically update the size of the input box to fit the text
+  const updateSize = () => {
+    if (inputRef.current) {
+      // calculate the height of the input box
+      inputRef.current.style.height = ""
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`
+    }
+  }
+
+  useEffect(() => {
+    updateSize()
+    window.addEventListener("resize", updateSize)
+    return () => window.removeEventListener("resize", updateSize)
+  }, [from, to])
+
   return (
-    <div>
-      <input
+    <Label>
+      <Text
         onChange={filterLocations}
         onKeyDown={checkForEnter}
+        onInput={updateSize}
         onFocus={() => {
           sendKey("Focus", inputRef)
         }}
         onBlur={() => sendKey("Blur", inputRef)}
         ref={inputRef}
-        type="text"
+        id={searchRole}
         placeholder={`Search ${searchRole}`}
       />
-    </div>
+    </Label>
   )
 }
+
+const Label = styled.label`
+  display: grid;
+  align-items: center;
+  height: 100%;
+  padding: 0 30px;
+
+  @media (max-width: ${media.small}px) {
+    padding: 0 15px;
+  }
+`
+
+const Text = styled.textarea`
+  color: #333;
+  font-size: 20px;
+  height: 0px;
+
+  //vertically center text
+  display: flex;
+  align-items: center;
+
+  @media (max-width: ${media.small}px) {
+    font-size: 14px;
+  }
+`

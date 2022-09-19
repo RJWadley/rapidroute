@@ -1,5 +1,5 @@
 import React from "react"
-import { createGlobalStyle } from "styled-components"
+import styled, { createGlobalStyle } from "styled-components"
 
 interface LayoutProps {
   children: React.ReactNode
@@ -7,10 +7,10 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div>
+    <Wrapper>
       <GlobalStyle />
       {children}
-    </div>
+    </Wrapper>
   )
 }
 
@@ -18,4 +18,9 @@ const GlobalStyle = createGlobalStyle`
   body {
     font-family: Inter;
   }
+`
+
+const Wrapper = styled.div`
+  max-width: calc(100vw - 20px);
+  margin: 0 auto;
 `

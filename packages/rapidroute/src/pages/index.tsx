@@ -4,10 +4,14 @@ import Layout from "components/Layout"
 import Results from "components/Results"
 import Selection from "components/Selection"
 import SEO from "components/SEO"
+import styled from "styled-components"
 
 export default function Home() {
   return (
     <Layout>
+      <Title>
+        <Strong>MRT</Strong> Route Finder
+      </Title>
       <Selection />
       <Results />
     </Layout>
@@ -17,3 +21,14 @@ export default function Home() {
 export function Head() {
   return <SEO />
 }
+
+const Title = styled.div`
+  text-align: center;
+  font-size: 40px;
+  margin-top: 200px;
+  margin-bottom: 50px;
+`
+
+const Strong = styled.span`
+  font-weight: 700;
+`

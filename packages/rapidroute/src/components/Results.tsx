@@ -102,7 +102,7 @@ export default function Results() {
   return (
     <>
       <OutWrapper ref={animationOutHolder} />
-      <div ref={resultsWrapper}>
+      <ResultsWrapper ref={resultsWrapper}>
         {diff &&
           results.map((result, i) => (
             <Route
@@ -113,7 +113,7 @@ export default function Results() {
               loadDelay={i * 0.1}
             />
           ))}
-      </div>
+      </ResultsWrapper>
     </>
   )
 }
@@ -128,4 +128,8 @@ const OutWrapper = styled.div`
     left: 0;
     width: 100%;
   }
+`
+
+const ResultsWrapper = styled.div`
+  margin-bottom: 500px;
 `
