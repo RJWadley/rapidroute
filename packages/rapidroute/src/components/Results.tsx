@@ -6,6 +6,7 @@ import removeExtras from "pathfinding/postProcessing/removeExtra"
 
 import gsap from "gsap"
 import styled from "styled-components"
+import { sleep } from "utils/functions"
 import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
 
@@ -22,7 +23,12 @@ export default function Results() {
       animateOut()
       setResults(null)
 
-      findPath.start().then(r => setResults(removeExtras(r)))
+      const minTime = sleep(500)
+
+      findPath.start().then(async r => {
+        await minTime
+        setResults(removeExtras(r))
+      })
 
       return () => {
         findPath.cancel()

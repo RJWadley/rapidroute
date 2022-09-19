@@ -53,16 +53,16 @@ export async function getPath<T extends keyof DatabaseType>(
 
   // if the hash matches the one we have, return the cached value
   if (hash === oneHashes[type] && databaseCache[type][itemName]) {
-    console.log("cache hit", type, itemName)
+    // console.log("cache hit", type, itemName)
     return databaseCache[type][itemName] as GetOne<T>
   }
   if (hash !== oneHashes[type]) {
-    console.log("hash mismatch", type, itemName)
+    // console.log("hash mismatch", type, itemName)
 
     // clear the cache
     databaseCache[type] = {}
   } else {
-    console.log("cache miss", type, itemName)
+    // console.log("cache miss", type, itemName)
   }
 
   // otherwise, get the value from the database
@@ -91,15 +91,17 @@ export async function getAll<T extends keyof DatabaseType>(
 
   // if the hash matches the one we have, return the cached value
   if (hash === allHashes[type] && databaseCache[type]) {
-    console.log("cache hit", type)
+    // console.log("cache hit", type)
     return databaseCache[type] as GetAll<T>
   }
   if (hash !== allHashes[type]) {
-    console.log("hash mismatch", type)
+    // console.log("hash mismatch", type)
 
     // clear the cache
     databaseCache[type] = {}
-  } else console.log("cache miss", type)
+  } else {
+    // console.log("cache miss", type)
+  }
 
   // otherwise, get the value from the database
   const itemRef = ref(database, type)

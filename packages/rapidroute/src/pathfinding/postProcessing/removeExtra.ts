@@ -31,6 +31,10 @@ export default function removeExtras(results: string[][]) {
         // then we can assume that the current result is a duplicate
         indexesToRemove.push(i)
       }
+      // and also vice versa
+      if (beforeIndex === afterIndex + 1) {
+        indexesToRemove.push(i)
+      }
     }
   }
 
