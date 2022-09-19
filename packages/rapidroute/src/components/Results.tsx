@@ -47,8 +47,13 @@ export default function Results() {
 
       const children = Array.from(newElement.children)
 
+      if (!children.length) return
+
+      const firstFive = children.slice(0, 5)
+      const allOthers = children.slice(5)
+
       // first five children
-      gsap.fromTo(children.slice(0, 5), {
+      gsap.fromTo(firstFive, {
           opacity: 1,
           y: 0,
         },
@@ -65,16 +70,17 @@ export default function Results() {
         })
 
       // all other children
-      gsap.fromTo(children.slice(5), {
-          opacity: 1,
-          y: 0,
-        },
-        {
-          opacity: 0,
-          y: 200,
-          duration: 0.5,
-          ease: "power3.in",
-        })
+      if (allOthers.length)
+        gsap.fromTo(allOthers, {
+            opacity: 1,
+            y: 0,
+          },
+          {
+            opacity: 0,
+            y: 200,
+            duration: 0.5,
+            ease: "power3.in",
+          })
     }
   }
 
