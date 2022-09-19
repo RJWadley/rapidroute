@@ -14,6 +14,7 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\" && npm run lint -workspaces",
     "start": "npm run build -w ./packages/database-types/ && npm start -w ./packages/rapidroute/",
     "import": "npm run start -w ./packages/database-importer",
-    "typegen": "npm run build -w ./packages/database-types/"
+    "typegen": "npm run build -w ./packages/database-types/",
+    "build": "npm run build -w ./packages/database-types/ && npm run build -w ./packages/rapidroute/"
   }
 }
