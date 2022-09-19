@@ -10,9 +10,11 @@ import WalkingRoute from "./WalkingRoute"
 
 interface SegmentProps {
   segment: SegmentType
+  isOpen: boolean
+  position: number
 }
 
-export default function Segment({ segment }: SegmentProps) {
+export default function Segment({ segment, isOpen, position }: SegmentProps) {
   const singleRoute = segment.routes.length === 1
   const walkingRoute = segment.routes.length === 0
   const variant = useMedia(`(min-width: ${media.small}px)`)
@@ -20,11 +22,28 @@ export default function Segment({ segment }: SegmentProps) {
     : "mobile"
   const wrapper = useRef<HTMLDivElement>(null)
 
+  const firstRender = useRef(true)
   useEffect(() => {
-    gsap.set(wrapper.current, {
-      y: 200,
-    })
-  }, [])
+    if (firstRender.current) {
+      if (isOpen)
+        gsap.fromTo(wrapper.current, {
+            y: 300,
+            opacity: 0,
+            height: 0,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            height: "auto",
+            delay: 0.1 * position,
+          })
+      else
+        gsap.set(wrapper.current, {
+          y: 200,
+        })
+      firstRender.current = false
+    }
+  }, [isOpen, position])
 
   if (walkingRoute)
     return (

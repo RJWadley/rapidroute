@@ -9,6 +9,7 @@ export const Wrapper = styled.div<{
     background-color: ${backgroundColor};
     color: ${textColor};
   `}
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
   padding: 30px;
   border-radius: 30px;
   display: grid;
@@ -53,6 +54,7 @@ export const Logo = styled.div<{
   width: 60px;
   height: 60px;
   min-width: 60px;
+  min-height: 60px;
 
   img {
     ${props =>
@@ -76,6 +78,7 @@ export const Logo = styled.div<{
       width: 40px;
       height: 40px;
       min-width: 40px;
+      min-height: 40px;
 
       img {
         ${bigLogo

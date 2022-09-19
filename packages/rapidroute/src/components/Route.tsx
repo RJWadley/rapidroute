@@ -31,7 +31,10 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
     setLocations(null)
     setSegments(null)
 
-    const promises = route.map(locationId => getPath("locations", locationId))
+    const promises = route.map(async locationId => {
+      await sleep(Math.random() * 100)
+      return getPath("locations", locationId)
+    })
 
     Promise.all(promises).then(results => {
       setLocations(results)
@@ -50,7 +53,10 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
           (previousLocation.routes || []).includes(routeId)
         )
 
-        return commonRoutes.map(routeId => getPath("routes", routeId))
+        return commonRoutes.map(async routeId => {
+          await sleep(Math.random() * 100)
+          return getPath("routes", routeId)
+        })
       })
 
       // wait for all promises to resolve
@@ -80,7 +86,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
     if (dropdownContent.current?.children.length)
       gsap.to(dropdownContent.current.children, {
         y: dropdownOpen ? 0 : 200,
-        stagger: dropdownOpen ? 0.1 : -0.1,
+        stagger: dropdownOpen ? 0.1 : -0.05,
         opacity: dropdownOpen ? 1 : 0,
         ease: dropdownOpen ? "power3.out" : "power3.in",
       })
@@ -98,8 +104,14 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
         </RoundButton>
       </Via>
       <Dropdown ref={dropdownContent}>
-        {segments?.map(segment => (
-          <Segment key={segment.from.uniqueId} segment={segment} />
+        {!segments && <div>Loading...</div>}
+        {segments?.map((segment, i) => (
+          <Segment
+            key={segment.from.uniqueId}
+            segment={segment}
+            isOpen={dropdownOpen}
+            position={i}
+          />
         ))}
       </Dropdown>
     </Wrapper>
@@ -112,6 +124,7 @@ const Wrapper = styled.div`
   display: grid;
   gap: 30px;
   opacity: 0;
+  margin-top: 30px;
 `
 
 const Via = styled.div`

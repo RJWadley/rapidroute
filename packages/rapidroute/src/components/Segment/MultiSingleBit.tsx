@@ -68,7 +68,7 @@ export default function MultiSingleBit({
         </Logo>
       )}
       <div>
-        <Name>{provider?.name}</Name>
+        <Name>{provider?.name ?? "Loading Name..."}</Name>
         <RouteNumber>{routeNumberMessage}</RouteNumber>
       </div>
       {(expandedFromGate || expandedToGate) && (
@@ -90,6 +90,7 @@ export const Wrapper = styled.div<{
     background-color: ${backgroundColor};
     color: ${textColor};
   `}
+  transition: background-color 0.2s, color 0.2s;
   padding: 10px;
   border-radius: ${({ small }) => (small ? "15px" : "20px")};
   display: grid;

@@ -51,6 +51,7 @@ export default function Results() {
           y: 200,
           duration: 0.5,
           stagger: -0.1,
+          ease: "power3.in",
           onComplete: () => {
             if (animationOutHolder.current)
               animationOutHolder.current.innerHTML = ""
@@ -66,12 +67,13 @@ export default function Results() {
           opacity: 0,
           y: 200,
           duration: 0.5,
+          ease: "power3.in",
         })
     }
   }
 
   useEffect(() => {
-    if (resultsWrapper.current)
+    if (resultsWrapper.current?.children.length)
       gsap.fromTo(resultsWrapper.current.children, {
           opacity: 0,
           y: 200,
@@ -106,4 +108,11 @@ export default function Results() {
 const OutWrapper = styled.div`
   height: 0;
   z-index: -1;
+  position: relative;
+
+  > div {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
 `

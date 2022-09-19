@@ -37,10 +37,7 @@ export const expandGate = (gateString: string | null | undefined) => {
   return expandedToGate
 }
 
-export default function SingleRoute({
-  segment,
-  variant,
-}: SegmentProps) {
+export default function SingleRoute({ segment, variant }: SegmentProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
   const route = segment.routes[0]
 
@@ -90,7 +87,7 @@ export default function SingleRoute({
             </Logo>
           )}
           <div>
-            <Name>{provider?.name}</Name>
+            <Name>{provider?.name ?? "Loading name..."}</Name>
             <RouteNumber>{routeNumberMessage}</RouteNumber>
           </div>
         </ProviderName>
