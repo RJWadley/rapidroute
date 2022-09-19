@@ -106,7 +106,7 @@ export default function Results() {
         {diff &&
           results.map((result, i) => (
             <Route
-              expandByDefault={i === 0}
+              expandByDefault={results.length === 1}
               key={result.toString()}
               route={result}
               diff={diff[i]}

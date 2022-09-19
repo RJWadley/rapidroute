@@ -27,15 +27,18 @@ export default function Segment({ segment, isOpen, position }: SegmentProps) {
     if (firstRender.current) {
       if (isOpen)
         gsap.fromTo(wrapper.current, {
-            y: 300,
+            y: 200,
+            yPercent: 100,
             opacity: 0,
             height: 0,
           },
           {
             y: 0,
+            yPercent: 0,
             opacity: 1,
             height: "auto",
-            delay: 0.1 * position,
+            delay: 0.3 + 0.1 * position,
+            ease: "power3.out",
           })
       else
         gsap.set(wrapper.current, {

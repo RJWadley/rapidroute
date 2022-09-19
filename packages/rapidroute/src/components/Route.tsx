@@ -74,7 +74,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
     }
   }, [routes, locations])
 
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
   const dropdownContent = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
