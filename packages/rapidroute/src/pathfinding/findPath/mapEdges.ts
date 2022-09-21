@@ -1,4 +1,4 @@
-import { shortHandMap } from "@rapidroute/database-types"
+import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 
 import { getAll } from "data/getData"
 
@@ -10,6 +10,7 @@ export interface GraphEdge {
   to: string
   weight: number
   routes?: string[]
+  mode: RouteMode
 }
 
 /**
@@ -38,7 +39,15 @@ export const rawEdges = getAll("pathfinding").then(data => {
             x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
           const weight = getRouteTime(distance, shortHandMap[routeTypeShort])
 
-          return [{ from, to, weight, routes: routeIds }]
+          return [
+            {
+              from,
+              to,
+              weight,
+              routes: routeIds,
+              mode: shortHandMap[routeTypeShort],
+            },
+          ]
         })
       }
       return []
@@ -79,8 +88,8 @@ export const rawEdges = getAll("pathfinding").then(data => {
       .flatMap(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk")
         return [
-          { from, to, weight },
-          { to: from, from: to, weight },
+          { from, to, weight, mode: "walk" } as const,
+          { to: from, from: to, weight, mode: "walk" } as const,
         ]
       })
 

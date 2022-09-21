@@ -1,5 +1,9 @@
 /* eslint-disable no-console */
-import { Pathfinding, shortHandMap } from "@rapidroute/database-types"
+import {
+  Pathfinding,
+  RouteMode,
+  shortHandMap,
+} from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
 import { rawEdges, rawNodes } from "./mapEdges"
@@ -19,9 +23,15 @@ export default class Pathfinder {
 
   cancelled = false
 
+  allowedModes: RouteMode[] = []
+
   constructor(from: string, to: string) {
     this.from = from
     this.to = to
+  }
+
+  setAllowedModes(modes: RouteMode[]) {
+    this.allowedModes = modes
   }
 
   getPercentComplete() {
@@ -88,6 +98,13 @@ export default class Pathfinder {
         .filter(edge => edge.from === current)
         .filter(edge => costSoFar[current] + edge.weight < this.maxCost)
         .forEach(async edge => {
+          // skip edges that are not allowed
+          if (
+            this.allowedModes.length &&
+            !this.allowedModes.includes(edge.mode)
+          )
+            return
+
           const newCost = costSoFar[current] + edge.weight
           this.updateMaxCost(nodes, edge.to, newCost)
 
@@ -205,8 +222,8 @@ export default class Pathfinder {
       .flatMap(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk")
         return [
-          { from: id, to, weight },
-          { to: id, from: to, weight },
+          { from: id, to, weight, mode: "walk" } as const,
+          { to: id, from: to, weight, mode: "walk" } as const,
         ]
       })
 

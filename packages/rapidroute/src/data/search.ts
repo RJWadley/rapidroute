@@ -6,6 +6,7 @@ const searchWorker = new FlexSearch.Index({
   tokenize: "reverse",
   charset: "latin:simple",
 })
+
 const strictSearchWorker = new FlexSearch.Index({
   tokenize: "strict",
 })
