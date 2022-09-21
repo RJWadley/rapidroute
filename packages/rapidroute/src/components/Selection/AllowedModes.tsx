@@ -109,6 +109,7 @@ const Selection = styled.div<{ active: boolean }>`
   letter-spacing: 0.025em;
   position: relative;
   white-space: nowrap;
+  opacity: 0;
 
   //check
   :before {

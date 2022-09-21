@@ -63,12 +63,13 @@ const Wrapper = styled.div`
   padding-top: 60px;
   z-index: -1;
   position: relative;
-  border-radius: 0 0 30px 30px;
+  border-radius: 30px;
   display: grid;
   gap: 3px;
   font-size: 16px;
   overflow: hidden;
   opacity: 0;
+  margin-top: -90px;
 
   @media (max-width: ${media.small}px) {
     padding: 15px;

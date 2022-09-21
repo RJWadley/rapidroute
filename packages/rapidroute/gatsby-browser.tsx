@@ -8,7 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Flip from "gsap/Flip"
 
 import Providers from "components/Providers"
-import invertLightness from "utils/invertLightness"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
 
@@ -19,5 +18,3 @@ export const wrapRootElement = ({ element }: { element: React.ReactNode }) => {
 export const wrapPageElement = ({ element }: { element: React.ReactNode }) => {
   return element
 }
-
-console.log(invertLightness("#00ffff"))
