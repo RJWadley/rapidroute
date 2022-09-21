@@ -2,7 +2,7 @@
 
 # RapidRoute Website
 
-Uses Gatsby, React, and TypeScript.
+Uses Gatsby, React, and TypeScript
 
 ## Development
 
