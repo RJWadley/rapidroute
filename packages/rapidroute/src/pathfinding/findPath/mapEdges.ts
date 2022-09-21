@@ -107,9 +107,22 @@ export const rawEdges = getAll("pathfinding").then(data => {
           weight: 500,
           mode: "spawnWarp",
         },
+        {
+          to: "A0",
+          from: placeId,
+          weight: 500,
+          mode: "spawnWarp",
+        },
       ]
     }
-    return []
+    return [
+      {
+        to: "A0",
+        from: placeId,
+        weight: 500,
+        mode: "spawnWarp",
+      },
+    ]
   })
 
   return [...walkingEdges, ...routeEdges, ...warpEdges]
