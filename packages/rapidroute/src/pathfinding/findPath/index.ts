@@ -29,7 +29,6 @@ export default class Pathfinder {
     this.from = from
     this.to = to
     this.allowedModes = [...allowedModes]
-    console.log("allowed modes", allowedModes)
   }
 
   getPercentComplete() {

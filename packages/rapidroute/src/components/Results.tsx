@@ -17,22 +17,34 @@ export default function Results() {
   const animationOutHolder = useRef<HTMLDivElement>(null)
   const { allowedModes } = useContext(RoutingContext)
 
+  const debouncer = useRef<Promise<unknown>>(Promise.resolve())
+
   useEffect(() => {
     if (from && to) {
       const findPath = new FindPath(from, to, allowedModes)
+      let canSave = true
 
-      animateOut()
-      setResults(null)
+      ;(async () => {
+        await debouncer.current
 
-      const minTime = sleep(500)
+        animateOut()
+        setResults(null)
 
-      findPath.start().then(async r => {
-        await minTime
-        setResults(removeExtras(r))
-      })
+        const minTime = sleep(500)
+
+        findPath.start().then(async r => {
+          await minTime
+          await debouncer.current
+          if (canSave) {
+            setResults(removeExtras(r))
+            debouncer.current = sleep(2000)
+          }
+        })
+      })()
 
       return () => {
         findPath.cancel()
+        canSave = false
       }
     }
     return undefined
@@ -95,7 +107,7 @@ export default function Results() {
           opacity: 1,
           y: 0,
           duration: 0.5,
-          stagger: 0.1,
+          stagger: 0.3,
         })
   }, [results])
 
@@ -111,7 +123,7 @@ export default function Results() {
               key={result.toString()}
               route={result}
               diff={diff[i]}
-              loadDelay={i * 0.1}
+              loadDelay={i * 0.3}
             />
           ))}
       </ResultsWrapper>
