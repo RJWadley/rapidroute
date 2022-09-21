@@ -1,3 +1,4 @@
+import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 import React, { useMemo, useState } from "react"
 
 type LocationId = string
@@ -8,11 +9,15 @@ export const RoutingContext = React.createContext<{
   to: LocationId | null
   setFrom: (from: LocationId | null) => void
   setTo: (to: LocationId | null) => void
+  allowedModes: RouteMode[]
+  setAllowedModes: (modes: RouteMode[]) => void
 }>({
   from: null,
   to: null,
   setFrom: () => {},
   setTo: () => {},
+  allowedModes: Object.values(shortHandMap),
+  setAllowedModes: () => {},
 })
 
 export function RoutingProvider({
@@ -22,6 +27,10 @@ export function RoutingProvider({
 }): JSX.Element {
   const [from, setFrom] = useState<LocationId | null>(null)
   const [to, setTo] = useState<LocationId | null>(null)
+  const [allowedModes, setAllowedModes] = useState<RouteMode[]>([
+    ...Object.values(shortHandMap),
+    "walk",
+  ])
 
   const value = useMemo(() => {
     return {
@@ -29,8 +38,10 @@ export function RoutingProvider({
       to,
       setFrom,
       setTo,
+      allowedModes,
+      setAllowedModes,
     }
-  }, [from, to, setFrom, setTo])
+  }, [from, to, allowedModes])
 
   return (
     <RoutingContext.Provider value={value}>{children}</RoutingContext.Provider>

@@ -23,15 +23,13 @@ export default class Pathfinder {
 
   cancelled = false
 
-  allowedModes: RouteMode[] = []
+  allowedModes: RouteMode[]
 
-  constructor(from: string, to: string) {
+  constructor(from: string, to: string, allowedModes: RouteMode[]) {
     this.from = from
     this.to = to
-  }
-
-  setAllowedModes(modes: RouteMode[]) {
-    this.allowedModes = modes
+    this.allowedModes = [...allowedModes]
+    console.log("allowed modes", allowedModes)
   }
 
   getPercentComplete() {
@@ -99,8 +97,11 @@ export default class Pathfinder {
         .filter(edge => costSoFar[current] + edge.weight < this.maxCost)
         .forEach(async edge => {
           // skip edges that are not allowed
+          if (this.allowedModes.length === 0) {
+            throw new Error("no modes")
+          }
           if (
-            this.allowedModes.length &&
+            this.allowedModes.length > 0 &&
             !this.allowedModes.includes(edge.mode)
           )
             return
@@ -129,7 +130,11 @@ export default class Pathfinder {
 
     if (paths.length === 0 && !preventReverse) {
       console.log("COULD NOT FIND PATH, TRYING REVERSE")
-      const reversed = await new Pathfinder(this.to, this.from).start(true)
+      const reversed = await new Pathfinder(
+        this.to,
+        this.from,
+        this.allowedModes
+      ).start(true)
 
       const end = performance.now()
       console.log(`Pathfinding took ${end - start}ms`)

@@ -36,6 +36,7 @@ const StyledButton = styled.button<{ flipped: boolean }>`
   height: 80px;
   border-radius: 20px;
   font-size: 70px;
+  overflow: hidden;
 
   @media (max-width: ${media.small}px) {
     width: 50px;

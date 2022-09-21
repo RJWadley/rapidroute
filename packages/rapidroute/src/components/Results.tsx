@@ -15,10 +15,11 @@ export default function Results() {
   const [results, setResults] = useState<string[][] | null>(null)
   const resultsWrapper = useRef<HTMLDivElement>(null)
   const animationOutHolder = useRef<HTMLDivElement>(null)
+  const { allowedModes } = useContext(RoutingContext)
 
   useEffect(() => {
     if (from && to) {
-      const findPath = new FindPath(from, to)
+      const findPath = new FindPath(from, to, allowedModes)
 
       animateOut()
       setResults(null)
@@ -35,7 +36,7 @@ export default function Results() {
       }
     }
     return undefined
-  }, [from, to])
+  }, [allowedModes, from, to])
 
   const animateOut = () => {
     // copy the old results to the animation out holder

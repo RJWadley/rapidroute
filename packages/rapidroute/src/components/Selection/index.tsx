@@ -8,6 +8,7 @@ import media from "utils/media"
 import SearchBox from "./SearchBox"
 import SearchList from "./SearchList"
 import SwapButton from "./SwapButton"
+import AllowedModes from "./AllowedModes"
 
 type LocationId = string
 
@@ -90,6 +91,7 @@ export default function Selection() {
         setSelectedIndex={selectionClick}
         show={showSearchList}
       />
+      <AllowedModes />
     </div>
   )
 }
