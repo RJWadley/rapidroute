@@ -12,9 +12,13 @@ export default function SwapButton() {
   const swapRef = useRef<HTMLDivElement>(null)
   const isMobile = useMedia(`(max-width: ${media.small}px)`)
 
+  const clickCount = useRef<number>(0)
+
   const handleClick = () => {
     const fromEl = document.getElementById("from")
     const toEl = document.getElementById("to")
+    const hash = clickCount.current + 1
+    clickCount.current = hash
 
     const duration = 0.5
     const mobile = window.innerWidth < media.small
@@ -26,15 +30,17 @@ export default function SwapButton() {
       yPercent: mobile ? 100 : 0,
       ease: "power2.in",
       onComplete: () => {
-        setFrom(to)
-        setTo(from)
-        gsap.to(fromEl, {
-          duration,
-          opacity: 1,
-          xPercent: 0,
-          yPercent: 0,
-          ease: "power2.out",
-        })
+        if (clickCount.current === hash) {
+          setFrom(to)
+          setTo(from)
+          gsap.to(fromEl, {
+            duration,
+            opacity: 1,
+            xPercent: 0,
+            yPercent: 0,
+            ease: "power2.out",
+          })
+        }
       },
     })
 
@@ -45,26 +51,19 @@ export default function SwapButton() {
       yPercent: mobile ? -100 : 0,
       ease: "power2.in",
       onComplete: () => {
-        gsap.to(toEl, {
-          duration,
-          opacity: 1,
-          xPercent: 0,
-          yPercent: 0,
-          ease: "power2.out",
-        })
+        if (clickCount.current === hash)
+          gsap.to(toEl, {
+            duration,
+            opacity: 1,
+            xPercent: 0,
+            yPercent: 0,
+            ease: "power2.out",
+          })
       },
     })
 
     gsap.to(swapRef.current, {
-      rotate: "+=180",
-      onUpdate: () => {
-        // clamp to intervals of 180
-        const rotation = gsap.getProperty(swapRef.current, "rotate")
-        if (rotation >= 360) {
-          gsap.getTweensOf(swapRef.current).forEach(t => t.kill())
-          gsap.set(swapRef.current, { rotate: 0 })
-        }
-      },
+      rotate: 180 * clickCount.current,
     })
   }
 
