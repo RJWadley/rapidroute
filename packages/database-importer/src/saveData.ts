@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   Location,
   Locations,
@@ -29,10 +30,12 @@ export default async function saveDataToFirebase(
   const updateProvider = (provider: Provider) => {
     const providerLessId: Partial<Provider> = { ...provider }
     delete providerLessId.uniqueId
-    database.ref(`providers/${provider.uniqueId}`).set(providerLessId)
-    // .then(() => {
-    //   console.log(`Saved provider ${provider.uniqueId}`)
-    // })
+    database
+      .ref(`providers/${provider.uniqueId}`)
+      .set(providerLessId)
+      .then(() => {
+        console.log(`Saved provider ${provider.uniqueId}`)
+      })
   }
 
   const deleteProvider = (providerId: string) => {
@@ -73,8 +76,10 @@ export default async function saveDataToFirebase(
   const updateLocation = (location: Location) => {
     const locationLessId: Partial<Location> = { ...location }
     delete locationLessId.uniqueId
-    database.ref(`locations/${location.uniqueId}`).set(locationLessId)
-    // .then(() => console.log(`Location saved: ${location.uniqueId}`))
+    database
+      .ref(`locations/${location.uniqueId}`)
+      .set(locationLessId)
+      .then(() => console.log(`Location saved: ${location.uniqueId}`))
 
     /* update this locations search index */
     const searchIndex: Omit<SearchIndex[string], "uniqueId"> = {
@@ -85,21 +90,25 @@ export default async function saveDataToFirebase(
           : location.ownerPlayer ?? ""
       } ${location.keywords ?? ""}`,
     }
-    database.ref(`searchIndex/${location.uniqueId}`).set(searchIndex)
-    // .then(() =>
-    //   console.log(`Search index updated for location: ${location.uniqueId}`)
-    // )
+    database
+      .ref(`searchIndex/${location.uniqueId}`)
+      .set(searchIndex)
+      .then(() =>
+        console.log(`Search index updated for location: ${location.uniqueId}`)
+      )
 
     /* update this locations pathfinding index */
-    database.ref(`pathfinding/${location.uniqueId}`).update({
-      x: location.location?.x ?? null,
-      z: location.location?.z ?? null,
-    })
-    // .then(() =>
-    //   console.log(
-    //     `Pathfinding index updated for location: ${location.uniqueId}`
-    //   )
-    // )
+    database
+      .ref(`pathfinding/${location.uniqueId}`)
+      .update({
+        x: location.location?.x ?? null,
+        z: location.location?.z ?? null,
+      })
+      .then(() =>
+        console.log(
+          `Pathfinding index updated for location: ${location.uniqueId}`
+        )
+      )
   }
 
   const deleteLocation = (locationId: string) => {
@@ -107,14 +116,16 @@ export default async function saveDataToFirebase(
       .ref(`locations/${locationId}`)
       .remove()
       .then(() => console.log("deleted location", locationId))
-    database.ref(`searchIndex/${locationId}`).remove()
-    // .then(() =>
-    //   console.log("deleted search index for location", location.uniqueId)
-    // )
-    database.ref(`pathfinding/${locationId}`).remove()
-    // .then(() =>
-    //   console.log("deleted pathfinding index for location", location.uniqueId)
-    // )
+    database
+      .ref(`searchIndex/${locationId}`)
+      .remove()
+      .then(() => console.log("deleted search index for location", locationId))
+    database
+      .ref(`pathfinding/${locationId}`)
+      .remove()
+      .then(() =>
+        console.log("deleted pathfinding index for location", locationId)
+      )
   }
 
   const saveLocations = async () => {
@@ -154,8 +165,10 @@ export default async function saveDataToFirebase(
       .then(snapshot => snapshot.val() as Route | null)
 
     if (!oldRoute) {
-      database.ref(`routes/${routeId}`).set(routeLessId)
-      // .then(() => console.log(`Route saved: ${routeId}`))
+      database
+        .ref(`routes/${routeId}`)
+        .set(routeLessId)
+        .then(() => console.log(`Route saved: ${routeId}`))
     } else {
       const newLocations = Object.keys(route.locations)
       const oldLocations = Object.keys(oldRoute.locations).filter(
@@ -182,9 +195,9 @@ export default async function saveDataToFirebase(
                   `pathfinding/${locationId}/${reverseShortHandMap[route.type]}`
                 )
                 .update({ [destinationLocationId]: routeIds })
-              // .then(() =>
-              //   console.log(`Route added to location: ${locationId}`)
-              // )
+                .then(() =>
+                  console.log(`Route added to location: ${locationId}`)
+                )
             })
           })
       })
@@ -208,9 +221,9 @@ export default async function saveDataToFirebase(
                   `pathfinding/${locationId}/${reverseShortHandMap[route.type]}`
                 )
                 .update({ [destinationLocationId]: routeIds })
-              // .then(() =>
-              //   console.log(`Route removed from location: ${locationId}`)
-              // )
+                .then(() =>
+                  console.log(`Route removed from location: ${locationId}`)
+                )
             })
           })
       })
