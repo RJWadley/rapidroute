@@ -83,7 +83,14 @@ export default function Route({
   const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
   const dropdownContent = useRef<HTMLDivElement>(null)
 
+  const canClick = useRef<Promise<unknown>>(Promise.resolve())
+  const clickHandler = async () => {
+    await canClick.current
+    setDropdownOpen(!dropdownOpen)
+  }
+
   useEffect(() => {
+    canClick.current = sleep(1000)
     gsap.to(dropdownContent.current, {
       height: dropdownOpen ? "auto" : 0,
       delay: dropdownOpen ? 0 : 0.5,
@@ -102,10 +109,7 @@ export default function Route({
     <Wrapper>
       <Via>
         <div>Via {describeDiff(diff)}</div>
-        <RoundButton
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          flipped={dropdownOpen}
-        >
+        <RoundButton onClick={clickHandler} flipped={dropdownOpen}>
           expand_more
         </RoundButton>
       </Via>
