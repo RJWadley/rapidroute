@@ -38,7 +38,7 @@ export default function Route({
     setSegments(null)
 
     const promises = route.map(async locationId => {
-      await sleep(loadDelay * 1000)
+      await sleep(loadDelay * 1000 + Math.random() * 500)
       return getPath("locations", locationId)
     })
 
