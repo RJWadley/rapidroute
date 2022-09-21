@@ -1,11 +1,14 @@
 import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import styled, { css } from "styled-components"
+import gsap from "gsap"
+import { sleep } from "pathfinding/findPath/pathUtil"
 
 export default function AllowedModes() {
   const { allowedModes, setAllowedModes } = useContext(RoutingContext)
   const [showFilters, setShowFilters] = useState(false)
+  const filtersRef = useRef<HTMLDivElement>(null)
 
   const toggleMode = (mode: RouteMode) => {
     if (allowedModes.includes(mode)) {
@@ -15,24 +18,45 @@ export default function AllowedModes() {
     }
   }
 
+  const debouncer = useRef<Promise<unknown>>(Promise.resolve())
+  useEffect(() => {
+    let canFinish = true
+    ;(async () => {
+      await debouncer.current
+
+      if (filtersRef.current?.children && canFinish) {
+        debouncer.current = sleep(500)
+        gsap.to(filtersRef.current.children, {
+          opacity: showFilters ? 1 : 0,
+          y: showFilters ? 0 : 20,
+          pointerEvents: showFilters ? "all" : "none",
+          stagger: showFilters ? 0.1 : -0.1,
+          ease: showFilters ? "power2.out" : "power2.in",
+        })
+      }
+    })()
+
+    return () => {
+      canFinish = false
+    }
+  }, [showFilters])
+
   return (
     <Wrapper>
       <FilterButton onClick={() => setShowFilters(!showFilters)}>
         Filter Search
       </FilterButton>
-      {showFilters && (
-        <Filters>
-          {Object.values(shortHandMap).map(mode => (
-            <Selection
-              active={allowedModes.includes(mode)}
-              key={mode}
-              onClick={() => toggleMode(mode)}
-            >
-              {getModeDisplayName(mode)}
-            </Selection>
-          ))}
-        </Filters>
-      )}
+      <Filters ref={filtersRef}>
+        {Object.values(shortHandMap).map(mode => (
+          <Selection
+            active={allowedModes.includes(mode)}
+            key={mode}
+            onClick={() => toggleMode(mode)}
+          >
+            {getModeDisplayName(mode)}
+          </Selection>
+        ))}
+      </Filters>
     </Wrapper>
   )
 }
