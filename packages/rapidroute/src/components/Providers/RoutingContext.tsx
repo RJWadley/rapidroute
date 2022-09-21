@@ -28,8 +28,7 @@ export function RoutingProvider({
   const [from, setFrom] = useState<LocationId | null>(null)
   const [to, setTo] = useState<LocationId | null>(null)
   const [allowedModes, setAllowedModes] = useState<RouteMode[]>([
-    ...Object.values(shortHandMap),
-    "walk",
+    ...Object.values(shortHandMap).filter(m => m !== "spawnWarp"),
   ])
 
   const value = useMemo(() => {

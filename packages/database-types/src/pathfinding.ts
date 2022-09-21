@@ -23,6 +23,10 @@ export type PathingPlace = {
    * the Z coordinate of the location
    */
   z: number | null
+  /**
+   * is a spawn warp
+   */
+  w: boolean | null
 }
 
 export const shortHandMap = {
@@ -30,6 +34,8 @@ export const shortHandMap = {
   S: "seaplane",
   H: "heli",
   M: "MRT",
+  W: "walk",
+  P: "spawnWarp",
 } as const
 
 export const reverseShortHandMap = {
@@ -37,4 +43,6 @@ export const reverseShortHandMap = {
   seaplane: "S",
   heli: "H",
   MRT: "M",
+  walk: "W",
+  spawnWarp: "P",
 } as const

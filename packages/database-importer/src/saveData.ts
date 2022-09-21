@@ -103,6 +103,7 @@ export default async function saveDataToFirebase(
       .update({
         x: location.location?.x ?? null,
         z: location.location?.z ?? null,
+        w: location.isSpawnWarp || null,
       })
       .then(() =>
         console.log(

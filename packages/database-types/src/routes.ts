@@ -37,7 +37,13 @@ export interface Route {
   locations: RouteLocations
 }
 
-export type RouteMode = "flight" | "seaplane" | "heli" | "MRT"
+export type RouteMode =
+  | "flight"
+  | "seaplane"
+  | "heli"
+  | "MRT"
+  | "walk"
+  | "spawnWarp"
 
 export interface RouteLocations {
   [key: string]: string

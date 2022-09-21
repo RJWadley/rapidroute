@@ -96,6 +96,22 @@ export const rawEdges = getAll("pathfinding").then(data => {
     return closestWalks
   })
 
-  return [...walkingEdges, ...routeEdges]
+  // spawn warp edges
+  const warpEdges: GraphEdge[] = edgeIds.flatMap(placeId => {
+    const isWarp = data[placeId].w
+    if (isWarp) {
+      return [
+        {
+          from: "A0",
+          to: placeId,
+          weight: 500,
+          mode: "spawnWarp",
+        },
+      ]
+    }
+    return []
+  })
+
+  return [...walkingEdges, ...routeEdges, ...warpEdges]
 })
 export const rawNodes = getAll("pathfinding")

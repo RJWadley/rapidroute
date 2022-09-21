@@ -71,8 +71,12 @@ const getModeDisplayName = (mode: RouteMode) => {
       return "Helicopter"
     case "seaplane":
       return "Seaplane"
-    default:
+    case "spawnWarp":
+      return "Warps"
+    case "walk":
       return "Walk"
+    default:
+      return "Missing Name"
   }
 }
 
@@ -92,6 +96,7 @@ const FilterButton = styled.button`
 const Filters = styled.div`
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 `
 
 const Selection = styled.div<{ active: boolean }>`
@@ -103,6 +108,7 @@ const Selection = styled.div<{ active: boolean }>`
     letter-spacing 0.2s ease-in-out;
   letter-spacing: 0.025em;
   position: relative;
+  white-space: nowrap;
 
   //check
   :before {
