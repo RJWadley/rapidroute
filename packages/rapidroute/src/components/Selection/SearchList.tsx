@@ -1,54 +1,117 @@
-import React, { useEffect, useRef } from "react"
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import styled from "styled-components"
 import gsap from "gsap"
 import media from "utils/media"
-
-type LocationId = string
+import { getAll } from "data/getData"
+import { SearchIndex } from "@rapidroute/database-types"
+import { RoutingContext } from "components/Providers/RoutingContext"
+import { search } from "data/search"
+import useMedia from "utils/useMedia"
 
 type SearchListProps = {
-  locations: LocationId[]
-  currentlySelected: number
-  setSelectedIndex: (index: number) => void
+  searchRole: "from" | "to"
+  searchFor: string
   show: boolean
 }
 
 export default function SearchList({
-  locations,
-  currentlySelected,
-  setSelectedIndex,
+  searchRole,
   show,
+  searchFor,
 }: SearchListProps): JSX.Element {
   const wrapper = useRef<HTMLDivElement>(null)
+  const [allLocations, setAllLocations] = React.useState<SearchIndex[string][]>(
+    []
+  )
+  const [searchResults, setSearchResults] = useState<SearchIndex[string][]>([])
+  const { setFrom, setTo } = useContext(RoutingContext)
+  const [highlightedIndex, setHighlightedIndex] = useState(0)
+  const isMobile = useMedia(media.mobile)
 
+  // get initial data for the search list locations
   useEffect(() => {
-    if (window.innerWidth > media.small)
+    getAll("searchIndex").then(data => {
+      setAllLocations(Object.values(data))
+    })
+  }, [])
+
+  // update the search list when the search box changes
+  useEffect(() => {
+    const results = search(searchFor)
+    setSearchResults(
+      allLocations.filter(location => results.includes(location.uniqueId))
+    )
+  }, [allLocations, searchFor])
+
+  // animate showing and hiding the search list
+  // also update the highlighted index when the search list is shown
+  useEffect(() => {
+    if (show) setHighlightedIndex(0)
+    if (!isMobile)
       gsap.to(wrapper.current, {
-        marginTop: show ? "-30px" : "-90px",
-        borderTopLeftRadius: show ? "0px" : "30px",
-        borderTopRightRadius: show ? "0px" : "30px",
         height: show ? "auto" : 0,
-        opacity: show ? 1 : 0,
+        pointerEvents: show ? "auto" : "none",
+        y: show ? 0 : -60,
+        borderTopLeftRadius: show ? 0 : 30,
+        borderTopRightRadius: show ? 0 : 30,
       })
     else
       gsap.to(wrapper.current, {
-        marginTop: show ? "-25px" : "-55px",
-        borderTopLeftRadius: show ? "0px" : "25px",
-        borderTopRightRadius: show ? "0px" : "25px",
         height: show ? "auto" : 0,
-        opacity: show ? 1 : 0,
+        pointerEvents: show ? "auto" : "none",
+        y: show ? 0 : -30,
+        borderTopLeftRadius: show ? 0 : 30,
+        borderTopRightRadius: show ? 0 : 30,
       })
-  }, [show])
+  }, [isMobile, show])
+
+  const setPlace = useCallback(
+    (place: string) => {
+      if (searchRole === "from") setFrom(place)
+      else setTo(place)
+    },
+    [searchRole, setFrom, setTo]
+  )
+
+  // handle key presses
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (!show) return
+      if (event.key === "ArrowDown") {
+        if (highlightedIndex < allLocations.length - 1)
+          setHighlightedIndex(highlightedIndex + 1)
+      } else if (event.key === "ArrowUp") {
+        if (highlightedIndex > 0) setHighlightedIndex(highlightedIndex - 1)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyPress)
+    return () => window.removeEventListener("keydown", handleKeyPress)
+  }, [highlightedIndex, allLocations, setPlace, show, searchResults])
+
+  // when closing the search list, select the highlighted location
+  useEffect(() => {
+    const id = searchResults[highlightedIndex]?.uniqueId
+    if (!show && id) setPlace(id)
+  }, [show, highlightedIndex, searchResults, setPlace])
 
   return (
     <Wrapper ref={wrapper}>
-      {locations.map((loc, i) => (
+      {searchResults.map((loc, i) => (
         <Option
-          key={loc}
-          onClick={() => setSelectedIndex(i)}
-          selected={i === currentlySelected}
-          data-flip-id={loc}
+          key={loc.uniqueId}
+          onClick={() => {
+            setHighlightedIndex(i)
+          }}
+          selected={highlightedIndex === i}
         >
-          {loc}
+          {loc.d}
         </Option>
       ))}
     </Wrapper>
@@ -61,17 +124,18 @@ const Wrapper = styled.div`
   background-color: #ddd;
   padding: 30px;
   padding-top: 60px;
-  z-index: -1;
-  position: relative;
-  border-radius: 30px;
+  border-radius: 0 0 30px 30px;
   display: grid;
   gap: 3px;
   font-size: 16px;
   overflow: hidden;
-  opacity: 0;
-  margin-top: -90px;
+  position: absolute;
+  top: calc(100% - 30px);
+  left: 0;
+  right: 0;
+  z-index: -2;
 
-  @media (max-width: ${media.small}px) {
+  @media (${media.mobile}) {
     padding: 15px;
     padding-top: 40px;
     border-radius: 0 0 25px 25px;
@@ -82,4 +146,5 @@ const Option = styled.div<{ selected: boolean }>`
   background-color: ${props => (props.selected ? "#ccc" : "#ddd")};
   padding: 3px 6px;
   border-radius: 5px;
+  cursor: pointer;
 `

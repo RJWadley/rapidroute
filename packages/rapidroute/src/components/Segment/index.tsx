@@ -17,7 +17,7 @@ interface SegmentProps {
 }
 
 export default function Segment({ segment, isOpen, position }: SegmentProps) {
-  const variant = useMedia(`(min-width: ${media.small}px)`)
+  const variant = useMedia(media.mobile)
     ? "desktop"
     : "mobile"
   const wrapper = useRef<HTMLDivElement>(null)

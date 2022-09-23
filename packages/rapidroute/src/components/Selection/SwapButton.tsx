@@ -10,7 +10,7 @@ import useMedia from "utils/useMedia"
 export default function SwapButton() {
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
   const swapRef = useRef<HTMLDivElement>(null)
-  const isMobile = useMedia(`(max-width: ${media.small}px)`)
+  const isMobile = useMedia(media.mobile)
 
   const clickCount = useRef<number>(0)
 
@@ -21,13 +21,12 @@ export default function SwapButton() {
     clickCount.current = hash
 
     const duration = 0.5
-    const mobile = window.innerWidth < media.small
 
     gsap.to(fromEl, {
       duration,
       opacity: 0,
-      xPercent: mobile ? 0 : 100,
-      yPercent: mobile ? 100 : 0,
+      xPercent: isMobile ? 0 : 100,
+      yPercent: isMobile ? 100 : 0,
       ease: "power2.in",
       onComplete: () => {
         if (clickCount.current === hash) {
@@ -47,8 +46,8 @@ export default function SwapButton() {
     gsap.to(toEl, {
       duration,
       opacity: 0,
-      xPercent: mobile ? 0 : -100,
-      yPercent: mobile ? -100 : 0,
+      xPercent: isMobile ? 0 : -100,
+      yPercent: isMobile ? -100 : 0,
       ease: "power2.in",
       onComplete: () => {
         if (clickCount.current === hash)
