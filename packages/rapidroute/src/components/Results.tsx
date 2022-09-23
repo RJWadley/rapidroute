@@ -9,10 +9,13 @@ import styled from "styled-components"
 import { sleep } from "utils/functions"
 import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
+import Spinner from "./Spinner"
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext)
-  const [results, setResults] = useState<string[][] | null>(null)
+  const [results, setResults] = useState<
+    string[][] | null | "none" | "loading"
+  >(null)
   const resultsWrapper = useRef<HTMLDivElement>(null)
   const animationOutHolder = useRef<HTMLDivElement>(null)
   const { allowedModes } = useContext(RoutingContext)
@@ -28,7 +31,7 @@ export default function Results() {
         await debouncer.current
 
         animateOut()
-        setResults(null)
+        setResults("loading")
 
         const minTime = sleep(500)
 
@@ -36,7 +39,12 @@ export default function Results() {
           await minTime
           await debouncer.current
           if (canSave) {
-            setResults(removeExtras(r).sort((a, b) => a.length - b.length))
+            const newResults = removeExtras(r).sort(
+              (a, b) => a.length - b.length
+            )
+            if (newResults.length && newResults[0].length > 1)
+              setResults(newResults)
+            else setResults("none")
             debouncer.current = sleep(2000)
           }
         })
@@ -111,10 +119,15 @@ export default function Results() {
         })
   }, [results])
 
-  const diff = results && resultDiff(results)
+  const diff = results && typeof results === "object" && resultDiff(results)
+
   return (
     <>
       <OutWrapper ref={animationOutHolder} />
+      <OutWrapper>
+        <Message show={results === "none"}>No Results</Message>
+        <Spinner show={results === "loading"} />
+      </OutWrapper>
       <ResultsWrapper ref={resultsWrapper}>
         {diff &&
           results.map((result, i) => (
@@ -141,6 +154,15 @@ const OutWrapper = styled.div`
     left: 0;
     width: 100%;
   }
+`
+
+const Message = styled.div<{ show: boolean }>`
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 100px;
+  opacity: ${props => (props.show ? 1 : 0)};
+  transition: opacity 0.5s;
 `
 
 const ResultsWrapper = styled.div`

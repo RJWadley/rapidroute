@@ -9,7 +9,7 @@ import AllowedModes from "./AllowedModes"
 export default function Selection() {
   return (
     <div>
-      <SearchContainer className="searchContainer">
+      <SearchContainer>
         <SearchBox searchRole="from" />
         <SearchBox searchRole="to" />
         <SwapButton />

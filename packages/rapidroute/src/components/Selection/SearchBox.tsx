@@ -55,13 +55,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
   }
 
   const handleBlur = async () => {
-    // if the focus is not descended from  .searchContainer then hide the search list
-    const elements = document.querySelectorAll(".searchContainer > *")
-    const isDescendant = Array.from(elements).some(
-      element => element === document.activeElement
-    )
     await sleep(250)
-    if (!isDescendant) setShowSearchList(false)
+    setShowSearchList(false)
   }
 
   return (
