@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import FindPath from "pathfinding/findPath"
+import FindPath, { ResultType } from "pathfinding/findPath"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
 
@@ -14,7 +14,7 @@ import Spinner from "./Spinner"
 export default function Results() {
   const { from, to } = useContext(RoutingContext)
   const [results, setResults] = useState<
-    string[][] | null | "none" | "loading"
+    ResultType[] | null | "none" | "loading"
   >(null)
   const resultsWrapper = useRef<HTMLDivElement>(null)
   const animationOutHolder = useRef<HTMLDivElement>(null)
@@ -40,9 +40,10 @@ export default function Results() {
           await debouncer.current
           if (canSave) {
             const newResults = removeExtras(r).sort(
-              (a, b) => a.length - b.length
+              // fewer totalCost comes first
+              (a, b) => a.totalCost - b.totalCost
             )
-            if (newResults.length && newResults[0].length > 1)
+            if (newResults.length && newResults[0].path.length > 1)
               setResults(newResults)
             else setResults("none")
             debouncer.current = sleep(2000)
@@ -119,7 +120,10 @@ export default function Results() {
         })
   }, [results])
 
-  const diff = results && typeof results === "object" && resultDiff(results)
+  const diff =
+    results &&
+    typeof results === "object" &&
+    resultDiff(results.map(r => r.path))
 
   return (
     <>
@@ -133,7 +137,7 @@ export default function Results() {
           results.map((result, i) => (
             <Route
               expandByDefault={results.length === 1}
-              key={result.toString()}
+              key={result.path.toString()}
               route={result}
               diff={diff[i]}
               loadDelay={i * 0.3}

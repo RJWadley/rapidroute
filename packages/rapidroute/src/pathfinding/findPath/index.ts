@@ -6,9 +6,14 @@ import {
 } from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
-import { rawEdges, rawNodes } from "./mapEdges"
+import { GraphEdge, rawEdges, rawNodes } from "./mapEdges"
 import { getDistance, throttle } from "./pathUtil"
 import PriorityQueue from "./PriorityQueue"
+
+export interface ResultType {
+  path: string[]
+  totalCost: number
+}
 
 export default class Pathfinder {
   from: string
@@ -25,6 +30,8 @@ export default class Pathfinder {
 
   allowedModes: RouteMode[]
 
+  edges: GraphEdge[] = []
+
   constructor(from: string, to: string, allowedModes: RouteMode[]) {
     this.from = from
     this.to = to
@@ -35,13 +42,14 @@ export default class Pathfinder {
     return this.distanceTravelled / (this.maxCost - this.EXTRA_TIME)
   }
 
-  async start(preventReverse = false): Promise<string[][]> {
+  async start(preventReverse = false): Promise<ResultType[]> {
     console.log("starting pathfinding from", this.from, "to", this.to)
     const frontier = new PriorityQueue<string>()
     const cameFrom: Record<string, string[]> = {}
     const costSoFar: Record<string, number> = {}
     const modeTo: Record<string, RouteMode[]> = {}
     const edges = await rawEdges
+    this.edges = edges
     const nodes = await rawNodes
 
     // create coordinate edges if needed
@@ -148,7 +156,8 @@ export default class Pathfinder {
 
       const end = performance.now()
       console.log(`Pathfinding took ${end - start}ms`)
-      return reversed.map(route => route.reverse())
+      reversed.forEach(result => result.path.reverse())
+      return reversed
     }
 
     const end = performance.now()
@@ -169,6 +178,19 @@ export default class Pathfinder {
     if (maxCost) this.maxCost = Math.min(this.maxCost, maxCost)
   }
 
+  getSortingCost(from: string, to: string) {
+    const allEdges = this.edges.filter(
+      edge =>
+        edge.from === from &&
+        edge.to === to &&
+        this.allowedModes.includes(edge.mode)
+    )
+    return Math.min(
+      ...allEdges.map(edge => edge.sortWeight ?? edge.weight),
+      Infinity
+    )
+  }
+
   /**
    * given a map of nodes to their parents, reconstruct all possible paths from the start to the end
    * @param cameFrom map of nodes to their parents
@@ -178,32 +200,40 @@ export default class Pathfinder {
   reconstructPaths(
     cameFrom: Record<string, string[]>,
     current: string
-  ): string[][] {
-    const pathsInProgress: string[][] = [[current]]
-    const results: string[][] = []
+  ): ResultType[] {
+    const pathsInProgress: ResultType[] = [{ path: [current], totalCost: 0 }]
+    const results: ResultType[] = []
     const MAX_PATHS = 20
 
     while (pathsInProgress.length) {
-      const path = pathsInProgress.pop()
-      if (!path) break
+      const pathInfo = pathsInProgress.pop()
+      if (!pathInfo) break
 
-      const lastNode = path[path.length - 1]
+      const lastNode = pathInfo.path[pathInfo.path.length - 1]
       const parents = cameFrom[lastNode]
 
       if (parents) {
         parents.forEach(parent => {
-          const newPath = [...path, parent]
+          const newPath = [...pathInfo.path, parent]
           if (pathsInProgress.length < MAX_PATHS * 2)
-            pathsInProgress.push(newPath)
+            pathsInProgress.push({
+              path: newPath,
+              totalCost:
+                pathInfo.totalCost + this.getSortingCost(parent, lastNode),
+            })
         })
       } else if (this.from === lastNode) {
-        results.push(path)
+        results.push(pathInfo)
       }
 
       if (results.length >= MAX_PATHS) break
     }
 
-    return results.map(path => path.reverse())
+    results.forEach(result => {
+      result.path.reverse()
+    })
+
+    return results
   }
 
   cancel() {

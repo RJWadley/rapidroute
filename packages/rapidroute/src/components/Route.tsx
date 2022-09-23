@@ -11,12 +11,13 @@ import styled from "styled-components"
 import gsap from "gsap"
 import media from "utils/media"
 import { sleep } from "utils/functions"
+import { ResultType } from "pathfinding/findPath"
 import createSegments, { SegmentType } from "./createSegments"
 import Segment from "./Segment"
 import RoundButton from "./RoundButton"
 
 interface RouteProps {
-  route: string[]
+  route: ResultType
   diff: string[]
   expandByDefault: boolean
   loadDelay: number
@@ -37,7 +38,7 @@ export default function Route({
     setLocations(null)
     setSegments(null)
 
-    const promises = route.map(async locationId => {
+    const promises = route.path.map(async locationId => {
       await sleep(loadDelay * 1000 + Math.random() * 500)
       return getPath("locations", locationId)
     })

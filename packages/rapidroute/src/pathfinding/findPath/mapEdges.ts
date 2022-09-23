@@ -11,6 +11,7 @@ export interface GraphEdge {
   weight: number
   routes?: string[]
   mode: RouteMode
+  sortWeight?: number
 }
 
 /**
@@ -28,8 +29,10 @@ export const rawEdges = getAll("pathfinding").then(data => {
       const routes = data[from][routeTypeShort]
 
       if (routes) {
-        return Object.entries(routes).flatMap(([to, routeIds]) => {
+        return Object.entries(routes).flatMap(([to, routeInfo]) => {
           if (to === from) return []
+
+          const routeIds = routeInfo.map(route => route.n)
 
           const x1 = data[from].x
           const y1 = data[from].z
@@ -38,12 +41,18 @@ export const rawEdges = getAll("pathfinding").then(data => {
           const distance =
             x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
           const weight = getRouteTime(distance, shortHandMap[routeTypeShort])
+          const sortWeight = getRouteTime(
+            distance,
+            shortHandMap[routeTypeShort],
+            Math.max(...routeInfo.map(r => r.g || 0))
+          )
 
           return [
             {
               from,
               to,
               weight,
+              sortWeight,
               routes: routeIds,
               mode: shortHandMap[routeTypeShort],
             },

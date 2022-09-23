@@ -83,7 +83,7 @@ export default async function saveDataToFirebase(
 
     /* update this locations search index */
     const searchIndex: Omit<SearchIndex[string], "uniqueId"> = {
-      d: location.name,
+      d: `${location.shortName} - ${location.name}`,
       i: `${location.name} ${location.shortName} ${
         location.ownerPlayer instanceof Array
           ? location.ownerPlayer.join(" ")
@@ -182,15 +182,21 @@ export default async function saveDataToFirebase(
         database
           .ref(`pathfinding/${locationId}/${reverseShortHandMap[route.type]}`)
           .get()
-          .then(snapshot => (snapshot.val() || {}) as Record<string, string[]>)
+          .then(
+            snapshot =>
+              (snapshot.val() || {}) as Record<
+                string,
+                { n: string; g: number | null }[]
+              >
+          )
           .then(origLocationPlaces => {
             newLocations.forEach(destinationLocationId => {
               if (destinationLocationId === locationId) return
 
               const routeIds = origLocationPlaces[destinationLocationId] || []
-              if (routeIds.includes(routeId)) return
+              if (routeIds.some(x => x.n === routeId)) return
 
-              routeIds.push(routeId)
+              routeIds.push({ n: routeId, g: route.numGates })
               database
                 .ref(
                   `pathfinding/${locationId}/${reverseShortHandMap[route.type]}`
@@ -208,15 +214,21 @@ export default async function saveDataToFirebase(
         database
           .ref(`pathfinding/${locationId}/${reverseShortHandMap[route.type]}`)
           .get()
-          .then(snapshot => (snapshot.val() || {}) as Record<string, string[]>)
+          .then(
+            snapshot =>
+              (snapshot.val() || {}) as Record<
+                string,
+                { n: string; g: number | null }[]
+              >
+          )
           .then(origLocationPlaces => {
             allLocations.forEach(destinationLocationId => {
               if (destinationLocationId === locationId) return
 
               let routeIds = origLocationPlaces[destinationLocationId] || []
-              if (!routeIds.includes(routeId)) return
+              if (!routeIds.filter(x => x.n === routeId).length) return
 
-              routeIds = routeIds.filter(x => x !== routeId)
+              routeIds = routeIds.filter(x => x.n !== routeId)
               database
                 .ref(
                   `pathfinding/${locationId}/${reverseShortHandMap[route.type]}`
@@ -248,16 +260,22 @@ export default async function saveDataToFirebase(
         database
           .ref(`pathfinding/${locationId}/${reverseShortHandMap[route.type]}`)
           .get()
-          .then(snapshot => (snapshot.val() || {}) as Record<string, string[]>)
+          .then(
+            snapshot =>
+              (snapshot.val() || {}) as Record<
+                string,
+                { n: string; g: number | null }[]
+              >
+          )
           .then(origLocationPlaces => {
             if (oldRoute)
               Object.keys(oldRoute.locations).forEach(destinationLocationId => {
                 if (destinationLocationId === locationId) return
 
                 let routeIds = origLocationPlaces[destinationLocationId] || []
-                if (!routeIds.includes(route.uniqueId)) return
+                if (!routeIds.filter(x => x.n === routeId).length) return
 
-                routeIds = routeIds.filter(x => x !== route.uniqueId)
+                routeIds = routeIds.filter(x => x.n !== route.uniqueId)
                 database
                   .ref(
                     `pathfinding/${locationId}/${

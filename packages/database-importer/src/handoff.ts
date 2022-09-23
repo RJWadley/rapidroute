@@ -67,8 +67,14 @@ export default async function handoffData(
         y => y.number === route.number && y.provider === route.provider
       )
       let locations: RouteLocations = {}
+      const gates: Record<string, string> = {}
       routesWithSameNumber.forEach(y => {
         locations[makeSafe(y.from)] = y.fromGate ?? "none"
+
+        const fromGate = gates[y.from] || y.fromGate
+        if (fromGate) gates[y.from] = fromGate
+        const toGate = gates[y.to] || y.toGate
+        if (toGate) gates[y.to] = toGate
       })
 
       // with a fallback for MRT stations bc they're special
@@ -88,6 +94,7 @@ export default async function handoffData(
         provider: makeSafe(route.provider ?? ""),
         type: route.mode,
         number: routeNumber || null,
+        numGates: Object.keys(gates).length || null,
       }
       return mappedRoute
     })

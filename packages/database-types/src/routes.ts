@@ -35,6 +35,10 @@ export interface Route {
    * the locations that this route passes through and at which gate or platform
    */
   locations: RouteLocations
+  /**
+   * number of gates
+   */
+  numGates: number | null
 }
 
 export type RouteMode =

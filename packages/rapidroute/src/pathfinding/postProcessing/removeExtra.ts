@@ -1,3 +1,4 @@
+import { ResultType } from "pathfinding/findPath"
 import resultDiffs from "./diff"
 
 /**
@@ -8,7 +9,7 @@ import resultDiffs from "./diff"
  * this is mainly designed to handle cases where you must transfer between two parallel lines, but the transfer
  * could be done at several similar points along the route. we only keep the first possible transfer point and the last.
  */
-export default function removeExtras(results: string[][]) {
+export default function removeExtras(results: ResultType[]) {
   // compare each result to the next and previous
 
   const indexesToRemove: number[] = []
@@ -18,11 +19,11 @@ export default function removeExtras(results: string[][]) {
     const next = results[i + 1]
     if (!prev || !curr || !next) throw new Error("invalid results")
 
-    const beforeDiff = resultDiffs([prev, curr])
-    const afterDiff = resultDiffs([curr, next])
+    const beforeDiff = resultDiffs([prev.path, curr.path])
+    const afterDiff = resultDiffs([curr.path, next.path])
 
-    const beforeIndex = curr.indexOf(beforeDiff[1][0])
-    const afterIndex = curr.indexOf(afterDiff[0][0])
+    const beforeIndex = curr.path.indexOf(beforeDiff[1][0])
+    const afterIndex = curr.path.indexOf(afterDiff[0][0])
 
     // if the current result has a single difference
     if (beforeDiff[1].length === 1 && afterDiff[0].length === 1) {
