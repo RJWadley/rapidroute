@@ -3,7 +3,7 @@ import { RoutingContext } from "components/Providers/RoutingContext"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import styled, { css } from "styled-components"
 import gsap from "gsap"
-import { sleep } from "pathfinding/findPath/pathUtil"
+import { sleep } from "utils/functions"
 
 export default function AllowedModes() {
   const { allowedModes, setAllowedModes } = useContext(RoutingContext)

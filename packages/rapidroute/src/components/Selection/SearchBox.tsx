@@ -4,7 +4,7 @@ import { getTextboxName } from "data/search"
 
 import styled, { css } from "styled-components"
 import media from "utils/media"
-import { sleep } from "pathfinding/findPath/pathUtil"
+import { sleep } from "utils/functions"
 import { RoutingContext } from "../Providers/RoutingContext"
 import SearchList from "./SearchList"
 

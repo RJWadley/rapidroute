@@ -49,7 +49,7 @@ const Loader = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
+  gap: 50px;
 
   div {
     display: inline-block;

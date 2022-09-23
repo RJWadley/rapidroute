@@ -11,14 +11,6 @@ export async function throttle() {
   }
 }
 
-export function sleep(ms: number) {
-  return new Promise<void>(resolve => {
-    setTimeout(() => {
-      resolve()
-    }, ms)
-  })
-}
-
 /**
  * given two locations, return the manhattan distance between them
  */
