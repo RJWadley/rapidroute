@@ -34,6 +34,15 @@ export default function SearchList({
   const [highlightedIndex, setHighlightedIndex] = useState(0)
   const isMobile = useMedia(media.mobile)
 
+  // restrict highlighting to search results
+  const restrictToBounds = useCallback(() => {
+    if (highlightedIndex < 0) {
+      setHighlightedIndex(searchResults.length - 1)
+    } else if (highlightedIndex >= searchResults.length) {
+      setHighlightedIndex(0)
+    }
+  }, [highlightedIndex, searchResults.length])
+
   // get initial data for the search list locations
   useEffect(() => {
     getAll("searchIndex").then(data => {
@@ -84,22 +93,46 @@ export default function SearchList({
     const handleKeyPress = (event: KeyboardEvent) => {
       if (!show) return
       if (event.key === "ArrowDown") {
-        if (highlightedIndex < allLocations.length - 1)
-          setHighlightedIndex(highlightedIndex + 1)
+        setHighlightedIndex(highlightedIndex + 1)
       } else if (event.key === "ArrowUp") {
-        if (highlightedIndex > 0) setHighlightedIndex(highlightedIndex - 1)
+        setHighlightedIndex(highlightedIndex - 1)
       }
     }
 
     window.addEventListener("keydown", handleKeyPress)
     return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [highlightedIndex, allLocations, setPlace, show, searchResults])
+  }, [
+    highlightedIndex,
+    allLocations,
+    setPlace,
+    show,
+    searchResults,
+    restrictToBounds,
+  ])
 
   // when closing the search list, select the highlighted location
   useEffect(() => {
     const id = searchResults[highlightedIndex]?.uniqueId
     if (!show && id) setPlace(id)
   }, [show, highlightedIndex, searchResults, setPlace])
+
+  // when selected index changes, make sure it is in view
+  const lastHighlightedIndex = useRef(highlightedIndex)
+  useEffect(() => {
+    restrictToBounds()
+    const diff = highlightedIndex - lastHighlightedIndex.current
+    const { scrollY } = window
+    if (diff !== 0) {
+      setTimeout(() => {
+        window.scrollTo(0, scrollY)
+        window.scrollBy({
+          top: diff * 29.5,
+          behavior: "smooth",
+        })
+        lastHighlightedIndex.current = highlightedIndex
+      }, 0)
+    }
+  }, [highlightedIndex, restrictToBounds])
 
   return (
     <Wrapper ref={wrapper}>
@@ -126,7 +159,6 @@ const Wrapper = styled.div`
   padding-top: 60px;
   border-radius: 30px;
   display: grid;
-  gap: 3px;
   font-size: 16px;
   overflow: hidden;
   position: absolute;
@@ -146,7 +178,7 @@ const Wrapper = styled.div`
 
 const Option = styled.div<{ selected: boolean }>`
   background-color: ${props => (props.selected ? "#ccc" : "#ddd")};
-  padding: 3px 6px;
+  padding: 5px 6px;
   border-radius: 5px;
   cursor: pointer;
 `
