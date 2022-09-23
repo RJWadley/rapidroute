@@ -40,6 +40,7 @@ export default class Pathfinder {
     const frontier = new PriorityQueue<string>()
     const cameFrom: Record<string, string[]> = {}
     const costSoFar: Record<string, number> = {}
+    const modeTo: Record<string, RouteMode[]> = {}
     const edges = await rawEdges
     const nodes = await rawNodes
 
@@ -105,6 +106,14 @@ export default class Pathfinder {
           )
             return
 
+          // if we just walked, we can't walk again
+          if (
+            modeTo[current] &&
+            modeTo[current].includes("walk") &&
+            edge.mode === "walk"
+          )
+            return
+
           const newCost = costSoFar[current] + edge.weight
           this.updateMaxCost(nodes, edge.to, newCost)
 
@@ -116,11 +125,13 @@ export default class Pathfinder {
             const priority = newCost
             frontier.enqueue(edge.to, priority)
             cameFrom[edge.to] = [current]
+            modeTo[edge.to] = [edge.mode]
           } else if (
             newCost === costSoFar[edge.to] &&
             !cameFrom[edge.to].includes(current)
           ) {
             cameFrom[edge.to].push(current)
+            modeTo[edge.to].push(edge.mode)
           }
         })
     }
