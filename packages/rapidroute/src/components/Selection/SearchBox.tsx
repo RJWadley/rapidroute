@@ -59,6 +59,10 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
     setShowSearchList(false)
   }
 
+  const highlightText = () => {
+    if (inputRef.current) inputRef.current.select()
+  }
+
   return (
     <>
       <Label>
@@ -67,7 +71,10 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
           ref={inputRef}
           onChange={handleInput}
           placeholder={`Search ${searchRole}`}
-          onFocus={() => setShowSearchList(true)}
+          onFocus={() => {
+            setShowSearchList(true)
+            highlightText()
+          }}
           onBlur={handleBlur}
           isTo={searchRole === "to"}
           // disable spellcheck, autocorrect, and autocapitalize, grammarly, etc.
