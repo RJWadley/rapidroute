@@ -36,7 +36,7 @@ export default function Results() {
           await minTime
           await debouncer.current
           if (canSave) {
-            setResults(removeExtras(r))
+            setResults(removeExtras(r).sort((a, b) => a.length - b.length))
             debouncer.current = sleep(2000)
           }
         })
