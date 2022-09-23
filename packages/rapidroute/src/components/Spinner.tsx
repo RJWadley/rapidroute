@@ -43,13 +43,13 @@ const bounce = keyframes`
 const Loader = styled.div`
   opacity: 0;
   margin-top: 100px;
+  margin-bottom: 100px;
   width: 100%;
   height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 15px;
-  border: 1px solid red;
 
   div {
     display: inline-block;

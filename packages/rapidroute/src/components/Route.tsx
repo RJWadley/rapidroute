@@ -15,6 +15,7 @@ import { ResultType } from "pathfinding/findPath"
 import createSegments, { SegmentType } from "./createSegments"
 import Segment from "./Segment"
 import RoundButton from "./RoundButton"
+import Spinner from "./Spinner"
 
 interface RouteProps {
   route: ResultType
@@ -115,7 +116,7 @@ export default function Route({
         </RoundButton>
       </Via>
       <Dropdown ref={dropdownContent}>
-        {!segments && <div>Loading...</div>}
+        {!segments && <Spinner show />}
         {segments?.map((segment, i) => (
           <Segment
             key={segment.from.uniqueId}
