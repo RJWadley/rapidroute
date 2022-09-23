@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react"
 
 import { getTextboxName } from "data/search"
 
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import media from "utils/media"
 import { sleep } from "pathfinding/findPath/pathUtil"
 import { RoutingContext } from "../Providers/RoutingContext"
@@ -20,7 +20,6 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
 
   // update the search box when the context changes
   useEffect(() => {
-    console.log("search box context changed")
     if (searchRole === "from" && inputRef.current && from)
       inputRef.current.value = getTextboxName(from)
     if (searchRole === "to" && inputRef.current && to)
@@ -75,7 +74,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
           placeholder={`Search ${searchRole}`}
           onFocus={() => setShowSearchList(true)}
           onBlur={handleBlur}
-          alignRight={searchRole === "to"}
+          isTo={searchRole === "to"}
           // disable spellcheck, autocorrect, and autocapitalize, grammarly, etc.
           spellCheck={false}
           autoCorrect="off"
@@ -102,25 +101,34 @@ const Label = styled.label`
   padding: 0 30px;
   cursor: text;
 
-  @media (${media.mobile}) {
-
-    padding: 0 15px;
+  @media ${media.mobile} {
+    padding: 0 20px;
   }
 `
 
-const Text = styled.textarea<{ alignRight: boolean }>`
+const Text = styled.textarea<{ isTo: boolean }>`
   color: #333;
   font-size: 20px;
   height: 0px;
-  text-align: ${props => (props.alignRight ? "right" : "left")};
+  text-align: ${props => (props.isTo ? "right" : "left")};
 
   //vertically center text
   display: flex;
   align-items: center;
 
-  @media (${media.mobile}) {
-
+  @media ${media.mobile} {
     font-size: 14px;
     text-align: left;
+
+    ${props =>
+      props.isTo
+        ? css`
+            align-self: start;
+            margin-top: 10px;
+          `
+        : css`
+            align-self: end;
+            margin-bottom: 10px;
+          `}
   }
 `

@@ -144,7 +144,7 @@ const Via = styled.div`
 
   padding: 10px 30px;
   font-size: 40px;
-  @media (${media.mobile}) {
+  @media ${media.mobile} {
     font-size: 20px;
   }
 `

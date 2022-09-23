@@ -24,6 +24,12 @@ export default function AllowedModes() {
     ;(async () => {
       await debouncer.current
 
+      gsap.to(filtersRef.current, {
+        height: showFilters ? "auto" : 0,
+        duration: 1,
+        ease: showFilters ? "power3.out" : "power3.in",
+      })
+
       if (filtersRef.current?.children && canFinish) {
         debouncer.current = sleep(500)
         gsap.to(filtersRef.current.children, {

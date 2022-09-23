@@ -65,7 +65,7 @@ export default function SearchList({
       gsap.to(wrapper.current, {
         height: show ? "auto" : 0,
         pointerEvents: show ? "auto" : "none",
-        y: show ? 0 : -30,
+        y: show ? 0 : -25,
         borderTopLeftRadius: show ? 0 : 30,
         borderTopRightRadius: show ? 0 : 30,
       })
@@ -135,7 +135,7 @@ const Wrapper = styled.div`
   right: 0;
   z-index: -2;
 
-  @media (${media.mobile}) {
+  @media ${media.mobile} {
     padding: 15px;
     padding-top: 40px;
     border-radius: 0 0 25px 25px;

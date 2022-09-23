@@ -46,12 +46,15 @@ const SearchContainer = styled.div`
     text-align: right;
   }
 
-  @media (${media.mobile}) {
+  @media ${media.mobile} {
     grid-template-columns: 1fr auto;
     grid-template-areas: "from swap" "to swap";
     height: 80px;
-    border-radius: 25px;
     padding-right: 15px;
+
+    :before {
+      border-radius: 25px;
+    }
 
     > label:nth-child(2) {
       text-align: left;

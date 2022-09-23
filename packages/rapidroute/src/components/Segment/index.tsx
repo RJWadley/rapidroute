@@ -17,9 +17,7 @@ interface SegmentProps {
 }
 
 export default function Segment({ segment, isOpen, position }: SegmentProps) {
-  const variant = useMedia(media.mobile)
-    ? "desktop"
-    : "mobile"
+  const variant = useMedia(media.mobile) ? "mobile" : "desktop"
   const wrapper = useRef<HTMLDivElement>(null)
   const singleRoute = segment.routes.length === 1
   const walkingRoute = segment.routes.length === 0
