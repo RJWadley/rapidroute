@@ -124,7 +124,7 @@ const Wrapper = styled.div`
   background-color: #ddd;
   padding: 30px;
   padding-top: 60px;
-  border-radius: 0 0 30px 30px;
+  border-radius: 30px;
   display: grid;
   gap: 3px;
   font-size: 16px;
@@ -134,11 +134,13 @@ const Wrapper = styled.div`
   left: 0;
   right: 0;
   z-index: -2;
+  transform: translateY(-61px);
 
   @media ${media.mobile} {
     padding: 15px;
     padding-top: 40px;
-    border-radius: 0 0 25px 25px;
+    border-radius: 25px;
+    transform: translateY(-25px);
   }
 `
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useLayoutEffect, useRef } from "react"
 import useMedia from "utils/useMedia"
 
 import gsap from "gsap"
@@ -30,7 +30,7 @@ export default function Segment({ segment, isOpen, position }: SegmentProps) {
     (segment.from.uniqueId === "A0" || segment.to.uniqueId === "A0")
 
   const firstRender = useRef(true)
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (firstRender.current) {
       if (isOpen)
         gsap.fromTo(wrapper.current, {
