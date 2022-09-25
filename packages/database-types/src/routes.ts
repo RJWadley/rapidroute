@@ -52,7 +52,7 @@ export type RouteMode =
   | "spawnWarp"
 
 export interface RouteLocations {
-  [key: string]: string
+  [key: string]: string | "none"
 }
 
 export const isRoute = (obj: unknown): obj is Route => TSON.is<Route>(obj)

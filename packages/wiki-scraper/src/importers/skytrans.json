@@ -1,0 +1,61 @@
+{
+  "_id": "skytrans",
+  "startUrl": ["https://wiki.minecartrapidtransit.net/index.php/SkyTrans"],
+  "selectors": [
+    {
+      "id": "fromName",
+      "multiple": false,
+      "parentSelectors": ["wrapper"],
+      "regex": "",
+      "selector": "td:nth-of-type(3) big",
+      "type": "SelectorText"
+    },
+    {
+      "id": "fromGate",
+      "multiple": false,
+      "parentSelectors": ["wrapper"],
+      "regex": "",
+      "selector": "td:nth-of-type(4) big",
+      "type": "SelectorText"
+    },
+    {
+      "id": "toName",
+      "multiple": false,
+      "parentSelectors": ["wrapper"],
+      "regex": "",
+      "selector": "td:nth-of-type(6) big",
+      "type": "SelectorText"
+    },
+    {
+      "id": "toGate",
+      "multiple": false,
+      "parentSelectors": ["wrapper"],
+      "regex": "",
+      "selector": "td:nth-of-type(7) big",
+      "type": "SelectorText"
+    },
+    {
+      "id": "flightNumber",
+      "multiple": false,
+      "parentSelectors": ["wrapper"],
+      "regex": "",
+      "selector": "td:nth-of-type(2)",
+      "type": "SelectorText"
+    },
+    {
+      "id": "isActive",
+      "multiple": false,
+      "parentSelectors": ["wrapper"],
+      "regex": "Active",
+      "selector": "td:nth-of-type(8)",
+      "type": "SelectorHTML"
+    },
+    {
+      "id": "wrapper",
+      "multiple": true,
+      "parentSelectors": ["_root"],
+      "selector": "tr",
+      "type": "SelectorElement"
+    }
+  ]
+}

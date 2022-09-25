@@ -1,0 +1,20 @@
+{
+  "name": "@rapidroute/wiki-scraper",
+  "scripts": {
+    "build": "tsc",
+    "start": "(npx tsc || exit 0) && node dist/src/index.js",
+    "lint": "npx eslint . --fix"
+  },
+  "engines": {
+    "node": "16"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "@rapidroute/database-types": "^1.0.0",
+    "web-scraper-headless": "^1.0.7"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.3",
+    "@rapidroute/eslint-config-base": "^1.0.0"
+  }
+}
