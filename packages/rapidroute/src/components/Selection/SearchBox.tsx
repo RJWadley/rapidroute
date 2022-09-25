@@ -1,7 +1,8 @@
 import React, { useContext, useEffect } from "react"
 
-import { getTextboxName } from "data/search"
 import styled, { css } from "styled-components"
+
+import { getTextboxName } from "data/search"
 import { sleep } from "utils/functions"
 import media from "utils/media"
 

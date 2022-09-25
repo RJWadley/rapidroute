@@ -1,7 +1,8 @@
 import React from "react"
 
-import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
 import styled from "styled-components"
+
+import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
 
 export default function Header() {
   return (
