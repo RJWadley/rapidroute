@@ -5,7 +5,7 @@
 // fetch for node.js
 import fetch from "node-fetch"
 
-import { Dynmap, Sets } from "./dynmap"
+import { Dynmap, Sets } from "./dynmapTypes"
 import {
   Aliases,
   LegacyPlace,
@@ -14,7 +14,7 @@ import {
   Mode,
   World,
 } from "./fetchingTypes"
-import { SheetResponse } from "./googleSheets"
+import { SheetResponse } from "./googleSheetsTypes"
 import handoffData from "./handoff"
 
 const DATA_SHEET_ID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8" // 3 calls

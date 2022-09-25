@@ -17,4 +17,4 @@ declare global {
   }
 }
 
-export type Exclude = never
+export {}
