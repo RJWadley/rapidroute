@@ -2,12 +2,17 @@ import { shortHandMap } from "@rapidroute/database-types"
 import { getAll } from "data/getData"
 
 const getDistance = (
-  x1: number | null,
-  y1: number | null,
-  x2: number | null,
-  y2: number | null
+  x1: number | undefined,
+  y1: number | undefined,
+  x2: number | undefined,
+  y2: number | undefined
 ) => {
-  if (x1 === null || y1 === null || x2 === null || y2 === null) {
+  if (
+    x1 === undefined ||
+    y1 === undefined ||
+    x2 === undefined ||
+    y2 === undefined
+  ) {
     return 0
   }
 
