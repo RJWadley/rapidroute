@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react"
 
-import { Provider } from "@rapidroute/database-utils"
+import { Provider } from "@rapidroute/database-types"
 
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"

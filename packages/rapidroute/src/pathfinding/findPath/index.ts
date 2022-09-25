@@ -3,7 +3,7 @@ import {
   Pathfinding,
   RouteMode,
   shortHandMap,
-} from "@rapidroute/database-utils"
+} from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
 import { GraphEdge, rawEdges, rawNodes } from "./mapEdges"

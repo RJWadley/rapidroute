@@ -8,7 +8,7 @@ import {
   Routes,
   SearchIndex,
   reverseShortHandMap,
-} from "@rapidroute/database-utils"
+} from "@rapidroute/database-types"
 import admin, { ServiceAccount } from "firebase-admin"
 
 import makeSafeForDatabase from "./makeSafeForDatabase"

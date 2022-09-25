@@ -1,4 +1,4 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-utils"
+import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import styled, { css } from "styled-components"

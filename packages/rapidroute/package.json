@@ -4,7 +4,7 @@
   "version": "3.0.0",
   "author": "rjwadley",
   "dependencies": {
-    "@rapidroute/database-utils": "^1.0.0",
+    "@rapidroute/database-types": "^1.0.0",
     "firebase": "^9.10.0",
     "flexsearch": "^0.7.21",
     "gatsby": "^4.23.0",

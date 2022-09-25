@@ -13,7 +13,7 @@
   },
   "references": [
     {
-      "path": "./packages/database-utils"
+      "path": "./packages/database-types"
     },
     {
       "path": "./packages/rapidroute"

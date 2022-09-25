@@ -20,7 +20,7 @@ Imports data from various spreadsheets and dynmap into the RapidRoute database
 
 ### Database Types
 
-`packages/database-utils`
+`packages/database-types`
 
 Contains typings for the RapidRoute database
 

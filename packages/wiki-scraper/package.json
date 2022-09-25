@@ -10,7 +10,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@rapidroute/database-utils": "^1.0.0",
+    "@rapidroute/database-types": "^1.0.0",
     "web-scraper-headless": "^1.0.7"
   },
   "devDependencies": {

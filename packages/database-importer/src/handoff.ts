@@ -4,7 +4,7 @@ import {
   Route,
   RouteLocations,
   PlaceType,
-} from "@rapidroute/database-utils"
+} from "@rapidroute/database-types"
 
 import {
   LegacyRoute,

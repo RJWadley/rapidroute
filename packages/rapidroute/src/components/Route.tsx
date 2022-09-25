@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react"
 
-import { Location, Route as RouteType } from "@rapidroute/database-utils"
+import { Location, Route as RouteType } from "@rapidroute/database-types"
 
 import { getPath } from "data/getData"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
