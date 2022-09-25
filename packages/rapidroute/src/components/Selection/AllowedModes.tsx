@@ -91,7 +91,7 @@ const FilterButton = styled.button`
   margin: 10px 30px;
   font-size: 16px;
   font-weight: 300;
-  color: #999;
+  color: #555;
   cursor: pointer;
 `
 
