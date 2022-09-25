@@ -2,7 +2,13 @@ import React, { useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 import gsap from "gsap"
 
-export default function Spinner({ show }: { show: boolean }) {
+export default function Spinner({
+  show,
+  className = "",
+}: {
+  show: boolean
+  className?: string
+}) {
   const wrapperRef = React.useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -17,7 +23,7 @@ export default function Spinner({ show }: { show: boolean }) {
   }, [show])
 
   return (
-    <Loader ref={wrapperRef}>
+    <Loader ref={wrapperRef} className={className}>
       <div />
       <div />
       <div />

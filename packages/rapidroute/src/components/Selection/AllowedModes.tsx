@@ -3,7 +3,6 @@ import { RoutingContext } from "components/Providers/RoutingContext"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import styled, { css } from "styled-components"
 import gsap from "gsap"
-import { sleep } from "utils/functions"
 
 export default function AllowedModes() {
   const { allowedModes, setAllowedModes } = useContext(RoutingContext)
@@ -18,32 +17,29 @@ export default function AllowedModes() {
     }
   }
 
-  const debouncer = useRef<Promise<unknown>>(Promise.resolve())
   useEffect(() => {
-    let canFinish = true
-    ;(async () => {
-      await debouncer.current
+    const t1 = gsap.to(filtersRef.current, {
+      height: showFilters ? "auto" : 0,
+      duration: 1,
+      ease: showFilters ? "power3.out" : "power3.in",
+    })
 
-      gsap.to(filtersRef.current, {
-        height: showFilters ? "auto" : 0,
-        duration: 1,
-        ease: showFilters ? "power3.out" : "power3.in",
+    if (filtersRef.current?.children) {
+      const t2 = gsap.to(filtersRef.current.children, {
+        opacity: showFilters ? 1 : 0,
+        y: showFilters ? 0 : 20,
+        pointerEvents: showFilters ? "all" : "none",
+        stagger: showFilters ? 0.1 : -0.1,
+        ease: showFilters ? "power2.out" : "power2.in",
       })
 
-      if (filtersRef.current?.children && canFinish) {
-        debouncer.current = sleep(500)
-        gsap.to(filtersRef.current.children, {
-          opacity: showFilters ? 1 : 0,
-          y: showFilters ? 0 : 20,
-          pointerEvents: showFilters ? "all" : "none",
-          stagger: showFilters ? 0.1 : -0.1,
-          ease: showFilters ? "power2.out" : "power2.in",
-        })
+      return () => {
+        t1.kill()
+        t2.kill()
       }
-    })()
-
+    }
     return () => {
-      canFinish = false
+      t1.kill()
     }
   }, [showFilters])
 
@@ -89,7 +85,6 @@ const getModeDisplayName = (mode: RouteMode) => {
 const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  height: 0;
 `
 
 const FilterButton = styled.button`

@@ -7,7 +7,7 @@ import { Location, Route as RouteType } from "@rapidroute/database-types"
 import { getPath } from "data/getData"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
 
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import gsap from "gsap"
 import media from "utils/media"
 import { sleep } from "utils/functions"
@@ -85,26 +85,31 @@ export default function Route({
   const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
   const dropdownContent = useRef<HTMLDivElement>(null)
 
-  const canClick = useRef<Promise<unknown>>(Promise.resolve())
-  const clickHandler = async () => {
-    await canClick.current
+  const clickHandler = () => {
     setDropdownOpen(!dropdownOpen)
   }
 
   useEffect(() => {
-    canClick.current = sleep(1000)
-    gsap.to(dropdownContent.current, {
+    const t1 = gsap.to(dropdownContent.current, {
       height: dropdownOpen ? "auto" : 0,
       delay: dropdownOpen ? 0 : 0.5,
     })
 
-    if (dropdownContent.current?.children.length)
-      gsap.to(dropdownContent.current.children, {
+    if (dropdownContent.current?.children.length) {
+      const t2 = gsap.to(dropdownContent.current.children, {
         y: dropdownOpen ? 0 : 200,
         stagger: dropdownOpen ? 0.1 : -0.05,
         opacity: dropdownOpen ? 1 : 0,
         ease: dropdownOpen ? "power3.out" : "power3.in",
       })
+      return () => {
+        t1.kill()
+        t2.kill()
+      }
+    }
+    return () => {
+      t1.kill()
+    }
   }, [dropdownOpen])
 
   return (
@@ -115,8 +120,8 @@ export default function Route({
           expand_more
         </RoundButton>
       </Via>
+      <CustomSpinner show={dropdownOpen && !!locations && !segments} />
       <Dropdown ref={dropdownContent}>
-        {!segments && <Spinner show />}
         {segments?.map((segment, i) => (
           <Segment
             key={segment.from.uniqueId}
@@ -134,7 +139,7 @@ const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
   display: grid;
-  gap: 30px;
+  gap: 15px;
   opacity: 0;
   margin-top: 30px;
 `
@@ -149,6 +154,16 @@ const Via = styled.div`
   @media ${media.mobile} {
     font-size: 20px;
   }
+`
+
+const CustomSpinner = styled(Spinner)<{ show: boolean }>`
+  ${({ show }) =>
+    !show &&
+    css`
+      height: 0;
+      margin: 0;
+    `}
+  transition: height 0.5s ease-in-out, margin 0.5s ease-in-out;
 `
 
 const Dropdown = styled.div`
