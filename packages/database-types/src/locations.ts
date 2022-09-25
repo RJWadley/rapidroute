@@ -55,9 +55,9 @@ export interface Location {
    */
   isSpawnWarp: boolean
   /**
-   * what route ids are available at this location?
+   * what route ids, if any, are available at this location?
    */
-  routes: string[]
+  routes?: string[]
   /**
    * search keywords for use in the index
    */
