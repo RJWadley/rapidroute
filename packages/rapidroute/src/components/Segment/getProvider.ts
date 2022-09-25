@@ -1,4 +1,4 @@
-import { Provider, Route } from "@rapidroute/database-types"
+import { Provider, Route } from "@rapidroute/database-utils"
 
 import { getPath } from "data/getData"
 

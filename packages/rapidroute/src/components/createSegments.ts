@@ -1,4 +1,4 @@
-import { Location, Route } from "@rapidroute/database-types"
+import { Location, Route } from "@rapidroute/database-utils"
 
 export interface SegmentType {
   from: Location

@@ -1,4 +1,4 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
+import { RouteMode, shortHandMap } from "@rapidroute/database-utils"
 
 import { getAll } from "data/getData"
 

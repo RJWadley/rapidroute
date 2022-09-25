@@ -3,7 +3,7 @@ import {
   DatabaseType,
   Hashes,
   databaseTypeGuards,
-} from "@rapidroute/database-types"
+} from "@rapidroute/database-utils"
 import { ref, onValue } from "firebase/database"
 import { throttle } from "pathfinding/findPath/pathUtil"
 
