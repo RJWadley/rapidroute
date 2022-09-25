@@ -30,7 +30,7 @@ export const rawEdges = getAll("pathfinding").then(data => {
 
       if (routes) {
         return Object.entries(routes).flatMap(([to, routeInfo]) => {
-          if (to === from) return []
+          if (to === from || !data[to] || !data[from]) return []
 
           const routeIds = routeInfo.map(route => route.n)
 

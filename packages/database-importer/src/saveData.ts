@@ -11,6 +11,7 @@ import {
 } from "@rapidroute/database-types"
 import admin, { ServiceAccount } from "firebase-admin"
 
+import makeSafeForDatabase from "./makeSafeForDatabase"
 import accountKey from "./serviceAccountKey.json"
 
 export default async function saveDataToFirebase(
@@ -32,7 +33,7 @@ export default async function saveDataToFirebase(
     delete providerLessId.uniqueId
     database
       .ref(`providers/${provider.uniqueId}`)
-      .set(providerLessId)
+      .set(makeSafeForDatabase(providerLessId))
       .then(() => {
         console.log(`Saved provider ${provider.uniqueId}`)
       })
@@ -78,7 +79,7 @@ export default async function saveDataToFirebase(
     delete locationLessId.uniqueId
     database
       .ref(`locations/${location.uniqueId}`)
-      .set(locationLessId)
+      .set(makeSafeForDatabase(locationLessId))
       .then(() => console.log(`Location saved: ${location.uniqueId}`))
 
     /* update this locations search index */
@@ -92,7 +93,7 @@ export default async function saveDataToFirebase(
     }
     database
       .ref(`searchIndex/${location.uniqueId}`)
-      .set(searchIndex)
+      .set(makeSafeForDatabase(searchIndex))
       .then(() =>
         console.log(`Search index updated for location: ${location.uniqueId}`)
       )
@@ -101,8 +102,8 @@ export default async function saveDataToFirebase(
     database
       .ref(`pathfinding/${location.uniqueId}`)
       .update({
-        x: location.location?.x ?? null,
-        z: location.location?.z ?? null,
+        x: location.location?.x || null,
+        z: location.location?.z || null,
         w: location.isSpawnWarp || null,
       })
       .then(() =>
@@ -168,7 +169,7 @@ export default async function saveDataToFirebase(
     if (!oldRoute) {
       database
         .ref(`routes/${routeId}`)
-        .set(routeLessId)
+        .set(makeSafeForDatabase(routeLessId))
         .then(() => console.log(`Route saved: ${routeId}`))
     } else {
       const newLocations = Object.keys(route.locations)
@@ -196,12 +197,14 @@ export default async function saveDataToFirebase(
               const routeIds = origLocationPlaces[destinationLocationId] || []
               if (routeIds.some(x => x.n === routeId)) return
 
-              routeIds.push({ n: routeId, g: route.numGates })
+              routeIds.push({ n: routeId, g: route.numGates ?? null })
               database
                 .ref(
                   `pathfinding/${locationId}/${reverseShortHandMap[route.type]}`
                 )
-                .update({ [destinationLocationId]: routeIds })
+                .update(
+                  makeSafeForDatabase({ [destinationLocationId]: routeIds })
+                )
                 .then(() =>
                   console.log(`Route added to location: ${locationId}`)
                 )
@@ -233,7 +236,9 @@ export default async function saveDataToFirebase(
                 .ref(
                   `pathfinding/${locationId}/${reverseShortHandMap[route.type]}`
                 )
-                .update({ [destinationLocationId]: routeIds })
+                .update(
+                  makeSafeForDatabase({ [destinationLocationId]: routeIds })
+                )
                 .then(() =>
                   console.log(`Route removed from location: ${locationId}`)
                 )
@@ -282,7 +287,9 @@ export default async function saveDataToFirebase(
                       reverseShortHandMap[route.type]
                     }`
                   )
-                  .update({ [destinationLocationId]: routeIds })
+                  .update(
+                    makeSafeForDatabase({ [destinationLocationId]: routeIds })
+                  )
                   .then(() =>
                     console.log(`Route removed from location: ${locationId}`)
                   )

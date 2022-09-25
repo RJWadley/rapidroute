@@ -51,6 +51,7 @@ getAll("pathfinding").then(data => {
     }
   }
 
+  // eslint-disable-next-line no-console
   console.log(
     "The furthest apart points are",
     furthestA,

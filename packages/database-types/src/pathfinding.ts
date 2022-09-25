@@ -4,19 +4,16 @@ export interface Pathfinding {
   [key: string]: PathingPlace
 }
 
-export type PathingPlace = {
-  /**
-   * all locations reachable from this location via this mode of transport
-   *
-   * value key: route location
-   * value value: routeIds that can be used to get to that location,
-   * N: route name, G: number of gates
-   */
-  [key in keyof typeof shortHandMap]?: Record<
-    string,
-    { n: string; g: number }[]
-  >
-} & {
+/**
+ * all locations reachable from this location via this mode of transport
+ *
+ * value key: route location
+ * value value: routeIds that can be used to get to that location,
+ * N: route name, G: number of gates
+ */
+type ShortHandType = Record<string, { n: string; g: number }[]>
+
+export interface PathingPlace {
   /**
    * should match the database key and the uniqueId of the location
    */
@@ -33,6 +30,13 @@ export type PathingPlace = {
    * is a spawn warp
    */
   w?: boolean
+
+  F?: ShortHandType
+  S?: ShortHandType
+  H?: ShortHandType
+  M?: ShortHandType
+  W?: ShortHandType
+  P?: ShortHandType
 }
 
 export const shortHandMap = {

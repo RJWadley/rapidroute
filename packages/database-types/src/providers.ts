@@ -24,11 +24,11 @@ export interface Provider {
   /**
    * URL to the provider's logo
    */
-  logo: string
+  logo?: string
   /**
    * accent color for the provider
    */
-  color: Color
+  color?: Color
   /**
    * owner or owners of the provider
    */

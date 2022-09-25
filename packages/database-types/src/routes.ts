@@ -24,7 +24,7 @@ export interface Route {
   /**
    * if available, the route number
    */
-  number?: string
+  number?: string | number
   /**
    * the provider of this route
    */
