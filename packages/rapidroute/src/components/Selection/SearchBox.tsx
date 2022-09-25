@@ -22,9 +22,11 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
   useEffect(() => {
     if (searchRole === "from" && inputRef.current && from)
       inputRef.current.value = getTextboxName(from)
+  }, [from, searchRole])
+  useEffect(() => {
     if (searchRole === "to" && inputRef.current && to)
       inputRef.current.value = getTextboxName(to)
-  }, [to, searchRole, from])
+  }, [searchRole, to])
 
   // automatically update the size of the input box to fit the text
   const updateSize = () => {
@@ -41,8 +43,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
     return () => window.removeEventListener("resize", updateSize)
   }, [from, to])
 
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setSearchFor(e.target.value)
+  const handleInput = () => {
+    setSearchFor(inputRef.current?.value ?? "")
     setShowSearchList(true)
     updateSize()
 
@@ -72,7 +74,6 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
           id={searchRole}
           ref={inputRef}
           onChange={handleInput}
-          onInput={updateSize}
           placeholder={`Search ${searchRole}`}
           onFocus={() => {
             setShowSearchList(true)

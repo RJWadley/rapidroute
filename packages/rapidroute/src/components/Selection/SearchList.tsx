@@ -7,12 +7,11 @@ import React, {
 } from "react"
 
 import { SearchIndex } from "@rapidroute/database-types"
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getAll } from "data/getData"
 import { search } from "data/search"
+import gsap from "gsap"
+import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -129,7 +128,6 @@ export default function SearchList({
         window.scrollTo(0, scrollY)
         window.scrollBy({
           top: diff * 29.5,
-          behavior: "smooth",
         })
         lastHighlightedIndex.current = highlightedIndex
       }, 0)
