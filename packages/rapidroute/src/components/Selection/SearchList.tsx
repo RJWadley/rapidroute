@@ -55,7 +55,10 @@ export default function SearchList({
   useEffect(() => {
     const results = search(searchFor)
     setSearchResults(
-      allLocations.filter(location => results.includes(location.uniqueId))
+      results.flatMap(
+        result =>
+          allLocations.find(location => location.uniqueId === result) || []
+      )
     )
   }, [allLocations, searchFor])
 

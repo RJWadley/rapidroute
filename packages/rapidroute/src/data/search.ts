@@ -27,13 +27,12 @@ export function search(query: string) {
     limit: 200,
   })
 
-  let results = searchWorker.search(query, {
+  const softResults = searchWorker.search(query, {
     suggest: true,
     limit: 200,
   })
 
-  results = [...strictResults, ...results]
-  results = [...new Set(results)]
+  let results = [...new Set([...strictResults, ...softResults])]
 
   results = results.sort((a, b) => {
     if (typeof a === "string" && typeof b === "string") {
