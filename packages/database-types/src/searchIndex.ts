@@ -1,5 +1,7 @@
+import TSON from "typescript-json"
+
 export interface SearchIndex {
-  [key: string]: Partial<SearchIndexItem>
+  [key: string]: SearchIndexItem
 }
 
 interface SearchIndexItem {
@@ -16,3 +18,6 @@ interface SearchIndexItem {
    */
   i: string
 }
+
+export const isSearchIndexItem = (obj: unknown): obj is SearchIndexItem =>
+  TSON.is<SearchIndexItem>(obj)

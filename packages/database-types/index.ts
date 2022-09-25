@@ -1,14 +1,15 @@
-import { Locations, Location, PlaceType } from "./src/locations"
+import { Locations, Location, PlaceType, isLocation } from "./src/locations"
 import {
+  isPathingPlace,
   Pathfinding,
   PathingPlace,
   reverseShortHandMap,
   shortHandMap,
 } from "./src/pathfinding"
-import { Providers, Provider } from "./src/providers"
-import { Routes, Route, RouteMode, RouteLocations } from "./src/routes"
-import { SearchIndex } from "./src/searchIndex"
-import { Worlds, World } from "./src/worlds"
+import { Providers, Provider, isProvider } from "./src/providers"
+import { Routes, Route, RouteMode, RouteLocations, isRoute } from "./src/routes"
+import { isSearchIndexItem, SearchIndex } from "./src/searchIndex"
+import { Worlds, World, isWorld } from "./src/worlds"
 
 export interface DatabaseType {
   /**
@@ -38,6 +39,19 @@ export interface DatabaseType {
 }
 
 export type Hashes = Record<keyof DatabaseType, string | undefined>
+
+export const databaseTypeGuards: {
+  [key in keyof DatabaseType]: (
+    value: unknown
+  ) => value is DatabaseType[key][string]
+} = {
+  providers: isProvider,
+  locations: isLocation,
+  routes: isRoute,
+  worlds: isWorld,
+  pathfinding: isPathingPlace,
+  searchIndex: isSearchIndexItem,
+}
 
 export {
   Provider,

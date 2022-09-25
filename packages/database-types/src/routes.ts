@@ -1,5 +1,7 @@
+import TSON from "typescript-json"
+
 export interface Routes {
-  [key: string]: Partial<Route>
+  [key: string]: Route
 }
 
 export interface Route {
@@ -52,3 +54,5 @@ export type RouteMode =
 export interface RouteLocations {
   [key: string]: string
 }
+
+export const isRoute = (obj: unknown): obj is Route => TSON.is<Route>(obj)

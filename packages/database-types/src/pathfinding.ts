@@ -1,5 +1,7 @@
+import TSON from "typescript-json"
+
 export interface Pathfinding {
-  [key: string]: Partial<PathingPlace>
+  [key: string]: PathingPlace
 }
 
 export type PathingPlace = {
@@ -50,3 +52,6 @@ export const reverseShortHandMap = {
   walk: "W",
   spawnWarp: "P",
 } as const
+
+export const isPathingPlace = (obj: unknown): obj is PathingPlace =>
+  TSON.is<PathingPlace>(obj)

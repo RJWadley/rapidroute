@@ -2,7 +2,12 @@
   "compilerOptions": {
     "incremental": true,
     "composite": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "plugins": [
+      {
+        "transform": "typescript-json/lib/transform"
+      }
+    ]
   },
   "include": ["src/**/*", "index.ts"]
 }

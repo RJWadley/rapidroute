@@ -1,5 +1,7 @@
+import TSON from "typescript-json"
+
 export interface Locations {
-  [key: string]: Partial<Location>
+  [key: string]: Location
 }
 
 export interface Location {
@@ -69,3 +71,6 @@ export interface Coordinates {
   z: number
   y: null | number
 }
+
+export const isLocation = (obj: unknown): obj is Location =>
+  TSON.is<Location>(obj)

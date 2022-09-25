@@ -1,5 +1,7 @@
+import TSON from "typescript-json"
+
 export interface Providers {
-  [key: string]: Partial<Provider>
+  [key: string]: Provider
 }
 
 export interface Provider {
@@ -84,3 +86,6 @@ export interface Color {
    */
   dark: string
 }
+
+export const isProvider = (obj: unknown): obj is Provider =>
+  TSON.is<Provider>(obj)

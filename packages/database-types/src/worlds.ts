@@ -1,8 +1,12 @@
+import TSON from "typescript-json"
+
 export interface Worlds {
-  [key: string]: Partial<World>
+  [key: string]: World
 }
 
 export interface World {
   uniqueId: string
   name: string
 }
+
+export const isWorld = (obj: unknown): obj is World => TSON.is<World>(obj)
