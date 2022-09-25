@@ -20,19 +20,19 @@ export interface Location {
   /**
    * THE IATA code of the location, if it is an airport
    */
-  IATA: null | string
+  IATA?: string
   /**
    * a short description of the location
    */
-  description: null | string
+  description?: string
   /**
    * location within the world
    */
-  location: null | Coordinates
+  location?: Coordinates
   /**
    * owner or owners of the location
    */
-  ownerPlayer: null | string | string[]
+  ownerPlayer?: string | string[]
   /**
    * which world this location is in
    */
@@ -61,7 +61,7 @@ export interface Location {
   /**
    * search keywords for use in the index
    */
-  keywords: null | string
+  keywords?: string
 }
 
 export type PlaceType = "City" | "Airport" | "MRT Station" | "Other"
@@ -69,7 +69,7 @@ export type PlaceType = "City" | "Airport" | "MRT Station" | "Other"
 export interface Coordinates {
   x: number
   z: number
-  y: null | number
+  y?: number
 }
 
 export const isLocation = (obj: unknown): obj is Location =>

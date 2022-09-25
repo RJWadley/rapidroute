@@ -12,7 +12,7 @@ export type PathingPlace = {
    * value value: routeIds that can be used to get to that location,
    * N: route name, G: number of gates
    */
-  [key in keyof typeof shortHandMap]: null | Record<
+  [key in keyof typeof shortHandMap]?: Record<
     string,
     { n: string; g: number }[]
   >
@@ -24,15 +24,15 @@ export type PathingPlace = {
   /**
    * the X coordinate of the location
    */
-  x: number | null
+  x?: number
   /**
    * the Z coordinate of the location
    */
-  z: number | null
+  z?: number
   /**
    * is a spawn warp
    */
-  w: boolean | null
+  w?: boolean
 }
 
 export const shortHandMap = {

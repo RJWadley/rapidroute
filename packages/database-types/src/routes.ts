@@ -12,11 +12,11 @@ export interface Route {
   /**
    * the name of this route, if it has one
    */
-  name: null | string
+  name?: string
   /**
    * a short description of the route, if it has one
    */
-  description: null | string
+  description?: string
   /**
    * what type of route is this?
    */
@@ -24,7 +24,7 @@ export interface Route {
   /**
    * if available, the route number
    */
-  number: null | string
+  number?: string
   /**
    * the provider of this route
    */
@@ -40,7 +40,7 @@ export interface Route {
   /**
    * number of gates
    */
-  numGates: number | null
+  numGates?: number
 }
 
 export type RouteMode =

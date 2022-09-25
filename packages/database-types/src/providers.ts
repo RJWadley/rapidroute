@@ -16,11 +16,11 @@ export interface Provider {
   /**
    * route numbers are sometimes prefixed with a code
    */
-  numberPrefix: null | string
+  numberPrefix?: string
   /**
    * optionally, a description of the provider
    */
-  description: null | string
+  description?: string
   /**
    * URL to the provider's logo
    */
@@ -32,12 +32,12 @@ export interface Provider {
   /**
    * owner or owners of the provider
    */
-  ownerPlayer: null | string | string[]
+  ownerPlayer?: string | string[]
   /**
    * if this provider is a codeshare for another provider,
    * this provides information about that relationship
    */
-  alias: null | Alias[]
+  alias?: Alias[]
   /**
    * true if the content of this provider can be overwritten automatically
    */
