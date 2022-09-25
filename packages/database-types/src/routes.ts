@@ -1,5 +1,5 @@
 export interface Routes {
-  [key: string]: Route
+  [key: string]: Partial<Route>
 }
 
 export interface Route {

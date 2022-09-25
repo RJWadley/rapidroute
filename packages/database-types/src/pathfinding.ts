@@ -1,5 +1,5 @@
 export interface Pathfinding {
-  [key: string]: PathingPlace
+  [key: string]: Partial<PathingPlace>
 }
 
 export type PathingPlace = {

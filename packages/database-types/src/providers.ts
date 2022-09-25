@@ -1,5 +1,5 @@
 export interface Providers {
-  [key: string]: Provider
+  [key: string]: Partial<Provider>
 }
 
 export interface Provider {

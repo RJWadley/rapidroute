@@ -1,5 +1,5 @@
 export interface Worlds {
-  [key: string]: World
+  [key: string]: Partial<World>
 }
 
 export interface World {

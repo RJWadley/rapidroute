@@ -1,5 +1,5 @@
 export interface Locations {
-  [key: string]: Location
+  [key: string]: Partial<Location>
 }
 
 export interface Location {
