@@ -5,8 +5,8 @@ import {
   databaseTypeGuards,
 } from "@rapidroute/database-types"
 import { ref, onValue } from "firebase/database"
-import { throttle } from "pathfinding/findPath/pathUtil"
 
+import { throttle } from "pathfinding/findPath/pathUtil"
 import { isBrowser } from "utils/functions"
 import isObject from "utils/isObject"
 

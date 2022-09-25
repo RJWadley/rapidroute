@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
 
+import gsap from "gsap"
+import styled from "styled-components"
+
 import FindPath, { ResultType } from "pathfinding/findPath"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
-
-import gsap from "gsap"
-import styled from "styled-components"
 import { sleep } from "utils/functions"
+
 import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
 import Spinner from "./Spinner"

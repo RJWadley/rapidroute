@@ -5,13 +5,15 @@ import React, {
   useRef,
   useState,
 } from "react"
-import styled from "styled-components"
-import gsap from "gsap"
-import media from "utils/media"
-import { getAll } from "data/getData"
+
 import { SearchIndex } from "@rapidroute/database-types"
+import gsap from "gsap"
+import styled from "styled-components"
+
 import { RoutingContext } from "components/Providers/RoutingContext"
+import { getAll } from "data/getData"
 import { search } from "data/search"
+import media from "utils/media"
 import useMedia from "utils/useMedia"
 
 type SearchListProps = {

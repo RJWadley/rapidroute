@@ -1,9 +1,10 @@
 import React from "react"
 
+import styled, { css } from "styled-components"
+
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
 
-import styled, { css } from "styled-components"
 import MultiSingleBit from "./MultiSingleBit"
 import { Left, LongNames, Symbols, Wrapper } from "./sharedComponents"
 

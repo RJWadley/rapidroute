@@ -1,5 +1,6 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 import React, { useMemo, useState } from "react"
+
+import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 
 type LocationId = string
 

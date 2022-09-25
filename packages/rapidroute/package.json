@@ -28,6 +28,7 @@
     "the-new-css-reset": "^1.7.3"
   },
   "devDependencies": {
+    "@rapidroute/eslint-config-base": "^1.0.0",
     "@rjwadley/eslint-plugin-format-gsap": "^0.1.1",
     "@types/flexsearch": "^0.7.3",
     "@types/node": "^18.7.18",

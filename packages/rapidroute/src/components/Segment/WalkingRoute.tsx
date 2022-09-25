@@ -4,6 +4,7 @@ import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
+
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 
 interface SegmentProps {

@@ -1,10 +1,12 @@
 import React from "react"
 
 import styled from "styled-components"
+
 import media from "utils/media"
+
+import AllowedModes from "./AllowedModes"
 import SearchBox from "./SearchBox"
 import SwapButton from "./SwapButton"
-import AllowedModes from "./AllowedModes"
 
 export default function Selection() {
   return (

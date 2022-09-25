@@ -3,18 +3,18 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 
 import { Location, Route as RouteType } from "@rapidroute/database-types"
+import gsap from "gsap"
+import styled, { css } from "styled-components"
 
 import { getPath } from "data/getData"
-import describeDiff from "pathfinding/postProcessing/describeDiff"
-
-import styled, { css } from "styled-components"
-import gsap from "gsap"
-import media from "utils/media"
-import { sleep } from "utils/functions"
 import { ResultType } from "pathfinding/findPath"
+import describeDiff from "pathfinding/postProcessing/describeDiff"
+import { sleep } from "utils/functions"
+import media from "utils/media"
+
 import createSegments, { SegmentType } from "./createSegments"
-import Segment from "./Segment"
 import RoundButton from "./RoundButton"
+import Segment from "./Segment"
 import Spinner from "./Spinner"
 
 interface RouteProps {

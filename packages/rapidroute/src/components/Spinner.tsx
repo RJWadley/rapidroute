@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
-import styled, { keyframes } from "styled-components"
+
 import gsap from "gsap"
+import styled, { keyframes } from "styled-components"
 
 export default function Spinner({
   show,

@@ -1,8 +1,10 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
-import { RoutingContext } from "components/Providers/RoutingContext"
 import React, { useContext, useEffect, useRef, useState } from "react"
-import styled, { css } from "styled-components"
+
+import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 import gsap from "gsap"
+import styled, { css } from "styled-components"
+
+import { RoutingContext } from "components/Providers/RoutingContext"
 
 export default function AllowedModes() {
   const { allowedModes, setAllowedModes } = useContext(RoutingContext)

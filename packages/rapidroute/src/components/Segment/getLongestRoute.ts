@@ -1,4 +1,5 @@
 import { shortHandMap } from "@rapidroute/database-types"
+
 import { getAll } from "data/getData"
 
 const getDistance = (

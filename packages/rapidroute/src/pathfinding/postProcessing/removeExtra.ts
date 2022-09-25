@@ -1,4 +1,5 @@
 import { ResultType } from "pathfinding/findPath"
+
 import resultDiffs from "./diff"
 
 /**

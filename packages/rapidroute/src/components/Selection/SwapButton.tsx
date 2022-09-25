@@ -1,9 +1,10 @@
 import React, { useContext, useRef } from "react"
 
+import gsap from "gsap"
+import styled from "styled-components"
+
 import { RoutingContext } from "components/Providers/RoutingContext"
 import RoundButton from "components/RoundButton"
-import styled from "styled-components"
-import gsap from "gsap"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 

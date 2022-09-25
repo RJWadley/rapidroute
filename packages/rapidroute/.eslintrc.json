@@ -5,10 +5,10 @@
     "sort-styled-components"
   ],
   "extends": [
-    "@rapidroute/eslint-config-base",
     "plugin:ssr-friendly/recommended",
     "airbnb",
     "airbnb/hooks",
+    "@rapidroute/eslint-config-base",
     "airbnb-typescript",
     "plugin:prettier/recommended"
   ],

@@ -1,10 +1,11 @@
 import React from "react"
 
+import styled from "styled-components"
+
 import Layout from "components/Layout"
 import Results from "components/Results"
 import Selection from "components/Selection"
 import SEO from "components/SEO"
-import styled from "styled-components"
 
 export default function Home() {
   return (

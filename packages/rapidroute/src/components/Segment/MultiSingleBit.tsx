@@ -1,14 +1,14 @@
 import React, { useMemo, useState } from "react"
 
 import { Provider, Route } from "@rapidroute/database-types"
+import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import invertLightness from "utils/invertLightness"
 
-import styled, { css } from "styled-components"
 import getProvider from "./getProvider"
-import { expandGate } from "./SingleRoute"
 import { Logo, Name, RouteNumber, GateNumber } from "./sharedComponents"
+import { expandGate } from "./SingleRoute"
 
 interface MultiSingleBitProps {
   segment: SegmentType

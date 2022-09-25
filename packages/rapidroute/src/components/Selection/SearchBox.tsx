@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from "react"
 
-import { getTextboxName } from "data/search"
-
 import styled, { css } from "styled-components"
-import media from "utils/media"
+
+import { getTextboxName } from "data/search"
 import { sleep } from "utils/functions"
+import media from "utils/media"
+
 import { RoutingContext } from "../Providers/RoutingContext"
 import SearchList from "./SearchList"
 
