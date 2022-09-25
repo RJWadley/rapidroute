@@ -7,7 +7,8 @@ export type PathingPlace = {
    * all locations reachable from this location via this mode of transport
    *
    * value key: route location
-   * value value: routeIds that can be used to get to that location
+   * value value: routeIds that can be used to get to that location,
+   * N: route name, G: number of gates
    */
   [key in keyof typeof shortHandMap]: null | Record<
     string,
