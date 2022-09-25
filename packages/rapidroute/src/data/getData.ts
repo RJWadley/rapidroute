@@ -1,4 +1,9 @@
-import { DatabaseType, Hashes } from "@rapidroute/database-types"
+/* eslint-disable no-console */
+import {
+  DatabaseType,
+  Hashes,
+  databaseTypeGuards,
+} from "@rapidroute/database-types"
 import { ref, onValue } from "firebase/database"
 import { throttle } from "pathfinding/findPath/pathUtil"
 
@@ -56,7 +61,8 @@ export async function getPath<T extends keyof DatabaseType>(
   // if the hash matches the one we have, return the cached value
   if (hash === oneHashes[type] && databaseCache[type][itemName]) {
     console.log("cache hit", type, itemName)
-    return databaseCache[type][itemName] as GetOne<T>
+    const output = databaseCache[type][itemName]
+    return databaseTypeGuards[type](output) ? output : null
   }
   if (hash !== oneHashes[type]) {
     console.log("hash mismatch", type, itemName)
@@ -94,7 +100,13 @@ export async function getAll<T extends keyof DatabaseType>(
   // if the hash matches the one we have, return the cached value
   if (hash === allHashes[type] && databaseCache[type]) {
     console.log("cache hit", type)
-    return databaseCache[type] as GetAll<T>
+    const output = databaseCache[type]
+
+    // filter out values that don't match the type guard
+    Object.keys(output).forEach(key => {
+      if (!databaseTypeGuards[type](output[key])) delete output[key]
+    })
+    return output
   }
   if (hash !== allHashes[type]) {
     console.log("hash mismatch", type)
