@@ -21,10 +21,10 @@ export default function Layout({ children }: LayoutProps) {
 const GlobalStyle = createGlobalStyle`
   body {
     font-family: Inter;
-    --rapid-red: #F15152;
+    --rapid-red: #f15152;
     --rapid-blue: #416788;
-    --rapid-green: #46DB5B;
-    --rapid-yellow: #FFCB47;
+    --rapid-green: #46db5b;
+    --rapid-yellow: #ffcb47;
   }
 `
 

@@ -106,7 +106,7 @@ export default class Pathfinder {
         .forEach(async edge => {
           // skip edges that are not allowed
           if (this.allowedModes.length === 0) {
-            throw new Error("no modes")
+            return
           }
           if (
             this.allowedModes.length > 0 &&

@@ -14,6 +14,8 @@ export interface GraphEdge {
   sortWeight?: number
 }
 
+const isMRT = (id: string) => id.match(/^[a-zA-Z]{1,2}\d{1,3}$/g)
+
 /**
  * first the database must be mapped to a graph
  */
@@ -96,9 +98,12 @@ export const rawEdges = getAll("pathfinding").then(data => {
       .slice(0, 5)
       .flatMap(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk")
+
+        const mode: RouteMode = isMRT(from) && isMRT(to) ? "MRT" : "walk"
+
         return [
-          { from, to, weight, mode: "walk" } as const,
-          { to: from, from: to, weight, mode: "walk" } as const,
+          { from, to, weight, mode } as const,
+          { to: from, from: to, weight, mode } as const,
         ]
       })
 

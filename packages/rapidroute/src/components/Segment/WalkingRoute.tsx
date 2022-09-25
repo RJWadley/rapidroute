@@ -22,14 +22,21 @@ export default function WalkingRoute({ segment, variant }: SegmentProps) {
   const detail =
     segment.to.type === "City" ? segment.to.shortName : segment.to.name
 
+  const isTransfer =
+    segment.to.type === "MRT Station" && segment.from.type === "MRT Station"
+
   return (
     <WalkWrapper
       backgroundColor={themeColor}
       textColor={invertLightness(themeColor)}
       small={variant === "mobile"}
     >
-      <WalkIcon small={variant === "mobile"}>directions_walk</WalkIcon>
-      <Name>Walk to {name}</Name>
+      <WalkIcon small={variant === "mobile"}>
+        {isTransfer ? "transfer_within_a_station" : "directions_walk"}
+      </WalkIcon>
+      <Name>
+        {isTransfer ? "Transfer" : "Walk"} to {name}
+      </Name>
       <RouteNumber>{detail}</RouteNumber>
     </WalkWrapper>
   )
