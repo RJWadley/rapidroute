@@ -1,8 +1,7 @@
 import React, { useContext, useEffect } from "react"
 
-import styled, { css } from "styled-components"
-
 import { getTextboxName } from "data/search"
+import styled, { css } from "styled-components"
 import { sleep } from "utils/functions"
 import media from "utils/media"
 
@@ -35,6 +34,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       inputRef.current.style.height = `${inputRef.current.scrollHeight}px`
     }
   }
+
   useEffect(() => {
     updateSize()
     window.addEventListener("resize", updateSize)
@@ -44,6 +44,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setSearchFor(e.target.value)
     setShowSearchList(true)
+    updateSize()
 
     // check for newlines in the input
     if (inputRef.current?.value.includes("\n")) {
@@ -71,6 +72,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
           id={searchRole}
           ref={inputRef}
           onChange={handleInput}
+          onInput={updateSize}
           placeholder={`Search ${searchRole}`}
           onFocus={() => {
             setShowSearchList(true)

@@ -1,7 +1,6 @@
 import React from "react"
 
 import styled from "styled-components"
-
 import media from "utils/media"
 
 import AllowedModes from "./AllowedModes"
@@ -27,7 +26,7 @@ const SearchContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  height: 100px;
+  min-height: 100px;
   grid-template-areas: "from swap to";
   position: relative;
   z-index: 1;
@@ -51,7 +50,7 @@ const SearchContainer = styled.div`
   @media ${media.mobile} {
     grid-template-columns: 1fr auto;
     grid-template-areas: "from swap" "to swap";
-    height: 80px;
+    min-height: 80px;
     padding-right: 15px;
 
     :before {
