@@ -7,10 +7,9 @@ const importers = {
   skytrans,
 }
 
-export default async function scrapeWiki(
-  importer: keyof typeof importers,
-  url?: string
-) {
+export type Importer = keyof typeof importers
+
+export default async function scrapeWiki(importer: Importer, url?: string) {
   const sitemap = importers[importer]
   if (url) sitemap.startUrl = [url]
 

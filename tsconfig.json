@@ -20,6 +20,9 @@
     },
     {
       "path": "./packages/database-importer"
+    },
+    {
+      "path": "./packages/wiki-scraper"
     }
   ],
   "include": []
