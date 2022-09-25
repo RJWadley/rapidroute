@@ -13,7 +13,7 @@ export default function Changelog() {
       </div>
       <div className="changelog">
         <div>
-          <h2>(Unreleased) 2022XXXX - Version 3.0</h2>
+          <h2>(Unreleased) 2022-XX-XX - Version 3.0</h2>
 
           <h3>New Features</h3>
           <ul>
@@ -40,7 +40,7 @@ export default function Changelog() {
         </div>
         <hr />
         <div>
-          <h2>20211005 - The Redesign Update</h2>
+          <h2>2021-10-05 - The Redesign Update</h2>
           <ul>
             <li>
               Searching algorithm has been re-written from scratch and is now
@@ -86,7 +86,7 @@ export default function Changelog() {
         </div>
         <hr />
         <div>
-          <h2>20211005 - The Color Update</h2>
+          <h2>2021-10-05 - The Color Update</h2>
           <ul>
             <li>Participating airlines now show logos in results</li>
             <li>Participating airlines are now color coded in results</li>
@@ -113,7 +113,7 @@ export default function Changelog() {
         <hr />
 
         <div>
-          <h2>20211002 - The Seaplane Update</h2>
+          <h2>2021-10-02 - The Seaplane Update</h2>
           <ul>
             <li>Added basic support for seaplanes and seaports</li>
             <li>
@@ -133,7 +133,7 @@ export default function Changelog() {
         </div>
         <hr />
         <div>
-          <h2>20210210 - The Helicopter Update</h2>
+          <h2>2021-02-10 - The Helicopter Update</h2>
           <ul>
             <li>Helicopters Helicopters Helicopters Helicopters</li>
             <li>
@@ -165,7 +165,7 @@ export default function Changelog() {
         </div>
         <hr />
         <div>
-          <h2>20210208 - The MRT Transit update</h2>
+          <h2>2021-02-08 - The MRT Transit update</h2>
           <ul>
             <li>
               Data is now sourced from the MRT Transit spreadsheet, which means
