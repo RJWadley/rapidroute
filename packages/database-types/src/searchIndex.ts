@@ -4,7 +4,7 @@ export interface SearchIndex {
   [key: string]: SearchIndexItem
 }
 
-interface SearchIndexItem {
+export interface SearchIndexItem {
   /**
    * unique id of the item
    */

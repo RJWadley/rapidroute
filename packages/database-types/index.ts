@@ -8,7 +8,11 @@ import {
 } from "./src/pathfinding"
 import { Providers, Provider, isProvider } from "./src/providers"
 import { Routes, Route, RouteMode, RouteLocations, isRoute } from "./src/routes"
-import { isSearchIndexItem, SearchIndex } from "./src/searchIndex"
+import {
+  isSearchIndexItem,
+  SearchIndex,
+  SearchIndexItem,
+} from "./src/searchIndex"
 import { Worlds, World, isWorld } from "./src/worlds"
 
 export interface DatabaseType {
@@ -63,6 +67,7 @@ export {
   Pathfinding,
   PathingPlace as PathfindingEdge,
   SearchIndex,
+  SearchIndexItem,
   World,
   Worlds,
   RouteMode,

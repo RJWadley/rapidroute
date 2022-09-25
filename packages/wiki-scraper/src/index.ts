@@ -1,29 +1,33 @@
 import webscraper from "web-scraper-headless"
 
 import skytrans from "./importers/skytrans.json"
+import { search } from "./searchForId"
 
 const importers = {
   skytrans,
 }
 
 export default async function scrapeWiki(
-  url: string,
-  importer: keyof typeof importers
+  importer: keyof typeof importers,
+  url?: string
 ) {
   const sitemap = importers[importer]
-  sitemap.startUrl = [url]
+  if (url) sitemap.startUrl = [url]
 
-  const data = await webscraper(sitemap)
+  const rawData = await webscraper(sitemap)
 
-  data.flatMap(route => {
+  const dataWithProms = rawData.map(async route => {
     const { fromName, toName, flightNumber, fromGate, toGate, isActive } = route
 
     const number = flightNumber?.match(/\d+/)?.[0]
 
     if (fromName && toName && number) {
+      const from = await search(fromName)
+      const to = await search(toName)
+
       return {
-        from: fromName,
-        to: toName,
+        from,
+        to,
         number,
         fromGate: fromGate?.match(/\d/) ? fromGate : undefined,
         toGate: toGate?.match(/\d/) ? toGate : undefined,
@@ -32,4 +36,8 @@ export default async function scrapeWiki(
     }
     return []
   })
+
+  const data = await Promise.all(dataWithProms)
+
+  return data.flat()
 }
