@@ -1,8 +1,7 @@
-import React, { useContext } from "react"
+import React from "react"
 
 import styled from "styled-components"
 
-import { darkModeContext } from "components/Providers/DarkMode"
 import media from "utils/media"
 
 import AllowedModes from "./AllowedModes"
@@ -10,11 +9,9 @@ import SearchBox from "./SearchBox"
 import SwapButton from "./SwapButton"
 
 export default function Selection() {
-  const isDark = useContext(darkModeContext)
-
   return (
     <div>
-      <SearchContainer isDark={isDark}>
+      <SearchContainer>
         <SearchBox searchRole="from" />
         <SearchBox searchRole="to" />
         <SwapButton />
@@ -24,7 +21,7 @@ export default function Selection() {
   )
 }
 
-const SearchContainer = styled.div<{ isDark: boolean }>`
+const SearchContainer = styled.div`
   max-width: 1000px;
   margin: 0 auto;
   display: grid;
@@ -42,7 +39,7 @@ const SearchContainer = styled.div<{ isDark: boolean }>`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: ${({ isDark }) => (isDark ? "#333" : "#eee")};
+    background-color: var(--default-card-background);
     border-radius: 30px;
     z-index: -1;
   }

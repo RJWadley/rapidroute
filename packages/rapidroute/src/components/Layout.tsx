@@ -65,7 +65,7 @@ const darkColors = css`
   --invert-background-green: ${invertLightness("#07380f")};
 `
 
-const GlobalStyle = createGlobalStyle<{ isDark: boolean }>`
+const GlobalStyle = createGlobalStyle<{ isDark?: boolean }>`
   :root {
     --rapid-red: #f15152;
     --rapid-blue: #416788;
