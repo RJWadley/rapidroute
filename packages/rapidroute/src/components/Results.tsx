@@ -117,7 +117,7 @@ export default function Results() {
           opacity: 1,
           y: 0,
           duration: 0.5,
-          stagger: 0.3,
+          stagger: 0.1,
         })
   }, [results])
 
@@ -141,7 +141,6 @@ export default function Results() {
               key={result.path.toString()}
               route={result}
               diff={diff[i]}
-              loadDelay={i * 0.3}
             />
           ))}
       </ResultsWrapper>

@@ -1,15 +1,11 @@
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react"
 
-import { Location, Route as RouteType } from "@rapidroute/database-types"
 import gsap from "gsap"
 import styled, { css } from "styled-components"
 
 import { getPath } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
-import { sleep } from "utils/functions"
 import media from "utils/media"
 
 import createSegments, { SegmentType } from "./createSegments"
@@ -21,38 +17,30 @@ interface RouteProps {
   route: ResultType
   diff: string[]
   expandByDefault: boolean
-  loadDelay: number
 }
 
-export default function Route({
-  route,
-  diff,
-  expandByDefault,
-  loadDelay,
-}: RouteProps) {
-  const [locations, setLocations] = useState<(Location | null)[] | null>(null)
-  const [routes, setRoutes] = useState<(RouteType | null)[][] | null>(null)
+export default function Route({ route, diff, expandByDefault }: RouteProps) {
   const [segments, setSegments] = useState<SegmentType[] | null>(null)
+  const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
+  const dropdownContent = useRef<HTMLDivElement>(null)
 
+  /**
+   * Create segments from route data
+   */
   useMemo(async () => {
-    setRoutes(null)
-    setLocations(null)
-    setSegments(null)
+    if (!dropdownOpen) return
 
     const promises = route.path.map(async locationId => {
-      await sleep(loadDelay * 1000 + Math.random() * 500)
       return getPath("locations", locationId)
     })
 
-    Promise.all(promises).then(results => {
-      setLocations(results)
-
+    Promise.all(promises).then(locations => {
       // for each set of locations, get the routes they have in common
-      const routePromises = results.map((location, index) => {
+      const routePromises = locations.map((location, index) => {
         if (index === 0) {
           return []
         }
-        const previousLocation = results[index - 1]
+        const previousLocation = locations[index - 1]
         if (!previousLocation || !location) {
           return [Promise.resolve(null)]
         }
@@ -62,33 +50,21 @@ export default function Route({
         )
 
         return commonRoutes.map(async routeId => {
-          await sleep(loadDelay * 1000)
           return getPath("routes", routeId)
         })
       })
 
       // wait for all promises to resolve
-      Promise.all(routePromises.map(p => Promise.all(p))).then(objs => {
-        objs.shift()
-
-        setRoutes(objs)
+      Promise.all(routePromises.map(p => Promise.all(p))).then(routes => {
+        routes.shift()
+        setSegments(createSegments(locations, routes))
       })
     })
-  }, [loadDelay, route])
+  }, [dropdownOpen, route.path])
 
-  useMemo(() => {
-    if (routes && locations) {
-      setSegments(createSegments(locations, routes))
-    }
-  }, [routes, locations])
-
-  const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
-  const dropdownContent = useRef<HTMLDivElement>(null)
-
-  const clickHandler = () => {
-    setDropdownOpen(!dropdownOpen)
-  }
-
+  /**
+   * animate opening and closing of dropdown
+   */
   useEffect(() => {
     const t1 = gsap.to(dropdownContent.current, {
       height: dropdownOpen ? "auto" : 0,
@@ -110,25 +86,23 @@ export default function Route({
     return () => {
       t1.kill()
     }
-  }, [dropdownOpen])
+  }, [dropdownOpen, segments])
 
   return (
     <Wrapper>
       <Via>
         <div>Via {describeDiff(diff)}</div>
-        <RoundButton onClick={clickHandler} flipped={dropdownOpen}>
+        <RoundButton
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          flipped={dropdownOpen}
+        >
           expand_more
         </RoundButton>
       </Via>
-      <CustomSpinner show={dropdownOpen && !!locations && !segments} />
+      <CustomSpinner show={dropdownOpen && !segments} />
       <Dropdown ref={dropdownContent}>
-        {segments?.map((segment, i) => (
-          <Segment
-            key={segment.from.uniqueId}
-            segment={segment}
-            isOpen={dropdownOpen}
-            position={i}
-          />
+        {segments?.map(segment => (
+          <Segment key={segment.from.uniqueId} segment={segment} />
         ))}
       </Dropdown>
     </Wrapper>

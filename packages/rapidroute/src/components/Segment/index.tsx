@@ -1,6 +1,6 @@
-import React, { useContext, useLayoutEffect, useRef } from "react"
+import React, { useContext, useRef } from "react"
 
-import gsap from "gsap"
+import styled from "styled-components"
 
 import { RoutingContext } from "components/Providers/RoutingContext"
 import media from "utils/media"
@@ -14,11 +14,9 @@ import WarpRoute from "./WarpRoute"
 
 interface SegmentProps {
   segment: SegmentType
-  isOpen: boolean
-  position: number
 }
 
-export default function Segment({ segment, isOpen, position }: SegmentProps) {
+export default function Segment({ segment }: SegmentProps) {
   const variant = useMedia(media.mobile) ? "mobile" : "desktop"
   const wrapper = useRef<HTMLDivElement>(null)
   const singleRoute = segment.routes.length === 1
@@ -31,53 +29,32 @@ export default function Segment({ segment, isOpen, position }: SegmentProps) {
     walkingRoute &&
     (segment.from.uniqueId === "A0" || segment.to.uniqueId === "A0")
 
-  const firstRender = useRef(true)
-  useLayoutEffect(() => {
-    if (firstRender.current) {
-      if (isOpen)
-        gsap.fromTo(wrapper.current, {
-            y: 200,
-            yPercent: 100,
-            opacity: 0,
-            height: 0,
-          },
-          {
-            y: 0,
-            yPercent: 0,
-            opacity: 1,
-            height: "auto",
-            delay: 0.3 + 0.1 * position,
-            ease: "power3.out",
-          })
-      else
-        gsap.set(wrapper.current, {
-          y: 200,
-        })
-      firstRender.current = false
-    }
-  }, [isOpen, position])
-
   if (isWarp)
     return (
-      <div ref={wrapper}>
+      <Wrapper ref={wrapper}>
         <WarpRoute segment={segment} variant={variant} />
-      </div>
+      </Wrapper>
     )
 
   if (walkingRoute)
     return (
-      <div ref={wrapper}>
+      <Wrapper ref={wrapper}>
         <WalkingRoute segment={segment} variant={variant} />
-      </div>
+      </Wrapper>
     )
 
   return (
-    <div ref={wrapper}>
+    <Wrapper ref={wrapper}>
       {singleRoute ? (
         <SingleRoute segment={segment} variant={variant} />
       ) : (
         <MultiRoute segment={segment} variant={variant} />
       )}
-    </div>
+    </Wrapper>
   )
 }
+
+const Wrapper = styled.div`
+  transform: translate(0, 200px);
+  opacity: 0;
+`
