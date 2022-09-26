@@ -145,7 +145,7 @@ const CustomSpinner = styled(Spinner)<{ show: boolean }>`
       height: 0;
       margin: 0;
     `}
-  transition: height 0.5s ease-in-out, margin 0.5s ease-in-out;
+  transition: height 0.1s ease-in-out, margin 0.1s ease-in-out;
 `
 
 const Dropdown = styled.div`

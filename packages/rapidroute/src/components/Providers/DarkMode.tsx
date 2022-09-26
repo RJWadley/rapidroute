@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react"
 
-export const darkModeContext = createContext(false)
+export const darkModeContext = createContext<boolean | undefined>(undefined)
 
 export const setToMatchUserPreference = (
   setDarkMode: (darkMode: boolean) => void
