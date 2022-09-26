@@ -14,7 +14,7 @@ interface SegmentProps {
 }
 
 export default function MultiRoute({ segment, variant }: SegmentProps) {
-  const themeColor = "#eee"
+  const themeColor = "var(--default-card-background)"
   return (
     <Wrapper
       backgroundColor={themeColor}

@@ -13,7 +13,7 @@ interface SegmentProps {
 }
 
 export default function WalkingRoute({ segment, variant }: SegmentProps) {
-  const themeColor = "#eee"
+  const themeColor = "var(--default-card-background)"
 
   const name =
     segment.to.type === "City"

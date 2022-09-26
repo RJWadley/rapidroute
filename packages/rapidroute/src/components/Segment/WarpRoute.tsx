@@ -13,7 +13,7 @@ interface SegmentProps {
 }
 
 export default function WarpRoute({ segment, variant }: SegmentProps) {
-  const themeColor = "#eee"
+  const themeColor = "var(--default-card-background)"
 
   return (
     <Warp

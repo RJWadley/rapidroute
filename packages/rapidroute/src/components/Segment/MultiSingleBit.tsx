@@ -31,7 +31,7 @@ export default function MultiSingleBit({
     route?.type === "MRT"
       ? "https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png"
       : provider?.logo
-  const themeColor = provider?.color?.light ?? "#eeeeee"
+  const themeColor = provider?.color?.light ?? "var(--default-card-background)"
 
   const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
   const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])

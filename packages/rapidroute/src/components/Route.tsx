@@ -7,10 +7,12 @@ import { getPath } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
 import media from "utils/media"
+import useMedia from "utils/useMedia"
 
 import createSegments, { SegmentType } from "./createSegments"
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
+import WillArrive from "./Segment/WillArrive"
 import Spinner from "./Spinner"
 
 interface RouteProps {
@@ -88,6 +90,9 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
     }
   }, [dropdownOpen, segments])
 
+  const destination = segments?.[segments.length - 1].to
+  const isMobile = useMedia(media.mobile)
+
   return (
     <Wrapper>
       <Via>
@@ -104,6 +109,9 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
         {segments?.map(segment => (
           <Segment key={segment.from.uniqueId} segment={segment} />
         ))}
+        {destination && (
+          <WillArrive destination={destination} small={isMobile} />
+        )}
       </Dropdown>
     </Wrapper>
   )

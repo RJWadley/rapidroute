@@ -156,7 +156,7 @@ export default function SearchList({
 const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  background-color: #ddd;
+  background-color: var(--mid-background);
   padding: 30px;
   padding-top: 60px;
   border-radius: 30px;
@@ -179,7 +179,8 @@ const Wrapper = styled.div`
 `
 
 const Option = styled.div<{ selected: boolean }>`
-  background-color: ${props => (props.selected ? "#ccc" : "#ddd")};
+  background-color: ${props =>
+    props.selected ? "var(--dark-background)" : "var(--mid-background)"};
   padding: 5px 6px;
   border-radius: 5px;
   cursor: pointer;

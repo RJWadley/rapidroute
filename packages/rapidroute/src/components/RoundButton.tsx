@@ -28,7 +28,7 @@ const StyledButton = styled.button<{ flipped: boolean }>`
   display: grid;
   place-items: center;
   font-family: "Material Icons";
-  background-color: #7cd48a;
+  background-color: var(--button-green);
   cursor: pointer;
   span {
     rotate: ${props => (props.flipped ? "180deg" : "0deg")};
