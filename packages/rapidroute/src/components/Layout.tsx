@@ -25,7 +25,7 @@ export default function Layout({ children }: LayoutProps) {
 
 const GlobalStyle = createGlobalStyle<{ isDark: boolean }>`
   body {
-    background-color: ${({ isDark }) => (isDark ? "black" : "white")};
+    background-color: ${({ isDark }) => (isDark ? "#111" : "white")};
     font-family: Inter;
   }
 
