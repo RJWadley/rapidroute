@@ -45,9 +45,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
   }, [from, to])
 
   const handleInput = () => {
-    setSearchFor(inputRef.current?.value ?? "")
+    setSearchFor(inputRef.current?.value.replace(/\n/g, "") ?? "")
     setShowSearchList(true)
-    updateSize()
 
     // check for newlines in the input
     if (inputRef.current?.value.includes("\n")) {
@@ -56,7 +55,14 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       if (searchRole === "from") {
         document.getElementById("to")?.focus()
       }
+      // update text to match the context
+      if (searchRole === "from" && from)
+        inputRef.current.value = getTextboxName(from)
+      else if (searchRole === "to" && to)
+        inputRef.current.value = getTextboxName(to)
     }
+
+    updateSize()
   }
 
   const handleBlur = async () => {
