@@ -1,11 +1,11 @@
-import React from "react"
+import React, { ReactNode } from "react"
 
 import styled, { createGlobalStyle } from "styled-components"
 
 import Header from "./Header"
 
 interface LayoutProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export default function Layout({ children }: LayoutProps) {

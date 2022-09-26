@@ -1,9 +1,9 @@
-import React from "react"
+import React, { ReactNode } from "react"
 
 import { RoutingProvider } from "./RoutingContext"
 
 interface ProvidersProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export default function Providers({ children }: ProvidersProps) {

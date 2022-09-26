@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 
 import styled, { css } from "styled-components"
 
@@ -14,9 +14,9 @@ interface SearchBoxProps {
 }
 
 export default function SearchBox({ searchRole }: SearchBoxProps) {
-  const inputRef = React.useRef<HTMLTextAreaElement>(null)
-  const [searchFor, setSearchFor] = React.useState("")
-  const [showSearchList, setShowSearchList] = React.useState(false)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const [searchFor, setSearchFor] = useState("")
+  const [showSearchList, setShowSearchList] = useState(false)
   const { to, from } = useContext(RoutingContext)
 
   // update the search box when the context changes

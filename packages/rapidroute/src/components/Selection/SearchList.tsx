@@ -28,9 +28,7 @@ export default function SearchList({
   searchFor,
 }: SearchListProps): JSX.Element {
   const wrapper = useRef<HTMLDivElement>(null)
-  const [allLocations, setAllLocations] = React.useState<SearchIndex[string][]>(
-    []
-  )
+  const [allLocations, setAllLocations] = useState<SearchIndex[string][]>([])
   const [searchResults, setSearchResults] = useState<SearchIndex[string][]>([])
   const { setFrom, setTo } = useContext(RoutingContext)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
