@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Fragment } from "react"
 
 import styled from "styled-components"
 
@@ -77,9 +77,9 @@ const listify = (arr: string[]) => {
   return (
     <>
       {arr.slice(0, -1).map(str => (
-        <React.Fragment key={str}>
+        <Fragment key={str}>
           <B>{str}</B>,{" "}
-        </React.Fragment>
+        </Fragment>
       ))}
       and <B>{arr[arr.length - 1]}</B>
     </>

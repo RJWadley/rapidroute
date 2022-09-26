@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from "react"
+import React, { createContext, ReactNode, useMemo, useState } from "react"
 
 import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 
 type LocationId = string
 
 // create a provider
-export const RoutingContext = React.createContext<{
+export const RoutingContext = createContext<{
   from: LocationId | null
   to: LocationId | null
   setFrom: (from: LocationId | null) => void
@@ -24,7 +24,7 @@ export const RoutingContext = React.createContext<{
 export function RoutingProvider({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }): JSX.Element {
   const [from, setFrom] = useState<LocationId | null>(null)
   const [to, setTo] = useState<LocationId | null>(null)

@@ -1,7 +1,8 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
+
+import styled, { css } from "styled-components"
 
 import { getTextboxName } from "data/search"
-import styled, { css } from "styled-components"
 import { sleep } from "utils/functions"
 import media from "utils/media"
 
@@ -13,9 +14,9 @@ interface SearchBoxProps {
 }
 
 export default function SearchBox({ searchRole }: SearchBoxProps) {
-  const inputRef = React.useRef<HTMLTextAreaElement>(null)
-  const [searchFor, setSearchFor] = React.useState("")
-  const [showSearchList, setShowSearchList] = React.useState(false)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const [searchFor, setSearchFor] = useState("")
+  const [showSearchList, setShowSearchList] = useState(false)
   const { to, from } = useContext(RoutingContext)
 
   // update the search box when the context changes
@@ -44,9 +45,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
   }, [from, to])
 
   const handleInput = () => {
-    setSearchFor(inputRef.current?.value ?? "")
+    setSearchFor(inputRef.current?.value.replace(/\n/g, "") ?? "")
     setShowSearchList(true)
-    updateSize()
 
     // check for newlines in the input
     if (inputRef.current?.value.includes("\n")) {
@@ -55,7 +55,14 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       if (searchRole === "from") {
         document.getElementById("to")?.focus()
       }
+      // update text to match the context
+      if (searchRole === "from" && from)
+        inputRef.current.value = getTextboxName(from)
+      else if (searchRole === "to" && to)
+        inputRef.current.value = getTextboxName(to)
     }
+
+    updateSize()
   }
 
   const handleBlur = async () => {
@@ -113,7 +120,7 @@ const Label = styled.label`
 `
 
 const Text = styled.textarea<{ isTo: boolean }>`
-  color: #333;
+  color: var(--default-text);
   font-size: 20px;
   height: 0px;
   text-align: ${props => (props.isTo ? "right" : "left")};

@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import React, { useEffect } from "react"
+import React, { MouseEventHandler, ReactNode, useEffect } from "react"
 
 import { navigate as gatsbyNavigate } from "gatsby-link"
 import gsap from "gsap"
@@ -203,7 +203,7 @@ interface TransitionLinkProps {
    */
   transition?: string
   openInNewTab?: boolean
-  children: React.ReactNode
+  children: ReactNode
   className?: string
 }
 
@@ -218,7 +218,7 @@ export function TransitionLink({
   children,
   className = "",
 }: TransitionLinkProps) {
-  const handleClick: React.MouseEventHandler = e => {
+  const handleClick: MouseEventHandler = e => {
     e.preventDefault()
 
     if (openInNewTab) {

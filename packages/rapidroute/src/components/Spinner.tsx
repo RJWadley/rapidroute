@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 
 import gsap from "gsap"
 import styled, { keyframes } from "styled-components"
@@ -10,7 +10,7 @@ export default function Spinner({
   show: boolean
   className?: string
 }) {
-  const wrapperRef = React.useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const t = gsap.to(wrapperRef.current, {

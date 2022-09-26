@@ -3,7 +3,6 @@ import React from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
-import invertLightness from "utils/invertLightness"
 
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 
@@ -13,19 +12,27 @@ interface SegmentProps {
 }
 
 export default function WalkingRoute({ segment, variant }: SegmentProps) {
-  const themeColor = "#eee"
+  const themeColor = "var(--default-card-background)"
+
+  const name =
+    segment.to.type === "City"
+      ? segment.to.name || "Untitled Location"
+      : segment.to.shortName || segment.to.name || "Untitled Location"
+  const detail =
+    segment.to.type === "City" ? segment.to.shortName : segment.to.name
+
+  const isTransfer =
+    segment.to.type === "MRT Station" && segment.from.type === "MRT Station"
 
   return (
-    <WalkWrapper
-      backgroundColor={themeColor}
-      textColor={invertLightness(themeColor)}
-      small={variant === "mobile"}
-    >
-      <WalkIcon small={variant === "mobile"}>directions_walk</WalkIcon>
+    <WalkWrapper backgroundColor={themeColor} small={variant === "mobile"}>
+      <WalkIcon small={variant === "mobile"}>
+        {isTransfer ? "transfer_within_a_station" : "directions_walk"}
+      </WalkIcon>
       <Name>
-        Walk to {segment.to.shortName || segment.to.name || "Untitled Location"}
+        {isTransfer ? "Transfer" : "Walk"} to {name}
       </Name>
-      <RouteNumber>{segment.to.name}</RouteNumber>
+      <RouteNumber>{detail}</RouteNumber>
     </WalkWrapper>
   )
 }

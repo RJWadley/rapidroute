@@ -7,11 +7,12 @@ import React, {
 } from "react"
 
 import { SearchIndex } from "@rapidroute/database-types"
+import gsap from "gsap"
+import styled from "styled-components"
+
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getAll } from "data/getData"
 import { search } from "data/search"
-import gsap from "gsap"
-import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -27,9 +28,7 @@ export default function SearchList({
   searchFor,
 }: SearchListProps): JSX.Element {
   const wrapper = useRef<HTMLDivElement>(null)
-  const [allLocations, setAllLocations] = React.useState<SearchIndex[string][]>(
-    []
-  )
+  const [allLocations, setAllLocations] = useState<SearchIndex[string][]>([])
   const [searchResults, setSearchResults] = useState<SearchIndex[string][]>([])
   const { setFrom, setTo } = useContext(RoutingContext)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
@@ -157,7 +156,7 @@ export default function SearchList({
 const Wrapper = styled.div`
   max-width: 1000px;
   margin: 0 auto;
-  background-color: #ddd;
+  background-color: var(--mid-background);
   padding: 30px;
   padding-top: 60px;
   border-radius: 30px;
@@ -180,7 +179,8 @@ const Wrapper = styled.div`
 `
 
 const Option = styled.div<{ selected: boolean }>`
-  background-color: ${props => (props.selected ? "#ccc" : "#ddd")};
+  background-color: ${props =>
+    props.selected ? "var(--dark-background)" : "var(--mid-background)"};
   padding: 5px 6px;
   border-radius: 5px;
   cursor: pointer;

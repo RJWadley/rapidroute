@@ -1,7 +1,7 @@
 /* eslint-disable ssr-friendly/no-dom-globals-in-module-scope */
 /* eslint-disable no-console */
 import "the-new-css-reset/css/reset.css"
-import React from "react"
+import React, { ReactNode } from "react"
 
 import gsap from "gsap"
 import Flip from "gsap/Flip"
@@ -11,10 +11,10 @@ import Providers from "components/Providers"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
 
-export const wrapRootElement = ({ element }: { element: React.ReactNode }) => {
+export const wrapRootElement = ({ element }: { element: ReactNode }) => {
   return <Providers>{element}</Providers>
 }
 
-export const wrapPageElement = ({ element }: { element: React.ReactNode }) => {
+export const wrapPageElement = ({ element }: { element: ReactNode }) => {
   return element
 }

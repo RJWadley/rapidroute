@@ -1,14 +1,13 @@
 import styled, { css } from "styled-components"
 
+import invertLightness from "utils/invertLightness"
+
 export const Wrapper = styled.div<{
   backgroundColor: string
-  textColor: string
   small: boolean
 }>`
-  ${({ backgroundColor, textColor }) => css`
-    background-color: ${backgroundColor};
-    color: ${textColor};
-  `}
+  background-color: ${props => props.backgroundColor};
+  color: ${props => invertLightness(props.backgroundColor)};
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
   padding: 30px;
   border-radius: 30px;

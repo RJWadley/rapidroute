@@ -93,7 +93,7 @@ const FilterButton = styled.button`
   margin: 10px 30px;
   font-size: 16px;
   font-weight: 300;
-  color: #555;
+  color: var(--low-contrast-text);
   cursor: pointer;
 `
 
@@ -104,7 +104,7 @@ const Filters = styled.div`
 `
 
 const Selection = styled.div<{ active: boolean }>`
-  background-color: #eee;
+  background-color: var(--default-card-background);
   padding: 20px 30px 20px 60px;
   border-radius: 20px;
   cursor: pointer;
@@ -123,7 +123,7 @@ const Selection = styled.div<{ active: boolean }>`
     left: 35px;
     width: 2px;
     height: 20px;
-    background-color: #333;
+    background-color: var(--default-text);
     rotate: 45deg;
     border-radius: 2px;
     transition: all 0.2s ease-in-out;
@@ -135,7 +135,7 @@ const Selection = styled.div<{ active: boolean }>`
     left: 35px;
     width: 2px;
     height: 20px;
-    background-color: #333;
+    background-color: var(--default-text);
     rotate: -45deg;
     border-radius: 2px;
     transition: all 0.2s ease-in-out;
@@ -145,7 +145,7 @@ const Selection = styled.div<{ active: boolean }>`
   ${({ active }) =>
     active &&
     css`
-      background-color: #cff4d5;
+      background-color: var(--background-green);
       font-weight: bold;
       letter-spacing: 0;
 

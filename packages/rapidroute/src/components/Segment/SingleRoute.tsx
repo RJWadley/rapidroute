@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from "react"
+import React, { useContext, useMemo, useState } from "react"
 
 import { Provider } from "@rapidroute/database-types"
 
 import { SegmentType } from "components/createSegments"
+import { darkModeContext } from "components/Providers/DarkMode"
 import invertLightness from "utils/invertLightness"
 
 import getProvider from "./getProvider"
@@ -40,6 +41,7 @@ export const expandGate = (gateString: string | null | undefined) => {
 export default function SingleRoute({ segment, variant }: SegmentProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
   const route = segment.routes[0]
+  const isDark = useContext(darkModeContext)
 
   useMemo(() => {
     if (route) getProvider(route, setProvider)
@@ -49,7 +51,10 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
     route?.type === "MRT"
       ? "https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png"
       : provider?.logo
-  const themeColor = provider?.color?.light ?? "#eeeeee"
+
+  const themeColor =
+    (isDark ? provider?.color?.dark : provider?.color?.light) ??
+    "var(--default-card-background)"
 
   const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])
   const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
@@ -70,11 +75,7 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
   }
 
   return (
-    <Wrapper
-      backgroundColor={themeColor}
-      textColor={invertLightness(themeColor)}
-      small={variant === "mobile"}
-    >
+    <Wrapper backgroundColor={themeColor} small={variant === "mobile"}>
       <Left>
         <ProviderName>
           {image && (
