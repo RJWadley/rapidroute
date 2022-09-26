@@ -8,14 +8,24 @@
  */
 export default function invertLightness(color: string) {
   let colorToInvert = color
-  if (color.length === 4) {
-    colorToInvert = color.replace(
+
+  if (colorToInvert.includes("var")) {
+    return colorToInvert.replace("var(--", "var(--invert-")
+  }
+
+  if (colorToInvert.length === 4) {
+    colorToInvert = colorToInvert.replace(
       /#([0-9a-f])([0-9a-f])([0-9a-f])/i,
       "#$1$1$2$2$3$3"
     )
   }
 
   const [h, s, l] = hexToHSL(colorToInvert)
+
+  if (Number.isNaN(h) || Number.isNaN(s) || Number.isNaN(l)) {
+    console.log("INVALID COLOR", color, colorToInvert)
+  }
+
   const newL = l > 0.5 ? 0.15 : 0.85
   return `hsl(${h * 360}, ${s * 100}%, ${newL * 100}%)`
 }

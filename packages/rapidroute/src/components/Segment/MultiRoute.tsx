@@ -3,7 +3,6 @@ import React from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
-import invertLightness from "utils/invertLightness"
 
 import MultiSingleBit from "./MultiSingleBit"
 import { Left, LongNames, Symbols, Wrapper } from "./sharedComponents"
@@ -16,11 +15,7 @@ interface SegmentProps {
 export default function MultiRoute({ segment, variant }: SegmentProps) {
   const themeColor = "var(--default-card-background)"
   return (
-    <Wrapper
-      backgroundColor={themeColor}
-      textColor={invertLightness(themeColor)}
-      small={variant === "mobile"}
-    >
+    <Wrapper backgroundColor={themeColor} small={variant === "mobile"}>
       <Left>
         {segment.routes.map(
           route =>

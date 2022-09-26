@@ -3,7 +3,6 @@ import React from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
-import invertLightness from "utils/invertLightness"
 
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 
@@ -26,11 +25,7 @@ export default function WalkingRoute({ segment, variant }: SegmentProps) {
     segment.to.type === "MRT Station" && segment.from.type === "MRT Station"
 
   return (
-    <WalkWrapper
-      backgroundColor={themeColor}
-      textColor={invertLightness(themeColor)}
-      small={variant === "mobile"}
-    >
+    <WalkWrapper backgroundColor={themeColor} small={variant === "mobile"}>
       <WalkIcon small={variant === "mobile"}>
         {isTransfer ? "transfer_within_a_station" : "directions_walk"}
       </WalkIcon>

@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from "react"
+import React, { useContext, useMemo, useState } from "react"
 
 import { Provider, Route } from "@rapidroute/database-types"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
+import { darkModeContext } from "components/Providers/DarkMode"
 import invertLightness from "utils/invertLightness"
 
 import getProvider from "./getProvider"
@@ -22,6 +23,7 @@ export default function MultiSingleBit({
   variant,
 }: MultiSingleBitProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
+  const isDark = useContext(darkModeContext)
 
   useMemo(() => {
     getProvider(route, setProvider)
@@ -31,7 +33,9 @@ export default function MultiSingleBit({
     route?.type === "MRT"
       ? "https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png"
       : provider?.logo
-  const themeColor = provider?.color?.light ?? "var(--default-card-background)"
+  const themeColor =
+    (isDark ? provider?.color?.dark : provider?.color?.light) ??
+    "var(--default-card-background)"
 
   const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
   const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])

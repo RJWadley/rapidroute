@@ -3,7 +3,6 @@ import React from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
-import invertLightness from "utils/invertLightness"
 
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 
@@ -16,11 +15,7 @@ export default function WarpRoute({ segment, variant }: SegmentProps) {
   const themeColor = "var(--default-card-background)"
 
   return (
-    <Warp
-      backgroundColor={themeColor}
-      textColor={invertLightness(themeColor)}
-      small={variant === "mobile"}
-    >
+    <Warp backgroundColor={themeColor} small={variant === "mobile"}>
       <WarpIcon small={variant === "mobile"}>switch_access_shortcut</WarpIcon>
       <Name>
         Warp to {segment.to.shortName || segment.to.name || "Untitled Location"}

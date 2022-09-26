@@ -42,7 +42,7 @@ const SearchContainer = styled.div<{ isDark: boolean }>`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: ${({ isDark }) => (isDark ? "#000" : "#eee")};
+    background-color: ${({ isDark }) => (isDark ? "#333" : "#eee")};
     border-radius: 30px;
     z-index: -1;
   }

@@ -3,6 +3,8 @@ import React from "react"
 import { Location } from "@rapidroute/database-types"
 import styled from "styled-components"
 
+import invertLightness from "utils/invertLightness"
+
 interface WillArriveProps {
   small: boolean
   destination: Location
@@ -22,6 +24,7 @@ export default function WillArrive({ small, destination }: WillArriveProps) {
 
 const Wrapper = styled.div`
   background-color: var(--background-green);
+  color: ${invertLightness("var(--background-green)")};
   border-radius: 30px;
   padding: 30px;
   display: flex;
