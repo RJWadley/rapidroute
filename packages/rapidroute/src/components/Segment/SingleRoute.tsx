@@ -1,6 +1,7 @@
 import React, { useContext, useMemo, useState } from "react"
 
 import { Provider } from "@rapidroute/database-types"
+import styled from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
@@ -74,6 +75,10 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
       routeNumberMessage = ""
   }
 
+  const letterCode = route?.type === "MRT" && provider?.name.charAt(1)
+  const providerName =
+    route?.type === "MRT" ? provider?.name.slice(3) : provider?.name
+
   return (
     <Wrapper backgroundColor={themeColor} small={variant === "mobile"}>
       <Left>
@@ -88,7 +93,12 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
             </Logo>
           )}
           <div>
-            <Name>{provider?.name ?? "Loading name..."}</Name>
+            <Name>
+              {letterCode && (
+                <Box color={invertLightness(themeColor)}>{letterCode}</Box>
+              )}
+              {providerName ?? "Loading name..."}
+            </Name>
             <RouteNumber>{routeNumberMessage}</RouteNumber>
           </div>
         </ProviderName>
@@ -111,3 +121,15 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
     </Wrapper>
   )
 }
+
+const Box = styled.span<{ color: string }>`
+  display: inline-flex;
+  border: 3px solid ${({ color }) => color};
+  padding: 2px;
+  margin-right: 5px;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+`
