@@ -6,6 +6,7 @@ import styled from "styled-components"
 import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
 import invertLightness from "utils/invertLightness"
+import media from "utils/media"
 
 import getProvider from "./getProvider"
 import {
@@ -132,4 +133,11 @@ const Box = styled.span<{ color: string }>`
   justify-content: center;
   align-items: center;
   border-radius: 10px;
+
+  @media ${media.mobile} {
+    width: 30px;
+    height: 30px;
+    border-width: 2px;
+    border-radius: 8px;
+  }
 `
