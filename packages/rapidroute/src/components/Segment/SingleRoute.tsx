@@ -34,8 +34,8 @@ export const expandGate = (gateString: string | null | undefined) => {
     toGate?.toLowerCase().includes("gate")
   )
     return toGate
-  const expandedToGate = toGate.match(/Tt/g)
-    ? toGate.split(" ").join(" Gate ").replace(/Tt/g, "Terminal ")
+  const expandedToGate = toGate.match(/T/g)
+    ? toGate.split(" ").join(" Gate ").replace(/T/g, "Terminal ")
     : `Gate ${toGate}`
   return expandedToGate
 }
