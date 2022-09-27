@@ -170,5 +170,5 @@ const Message = styled.div<{ show: boolean }>`
 `
 
 const ResultsWrapper = styled.div`
-  margin-bottom: 100vh;
+  margin-bottom: 50vh;
 `
