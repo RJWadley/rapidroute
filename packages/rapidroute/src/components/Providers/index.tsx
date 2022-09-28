@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react"
 
 import { DarkModeProvider } from "./DarkMode"
+import { NavigationProvider } from "./NavigationContext"
 import { RoutingProvider } from "./RoutingContext"
 
 interface ProvidersProps {
@@ -10,7 +11,9 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <RoutingProvider>
-      <DarkModeProvider>{children}</DarkModeProvider>
+      <NavigationProvider>
+        <DarkModeProvider>{children}</DarkModeProvider>
+      </NavigationProvider>
     </RoutingProvider>
   )
 }

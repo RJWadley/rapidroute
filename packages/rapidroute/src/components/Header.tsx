@@ -1,12 +1,13 @@
 import React from "react"
 
+import { navigate } from "gatsby"
 import styled from "styled-components"
 
 import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
 
 export default function Header() {
   return (
-    <Wrapper>
+    <Wrapper onClick={() => navigate("/")}>
       <StyledLogo />
       <Text>
         <div>

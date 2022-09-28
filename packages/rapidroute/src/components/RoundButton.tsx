@@ -14,7 +14,7 @@ interface RoundButtonProps {
 export default function RoundButton({
   onClick,
   children,
-  flipped = true,
+  flipped = false,
   className = "",
 }: RoundButtonProps) {
   return (
@@ -25,15 +25,18 @@ export default function RoundButton({
 }
 
 const StyledButton = styled.button<{ flipped: boolean }>`
-  display: grid;
-  place-items: center;
-  font-family: "Material Icons";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
   background-color: var(--button-green);
   color: var(--invert-button-green);
   cursor: pointer;
-  span {
+  * {
     rotate: ${props => (props.flipped ? "180deg" : "0deg")};
     transition: rotate 0.5s ease-in-out;
+    height: 80px;
   }
   width: 80px;
   height: 80px;
@@ -44,6 +47,9 @@ const StyledButton = styled.button<{ flipped: boolean }>`
   @media ${media.mobile} {
     width: 50px;
     height: 50px;
+    * {
+      height: 50px;
+    }
     border-radius: 15px;
     font-size: 40px;
   }

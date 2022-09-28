@@ -12,6 +12,7 @@ import useMedia from "utils/useMedia"
 import createSegments, { SegmentType } from "./createSegments"
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
+import BeginNavigation from "./Segment/BeginNavigation"
 import WillArrive from "./Segment/WillArrive"
 import Spinner from "./Spinner"
 
@@ -106,6 +107,11 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
       </Via>
       <CustomSpinner show={dropdownOpen && !segments} />
       <Dropdown ref={dropdownContent}>
+        <BeginNavigation
+          small={isMobile}
+          route={route.path}
+          segments={segments}
+        />
         {segments?.map(segment => (
           <Segment key={segment.from.uniqueId} segment={segment} />
         ))}

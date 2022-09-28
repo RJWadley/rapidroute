@@ -38,7 +38,7 @@ const Warp = styled(Wrapper)`
 `
 
 const WarpIcon = styled.div<{ small: boolean }>`
-  font-family: "Material Icons";
+  font-family: "Material Symbols Outlined";
   font-size: ${props => (props.small ? "40px" : "60px")};
   grid-row: ${props => props.small && "span 2"};
   rotate: 90deg;
