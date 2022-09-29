@@ -25,7 +25,9 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "styled-components": "^5.3.5",
-    "the-new-css-reset": "^1.7.3"
+    "the-new-css-reset": "^1.7.3",
+    "@types/fabric": "^4.5.12",
+    "fabric": "^5.2.4"
   },
   "devDependencies": {
     "@rapidroute/eslint-config-base": "^1.0.0",
