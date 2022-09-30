@@ -62,7 +62,7 @@ function renderTilesInRange(
         img.src = tile.url
         tilesMap[tile.id] = img
         img.onload = () => {
-          canvas.renderAll()
+          canvas.requestRenderAll()
         }
       }
       // check if the image is loaded and not broken

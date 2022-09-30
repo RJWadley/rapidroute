@@ -5,7 +5,7 @@ export default function renderAllObjects(canvas: fabric.Canvas) {
   const rect = new fabric.Rect({
     left: 100,
     top: 100,
-    fill: "green",
+    fill: "red",
     width: 50,
     height: 50,
     selectable: false,
@@ -19,7 +19,7 @@ export default function renderAllObjects(canvas: fabric.Canvas) {
 
     // select the object
     canvas.setActiveObject(rect)
-    canvas.renderAll()
+    canvas.requestRenderAll()
   })
   rect.on("mousedown", event => {
     // if touch event, set selectable to true
@@ -33,7 +33,7 @@ export default function renderAllObjects(canvas: fabric.Canvas) {
   })
   rect.on("deselected", () => {
     rect.selectable = false
-    rect.set("fill", "green")
-    canvas.renderAll()
+    rect.set("fill", "red")
+    canvas.requestRenderAll()
   })
 }

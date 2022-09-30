@@ -9,6 +9,7 @@ import handlePinchToZoom, {
 import renderAllObjects from "./renderAllObjects"
 import renderBackground from "./renderBackground"
 import renderDynmapMarkers from "./renderDynmapMarkers"
+import renderPlayers from "./renderPlayers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
 export default function MapCanvas() {
@@ -18,7 +19,6 @@ export default function MapCanvas() {
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
         selection: false,
-        imageSmoothingEnabled: false,
       })
       fabric.Object.prototype.transparentCorners = false
       canvas.setDimensions({
@@ -27,10 +27,21 @@ export default function MapCanvas() {
         height:
           canvasRef.current.parentElement?.parentElement?.offsetHeight || 100,
       })
-      canvas.renderAll()
+
+      // start centered on 0,0 and zoomed out
+      const initialZoom = 0.02
+      const vpt = canvas.viewportTransform
+      if (vpt) {
+        vpt[4] = window.innerWidth / 2 / initialZoom
+        vpt[5] = window.innerHeight / 2 / initialZoom
+      }
+      canvas.setZoom(initialZoom)
+
+      canvas.requestRenderAll()
       renderAllObjects(canvas)
       setupPanAndZoom(canvas)
       renderDynmapMarkers(canvas)
+      const clearPlayers = renderPlayers(canvas)
 
       // before render
       canvas.on("before:render", () => {
@@ -48,7 +59,7 @@ export default function MapCanvas() {
               canvasRef.current.parentElement?.parentElement?.offsetHeight ||
               100,
           })
-        canvas.renderAll()
+        canvas.requestRenderAll()
       }
 
       window.addEventListener("resize", resize)
@@ -62,6 +73,7 @@ export default function MapCanvas() {
         window.removeEventListener("touchmove", touchHandler)
         window.removeEventListener("touchend", handleTouchEnd)
         window.removeEventListener("touchstart", handleTouchStart)
+        clearPlayers()
       }
     }
     return () => {}
