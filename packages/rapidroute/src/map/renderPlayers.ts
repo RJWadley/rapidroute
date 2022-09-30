@@ -17,7 +17,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
   )
     .then(response => response.json())
     .then(async (data: WorldInfo) => {
-      const { players } = data
+      const players = data.players.filter(x => x.world === "new")
 
       const allProms = players.map(
         player =>
@@ -35,7 +35,6 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
       players.forEach(player => {
         if (!playerUUIDs[player.name]) return
-        console.log("updating player", player.name)
         // if player already on map, update their position
         if (previousPlayerRects[player.name]) {
           // tween to new position over 5 seconds
@@ -50,7 +49,6 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             onChange: () => canvas.requestRenderAll(),
           })
         } else {
-          console.log("creating new player", player.name)
           // otherwise, add them to the map
           const playerImageURL = `https://crafatar.com/avatars/${
             playerUUIDs[player.name]

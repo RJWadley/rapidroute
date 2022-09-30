@@ -86,7 +86,11 @@ function renderMRTMarkers(canvas: fabric.Canvas, data: MrtTypes) {
           ctx.beginPath()
           if (!previousPoint) previousPoint = startPoint
           ctx.moveTo(previousPoint.x, previousPoint.y)
-          if (getDistance(startPoint, endPoint) > simplifyThreshold) {
+          if (
+            getDistance(startPoint, endPoint) > simplifyThreshold ||
+            i === 0 ||
+            i === points.length - 2
+          ) {
             ctx.lineTo(endPoint.x, endPoint.y)
             previousPoint = endPoint
           }
@@ -118,7 +122,11 @@ function renderMRTMarkers(canvas: fabric.Canvas, data: MrtTypes) {
           ctx.beginPath()
           if (!previousPoint) previousPoint = startPoint
           ctx.moveTo(previousPoint.x, previousPoint.y)
-          if (getDistance(startPoint, endPoint) > simplifyThreshold) {
+          if (
+            getDistance(startPoint, endPoint) > simplifyThreshold ||
+            i === 0 ||
+            i === points.length - 2
+          ) {
             ctx.lineTo(endPoint.x, endPoint.y)
             previousPoint = endPoint
           }
