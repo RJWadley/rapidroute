@@ -3,7 +3,8 @@
   "scripts": {
     "build": "tsc",
     "start": "(npx tsc || exit 0) && node dist/src/index.js",
-    "lint": "npx eslint . --fix"
+    "lint": "npx eslint . --fix",
+    "clean": "rm -rf dist"
   },
   "engines": {
     "node": "16"
