@@ -8,6 +8,7 @@ import handlePinchToZoom, {
 } from "./pinchToZoom"
 import renderAllObjects from "./renderAllObjects"
 import renderBackground from "./renderBackground"
+import renderDynmapMarkers from "./renderDynmapMarkers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
 export default function MapCanvas() {
@@ -17,6 +18,7 @@ export default function MapCanvas() {
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
         selection: false,
+        imageSmoothingEnabled: false,
       })
       fabric.Object.prototype.transparentCorners = false
       canvas.setDimensions({
@@ -28,6 +30,7 @@ export default function MapCanvas() {
       canvas.renderAll()
       renderAllObjects(canvas)
       setupPanAndZoom(canvas)
+      renderDynmapMarkers(canvas)
 
       // before render
       canvas.on("before:render", () => {
