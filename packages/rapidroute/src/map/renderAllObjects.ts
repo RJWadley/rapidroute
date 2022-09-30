@@ -15,17 +15,23 @@ export default function renderAllObjects(canvas: fabric.Canvas) {
 
   // on double click or tap, add a new rectangle
   rect.on("mousedblclick", () => {
-    console.log("double clicked")
     rect.selectable = true
-    rect.set("fill", "blue")
 
     // select the object
     canvas.setActiveObject(rect)
-
     canvas.renderAll()
   })
+  rect.on("mousedown", event => {
+    // if touch event, set selectable to true
+    if (event.e.type === "touchstart") {
+      rect.selectable = true
+    }
+  })
+  rect.on("selected", () => {
+    // transparent blue background
+    rect.set("fill", "rgba(0, 0, 255, 0.5)")
+  })
   rect.on("deselected", () => {
-    console.log("deselected")
     rect.selectable = false
     rect.set("fill", "green")
     canvas.renderAll()
