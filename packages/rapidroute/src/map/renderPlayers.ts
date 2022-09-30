@@ -2,10 +2,16 @@ import { fabric } from "fabric"
 
 import { WorldInfo } from "./worldInfoType"
 
+function easeLinear(t: number, b: number, c: number, d: number) {
+  return b + (t / d) * c
+}
+
 let previousPlayers = []
 const previousPlayerRects: Record<string, fabric.Image> = {}
 const playerUUIDs: Record<string, string> = {}
 const updatePlayers = (canvas: fabric.Canvas) => {
+  const imageWidth = () => 3 * Math.max(5, 10 * canvas.getZoom())
+
   fetch(
     "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
   )
@@ -35,10 +41,12 @@ const updatePlayers = (canvas: fabric.Canvas) => {
           // tween to new position over 5 seconds
           previousPlayerRects[player.name].animate("left", player.x, {
             duration: 5000,
+            easing: easeLinear,
             onChange: () => canvas.requestRenderAll(),
           })
           previousPlayerRects[player.name].animate("top", player.z, {
             duration: 5000,
+            easing: easeLinear,
             onChange: () => canvas.requestRenderAll(),
           })
         } else {
@@ -54,20 +62,22 @@ const updatePlayers = (canvas: fabric.Canvas) => {
               left: player.x,
               top: player.z,
               selectable: false,
+              originX: "center",
+              originY: "center",
             })
-            img.scaleToWidth(3 * Math.max(5, 10 * canvas.getZoom()))
-            img.scaleToHeight(3 * Math.max(5, 10 * canvas.getZoom()))
+            img.scaleToWidth(imageWidth())
+            img.scaleToHeight(imageWidth())
             canvas.add(img)
             previousPlayerRects[player.name] = img
 
             // on zoom, scale
             canvas.on("mouse:wheel", () => {
-              img.scaleToWidth(3 * Math.max(5, 10 * canvas.getZoom()))
-              img.scaleToHeight(3 * Math.max(5, 10 * canvas.getZoom()))
+              img.scaleToWidth(imageWidth())
+              img.scaleToHeight(imageWidth())
             })
             canvas.on("mouse:move", () => {
-              img.scaleToWidth(3 * Math.max(5, 10 * canvas.getZoom()))
-              img.scaleToHeight(3 * Math.max(5, 10 * canvas.getZoom()))
+              img.scaleToWidth(imageWidth())
+              img.scaleToHeight(imageWidth())
             })
           })
         }
