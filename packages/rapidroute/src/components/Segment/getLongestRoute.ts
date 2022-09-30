@@ -1,4 +1,4 @@
-import { shortHandMap } from "@rapidroute/database-types"
+import { shortHandMapKeys } from "@rapidroute/database-types"
 
 import { getAll } from "data/getData"
 
@@ -32,9 +32,7 @@ getAll("pathfinding").then(data => {
       const placeA = allPlaces[i]
       const placeB = allPlaces[j]
 
-      const modes = Object.keys(shortHandMap) as Array<
-        keyof typeof shortHandMap
-      >
+      const modes = shortHandMapKeys
       for (let k = 0; k < modes.length; k += 1) {
         const mode = modes[k]
 

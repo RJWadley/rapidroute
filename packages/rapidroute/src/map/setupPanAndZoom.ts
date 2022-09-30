@@ -35,6 +35,7 @@ export default function setupPanAndZoom(canvas: fabric.Canvas) {
     deltaY = 0
   })
   canvas.on("mouse:move", opt => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const e = opt.e as TouchEvent | MouseEvent
     // detect multi touch
     if ("touches" in e && e.touches && e.touches.length > 1) {

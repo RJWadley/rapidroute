@@ -1,4 +1,4 @@
-import { shortHandMap } from "@rapidroute/database-types"
+import { shortHandMapKeys } from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
 import { rawNodes } from "./mapEdges"
@@ -22,9 +22,7 @@ export default async function createCoordinateEdges(
       return { to: nodeId, distance }
     })
     .filter(({ to }) => {
-      const shortTypes = Object.keys(
-        shortHandMap
-      ) as (keyof typeof shortHandMap)[]
+      const shortTypes = shortHandMapKeys
       return shortTypes.some(routeTypeShort => {
         const routes = nodes[to][routeTypeShort]
         return !!routes

@@ -141,11 +141,10 @@ export async function getAll<T extends keyof DatabaseType>(
         })
 
         // filter out values that don't match the type guard
-        ;(Object.keys(rawData) as (keyof typeof rawData)[]).forEach(key => {
+        Object.entries(rawData).forEach(([key, item]) => {
           // if key is a symbol, it's not a valid key
           if (typeof key === "symbol") return
 
-          const item = rawData[key]
           if (databaseTypeGuards[type](item)) {
             data[key] = item
           } else {

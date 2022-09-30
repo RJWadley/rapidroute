@@ -5,6 +5,7 @@ import {
   PathingPlace,
   reverseShortHandMap,
   shortHandMap,
+  shortHandMapKeys,
 } from "./src/pathfinding"
 import { Providers, Provider, isProvider } from "./src/providers"
 import { Routes, Route, RouteMode, RouteLocations, isRoute } from "./src/routes"
@@ -73,6 +74,7 @@ export {
   RouteMode,
   shortHandMap,
   reverseShortHandMap,
+  shortHandMapKeys,
   RouteLocations,
   PlaceType,
 }

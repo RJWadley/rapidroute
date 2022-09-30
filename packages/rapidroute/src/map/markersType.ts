@@ -288,6 +288,29 @@ type MRTLines =
   | "desert"
   | "circle"
 
+export const isMRTLine = (line: string): line is MRTLines => {
+  return (
+    line === "southern" ||
+    line === "forest" ||
+    line === "arctic" ||
+    line === "northern" ||
+    line === "zephyr" ||
+    line === "mesa" ||
+    line === "plains" ||
+    line === "expo" ||
+    line === "eastern" ||
+    line === "island" ||
+    line === "taiga" ||
+    line === "savannah" ||
+    line === "lakeshore" ||
+    line === "valley" ||
+    line === "western" ||
+    line === "jungle" ||
+    line === "desert" ||
+    line === "circle"
+  )
+}
+
 export type MrtTypes = Markers["sets"][MRTLines]
 
 export type MrtLinesTypes = MrtTypes["lines"]
