@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { fabric } from "fabric"
 
 import invertLightness from "utils/invertLightness"
@@ -19,80 +20,8 @@ export default function renderMRTMarkers(
 
   combinedLines.forEach(points => {
     canvas.on("before:render", () => {
-      const ctx = canvas.getContext()
-
-      const stroked: boolean[] = []
-      const simplifyThreshold = 3
-
-      let previousPoint: { x: number; y: number } | undefined
-      // draw any line segments that are on screen
-      for (let i = 0; i < points.length - 1; i += 1) {
-        const p1 = points[i]
-        const p2 = points[i + 1]
-
-        if (lineIsOnScreen(p1, p2, canvas)) {
-          const startPoint = fabric.util.transformPoint(
-            new fabric.Point(p1.x, p1.y),
-            canvas.viewportTransform || []
-          )
-          const endPoint = fabric.util.transformPoint(
-            new fabric.Point(p2.x, p2.y),
-            canvas.viewportTransform || []
-          )
-          ctx.beginPath()
-          if (!previousPoint) previousPoint = startPoint
-          ctx.moveTo(previousPoint.x, previousPoint.y)
-          if (
-            getDistance(startPoint, endPoint) > simplifyThreshold ||
-            i === 0 ||
-            i === points.length - 2
-          ) {
-            ctx.lineTo(endPoint.x, endPoint.y)
-            previousPoint = endPoint
-          }
-          ctx.strokeStyle = "black"
-          ctx.lineWidth = 1.5 * Math.max(5, 5 * canvas.getZoom())
-          ctx.lineCap = "round"
-          ctx.stroke()
-          ctx.closePath()
-          stroked[i] = true
-        } else {
-          previousPoint = undefined
-        }
-      }
-
-      previousPoint = undefined
-      // go through stroked segments and draw the caps
-      for (let i = 0; i < points.length - 1; i += 1) {
-        if (stroked[i]) {
-          const p1 = points[i]
-          const p2 = points[i + 1]
-          const startPoint = fabric.util.transformPoint(
-            new fabric.Point(p1.x, p1.y),
-            canvas.viewportTransform || []
-          )
-          const endPoint = fabric.util.transformPoint(
-            new fabric.Point(p2.x, p2.y),
-            canvas.viewportTransform || []
-          )
-          ctx.beginPath()
-          if (!previousPoint) previousPoint = startPoint
-          ctx.moveTo(previousPoint.x, previousPoint.y)
-          if (
-            getDistance(startPoint, endPoint) > simplifyThreshold ||
-            i === 0 ||
-            i === points.length - 2
-          ) {
-            ctx.lineTo(endPoint.x, endPoint.y)
-            previousPoint = endPoint
-          }
-          ctx.strokeStyle = line?.color || "orange"
-          ctx.lineWidth = Math.max(5, 5 * canvas.getZoom())
-          ctx.stroke()
-        } else {
-          previousPoint = undefined
-        }
-      }
+      drawLine(canvas, points, "black", 1.5)
+      drawLine(canvas, points, line?.color, 1)
     })
 
     const { markers } = data
@@ -188,4 +117,56 @@ const getDistance = (
   const xDiff = p1.x - p2.x
   const yDiff = p1.y - p2.y
   return Math.sqrt(xDiff * xDiff + yDiff * yDiff)
+}
+
+const drawLine = (
+  canvas: fabric.Canvas,
+  points: { x: number; y: number }[],
+  color?: string,
+  width = 1
+) => {
+  let previousPoint: { x: number; y: number } | undefined
+  const simplifyThreshold = 4
+  const importantLineThreshold = 10
+  const ctx = canvas.getContext()
+  // draw any line segments that are on screen
+  ctx.beginPath()
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const p1 = points[i]
+    const p2 = points[i + 1]
+
+    if (lineIsOnScreen(p1, p2, canvas)) {
+      const startPoint = fabric.util.transformPoint(
+        new fabric.Point(p1.x, p1.y),
+        canvas.viewportTransform || []
+      )
+      const endPoint = fabric.util.transformPoint(
+        new fabric.Point(p2.x, p2.y),
+        canvas.viewportTransform || []
+      )
+      if (!previousPoint) previousPoint = startPoint
+      ctx.moveTo(previousPoint.x, previousPoint.y)
+      if (
+        previousPoint !== startPoint &&
+        getDistance(startPoint, endPoint) > importantLineThreshold
+      ) {
+        ctx.lineTo(startPoint.x, startPoint.y)
+      }
+      if (
+        getDistance(previousPoint, endPoint) > simplifyThreshold ||
+        i === 0 ||
+        i === points.length - 2
+      ) {
+        ctx.lineTo(endPoint.x, endPoint.y)
+        previousPoint = endPoint
+      }
+      ctx.strokeStyle = color || "black"
+      ctx.lineWidth = width * Math.max(5, 5 * canvas.getZoom())
+      ctx.lineCap = "round"
+    } else {
+      previousPoint = undefined
+    }
+  }
+  ctx.stroke()
+  ctx.closePath()
 }

@@ -1,36 +1,5 @@
 import { fabric } from "fabric"
 
-// canvas.on({
-//   "object:selected": function () {
-//     pausePanning = true
-//   },
-//   "selection:cleared": function () {
-//     pausePanning = false
-//   },
-//   "touch:drag": function (e) {
-//     if (
-//       pausePanning == false &&
-//       undefined != e.e.layerX &&
-//       undefined != e.e.layerY
-//     ) {
-//       currentX = e.e.layerX
-//       currentY = e.e.layerY
-//       xChange = currentX - lastX
-//       yChange = currentY - lastY
-
-//       if (
-//         Math.abs(currentX - lastX) <= 50 &&
-//         Math.abs(currentY - lastY) <= 50
-//       ) {
-//         const delta = new fabric.Point(xChange, yChange)
-//         canvas.relativePan(delta)
-//       }
-
-//       lastX = e.e.layerX
-//       lastY = e.e.layerY
-//     }
-//   },
-// })
 let lastDistance = 0
 const last10dz: number[] = []
 let dz = 0
