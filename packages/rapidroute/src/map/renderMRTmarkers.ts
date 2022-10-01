@@ -4,10 +4,7 @@ import { fabric } from "fabric"
 import invertLightness from "utils/invertLightness"
 
 import lineIsOnScreen from "./lineIsOnScreen"
-import { Marker, MrtTypes } from "./markersType"
-
-const allMarkers: Marker[] = []
-const lineColors: Record<string, string> = {}
+import { MrtTypes } from "./markersType"
 
 export default function renderMRTMarkers(
   canvas: fabric.Canvas,
@@ -30,18 +27,6 @@ export default function renderMRTMarkers(
 
   const { markers } = data
   const markerList = Object.values(markers)
-  allMarkers.push(...markerList)
-  lineColors[markerList[0].icon] = line?.color || "black"
-
-  // any markers within 5 units of each other are combined
-  const sharedMarkers: Marker[][] = allMarkers.flatMap(marker => {
-    const shared = markerList.filter(m => {
-      const xDiff = Math.abs(m.x - marker.x)
-      const yDiff = Math.abs(m.z - marker.z)
-      return xDiff < 50 && yDiff < 50 && m.icon !== marker.icon
-    })
-    return shared.length > 0 ? [[marker, ...shared]] : []
-  })
 
   markerList.forEach(marker => {
     const { x, z } = marker
@@ -66,36 +51,6 @@ export default function renderMRTMarkers(
         ctx.lineWidth = 5 * canvas.getZoom()
         ctx.fill()
         ctx.stroke()
-      }
-    })
-  })
-
-  sharedMarkers.forEach(markersHere => {
-    canvas.on("before:render", () => {
-      const firstMarker = markersHere[0]
-      const averageX = markersHere.reduce((sum, m) => sum + m.x, 0) / 2
-      const averageZ = markersHere.reduce((sum, m) => sum + m.z, 0) / 2
-      for (let i = markersHere.length - 1; i >= 0; i -= 1) {
-        // draw a circle around the marker location
-        const ctx = canvas.getContext()
-        const { x, z } = firstMarker
-        const radius = 100 * i * canvas.getZoom()
-
-        if (canvas.getZoom() < 0.1) return
-
-        if (lineIsOnScreen({ x, y: z + 32 }, { x, y: z + 32 }, canvas)) {
-          const point = fabric.util.transformPoint(
-            new fabric.Point(averageX, averageZ + 32),
-            canvas.viewportTransform || []
-          )
-          ctx.beginPath()
-          ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
-          ctx.fillStyle = lineColors[firstMarker.icon]
-          ctx.strokeStyle = lineColors[markersHere[i].icon]
-          ctx.lineWidth = 50 * canvas.getZoom()
-          ctx.fill()
-          ctx.stroke()
-        }
       }
     })
   })
