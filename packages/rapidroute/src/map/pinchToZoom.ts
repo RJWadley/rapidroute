@@ -20,7 +20,7 @@ export default function handlePinchToZoom(
     const y2 = touch2.clientY
     const distance = Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     if (lastDistance) {
-      const delta = distance - lastDistance
+      const delta = (distance - lastDistance) * 2
       const zoom = canvas.getZoom()
       const newZoom = zoom + (delta / 1000) * zoom
       canvas.zoomToPoint(

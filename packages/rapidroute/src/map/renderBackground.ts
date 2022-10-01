@@ -38,6 +38,7 @@ function renderTilesInRange(
   canvas: fabric.Canvas
 ) {
   const tileWidth = 2 ** (8 - zoom) * 32
+  const ctx = canvas.getContext()
 
   //   start at the top left corner of the canvas and iterate over the tiles, drawing them one by one
   for (
@@ -51,7 +52,6 @@ function renderTilesInRange(
       y += tileWidth
     ) {
       const tile = getTileUrl({ x: x / tileWidth, z: y / tileWidth, zoom })
-      const ctx = canvas.getContext()
       const imageOrigin = fabric.util.transformPoint(
         new fabric.Point(x, y),
         canvas.viewportTransform || []
