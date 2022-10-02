@@ -21,29 +21,29 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
       const allProms = players.map(
         player =>
-          !playerUUIDs[player.name] &&
-          fetch(`https://api.minetools.eu/uuid/${player.name}`)
+          !playerUUIDs[player.account] &&
+          fetch(`https://api.minetools.eu/uuid/${player.account}`)
             .then(response => response.json())
             .then(uuidData => {
-              playerUUIDs[player.name] = uuidData.id
+              playerUUIDs[player.account] = uuidData.id
             })
       )
 
       await Promise.allSettled(allProms)
 
-      previousPlayers = players.map(player => player.name)
+      previousPlayers = players.map(player => player.account)
 
       players.forEach(player => {
-        if (!playerUUIDs[player.name]) return
+        if (!playerUUIDs[player.account]) return
         // if player already on map, update their position
-        if (previousPlayerRects[player.name]) {
+        if (previousPlayerRects[player.account]) {
           // tween to new position over 5 seconds
-          previousPlayerRects[player.name].animate("left", player.x, {
+          previousPlayerRects[player.account].animate("left", player.x, {
             duration: 5000,
             easing: easeLinear,
             onChange: () => canvas.requestRenderAll(),
           })
-          previousPlayerRects[player.name].animate("top", player.z, {
+          previousPlayerRects[player.account].animate("top", player.z, {
             duration: 5000,
             easing: easeLinear,
             onChange: () => canvas.requestRenderAll(),
@@ -51,7 +51,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
         } else {
           // otherwise, add them to the map
           const playerImageURL = `https://crafatar.com/avatars/${
-            playerUUIDs[player.name]
+            playerUUIDs[player.account]
           }?overlay=true&size=512`
 
           // create a rect with the image
@@ -66,7 +66,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             img.scaleToWidth(imageWidth())
             img.scaleToHeight(imageWidth())
             canvas.add(img)
-            previousPlayerRects[player.name] = img
+            previousPlayerRects[player.account] = img
 
             // on zoom, scale
             canvas.on("mouse:wheel", () => {
@@ -77,12 +77,55 @@ const updatePlayers = (canvas: fabric.Canvas) => {
               img.scaleToWidth(imageWidth())
               img.scaleToHeight(imageWidth())
             })
+
+            canvas.on("after:render", () => {
+              if (Object.values(previousPlayerRects).includes(img)) {
+                // render a label above the player
+                const ctx = canvas.getContext()
+                const fontSize = 15
+                const padding = 5
+                const cornerRadius = 10
+                const bounds = img.getBoundingRect()
+                const absoluteX = bounds.left + bounds.width / 2
+                const absoluteY = bounds.top - padding - 10
+
+                ctx.font = `${fontSize}px Arial`
+                ctx.textAlign = "center"
+
+                // fill a rect behind the text
+                ctx.fillStyle = "rgba(0, 0, 0, 0.5)"
+                ctx.strokeStyle = "rgba(0, 0, 0, 0.5)"
+                ctx.lineJoin = "round"
+                ctx.lineWidth = cornerRadius
+                ctx.fillRect(
+                  absoluteX -
+                    ctx.measureText(player.account).width / 2 -
+                    padding +
+                    cornerRadius / 2,
+                  absoluteY - fontSize - padding + cornerRadius / 2,
+                  ctx.measureText(player.account).width +
+                    padding * 2 -
+                    cornerRadius,
+                  fontSize + padding - cornerRadius
+                )
+                ctx.strokeRect(
+                  absoluteX -
+                    ctx.measureText(player.account).width / 2 -
+                    padding,
+                  absoluteY - fontSize - padding,
+                  ctx.measureText(player.account).width + padding * 2,
+                  fontSize + padding
+                )
+                ctx.fillStyle = "white"
+                ctx.fillText(player.account, absoluteX, absoluteY - padding)
+              }
+            })
           })
         }
       })
 
       // remove players that are no longer on the map
-      const currentPlayers = players.map(player => player.name)
+      const currentPlayers = players.map(player => player.account)
       const playersToRemove = previousPlayers.filter(
         player => !currentPlayers.includes(player)
       )

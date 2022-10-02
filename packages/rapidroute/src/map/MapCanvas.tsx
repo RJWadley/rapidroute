@@ -16,7 +16,7 @@ export default function MapCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    window.isDebug = true
+    window.isDebug = false
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
         selection: false,
