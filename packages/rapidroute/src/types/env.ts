@@ -26,6 +26,15 @@ declare global {
      * player to follow on map
      */
     following: string | undefined
+    /**
+     * point of interest to follow on map
+     */
+    pointOfInterest:
+      | {
+          x: number
+          z: number
+        }
+      | undefined
   }
 }
 

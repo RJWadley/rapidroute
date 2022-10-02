@@ -26,7 +26,11 @@ const canMoveCamera = () => {
   return true
 }
 
-const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
+const zoomToPlayer = (x: number, z: number, canvas: fabric.Canvas) => {
+  if (window.pointOfInterest) {
+    return zoomToTwoPoints({ x, z }, window.pointOfInterest, canvas)
+  }
+
   if (!(activeCanvas === canvas)) return
   if (!canMoveCamera()) return
   const duration = 5000
@@ -58,6 +62,55 @@ const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
     Object.values(previousPlayerRects).forEach(rect => {
       rect.setCoords()
     })
+  }
+  animate()
+}
+
+/**
+ * given two points, zoom the canvas to fit them both
+ */
+const zoomToTwoPoints = (
+  a: { x: number; z: number },
+  b: { x: number; z: number },
+  canvas: fabric.Canvas
+) => {
+  if (!(activeCanvas === canvas)) return
+  if (!canMoveCamera()) return
+  const padding = 100 / canvas.getZoom()
+  const width = Math.abs(a.x - b.x) + padding * 2
+  const height = Math.abs(a.z - b.z) + padding * 2
+  const centerX = (a.x + b.x) / 2
+  const centerZ = (a.z + b.z) / 2
+  const endZoom = Math.min(
+    canvas.getWidth() / width,
+    canvas.getHeight() / height
+  )
+  const endX = -centerX * endZoom + window.innerWidth / 2
+  const endZ = -centerZ * endZoom + window.innerHeight / 2
+  const startZoom = canvas.getZoom()
+  const vpt = canvas.viewportTransform
+  if (!vpt) return
+  const startX = vpt[4]
+  const startZ = vpt[5]
+  const duration = 5000
+  const start = Date.now()
+  const end = start + duration
+  const animate = () => {
+    if (!canMoveCamera()) return
+    const now = Date.now()
+    const t = now - start
+    const newX = easeLinear(t, startX, endX - startX, duration)
+    const newZ = easeLinear(t, startZ, endZ - startZ, duration)
+    const zoom = easeLinear(t, startZoom, endZoom - startZoom, duration)
+    canvas.setZoom(zoom)
+    const vpt = canvas.viewportTransform
+    if (vpt) {
+      vpt[4] = newX
+      vpt[5] = newZ
+    }
+    if (now < end) {
+      requestAnimationFrame(animate)
+    }
   }
   animate()
 }
@@ -97,7 +150,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
         // if player already on map, update their position
         if (previousPlayerRects[player.account]) {
           if (isPlayerToFollow(player.account)) {
-            updateCamera(player.x, player.z, canvas)
+            zoomToPlayer(player.x, player.z, canvas)
           }
 
           let img = previousPlayerRects[player.account]
@@ -196,7 +249,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
               console.log("click", player.account)
               window.following = player.account
               window.lastMapInteraction = undefined
-              updateCamera(player.x, player.z, canvas)
+              zoomToPlayer(player.x, player.z, canvas)
             })
 
             // for the first five seconds, update image width every frame
@@ -212,7 +265,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
           // center on player
           if (isPlayerToFollow(player.account)) {
-            updateCamera(player.x, player.z, canvas)
+            zoomToPlayer(player.x, player.z, canvas)
           }
         }
       })
