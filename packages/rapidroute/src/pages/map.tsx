@@ -1,15 +1,18 @@
-import React from "react"
+import React, { useEffect } from "react"
 
 import styled from "styled-components"
 
 import MapCanvas from "map/MapCanvas"
+import { isBrowser } from "utils/functions"
 
 export default function MapTest() {
-  return (
-    <Wrapper>
-      <MapCanvas />
-    </Wrapper>
-  )
+  const [showMap, setShowMap] = React.useState(false)
+
+  useEffect(() => {
+    if (isBrowser()) setShowMap(true)
+  }, [])
+
+  return <Wrapper>{showMap && <MapCanvas />}</Wrapper>
 }
 
 const Wrapper = styled.div`
