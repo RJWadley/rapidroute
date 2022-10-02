@@ -13,8 +13,9 @@ function easeLinear(
 }
 
 let previousPlayers: string[] = []
-const previousPlayerRects: Record<string, fabric.Image> = {}
-const playerUUIDs: Record<string, string> = {}
+let previousPlayerRects: Record<string, fabric.Image> = {}
+let playerUUIDs: Record<string, string> = {}
+let activeCanvas: fabric.Canvas | undefined
 
 const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
   const duration = 5000
@@ -49,7 +50,7 @@ const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
   animate()
 }
 
-const updatePlayers = (canvas: fabric.Canvas, following: string) => {
+const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
   const imageWidth = () => 3 * Math.max(5, 10 * canvas.getZoom())
 
   fetch(
@@ -57,11 +58,13 @@ const updatePlayers = (canvas: fabric.Canvas, following: string) => {
   )
     .then(response => response.json())
     .then(async (data: WorldInfo) => {
+      if (!(activeCanvas === canvas)) return
+
       const players = data.players.filter(x => x.world === "new")
 
       // if account matches, follow player
       const isPlayerToFollow = (name: string) =>
-        following.toLowerCase() === name.toLowerCase()
+        following && following.toLowerCase() === name.toLowerCase()
 
       const allProms = players.map(
         player =>
@@ -74,6 +77,7 @@ const updatePlayers = (canvas: fabric.Canvas, following: string) => {
       )
 
       await Promise.allSettled(allProms)
+      if (!(activeCanvas === canvas)) return
 
       players.forEach(player => {
         if (!playerUUIDs[player.account]) return
@@ -191,12 +195,19 @@ const updatePlayers = (canvas: fabric.Canvas, following: string) => {
 
 export default function renderPlayers(
   canvas: fabric.Canvas,
-  following: string
+  following?: string
 ) {
+  activeCanvas = canvas
   const int = setInterval(() => {
     updatePlayers(canvas, following)
   }, 5000)
   updatePlayers(canvas, following)
 
-  return () => clearInterval(int)
+  return () => {
+    activeCanvas = undefined
+    previousPlayers = []
+    previousPlayerRects = {}
+    playerUUIDs = {}
+    clearInterval(int)
+  }
 }

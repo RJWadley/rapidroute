@@ -3,16 +3,22 @@ import React, { useEffect } from "react"
 import styled from "styled-components"
 
 import MapCanvas from "map/MapCanvas"
-import { isBrowser } from "utils/functions"
 
 export default function MapTest() {
-  const [showMap, setShowMap] = React.useState(false)
+  const [following, setFollowing] = React.useState<string | undefined>()
 
   useEffect(() => {
-    if (isBrowser()) setShowMap(true)
+    // wait 10 seconds and then start following
+    setTimeout(() => {
+      setFollowing("_mossie")
+    }, 5000)
   }, [])
 
-  return <Wrapper>{showMap && <MapCanvas />}</Wrapper>
+  return (
+    <Wrapper>
+      <MapCanvas following={following} />
+    </Wrapper>
+  )
 }
 
 const Wrapper = styled.div`

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react"
 
 import { fabric } from "fabric"
+import styled from "styled-components"
 
 import handlePinchToZoom, {
   handleTouchEnd,
@@ -12,10 +13,12 @@ import renderDynmapMarkers from "./renderDynmapMarkers"
 import renderPlayers from "./renderPlayers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
-export default function MapCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+interface MapCanvasProps {
+  following?: string
+}
 
-  const following = "paintedblue"
+export default function MapCanvas({ following = undefined }: MapCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     window.isDebug = false
@@ -91,24 +94,26 @@ export default function MapCanvas() {
       window.addEventListener("touchend", handleTouchEnd)
       window.addEventListener("touchstart", handleTouchStart)
       return () => {
-        canvas.dispose()
+        console.log("unmounting map")
         window.removeEventListener("resize", resize)
         window.removeEventListener("touchmove", touchHandler)
         window.removeEventListener("touchend", handleTouchEnd)
         window.removeEventListener("touchstart", handleTouchStart)
         clearPlayers()
+        canvas.dispose()
       }
     }
     return () => {}
-  }, [])
+  }, [following])
 
-  useEffect(() => {
-    window.addEventListener("error", e => {
-      if (e.message.includes("clearRect")) {
-        window.location.reload()
-      }
-    })
-  }, [])
-
-  return <canvas ref={canvasRef} />
+  return (
+    <Wrapper>
+      <canvas ref={canvasRef} />
+    </Wrapper>
+  )
 }
+
+const Wrapper = styled.div`
+  width: 100%;
+  height: 100%;
+`
