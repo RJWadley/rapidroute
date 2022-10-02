@@ -62,7 +62,7 @@ const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
   animate()
 }
 
-const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
+const updatePlayers = (canvas: fabric.Canvas) => {
   const imageWidth = () => 3 * Math.max(5, 10 * canvas.getZoom())
 
   fetch(
@@ -76,7 +76,8 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
 
       // if account matches, follow player
       const isPlayerToFollow = (name: string) =>
-        following && following.toLowerCase() === name.toLowerCase()
+        window.following &&
+        window.following.toLowerCase() === name.toLowerCase()
 
       const allProms = players.map(
         player =>
@@ -130,6 +131,7 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
               selectable: false,
               originX: "center",
               originY: "center",
+              hoverCursor: "pointer",
             })
             canvas.add(img)
             previousPlayerRects[player.account] = img
@@ -188,6 +190,15 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
               }
             })
 
+            // on click, follow player
+
+            img.on("mousedown", event => {
+              console.log("click", player.account)
+              window.following = player.account
+              window.lastMapInteraction = undefined
+              updateCamera(player.x, player.z, canvas)
+            })
+
             // for the first five seconds, update image width every frame
             const start = Date.now()
             const end = start + 5000
@@ -219,15 +230,12 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
     })
 }
 
-export default function renderPlayers(
-  canvas: fabric.Canvas,
-  following?: string
-) {
+export default function renderPlayers(canvas: fabric.Canvas) {
   activeCanvas = canvas
   const int = setInterval(() => {
-    updatePlayers(canvas, following)
+    updatePlayers(canvas)
   }, 5000)
-  updatePlayers(canvas, following)
+  updatePlayers(canvas)
 
   return () => {
     activeCanvas = undefined

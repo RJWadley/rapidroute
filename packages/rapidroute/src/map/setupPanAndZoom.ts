@@ -73,7 +73,6 @@ export default function setupPanAndZoom(canvas: fabric.Canvas) {
     window.lastMapInteraction = new Date()
   })
   canvas.on("mouse:up", () => {
-    window.lastMapInteraction = new Date()
     isDragging = false
     const lastX = last10posX[last10posX.length - 1]
     const lastY = last10posY[last10posY.length - 1]

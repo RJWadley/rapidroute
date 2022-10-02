@@ -22,6 +22,10 @@ declare global {
      * date of last pan or zoom on map
      */
     lastMapInteraction: Date | undefined
+    /**
+     * player to follow on map
+     */
+    following: string | undefined
   }
 }
 

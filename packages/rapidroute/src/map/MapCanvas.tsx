@@ -13,11 +13,7 @@ import renderDynmapMarkers from "./renderDynmapMarkers"
 import renderPlayers from "./renderPlayers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
-interface MapCanvasProps {
-  following?: string
-}
-
-export default function MapCanvas({ following = undefined }: MapCanvasProps) {
+export default function MapCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const previousTransform = useRef<number[] | undefined>()
 
@@ -52,7 +48,7 @@ export default function MapCanvas({ following = undefined }: MapCanvasProps) {
       renderAllObjects(canvas)
       setupPanAndZoom(canvas)
       renderDynmapMarkers(canvas)
-      const clearPlayers = renderPlayers(canvas, following)
+      const clearPlayers = renderPlayers(canvas)
 
       // before render
       canvas.on("before:render", () => {
@@ -108,7 +104,7 @@ export default function MapCanvas({ following = undefined }: MapCanvasProps) {
       }
     }
     return () => {}
-  }, [following])
+  }, [])
 
   return (
     <Wrapper>
