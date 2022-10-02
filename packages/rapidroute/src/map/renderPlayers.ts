@@ -13,7 +13,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
   const imageWidth = () => 3 * Math.max(5, 10 * canvas.getZoom())
 
   fetch(
-    "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
+    "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
   )
     .then(response => response.json())
     .then(async (data: WorldInfo) => {

@@ -595,7 +595,7 @@ const placeLocations: Record<
 function generateMrtFromMarkers(): Promise<boolean> {
   return new Promise(resolve => {
     fetch(
-      "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
+      "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
     )
       .then(response => {
         return response.json()
