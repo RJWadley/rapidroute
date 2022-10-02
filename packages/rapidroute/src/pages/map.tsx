@@ -1,18 +1,10 @@
-import React, { useEffect } from "react"
+import React from "react"
 
 import styled from "styled-components"
 
 import MapCanvas from "map/MapCanvas"
 
 export default function MapTest() {
-  useEffect(() => {
-    window.following = "_melecie"
-    window.pointOfInterest = {
-      x: 0,
-      z: 0,
-    }
-  }, [])
-
   return (
     <Wrapper>
       <MapCanvas />
