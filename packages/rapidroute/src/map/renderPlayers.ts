@@ -6,7 +6,7 @@ function easeLinear(t: number, b: number, c: number, d: number) {
   return b + (t / d) * c
 }
 
-let previousPlayers = []
+let previousPlayers: string[] = []
 const previousPlayerRects: Record<string, fabric.Image> = {}
 const playerUUIDs: Record<string, string> = {}
 const updatePlayers = (canvas: fabric.Canvas) => {
@@ -30,8 +30,6 @@ const updatePlayers = (canvas: fabric.Canvas) => {
       )
 
       await Promise.allSettled(allProms)
-
-      previousPlayers = players.map(player => player.account)
 
       players.forEach(player => {
         if (!playerUUIDs[player.account]) return
