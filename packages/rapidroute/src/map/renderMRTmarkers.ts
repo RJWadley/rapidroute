@@ -4,7 +4,7 @@ import { fabric } from "fabric"
 import invertLightness from "utils/invertLightness"
 
 import lineIsOnScreen from "./lineIsOnScreen"
-import { MrtTypes } from "./markersType"
+import { Marker, MrtTypes } from "./markersType"
 
 export default function renderMRTMarkers(
   canvas: fabric.Canvas,
@@ -13,7 +13,7 @@ export default function renderMRTMarkers(
   const { lines } = data
 
   const allLines = Object.values(lines).map(line =>
-    line.x.map((x, i) => ({ x, y: line.z[i] + 32 }))
+    line.x.map((x, i) => ({ x, y: line.z[i] }))
   )
   const combinedLines = combineLines(allLines)
   const line = Object.values(lines).find(l => l.color)
@@ -24,24 +24,32 @@ export default function renderMRTMarkers(
       drawLine(canvas, points, line?.color, 1)
     })
   })
+}
 
-  const { markers } = data
-  const markerList = Object.values(markers)
-
-  markerList.forEach(marker => {
-    const { x, z } = marker
-
-    canvas.on("before:render", () => {
+export function renderStops(
+  canvas: fabric.Canvas,
+  stops: { x: number; z: number }[],
+  color: string
+) {
+  canvas.on("before:render", () => {
+    stops.forEach(marker => {
+      const { x, z } = marker
       const ctx = canvas.getContext()
       const radius = 10 * canvas.getZoom()
-      const lineColor = Object.values(lines)[0].color
+      const lineColor = color
 
       if (canvas.getZoom() < 0.1) return
 
       // draw a point at the marker location
-      if (lineIsOnScreen({ x, y: z + 32 }, { x, y: z + 32 }, canvas)) {
+      if (
+        lineIsOnScreen(
+          { x: x + 12.5, y: z + 12.5 },
+          { x: x - 12.5, y: z - 12.5 },
+          canvas
+        )
+      ) {
         const point = fabric.util.transformPoint(
-          new fabric.Point(x, z + 32),
+          new fabric.Point(x, z),
           canvas.viewportTransform || []
         )
         ctx.beginPath()
@@ -130,13 +138,15 @@ const drawLine = (
   const simplifyThreshold = 4
   const importantLineThreshold = 10
   const ctx = canvas.getContext()
+  const lineWidth = width * Math.max(5, 5 * canvas.getZoom())
+
   // draw any line segments that are on screen
   ctx.beginPath()
   for (let i = 0; i < points.length - 1; i += 1) {
     const p1 = points[i]
     const p2 = points[i + 1]
 
-    if (lineIsOnScreen(p1, p2, canvas)) {
+    if (lineIsOnScreen(p1, p2, canvas, lineWidth / canvas.getZoom() / 2)) {
       const startPoint = fabric.util.transformPoint(
         new fabric.Point(p1.x, p1.y),
         canvas.viewportTransform || []
@@ -162,7 +172,7 @@ const drawLine = (
         previousPoint = endPoint
       }
       ctx.strokeStyle = color || "black"
-      ctx.lineWidth = width * Math.max(5, 5 * canvas.getZoom())
+      ctx.lineWidth = lineWidth
       ctx.lineCap = "round"
     } else {
       previousPoint = undefined
@@ -170,4 +180,48 @@ const drawLine = (
   }
   ctx.stroke()
   ctx.closePath()
+}
+
+export const renderDuplicateStops = (
+  canvas: fabric.Canvas,
+  duplicateStops: Marker[][],
+  lineColors: Record<string, string>
+) => {
+  duplicateStops.forEach(duplicateStopSet => {
+    const ctx = canvas.getContext()
+    const averageX =
+      duplicateStopSet.reduce((acc, marker) => acc + marker.x, 0) /
+      duplicateStopSet.length
+    const averageZ =
+      duplicateStopSet.reduce((acc, marker) => acc + marker.z, 0) /
+      duplicateStopSet.length
+
+    canvas.on("before:render", () => {
+      duplicateStopSet.forEach((marker, i) => {
+        const radius = 10 * canvas.getZoom() * (duplicateStopSet.length - i)
+        const lineColor = lineColors[marker.icon]
+
+        if (canvas.getZoom() < 0.1) return
+
+        if (
+          lineIsOnScreen(
+            { x: averageX + 10, y: averageZ + radius / 10 },
+            { x: averageX - 10, y: averageZ - radius / 10 },
+            canvas
+          )
+        ) {
+          const point = fabric.util.transformPoint(
+            new fabric.Point(averageX, averageZ),
+            canvas.viewportTransform || []
+          )
+
+          ctx.beginPath()
+          ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
+          ctx.fillStyle = lineColor
+          ctx.fill()
+          ctx.closePath()
+        }
+      })
+    })
+  })
 }

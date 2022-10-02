@@ -16,6 +16,7 @@ export default function MapCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
+    window.isDebug = true
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
         selection: false,
@@ -48,6 +49,25 @@ export default function MapCanvas() {
         renderBackground(canvas)
       })
 
+      canvas.on("after:render", () => {
+        if (!window.isDebug) return
+
+        // draw a line 100px from the border of the canvas all around
+        const ctx = canvas.getContext()
+        if (canvas.width && canvas.height) {
+          ctx.beginPath()
+          ctx.moveTo(100, 100)
+          ctx.lineTo(canvas.width - 100, 100)
+          ctx.lineTo(canvas.width - 100, canvas.height - 100)
+          ctx.lineTo(100, canvas.height - 100)
+          ctx.lineTo(100, 100)
+          ctx.closePath()
+          ctx.lineWidth = 1
+          ctx.strokeStyle = "red"
+          ctx.stroke()
+        }
+      })
+
       // resize
       const resize = () => {
         if (canvasRef.current)
@@ -77,6 +97,14 @@ export default function MapCanvas() {
       }
     }
     return () => {}
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener("error", e => {
+      if (e.message.includes("clearRect")) {
+        window.location.reload()
+      }
+    })
   }, [])
 
   return <canvas ref={canvasRef} />
