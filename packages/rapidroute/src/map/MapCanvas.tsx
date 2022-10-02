@@ -23,6 +23,7 @@ export default function MapCanvas() {
       const canvas = new fabric.Canvas(canvasRef.current, {
         selection: false,
         imageSmoothingEnabled: false,
+        skipOffscreen: true,
       })
       fabric.Object.prototype.transparentCorners = false
       canvas.setDimensions({
