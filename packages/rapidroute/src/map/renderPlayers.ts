@@ -81,6 +81,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             canvas.on("after:render", () => {
               if (Object.values(previousPlayerRects).includes(img)) {
                 // render a label above the player
+                img.setCoords()
                 const ctx = canvas.getContext()
                 const fontSize = 15
                 const padding = 5
