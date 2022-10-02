@@ -6,7 +6,6 @@
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
     "@types/fabric": "^4.5.12",
-    "canvas": "^2.10.1",
     "fabric": "^5.2.4",
     "firebase": "^9.10.0",
     "flexsearch": "^0.7.21",
@@ -24,7 +23,6 @@
     "gatsby-plugin-tsconfig-paths": "^1.0.5",
     "gatsby-transformer-sharp": "^4.24.0",
     "gsap": "npm:@gsap/shockingly@^3.11.2",
-    "node-loader": "^2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",

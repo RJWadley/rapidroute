@@ -4,16 +4,19 @@ import { GatsbyNode } from "gatsby"
 
 export const onCreateWebpackConfig: GatsbyNode["onCreateWebpackConfig"] = ({
   actions,
+  stage,
+  loaders,
 }) => {
-  // node loader
-  actions.setWebpackConfig({
-    module: {
-      rules: [
-        {
-          test: /\.node$/,
-          loader: "node-loader",
-        },
-      ],
-    },
-  })
+  if (stage === "build-html") {
+    actions.setWebpackConfig({
+      module: {
+        rules: [
+          {
+            test: /canvas|jsdom|fabric/,
+            use: loaders.null(),
+          },
+        ],
+      },
+    })
+  }
 }
