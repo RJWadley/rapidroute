@@ -18,6 +18,10 @@ declare global {
      * true if should show debugging information
      */
     isDebug: boolean | undefined
+    /**
+     * date of last pan or zoom on map
+     */
+    lastMapInteraction: Date | undefined
   }
 }
 

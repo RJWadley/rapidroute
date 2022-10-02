@@ -19,6 +19,7 @@ interface MapCanvasProps {
 
 export default function MapCanvas({ following = undefined }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const previousTransform = useRef<number[] | undefined>()
 
   useEffect(() => {
     window.isDebug = false
@@ -43,6 +44,9 @@ export default function MapCanvas({ following = undefined }: MapCanvasProps) {
         vpt[5] = window.innerHeight / 2 / initialZoom
       }
       canvas.setZoom(initialZoom)
+      if (previousTransform.current) {
+        canvas.viewportTransform = previousTransform.current
+      }
 
       canvas.requestRenderAll()
       renderAllObjects(canvas)
@@ -94,12 +98,12 @@ export default function MapCanvas({ following = undefined }: MapCanvasProps) {
       window.addEventListener("touchend", handleTouchEnd)
       window.addEventListener("touchstart", handleTouchStart)
       return () => {
-        console.log("unmounting map")
         window.removeEventListener("resize", resize)
         window.removeEventListener("touchmove", touchHandler)
         window.removeEventListener("touchend", handleTouchEnd)
         window.removeEventListener("touchstart", handleTouchStart)
         clearPlayers()
+        previousTransform.current = canvas.viewportTransform
         canvas.dispose()
       }
     }

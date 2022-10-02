@@ -9,6 +9,8 @@ export default function handlePinchToZoom(
   e: TouchEvent,
   canvas: fabric.Canvas
 ) {
+  window.lastMapInteraction = new Date()
+
   if (canvas.getActiveObject()) return
   const { touches } = e
   if (touches.length === 2) {

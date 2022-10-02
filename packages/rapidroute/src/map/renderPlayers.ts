@@ -17,7 +17,18 @@ let previousPlayerRects: Record<string, fabric.Image> = {}
 let playerUUIDs: Record<string, string> = {}
 let activeCanvas: fabric.Canvas | undefined
 
+const canMoveCamera = () => {
+  if (window.lastMapInteraction) {
+    const now = new Date()
+    const diff = now.getTime() - window.lastMapInteraction.getTime()
+    if (diff < 10000) return false
+  }
+  return true
+}
+
 const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
+  if (!(activeCanvas === canvas)) return
+  if (!canMoveCamera()) return
   const duration = 5000
   const start = Date.now()
   const startZoom = canvas.getZoom()
@@ -28,6 +39,7 @@ const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
   const endX = -x * endZoom + window.innerWidth / 2
   const endZ = -z * endZoom + window.innerHeight / 2
   const animate = () => {
+    if (!canMoveCamera()) return
     const now = Date.now()
     const t = now - start
     const newX = easeLinear(t, startX, endX - startX, duration)
@@ -86,11 +98,16 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
           if (isPlayerToFollow(player.account)) {
             updateCamera(player.x, player.z, canvas)
           }
+
+          let img = previousPlayerRects[player.account]
+
           // tween to new position over 5 seconds
-          previousPlayerRects[player.account].animate("left", player.x, {
+          img.animate("left", player.x, {
             duration: 5000,
             easing: easeLinear,
             onChange: () => {
+              img.scaleToWidth(imageWidth())
+              img.scaleToHeight(imageWidth())
               canvas.requestRenderAll()
             },
           })
@@ -106,6 +123,7 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
 
           // create a rect with the image
           fabric.Image.fromURL(playerImageURL, img => {
+            if (!(activeCanvas === canvas)) return
             img.set({
               left: player.x,
               top: player.z,
@@ -113,8 +131,6 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
               originX: "center",
               originY: "center",
             })
-            img.scaleToWidth(imageWidth())
-            img.scaleToHeight(imageWidth())
             canvas.add(img)
             previousPlayerRects[player.account] = img
 
@@ -171,6 +187,16 @@ const updatePlayers = (canvas: fabric.Canvas, following?: string) => {
                 ctx.fillText(player.account, absoluteX, absoluteY - padding)
               }
             })
+
+            // for the first five seconds, update image width every frame
+            const start = Date.now()
+            const end = start + 5000
+            const updateWidth = () => {
+              img.scaleToWidth(imageWidth())
+              img.scaleToHeight(imageWidth())
+              if (Date.now() < end) requestAnimationFrame(updateWidth)
+            }
+            updateWidth()
           })
 
           // center on player
