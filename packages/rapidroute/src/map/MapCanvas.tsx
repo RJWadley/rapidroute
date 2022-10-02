@@ -15,6 +15,8 @@ import setupPanAndZoom from "./setupPanAndZoom"
 export default function MapCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  const following = "paintedblue"
+
   useEffect(() => {
     window.isDebug = false
     if (canvasRef.current) {
@@ -43,7 +45,7 @@ export default function MapCanvas() {
       renderAllObjects(canvas)
       setupPanAndZoom(canvas)
       renderDynmapMarkers(canvas)
-      const clearPlayers = renderPlayers(canvas)
+      const clearPlayers = renderPlayers(canvas, following)
 
       // before render
       canvas.on("before:render", () => {

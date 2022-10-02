@@ -2,14 +2,54 @@ import { fabric } from "fabric"
 
 import { WorldInfo } from "./worldInfoType"
 
-function easeLinear(t: number, b: number, c: number, d: number) {
-  return b + (t / d) * c
+// with full param names
+function easeLinear(
+  currentTime: number,
+  startValue: number,
+  changeInValue: number,
+  duration: number
+) {
+  return startValue + (currentTime / duration) * changeInValue
 }
 
 let previousPlayers: string[] = []
 const previousPlayerRects: Record<string, fabric.Image> = {}
 const playerUUIDs: Record<string, string> = {}
-const updatePlayers = (canvas: fabric.Canvas) => {
+
+const updateCamera = (x: number, z: number, canvas: fabric.Canvas) => {
+  const duration = 5000
+  const start = Date.now()
+  const startZoom = canvas.getZoom()
+  const startX = canvas.viewportTransform?.[4] ?? 0
+  const startZ = canvas.viewportTransform?.[5] ?? 0
+  const end = start + duration
+  const endZoom = 1
+  const endX = -x * endZoom + window.innerWidth / 2
+  const endZ = -z * endZoom + window.innerHeight / 2
+  const animate = () => {
+    const now = Date.now()
+    const t = now - start
+    const newX = easeLinear(t, startX, endX - startX, duration)
+    const newZ = easeLinear(t, startZ, endZ - startZ, duration)
+    const zoom = easeLinear(t, startZoom, endZoom - startZoom, duration)
+    canvas.setZoom(zoom)
+    const vpt = canvas.viewportTransform
+    if (vpt) {
+      vpt[4] = newX
+      vpt[5] = newZ
+    }
+    if (now < end) {
+      requestAnimationFrame(animate)
+    }
+
+    Object.values(previousPlayerRects).forEach(rect => {
+      rect.setCoords()
+    })
+  }
+  animate()
+}
+
+const updatePlayers = (canvas: fabric.Canvas, following: string) => {
   const imageWidth = () => 3 * Math.max(5, 10 * canvas.getZoom())
 
   fetch(
@@ -18,6 +58,10 @@ const updatePlayers = (canvas: fabric.Canvas) => {
     .then(response => response.json())
     .then(async (data: WorldInfo) => {
       const players = data.players.filter(x => x.world === "new")
+
+      // if account matches, follow player
+      const isPlayerToFollow = (name: string) =>
+        following.toLowerCase() === name.toLowerCase()
 
       const allProms = players.map(
         player =>
@@ -35,16 +79,20 @@ const updatePlayers = (canvas: fabric.Canvas) => {
         if (!playerUUIDs[player.account]) return
         // if player already on map, update their position
         if (previousPlayerRects[player.account]) {
+          if (isPlayerToFollow(player.account)) {
+            updateCamera(player.x, player.z, canvas)
+          }
           // tween to new position over 5 seconds
           previousPlayerRects[player.account].animate("left", player.x, {
             duration: 5000,
             easing: easeLinear,
-            onChange: () => canvas.requestRenderAll(),
+            onChange: () => {
+              canvas.requestRenderAll()
+            },
           })
           previousPlayerRects[player.account].animate("top", player.z, {
             duration: 5000,
             easing: easeLinear,
-            onChange: () => canvas.requestRenderAll(),
           })
         } else {
           // otherwise, add them to the map
@@ -120,6 +168,11 @@ const updatePlayers = (canvas: fabric.Canvas) => {
               }
             })
           })
+
+          // center on player
+          if (isPlayerToFollow(player.account)) {
+            updateCamera(player.x, player.z, canvas)
+          }
         }
       })
 
@@ -136,11 +189,14 @@ const updatePlayers = (canvas: fabric.Canvas) => {
     })
 }
 
-export default function renderPlayers(canvas: fabric.Canvas) {
+export default function renderPlayers(
+  canvas: fabric.Canvas,
+  following: string
+) {
   const int = setInterval(() => {
-    updatePlayers(canvas)
+    updatePlayers(canvas, following)
   }, 5000)
-  updatePlayers(canvas)
+  updatePlayers(canvas, following)
 
   return () => clearInterval(int)
 }

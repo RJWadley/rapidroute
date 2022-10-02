@@ -48,6 +48,7 @@ export default function setupPanAndZoom(canvas: fabric.Canvas) {
     if (canvas.getActiveObject()) return
     if (!isDragging || !pointer) return
     const vpt = canvas.viewportTransform
+
     if (vpt) {
       vpt[4] += pointer.x - lastPosX
       vpt[5] += pointer.y - lastPosY
