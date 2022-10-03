@@ -25,7 +25,11 @@ export default function NavigationSidebar() {
 const Wrapper = styled.div`
   > * {
     opacity: 1;
+    transform: none;
   }
   height: 100%;
   overflow-y: auto;
+  display: grid;
+  padding: 25px;
+  gap: 25px;
 `

@@ -40,8 +40,8 @@ const zoomToPlayer = (x: number, z: number, canvas: fabric.Canvas) => {
   const startZ = canvas.viewportTransform?.[5] ?? 0
   const end = start + duration
   const endZoom = 1
-  const endX = -x * endZoom + window.innerWidth / 2
-  const endZ = -z * endZoom + window.innerHeight / 2
+  const endX = -x * endZoom + canvas.getWidth() / 2
+  const endZ = -z * endZoom + canvas.getHeight() / 2
   const animate = () => {
     if (!canMoveCamera()) return
     const now = Date.now()
@@ -85,8 +85,8 @@ const zoomToTwoPoints = (
     canvas.getWidth() / width,
     canvas.getHeight() / height
   )
-  const endX = -centerX * endZoom + window.innerWidth / 2
-  const endZ = -centerZ * endZoom + window.innerHeight / 2
+  const endX = -centerX * endZoom + canvas.getWidth() / 2
+  const endZ = -centerZ * endZoom + canvas.getHeight() / 2
   const startZoom = canvas.getZoom()
   const vpt = canvas.viewportTransform
   if (!vpt) return

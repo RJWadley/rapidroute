@@ -37,8 +37,8 @@ export default function MapCanvas() {
       const initialZoom = 0.02
       const vpt = canvas.viewportTransform
       if (vpt) {
-        vpt[4] = window.innerWidth / 2 / initialZoom
-        vpt[5] = window.innerHeight / 2 / initialZoom
+        vpt[4] = canvas.getWidth() / 2 / initialZoom
+        vpt[5] = canvas.getHeight() / 2 / initialZoom
       }
       canvas.setZoom(initialZoom)
       if (previousTransform.current) {
