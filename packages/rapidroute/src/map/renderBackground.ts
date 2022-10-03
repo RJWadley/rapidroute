@@ -4,7 +4,7 @@ import getTileUrl from "./getTileURL"
 
 const tilesMap: Record<string, HTMLImageElement> = {}
 
-const densityBreakpoints = [101, 34, 15, 10, 5, 2, 1, 0.5, 0.25, 0.1, 0.05]
+const densityBreakpoints = [Infinity, 50, 15, 8, 4, 2, 1, 0.5, 0.25]
 
 export default function renderBackground(canvas: fabric.Canvas) {
   // get the bounds of the canvas viewport

@@ -211,7 +211,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
                 const absoluteX = bounds.left + bounds.width / 2
                 const absoluteY = bounds.top - padding - 10
 
-                ctx.font = `${fontSize}px Arial`
+                ctx.font = `${fontSize}px Inter`
                 ctx.textAlign = "center"
 
                 // fill a rect behind the text
@@ -246,7 +246,6 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             // on click, follow player
 
             img.on("mousedown", event => {
-              console.log("click", player.account)
               window.following = player.account
               window.lastMapInteraction = undefined
               zoomToPlayer(player.x, player.z, canvas)
