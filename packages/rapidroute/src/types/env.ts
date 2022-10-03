@@ -35,6 +35,15 @@ declare global {
           z: number
         }
       | undefined
+    /**
+     * last known location of following player
+     */
+    lastKnownLocation:
+      | {
+          x: number
+          z: number
+        }
+      | undefined
   }
 }
 

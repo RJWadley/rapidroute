@@ -4,7 +4,6 @@ import styled, { createGlobalStyle, css } from "styled-components"
 
 import invertLightness from "utils/invertLightness"
 
-import Header from "./Header"
 import { darkModeContext } from "./Providers/DarkMode"
 
 interface LayoutProps {
@@ -16,7 +15,6 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <Wrapper>
-      <Header />
       <GlobalStyle isDark={isDark} />
       {children}
     </Wrapper>

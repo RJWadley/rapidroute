@@ -146,6 +146,11 @@ const updatePlayers = (canvas: fabric.Canvas) => {
       if (!(activeCanvas === canvas)) return
 
       players.forEach(player => {
+        if (!window.following) window.lastKnownLocation = undefined
+        if (isPlayerToFollow(player.account)) {
+          window.lastKnownLocation = { x: player.x, z: player.z }
+        }
+
         if (!playerUUIDs[player.account]) return
         // if player already on map, update their position
         if (previousPlayerRects[player.account]) {
