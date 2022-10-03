@@ -1,4 +1,8 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
+import {
+  RouteMode,
+  shortHandMap,
+  shortHandMapKeys,
+} from "@rapidroute/database-types"
 
 import { getAll } from "data/getData"
 
@@ -24,9 +28,7 @@ export const rawEdges = getAll("pathfinding").then(data => {
 
   // for each route type in each nodes, generate edges to all listed nodes
   const routeEdges: GraphEdge[] = edgeIds.flatMap(from => {
-    const shortTypes = Object.keys(
-      shortHandMap
-    ) as (keyof typeof shortHandMap)[]
+    const shortTypes = shortHandMapKeys
     return shortTypes.flatMap(routeTypeShort => {
       const routes = data[from][routeTypeShort]
 
@@ -80,9 +82,7 @@ export const rawEdges = getAll("pathfinding").then(data => {
       })
       // only include locations which have at least one route availabe at them
       .filter(({ to }) => {
-        const shortTypes = Object.keys(
-          shortHandMap
-        ) as (keyof typeof shortHandMap)[]
+        const shortTypes = shortHandMapKeys
         return shortTypes.some(routeTypeShort => {
           const routes = data[to][routeTypeShort]
           return !!routes && !routes[from]

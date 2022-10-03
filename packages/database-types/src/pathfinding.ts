@@ -57,5 +57,7 @@ export const reverseShortHandMap = {
   spawnWarp: "P",
 } as const
 
+export const shortHandMapKeys = ["F", "S", "H", "M", "W", "P"] as const
+
 export const isPathingPlace = (obj: unknown): obj is PathingPlace =>
   TSON.is<PathingPlace>(obj)

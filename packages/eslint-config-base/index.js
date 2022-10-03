@@ -38,5 +38,13 @@ module.exports = {
         skipComments: true,
       },
     ],
+
+    // ban type assertion with the `as` keyword
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {
+        assertionStyle: "never",
+      },
+    ],
   },
 }

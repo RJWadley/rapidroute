@@ -5,7 +5,7 @@
 // fetch for node.js
 import fetch from "node-fetch"
 
-import { Dynmap, Sets } from "./dynmapTypes"
+import { Markers, isMRTLine } from "./dynmapTypes"
 import {
   Aliases,
   LegacyPlace,
@@ -204,10 +204,8 @@ function parseRawFlightData(
   // first parse the places
   const placeList: LegacyPlace[] = []
   placesRaw.forEach(place => {
-    let world = <World>place[2] // default to new
-    if (world !== "Old" && world !== "New") {
-      world = "New"
-    }
+    const worldRaw = place[2]
+    const world = worldRaw === "New" ? "New" : "Old"
 
     placeList.push({
       id: place[1] || place[0],
@@ -597,17 +595,17 @@ const placeLocations: Record<
 function generateMrtFromMarkers(): Promise<boolean> {
   return new Promise(resolve => {
     fetch(
-      "https://misty-rice-7487.rjwadley.workers.dev/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
+      "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
     )
       .then(response => {
         return response.json()
       })
-      .then((data: Dynmap) => {
+      .then((data: Markers) => {
         resolve(true)
 
         const { sets } = data
 
-        ;(Object.keys(sets) as (keyof Sets)[]).forEach(lineName => {
+        Object.keys(sets).forEach(lineName => {
           if (lineName === "airports") {
             const airports = sets.airports.markers
 
@@ -622,16 +620,7 @@ function generateMrtFromMarkers(): Promise<boolean> {
             })
           }
 
-          if (
-            lineName === "roads.a" ||
-            lineName === "roads.b" ||
-            lineName === "worldborder.markerset" ||
-            lineName === "cities" ||
-            lineName === "markers" ||
-            lineName === "old" ||
-            lineName === "airports"
-          )
-            return
+          if (!isMRTLine(lineName)) return
 
           const currentLine = sets[lineName].markers
 

@@ -14,6 +14,27 @@ declare global {
      * special object that can be used to detect if running in firefox
      */
     netscape: unknown
+    /**
+     * true if should show debugging information
+     */
+    isDebug: boolean | undefined
+    /**
+     * date of last pan or zoom on map
+     */
+    lastMapInteraction: Date | undefined
+    /**
+     * player to follow on map
+     */
+    following: string | undefined
+    /**
+     * point of interest to follow on map
+     */
+    pointOfInterest:
+      | {
+          x: number
+          z: number
+        }
+      | undefined
   }
 }
 

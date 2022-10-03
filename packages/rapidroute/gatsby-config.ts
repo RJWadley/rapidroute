@@ -9,7 +9,10 @@ const config: GatsbyConfig = {
     siteUrl: "https://www.mrtrapidroute.com",
     image: "https://example.com/logo.png",
   },
-  graphqlTypegen: true,
+  graphqlTypegen: {
+    generateOnBuild: true,
+    typesOutputPath: "src/types/gatsby-types.d.ts",
+  },
   plugins: [
     "gatsby-plugin-styled-components",
     "gatsby-plugin-sitemap",
