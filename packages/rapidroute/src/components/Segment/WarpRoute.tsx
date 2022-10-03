@@ -9,14 +9,21 @@ import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 interface SegmentProps {
   segment: SegmentType
   variant: "mobile" | "desktop"
+  forceMobile: boolean
 }
 
-export default function WarpRoute({ segment, variant }: SegmentProps) {
+export default function WarpRoute({
+  segment,
+  variant,
+  forceMobile,
+}: SegmentProps) {
   const themeColor = "var(--default-card-background)"
 
+  const isMobile = variant === "mobile" || forceMobile
+
   return (
-    <Warp backgroundColor={themeColor} small={variant === "mobile"}>
-      <WarpIcon small={variant === "mobile"}>switch_access_shortcut</WarpIcon>
+    <Warp backgroundColor={themeColor} small={isMobile}>
+      <WarpIcon small={isMobile}>switch_access_shortcut</WarpIcon>
       <Name>
         Warp to {segment.to.shortName || segment.to.name || "Untitled Location"}
       </Name>

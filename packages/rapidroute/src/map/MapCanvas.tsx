@@ -48,7 +48,7 @@ export default function MapCanvas() {
       canvas.requestRenderAll()
       renderAllObjects(canvas)
       setupPanAndZoom(canvas)
-      renderDynmapMarkers(canvas)
+      const clearMarkers = renderDynmapMarkers(canvas)
       const clearPlayers = renderPlayers(canvas)
 
       // before render
@@ -77,15 +77,23 @@ export default function MapCanvas() {
 
       // resize
       const resize = () => {
-        if (canvasRef.current)
+        if (canvasRef.current) {
           canvas.setDimensions({
-            width:
-              canvasRef.current.parentElement?.parentElement?.offsetWidth ||
-              100,
-            height:
-              canvasRef.current.parentElement?.parentElement?.offsetHeight ||
-              100,
+            width: 0,
+            height: 0,
           })
+          setTimeout(() => {
+            if (canvasRef.current)
+              canvas.setDimensions({
+                width:
+                  canvasRef.current.parentElement?.parentElement?.offsetWidth ||
+                  100,
+                height:
+                  canvasRef.current.parentElement?.parentElement
+                    ?.offsetHeight || 100,
+              })
+          }, 1)
+        }
         canvas.requestRenderAll()
       }
 
@@ -94,12 +102,15 @@ export default function MapCanvas() {
       window.addEventListener("touchmove", touchHandler)
       window.addEventListener("touchend", handleTouchEnd)
       window.addEventListener("touchstart", handleTouchStart)
+      const clearTiles = renderBackground(canvas)
       return () => {
         window.removeEventListener("resize", resize)
         window.removeEventListener("touchmove", touchHandler)
         window.removeEventListener("touchend", handleTouchEnd)
         window.removeEventListener("touchstart", handleTouchStart)
         clearPlayers()
+        clearMarkers()
+        clearTiles()
         previousTransform.current = canvas.viewportTransform
         canvas.dispose()
       }

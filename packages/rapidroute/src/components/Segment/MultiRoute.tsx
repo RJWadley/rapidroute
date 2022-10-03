@@ -10,12 +10,20 @@ import { Left, LongNames, Symbols, Wrapper } from "./sharedComponents"
 interface SegmentProps {
   segment: SegmentType
   variant: "mobile" | "desktop"
+  forceMobile: boolean
 }
 
-export default function MultiRoute({ segment, variant }: SegmentProps) {
+export default function MultiRoute({
+  segment,
+  variant,
+  forceMobile,
+}: SegmentProps) {
   const themeColor = "var(--default-card-background)"
+
+  const isMobile = variant === "mobile" || forceMobile
+
   return (
-    <Wrapper backgroundColor={themeColor} small={variant === "mobile"}>
+    <Wrapper backgroundColor={themeColor} small={isMobile}>
       <Left>
         {segment.routes.map(
           route =>
@@ -29,7 +37,7 @@ export default function MultiRoute({ segment, variant }: SegmentProps) {
             )
         )}
       </Left>
-      <Right bumpToFront={variant === "mobile"}>
+      <Right bumpToFront={isMobile}>
         <Symbols singleLine={false}>
           <div>{segment.from.shortName || "---"}</div>
           <div>-&gt;</div>

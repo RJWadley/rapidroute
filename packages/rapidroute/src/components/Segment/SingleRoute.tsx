@@ -24,6 +24,7 @@ import {
 interface SegmentProps {
   segment: SegmentType
   variant: "mobile" | "desktop"
+  forceMobile: boolean
 }
 
 export const expandGate = (gateString: string | null | undefined) => {
@@ -40,7 +41,11 @@ export const expandGate = (gateString: string | null | undefined) => {
   return expandedToGate
 }
 
-export default function SingleRoute({ segment, variant }: SegmentProps) {
+export default function SingleRoute({
+  segment,
+  variant,
+  forceMobile,
+}: SegmentProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
   const route = segment.routes[0]
   const isDark = useContext(darkModeContext)
@@ -80,15 +85,17 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
   const providerName =
     route?.type === "MRT" ? provider?.name.slice(3) : provider?.name
 
+  const isMobile = variant === "mobile" || forceMobile
+
   return (
-    <Wrapper backgroundColor={themeColor} small={variant === "mobile"}>
+    <Wrapper backgroundColor={themeColor} small={isMobile}>
       <Left>
         <ProviderName>
           {image && (
             <Logo
               bigLogo={route?.type === "MRT"}
               background={invertLightness(themeColor)}
-              small={variant === "mobile"}
+              small={isMobile}
             >
               <img src={image} alt={`${provider?.name} logo`} />
             </Logo>
@@ -108,7 +115,7 @@ export default function SingleRoute({ segment, variant }: SegmentProps) {
           {segment.to.name}
         </LongNames>
       </Left>
-      <Symbols singleLine={variant === "mobile"}>
+      <Symbols singleLine={isMobile}>
         <div>
           {segment.from.shortName || "---"}
           {expandedFromGate && <GateNumber>{expandedFromGate}</GateNumber>}

@@ -9,9 +9,14 @@ import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 interface SegmentProps {
   segment: SegmentType
   variant: "mobile" | "desktop"
+  forceMobile: boolean
 }
 
-export default function WalkingRoute({ segment, variant }: SegmentProps) {
+export default function WalkingRoute({
+  segment,
+  variant,
+  forceMobile,
+}: SegmentProps) {
   const themeColor = "var(--default-card-background)"
 
   const name =
@@ -24,9 +29,11 @@ export default function WalkingRoute({ segment, variant }: SegmentProps) {
   const isTransfer =
     segment.to.type === "MRT Station" && segment.from.type === "MRT Station"
 
+  const isMobile = variant === "mobile" || forceMobile
+
   return (
-    <WalkWrapper backgroundColor={themeColor} small={variant === "mobile"}>
-      <WalkIcon small={variant === "mobile"}>
+    <WalkWrapper backgroundColor={themeColor} small={isMobile}>
+      <WalkIcon small={isMobile}>
         {isTransfer ? "transfer_within_a_station" : "directions_walk"}
       </WalkIcon>
       <Name>

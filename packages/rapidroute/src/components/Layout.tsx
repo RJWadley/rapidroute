@@ -98,7 +98,6 @@ const GlobalStyle = createGlobalStyle<{ isDark?: boolean }>`
 `
 
 const Wrapper = styled.div`
-  max-width: calc(100vw - 20px);
-  margin: 0 auto;
   color: var(--default-text);
+  min-height: 100vh;
 `

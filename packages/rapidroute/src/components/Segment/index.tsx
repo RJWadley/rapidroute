@@ -14,9 +14,13 @@ import WarpRoute from "./WarpRoute"
 
 interface SegmentProps {
   segment: SegmentType
+  forceMobile?: boolean
 }
 
-export default function Segment({ segment }: SegmentProps) {
+export default function Segment({
+  segment,
+  forceMobile = false,
+}: SegmentProps) {
   const variant = useMedia(media.mobile) ? "mobile" : "desktop"
   const wrapper = useRef<HTMLDivElement>(null)
   const singleRoute = segment.routes.length === 1
@@ -32,23 +36,39 @@ export default function Segment({ segment }: SegmentProps) {
   if (isWarp)
     return (
       <Wrapper ref={wrapper}>
-        <WarpRoute segment={segment} variant={variant} />
+        <WarpRoute
+          forceMobile={forceMobile}
+          segment={segment}
+          variant={variant}
+        />
       </Wrapper>
     )
 
   if (walkingRoute)
     return (
       <Wrapper ref={wrapper}>
-        <WalkingRoute segment={segment} variant={variant} />
+        <WalkingRoute
+          forceMobile={forceMobile}
+          segment={segment}
+          variant={variant}
+        />
       </Wrapper>
     )
 
   return (
     <Wrapper ref={wrapper}>
       {singleRoute ? (
-        <SingleRoute segment={segment} variant={variant} />
+        <SingleRoute
+          forceMobile={forceMobile}
+          segment={segment}
+          variant={variant}
+        />
       ) : (
-        <MultiRoute segment={segment} variant={variant} />
+        <MultiRoute
+          forceMobile={forceMobile}
+          segment={segment}
+          variant={variant}
+        />
       )}
     </Wrapper>
   )

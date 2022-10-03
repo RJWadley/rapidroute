@@ -3,10 +3,11 @@ import { fabric } from "fabric"
 import getTileUrl from "./getTileURL"
 
 const tilesMap: Record<string, HTMLImageElement> = {}
-
 const densityBreakpoints = [Infinity, 50, 15, 8, 4, 2, 1, 0.5, 0.25]
+let isActive = false
 
 export default function renderBackground(canvas: fabric.Canvas) {
+  isActive = true
   // get the bounds of the canvas viewport
   const bounds = canvas.calcViewportBoundaries()
 
@@ -25,6 +26,10 @@ export default function renderBackground(canvas: fabric.Canvas) {
       renderTilesInRange(bounds, i, canvas)
     }
   }
+
+  return () => {
+    isActive = false
+  }
 }
 
 function renderTilesInRange(
@@ -42,6 +47,10 @@ function renderTilesInRange(
 
   const debugOffset = window.isDebug ? 100 / canvas.getZoom() : 0
   const verticalOffset = 32
+
+  const onImageLoad = () => {
+    if (isActive) canvas.requestRenderAll()
+  }
 
   // start at the top left corner of the canvas and iterate over the tiles, drawing them one by one
   for (
@@ -66,9 +75,7 @@ function renderTilesInRange(
         const img = new Image()
         img.src = tile.url
         tilesMap[tile.id] = img
-        img.onload = () => {
-          canvas.requestRenderAll()
-        }
+        img.onload = onImageLoad
       }
       // check if the image is loaded and not broken
       if (tilesMap[tile.id].complete && tilesMap[tile.id].naturalHeight !== 0) {

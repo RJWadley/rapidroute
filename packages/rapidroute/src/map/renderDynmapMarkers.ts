@@ -7,6 +7,8 @@ import renderMRTMarkers, {
 } from "./renderMRTmarkers"
 
 export default function renderDynmapMarkers(canvas: fabric.Canvas) {
+  let isActive = true
+
   fetch(
     "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
   )
@@ -14,6 +16,7 @@ export default function renderDynmapMarkers(canvas: fabric.Canvas) {
       return response.json()
     })
     .then((data: Markers) => {
+      if (!isActive) return
       const allMRTStops = Object.keys(data.sets).flatMap(set => {
         if (isMRTLine(set)) {
           return Object.values(data.sets[set].markers)
@@ -68,4 +71,8 @@ export default function renderDynmapMarkers(canvas: fabric.Canvas) {
 
       canvas.requestRenderAll()
     })
+
+  return () => {
+    isActive = false
+  }
 }
