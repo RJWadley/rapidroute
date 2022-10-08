@@ -33,8 +33,6 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
   useMemo(async () => {
     if (!dropdownOpen) return
 
-    console.log(route)
-
     resultToSegments(route).then(newSegments => {
       setSegments(newSegments)
     })
@@ -44,17 +42,20 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
    * animate opening and closing of dropdown
    */
   useEffect(() => {
+    const duration = 0.5
     const t1 = gsap.to(dropdownContent.current, {
       height: dropdownOpen ? "auto" : 0,
-      delay: dropdownOpen ? 0 : 0.5,
+      delay: dropdownOpen ? 0 : duration,
+      duration,
     })
 
     if (dropdownContent.current?.children.length) {
       const t2 = gsap.to(dropdownContent.current.children, {
         y: dropdownOpen ? 0 : 200,
-        stagger: dropdownOpen ? 0.1 : -0.05,
+        stagger: dropdownOpen ? duration / 5 : -duration / 10,
         opacity: dropdownOpen ? 1 : 0,
         ease: dropdownOpen ? "power3.out" : "power3.in",
+        duration,
       })
       return () => {
         t1.kill()
@@ -82,16 +83,20 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
       </Via>
       <CustomSpinner show={dropdownOpen && !segments} />
       <Dropdown ref={dropdownContent}>
-        <BeginNavigation
-          small={isMobile}
-          route={route.path}
-          segments={segments}
-        />
-        {segments?.map(segment => (
-          <Segment key={segment.from.uniqueId} segment={segment} />
-        ))}
-        {destination && (
-          <WillArrive destination={destination} small={isMobile} />
+        {segments && (
+          <>
+            <BeginNavigation
+              small={isMobile}
+              route={route.path}
+              segments={segments}
+            />
+            {segments?.map(segment => (
+              <Segment key={segment.from.uniqueId} segment={segment} />
+            ))}
+            {destination && (
+              <WillArrive destination={destination} small={isMobile} />
+            )}
+          </>
         )}
       </Dropdown>
     </Wrapper>

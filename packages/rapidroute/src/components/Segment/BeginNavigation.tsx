@@ -48,6 +48,8 @@ const Wrapper = styled.div`
   gap: 30px;
   align-items: center;
   justify-content: space-between;
+  transform: translate(0, 200px);
+  opacity: 0;
 `
 
 const Text = styled.div<{ small: boolean }>`

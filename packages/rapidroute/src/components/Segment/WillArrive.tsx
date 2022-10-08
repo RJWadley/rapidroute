@@ -30,6 +30,8 @@ const Wrapper = styled.div`
   display: flex;
   gap: 30px;
   align-items: center;
+  transform: translate(0, 200px);
+  opacity: 0;
 `
 
 const Icon = styled.div<{ small: boolean }>`
