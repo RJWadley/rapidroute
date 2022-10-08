@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import "the-new-css-reset/css/reset.css"
 import React, { ReactNode } from "react"
+import "hacktimer/hacktimer"
 
 import gsap from "gsap"
 import Flip from "gsap/Flip"
