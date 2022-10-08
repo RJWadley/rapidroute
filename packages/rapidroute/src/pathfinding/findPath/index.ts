@@ -135,7 +135,11 @@ export default class Pathfinder {
 
     const paths = this.reconstructPaths(cameFrom, this.to)
 
-    if (paths.length === 0 && !preventReverse) {
+    if (
+      paths.length === 0 &&
+      !preventReverse &&
+      !this.allowedModes.includes("spawnWarp")
+    ) {
       console.log("COULD NOT FIND PATH, TRYING REVERSE")
       const reversed = await new Pathfinder(
         this.to,

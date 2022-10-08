@@ -62,7 +62,7 @@ export default function useNavigation() {
           setCurrentRoute(segments)
 
           // set point of interest
-          const poi = segments[0].to.location
+          const poi = segments[0]?.to.location
           window.pointOfInterest = poi
         })
       })
