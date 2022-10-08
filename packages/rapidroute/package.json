@@ -27,7 +27,9 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "styled-components": "^5.3.6",
-    "the-new-css-reset": "^1.7.3"
+    "the-new-css-reset": "^1.7.3",
+    "ttsreader": "^1.0.25",
+    "use-deep-compare": "^1.1.0"
   },
   "devDependencies": {
     "@rapidroute/eslint-config-base": "^1.0.0",

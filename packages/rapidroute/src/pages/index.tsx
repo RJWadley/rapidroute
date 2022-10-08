@@ -7,8 +7,10 @@ import Layout from "components/Layout"
 import Results from "components/Results"
 import Selection from "components/Selection"
 import SEO from "components/SEO"
+import useVoiceNavigation from "navigation/useVoiceNavigation"
 
 export default function Home() {
+  useVoiceNavigation([])
   return (
     <Layout>
       <Header />

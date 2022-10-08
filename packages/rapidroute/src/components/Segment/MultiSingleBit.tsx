@@ -26,7 +26,7 @@ export default function MultiSingleBit({
   const isDark = useContext(darkModeContext)
 
   useMemo(() => {
-    getProvider(route, setProvider)
+    getProvider(route).then(p => p && setProvider(p))
   }, [route])
 
   const image =

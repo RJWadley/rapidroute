@@ -51,7 +51,7 @@ export default function SingleRoute({
   const isDark = useContext(darkModeContext)
 
   useMemo(() => {
-    if (route) getProvider(route, setProvider)
+    if (route) getProvider(route).then(p => p && setProvider(p))
   }, [route])
 
   const image =

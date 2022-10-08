@@ -43,6 +43,7 @@ const zoomToPlayer = (x: number, z: number, canvas: fabric.Canvas) => {
   const endX = -x * endZoom + canvas.getWidth() / 2
   const endZ = -z * endZoom + canvas.getHeight() / 2
   const animate = () => {
+    if (!(activeCanvas === canvas)) return
     if (!canMoveCamera()) return
     const now = Date.now()
     const t = now - start
@@ -81,9 +82,11 @@ const zoomToTwoPoints = (
   const height = Math.abs(a.z - b.z) + padding * 2
   const centerX = (a.x + b.x) / 2
   const centerZ = (a.z + b.z) / 2
+  const MAX_ZOOM = 10
   const endZoom = Math.min(
     canvas.getWidth() / width,
-    canvas.getHeight() / height
+    canvas.getHeight() / height,
+    MAX_ZOOM
   )
   const endX = -centerX * endZoom + canvas.getWidth() / 2
   const endZ = -centerZ * endZoom + canvas.getHeight() / 2
@@ -97,6 +100,7 @@ const zoomToTwoPoints = (
   const end = start + duration
   const animate = () => {
     if (!canMoveCamera()) return
+    if (!(activeCanvas === canvas)) return
     const now = Date.now()
     const t = now - start
     const newX = easeLinear(t, startX, endX - startX, duration)
@@ -165,6 +169,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             duration: 5000,
             easing: easeLinear,
             onChange: () => {
+              if (!(activeCanvas === canvas)) return
               img.scaleToWidth(imageWidth())
               img.scaleToHeight(imageWidth())
               canvas.requestRenderAll()
@@ -253,7 +258,9 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             img.on("mousedown", event => {
               window.following = player.account
               window.lastMapInteraction = undefined
-              zoomToPlayer(player.x, player.z, canvas)
+              const top = img.top ?? 0
+              const left = img.left ?? 0
+              zoomToPlayer(left, top, canvas)
             })
 
             // for the first five seconds, update image width every frame
@@ -297,6 +304,9 @@ export default function renderPlayers(canvas: fabric.Canvas) {
   return () => {
     activeCanvas = undefined
     previousPlayers = []
+    Object.values(previousPlayerRects).forEach(player => {
+      canvas.remove(player)
+    })
     previousPlayerRects = {}
     playerUUIDs = {}
     clearInterval(int)
