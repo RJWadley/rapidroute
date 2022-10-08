@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 
 import { navigate } from "gatsby-link"
 import styled from "styled-components"
@@ -11,11 +11,20 @@ import Segment from "./Segment"
 
 export default function NavigationSidebar() {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)
+  const scrollMarker = useRef<HTMLDivElement>(null)
 
   if (currentRoute.length === 0) navigate("/")
 
   useNavigation()
   const followedRoute = useFollowedRoute(spokenRoute)
+
+  useEffect(() => {
+    if (scrollMarker.current) {
+      scrollMarker.current.scrollIntoView({
+        behavior: "smooth",
+      })
+    }
+  }, [followedRoute, spokenRoute])
 
   return (
     <Wrapper>
@@ -24,6 +33,7 @@ export default function NavigationSidebar() {
           <Segment forceMobile segment={segment} key={segment.to.uniqueId} />
         )
       })}
+      <div ref={scrollMarker} />
       {spokenRoute.map(segment => {
         return (
           <Segment forceMobile segment={segment} key={segment.to.uniqueId} />
@@ -40,7 +50,8 @@ const Wrapper = styled.div`
   }
   height: 100%;
   overflow-y: auto;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   padding: 25px;
   gap: 25px;
 `
