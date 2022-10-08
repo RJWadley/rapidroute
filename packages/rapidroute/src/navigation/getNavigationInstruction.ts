@@ -7,7 +7,9 @@ const northSouthLines = ["Z", "E", "J", "W"]
 const inOutLines = ["A", "T", "I", "M", "D", "P", "V", "H", "F"]
 const circleLines = ["C"]
 
-const stopToNumber = (stop: string) => {
+export const stopToNumber = (stop: string | undefined) => {
+  if (!stop) return 0
+
   if (stop[1] === "X") return -1
   if (stop === "MH") return -0.3
   if (stop === "MW") return -0.2

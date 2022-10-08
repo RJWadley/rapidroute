@@ -7,11 +7,15 @@ export const NavigationContext = createContext<{
   setPrefferedRoute: (prefferedRoute: string[]) => void
   currentRoute: SegmentType[]
   setCurrentRoute: (currentRoute: SegmentType[]) => void
+  spokenRoute: SegmentType[]
+  setSpokenRoute: (spokenRoute: SegmentType[]) => void
 }>({
   prefferedRoute: [],
   setPrefferedRoute: () => {},
   currentRoute: [],
   setCurrentRoute: () => {},
+  spokenRoute: [],
+  setSpokenRoute: () => {},
 })
 
 export function NavigationProvider({
@@ -21,6 +25,7 @@ export function NavigationProvider({
 }): JSX.Element {
   const [prefferedRoute, setPrefferedRoute] = useState<string[]>([])
   const [currentRoute, setCurrentRoute] = useState<SegmentType[]>([])
+  const [spokenRoute, setSpokenRoute] = useState<SegmentType[]>([])
 
   const value = useMemo(() => {
     return {
@@ -28,8 +33,10 @@ export function NavigationProvider({
       setPrefferedRoute,
       currentRoute,
       setCurrentRoute,
+      spokenRoute,
+      setSpokenRoute,
     }
-  }, [currentRoute, prefferedRoute])
+  }, [currentRoute, prefferedRoute, spokenRoute])
 
   return (
     <NavigationContext.Provider value={value}>
