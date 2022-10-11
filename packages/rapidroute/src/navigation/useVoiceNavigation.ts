@@ -2,18 +2,20 @@ import { TtsEngine } from "ttsreader"
 import { useDeepCompareMemo } from "use-deep-compare"
 
 import { SegmentType } from "components/createSegments"
+import { isBrowser } from "utils/functions"
 
 import getNavigationInstruction from "./getNavigationInstruction"
 
-TtsEngine.init({
-  onInit: () => {
-    TtsEngine.setBestMatchingVoice(null, null, "en")
-  },
-})
+if (isBrowser())
+  TtsEngine.init({
+    onInit: () => {
+      TtsEngine.setBestMatchingVoice(null, null, "en")
+    },
+  })
 
 export default function useVoiceNavigation(route: SegmentType[]) {
   useDeepCompareMemo(async () => {
-    if (!route.length) return
+    if (!route.length || !isBrowser()) return
 
     const firstSegment = route[0]
     const nextSegment = route[1]

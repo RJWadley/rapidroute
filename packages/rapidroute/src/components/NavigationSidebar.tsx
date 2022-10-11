@@ -5,6 +5,7 @@ import styled from "styled-components"
 
 import useFollowedRoute from "navigation/useFollowedRoute"
 import useNavigation from "navigation/useNavigation"
+import { isBrowser } from "utils/functions"
 
 import { NavigationContext } from "./Providers/NavigationContext"
 import Segment from "./Segment"
@@ -13,7 +14,7 @@ export default function NavigationSidebar() {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
 
-  if (currentRoute.length === 0) navigate("/")
+  if (isBrowser() && currentRoute.length === 0) navigate("/")
 
   useNavigation()
   const followedRoute = useFollowedRoute(spokenRoute)
