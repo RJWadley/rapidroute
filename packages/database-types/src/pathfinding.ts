@@ -9,9 +9,9 @@ export interface Pathfinding {
  *
  * value key: route location
  * value value: routeIds that can be used to get to that location,
- * N: route name, G: number of gates
+ * N: route name, G: number of gates (0 if undefined)
  */
-type ShortHandType = Record<string, { n: string; g: number }[]>
+type ShortHandType = Record<string, { n: string; g?: number }[]>
 
 export interface PathingPlace {
   /**
