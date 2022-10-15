@@ -12,6 +12,7 @@ import { isBrowser } from "utils/functions"
 import isObject from "utils/isObject"
 
 import { database } from "./firebase"
+import isCoordinate from "./isCoordinate"
 
 const getItem = (itemName: string) =>
   isBrowser() ? localStorage.getItem(itemName) : null
@@ -57,7 +58,7 @@ export async function getPath<T extends keyof DatabaseType>(
   itemName: string
 ): Promise<GetOne<T> | null> {
   // some things are not in the database, so we need to check for that
-  if (type === "locations" && itemName.match(/^Coordinate: \d+, \d+$/g)) {
+  if (type === "locations" && isCoordinate(itemName)) {
     const xCoord = parseInt(itemName.split(", ")[0].split(": ")[1], 10)
     const zCoord = parseInt(itemName.split(", ")[1], 10)
     const out: Location = {

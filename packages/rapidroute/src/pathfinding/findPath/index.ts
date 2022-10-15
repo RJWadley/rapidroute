@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
+import isCoordinate from "data/isCoordinate"
+
 import createCoordinateEdges from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"
 import { GraphEdge, rawEdges, rawNodes } from "./mapEdges"
@@ -50,18 +52,17 @@ export default class Pathfinder {
     const nodes = await rawNodes
 
     // create coordinate edges if needed
-    // in the form coordinate: number, number
-    if (this.from.startsWith("Coordinate: ")) {
+    if (isCoordinate(this.from)) {
       const [x, z] = this.from
-        .replace("Coordinate: ", "")
+        .replace("Coordinate:", "")
         .split(",")
         .map(n => Number(n))
       const coordinateEdges = await createCoordinateEdges(this.from, x, z)
       edges.push(...coordinateEdges)
     }
-    if (this.to.startsWith("Coordinate: ")) {
+    if (isCoordinate(this.to)) {
       const [x, z] = this.to
-        .replace("Coordinate: ", "")
+        .replace("Coordinate:", "")
         .split(",")
         .map(n => Number(n))
       const coordinateEdges = await createCoordinateEdges(this.to, x, z)
