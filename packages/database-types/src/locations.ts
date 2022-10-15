@@ -64,7 +64,12 @@ export interface Location {
   keywords?: string
 }
 
-export type PlaceType = "City" | "Airport" | "MRT Station" | "Other"
+export type PlaceType =
+  | "City"
+  | "Airport"
+  | "MRT Station"
+  | "Other"
+  | "Coordinate"
 
 export interface Coordinates {
   x: number

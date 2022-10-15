@@ -51,17 +51,17 @@ export default class Pathfinder {
 
     // create coordinate edges if needed
     // in the form coordinate: number, number
-    if (this.from.startsWith("coordinate: ")) {
+    if (this.from.startsWith("Coordinate: ")) {
       const [x, z] = this.from
-        .replace("coordinate:", "")
+        .replace("Coordinate: ", "")
         .split(",")
         .map(n => Number(n))
       const coordinateEdges = await createCoordinateEdges(this.from, x, z)
       edges.push(...coordinateEdges)
     }
-    if (this.to.startsWith("coordinate:")) {
+    if (this.to.startsWith("Coordinate: ")) {
       const [x, z] = this.to
-        .replace("coordinate:", "")
+        .replace("Coordinate: ", "")
         .split(",")
         .map(n => Number(n))
       const coordinateEdges = await createCoordinateEdges(this.to, x, z)

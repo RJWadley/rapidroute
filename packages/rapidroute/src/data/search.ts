@@ -45,12 +45,9 @@ export function search(query: string) {
 
   if (/\d+, *\d+/g.test(query)) {
     // add to beginning of results if it's a x,y coordinate
-    results.unshift(
-      `coordinate: ${
-        // only keep digits and commas
-        query.replace(/([^0-9,])/g, "")
-      }`
-    )
+    const xCoord = query.split(",")[0].replace(/\D/g, "")
+    const yCoord = query.split(",")[1].replace(/\D/g, "")
+    results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
   }
 
   return results.map(x => (typeof x === "number" ? x.toString() : x))

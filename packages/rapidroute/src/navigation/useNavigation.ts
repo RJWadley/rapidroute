@@ -51,7 +51,7 @@ export default function useNavigation() {
 
     if (playersLocation) {
       const { x, z } = playersLocation
-      const coordId = `coordinate:${x}, ${z}`
+      const coordId = `Coordinate: ${x}, ${z}`
 
       pathfinder?.cancel()
       pathfinder = new FindPath(coordId, destinationId, allowedModes)

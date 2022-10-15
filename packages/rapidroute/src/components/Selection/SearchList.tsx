@@ -54,10 +54,17 @@ export default function SearchList({
   useEffect(() => {
     const results = search(searchFor)
     setSearchResults(
-      results.flatMap(
-        result =>
-          allLocations.find(location => location.uniqueId === result) || []
-      )
+      results.flatMap(result => {
+        if (result.match(/^Coordinate: \d+, \d+$/g))
+          return [
+            {
+              uniqueId: result,
+              d: result,
+              i: result,
+            },
+          ]
+        return allLocations.find(location => location.uniqueId === result) || []
+      })
     )
   }, [allLocations, searchFor])
 
