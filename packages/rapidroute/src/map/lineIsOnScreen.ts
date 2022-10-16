@@ -1,5 +1,7 @@
 import { fabric } from "fabric"
 
+import { session } from "utils/localUtils"
+
 /**
  * checks if the line between two points intersects the canvas viewport
  */
@@ -9,7 +11,7 @@ export default function lineIsOnScreen(
   canvas: fabric.Canvas,
   lineWidth: number = 0
 ) {
-  const debugCull = window.isDebug ? 100 / canvas.getZoom() : 0
+  const debugCull = session.isDebug ? 100 / canvas.getZoom() : 0
   const viewPort = canvas.calcViewportBoundaries()
   const minX = viewPort.tl.x + debugCull - lineWidth
   const maxX = viewPort.br.x - debugCull + lineWidth

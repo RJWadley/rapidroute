@@ -1,5 +1,7 @@
 /// <reference types="react-scripts" />
 
+import { Session } from "utils/localUtils"
+
 declare global {
   interface Window {
     /**
@@ -15,31 +17,9 @@ declare global {
      */
     netscape: unknown
     /**
-     * true if should show debugging information
+     * access to session for debugging
      */
-    isDebug?: boolean
-    /**
-     * date of last pan or zoom on map
-     */
-    lastMapInteraction?: Date
-    /**
-     * player to follow on map
-     */
-    following?: string
-    /**
-     * point of interest to follow on map
-     */
-    pointOfInterest?: {
-      x: number
-      z: number
-    }
-    /**
-     * last known location of the user
-     */
-    lastKnownLocation?: {
-      x: number
-      z: number
-    }
+    session?: Session
   }
 }
 

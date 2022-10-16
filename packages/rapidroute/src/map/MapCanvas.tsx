@@ -3,6 +3,8 @@ import React, { useEffect, useRef } from "react"
 import { fabric } from "fabric"
 import styled from "styled-components"
 
+import { session } from "utils/localUtils"
+
 import handlePinchToZoom, {
   handleTouchEnd,
   handleTouchStart,
@@ -18,7 +20,7 @@ export default function MapCanvas() {
   const previousTransform = useRef<number[] | undefined>()
 
   useEffect(() => {
-    window.isDebug = false
+    session.isDebug = false
     if (canvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
         selection: false,
@@ -57,7 +59,7 @@ export default function MapCanvas() {
       })
 
       canvas.on("after:render", () => {
-        if (!window.isDebug) return
+        if (!session.isDebug) return
 
         // draw a line 100px from the border of the canvas all around
         const ctx = canvas.getContext()

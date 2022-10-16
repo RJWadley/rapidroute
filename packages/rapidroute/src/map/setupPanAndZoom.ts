@@ -1,9 +1,11 @@
 import { fabric } from "fabric"
 
+import { session } from "utils/localUtils"
+
 export default function setupPanAndZoom(canvas: fabric.Canvas) {
   // zooming
   canvas.on("mouse:wheel", opt => {
-    window.lastMapInteraction = new Date()
+    session.lastMapInteraction = new Date()
     const delta = -opt.e.deltaY
     const zoom = canvas.getZoom()
     const newZoom = zoom + (delta / 1000) * zoom
@@ -25,7 +27,7 @@ export default function setupPanAndZoom(canvas: fabric.Canvas) {
   const last10posX: number[] = []
   const last10posY: number[] = []
   canvas.on("mouse:down", opt => {
-    window.lastMapInteraction = new Date()
+    session.lastMapInteraction = new Date()
     const { pointer } = opt
     if (!pointer) return
     isDragging = true
@@ -70,7 +72,7 @@ export default function setupPanAndZoom(canvas: fabric.Canvas) {
       obj.setCoords()
     })
 
-    window.lastMapInteraction = new Date()
+    session.lastMapInteraction = new Date()
   })
   canvas.on("mouse:up", () => {
     isDragging = false

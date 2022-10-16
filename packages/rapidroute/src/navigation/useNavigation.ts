@@ -4,6 +4,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
 import FindPath from "pathfinding/findPath"
+import { session } from "utils/localUtils"
 
 import { stopToNumber } from "./getNavigationInstruction"
 import useVoiceNavigation from "./useVoiceNavigation"
@@ -47,7 +48,7 @@ export default function useNavigation() {
   let pathfinder: FindPath | undefined
 
   const updateRoute = () => {
-    const playersLocation = window.lastKnownLocation
+    const playersLocation = session.lastKnownLocation
 
     if (playersLocation) {
       const { x, z } = playersLocation
@@ -63,7 +64,7 @@ export default function useNavigation() {
 
           // set point of interest
           const poi = segments[0]?.to.location
-          window.pointOfInterest = poi
+          session.pointOfInterest = poi
         })
       })
     }

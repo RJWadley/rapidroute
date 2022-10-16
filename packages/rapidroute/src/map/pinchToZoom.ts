@@ -1,5 +1,7 @@
 import { fabric } from "fabric"
 
+import { session } from "utils/localUtils"
+
 let lastDistance = 0
 const last10dz: number[] = []
 let dz = 0
@@ -9,7 +11,7 @@ export default function handlePinchToZoom(
   e: TouchEvent,
   canvas: fabric.Canvas
 ) {
-  window.lastMapInteraction = new Date()
+  session.lastMapInteraction = new Date()
 
   if (canvas.getActiveObject()) return
   const { touches } = e

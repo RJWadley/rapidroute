@@ -1,125 +1,14 @@
 import { fabric } from "fabric"
 
-import { getLocal } from "utils/localUtils"
+import { getLocal, session } from "utils/localUtils"
 
 import { WorldInfo } from "./worldInfoType"
-
-// with full param names
-function easeLinear(
-  currentTime: number,
-  startValue: number,
-  changeInValue: number,
-  duration: number
-) {
-  return startValue + (currentTime / duration) * changeInValue
-}
+import { easeLinear, updateActiveCanvas, zoomToPlayer } from "./zoomTo"
 
 let previousPlayers: string[] = []
 let previousPlayerRects: Record<string, fabric.Image> = {}
 let playerUUIDs: Record<string, string> = {}
 let activeCanvas: fabric.Canvas | undefined
-
-const canMoveCamera = () => {
-  if (window.lastMapInteraction) {
-    const now = new Date()
-    const diff = now.getTime() - window.lastMapInteraction.getTime()
-    if (diff < 10000) return false
-  }
-  return true
-}
-
-const zoomToPlayer = (x: number, z: number, canvas: fabric.Canvas) => {
-  if (window.pointOfInterest) {
-    return zoomToTwoPoints({ x, z }, window.pointOfInterest, canvas)
-  }
-
-  if (!(activeCanvas === canvas)) return
-  if (!canMoveCamera()) return
-  const duration = 5000
-  const start = Date.now()
-  const startZoom = canvas.getZoom()
-  const startX = canvas.viewportTransform?.[4] ?? 0
-  const startZ = canvas.viewportTransform?.[5] ?? 0
-  const end = start + duration
-  const endZoom = 1
-  const endX = -x * endZoom + canvas.getWidth() / 2
-  const endZ = -z * endZoom + canvas.getHeight() / 2
-  const animate = () => {
-    if (!(activeCanvas === canvas)) return
-    if (!canMoveCamera()) return
-    const now = Date.now()
-    const t = now - start
-    const newX = easeLinear(t, startX, endX - startX, duration)
-    const newZ = easeLinear(t, startZ, endZ - startZ, duration)
-    const zoom = easeLinear(t, startZoom, endZoom - startZoom, duration)
-    canvas.setZoom(zoom)
-    const vpt = canvas.viewportTransform
-    if (vpt) {
-      vpt[4] = newX
-      vpt[5] = newZ
-    }
-    if (now < end) {
-      requestAnimationFrame(animate)
-    }
-
-    Object.values(previousPlayerRects).forEach(rect => {
-      rect.setCoords()
-    })
-  }
-  animate()
-}
-
-/**
- * given two points, zoom the canvas to fit them both
- */
-const zoomToTwoPoints = (
-  a: { x: number; z: number },
-  b: { x: number; z: number },
-  canvas: fabric.Canvas
-) => {
-  if (!(activeCanvas === canvas)) return
-  if (!canMoveCamera()) return
-  const padding = 100 / canvas.getZoom()
-  const width = Math.abs(a.x - b.x) + padding * 2
-  const height = Math.abs(a.z - b.z) + padding * 2
-  const centerX = (a.x + b.x) / 2
-  const centerZ = (a.z + b.z) / 2
-  const MAX_ZOOM = 10
-  const endZoom = Math.min(
-    canvas.getWidth() / width,
-    canvas.getHeight() / height,
-    MAX_ZOOM
-  )
-  const endX = -centerX * endZoom + canvas.getWidth() / 2
-  const endZ = -centerZ * endZoom + canvas.getHeight() / 2
-  const startZoom = canvas.getZoom()
-  const vpt = canvas.viewportTransform
-  if (!vpt) return
-  const startX = vpt[4]
-  const startZ = vpt[5]
-  const duration = 5000
-  const start = Date.now()
-  const end = start + duration
-  const animate = () => {
-    if (!canMoveCamera()) return
-    if (!(activeCanvas === canvas)) return
-    const now = Date.now()
-    const t = now - start
-    const newX = easeLinear(t, startX, endX - startX, duration)
-    const newZ = easeLinear(t, startZ, endZ - startZ, duration)
-    const zoom = easeLinear(t, startZoom, endZoom - startZoom, duration)
-    canvas.setZoom(zoom)
-    const vpt = canvas.viewportTransform
-    if (vpt) {
-      vpt[4] = newX
-      vpt[5] = newZ
-    }
-    if (now < end) {
-      requestAnimationFrame(animate)
-    }
-  }
-  animate()
-}
 
 const updatePlayers = (canvas: fabric.Canvas) => {
   const imageWidth = () => 3 * Math.max(5, 10 * canvas.getZoom())
@@ -135,8 +24,8 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
       // if account matches, follow player
       const isPlayerToFollow = (name: string) =>
-        window.following &&
-        window.following.toLowerCase() === name.toLowerCase()
+        session.following &&
+        session.following.toLowerCase() === name.toLowerCase()
 
       const allProms = players.map(
         player =>
@@ -151,20 +40,20 @@ const updatePlayers = (canvas: fabric.Canvas) => {
       await Promise.allSettled(allProms)
       if (!(activeCanvas === canvas)) return
 
-      if (!getLocal("selectedPlayer")) window.lastKnownLocation = undefined
+      if (!getLocal("selectedPlayer")) session.lastKnownLocation = undefined
       players.forEach(player => {
         if (
           player.account.toLowerCase() ===
           getLocal("selectedPlayer")?.toString().toLowerCase()
         ) {
-          window.lastKnownLocation = { x: player.x, z: player.z }
+          session.lastKnownLocation = { x: player.x, z: player.z }
         }
 
         if (!playerUUIDs[player.account]) return
         // if player already on map, update their position
         if (previousPlayerRects[player.account]) {
           if (isPlayerToFollow(player.account)) {
-            zoomToPlayer(player.x, player.z, canvas)
+            zoomToPlayer(player.x, player.z, canvas, previousPlayerRects)
           }
 
           const img = previousPlayerRects[player.account]
@@ -260,12 +149,12 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
             // on click, follow player
 
-            img.on("mousedown", event => {
-              window.following = player.account
-              window.lastMapInteraction = undefined
+            img.on("mousedown", () => {
+              session.following = player.account
+              session.lastMapInteraction = undefined
               const top = img.top ?? 0
               const left = img.left ?? 0
-              zoomToPlayer(left, top, canvas)
+              zoomToPlayer(left, top, canvas, previousPlayerRects)
             })
 
             // for the first five seconds, update image width every frame
@@ -281,7 +170,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
           // center on player
           if (isPlayerToFollow(player.account)) {
-            zoomToPlayer(player.x, player.z, canvas)
+            zoomToPlayer(player.x, player.z, canvas, previousPlayerRects)
           }
         }
       })
@@ -301,6 +190,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
 export default function renderPlayers(canvas: fabric.Canvas) {
   activeCanvas = canvas
+  updateActiveCanvas(canvas)
   const int = setInterval(() => {
     updatePlayers(canvas)
   }, 5000)

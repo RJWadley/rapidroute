@@ -5,7 +5,7 @@ import styled from "styled-components"
 
 import averageImageHue from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
-import { setLocal } from "utils/localUtils"
+import { session, setLocal } from "utils/localUtils"
 
 import { darkModeContext } from "./Providers/DarkMode"
 import RoundButton from "./RoundButton"
@@ -84,7 +84,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       <CustomRound
         onClick={() => {
           setLocal("selectedPlayer", name)
-          window.following = name
+          session.following = name
           navigate(nextUrl)
         }}
         backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}

@@ -1,5 +1,7 @@
 import { fabric } from "fabric"
 
+import { session } from "utils/localUtils"
+
 import getTileUrl from "./getTileURL"
 
 const tilesMap: Record<string, HTMLImageElement> = {}
@@ -45,7 +47,7 @@ function renderTilesInRange(
   const tileWidth = 2 ** (8 - zoom) * 32
   const ctx = canvas.getContext()
 
-  const debugOffset = window.isDebug ? 100 / canvas.getZoom() : 0
+  const debugOffset = session.isDebug ? 100 / canvas.getZoom() : 0
   const verticalOffset = 32
 
   const onImageLoad = () => {

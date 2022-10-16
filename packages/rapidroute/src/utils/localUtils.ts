@@ -42,7 +42,7 @@ export const setLocal = <T extends keyof LocalStorage>(
 export const getLocal = <T extends keyof LocalStorage>(
   key: T
 ): LocalStorage[T] | null => {
-  if (!isBrowser) return null
+  if (!isBrowser()) return null
   const value = localStorage.getItem(key)
   if (value === null) {
     return null
@@ -61,3 +61,36 @@ if (isBrowser())
     localStorage.clear()
     setLocal("version", latestVersion)
   }
+
+export interface Session {
+  /**
+   * true if should show debugging information
+   */
+  isDebug: boolean
+  /**
+   * date of last pan or zoom on map
+   */
+  lastMapInteraction?: Date
+  /**
+   * player to follow on map
+   */
+  following?: string
+  /**
+   * point of interest to follow on map
+   */
+  pointOfInterest?: {
+    x: number
+    z: number
+  }
+  /**
+   * last known location of the user
+   */
+  lastKnownLocation?: {
+    x: number
+    z: number
+  }
+}
+
+export const session: Session = {
+  isDebug: false,
+}
