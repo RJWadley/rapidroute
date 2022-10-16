@@ -2,7 +2,7 @@ import { DatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"
 
-const lastBreakingUpdate = 20221015
+const latestVersion = 20221015
 
 /**
  * return types from local storage
@@ -20,7 +20,7 @@ interface LocalStorage {
   /**
    * the currently selected player
    */
-  selectedPlayer: string
+  selectedPlayer: string | number
   /**
    * the current dark mode preference
    */
@@ -55,7 +55,9 @@ export const clearLocal = <T extends keyof LocalStorage>(key: T) => {
   localStorage.removeItem(key)
 }
 
-if ((getLocal("version") || -1) < lastBreakingUpdate) {
-  localStorage.clear()
-  setLocal("version", lastBreakingUpdate)
-}
+const version = getLocal("version")
+if (isBrowser())
+  if (!version || version < latestVersion) {
+    localStorage.clear()
+    setLocal("version", latestVersion)
+  }
