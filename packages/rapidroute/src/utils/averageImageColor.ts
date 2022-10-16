@@ -1,7 +1,9 @@
 /**
  * return the average hue of an image
  */
-export default function averageImageHue(imageURL: string): Promise<number> {
+export default function averageImageHSL(
+  imageURL: string
+): Promise<[number, number, number]> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.crossOrigin = "Anonymous"
@@ -24,7 +26,7 @@ export default function averageImageHue(imageURL: string): Promise<number> {
         b += data[i + 2]
       }
       const avg = [r / data.length, g / data.length, b / data.length]
-      const hue = rgbToHsl(avg[0], avg[1], avg[2])[0]
+      const hue = rgbToHsl(avg[0], avg[1], avg[2])
       return resolve(hue)
     }
     img.onerror = err => {
@@ -33,7 +35,11 @@ export default function averageImageHue(imageURL: string): Promise<number> {
   })
 }
 
-const rgbToHsl = (rIn: number, gIn: number, bIn: number) => {
+const rgbToHsl = (
+  rIn: number,
+  gIn: number,
+  bIn: number
+): [number, number, number] => {
   const r = rIn / 255
   const g = gIn / 255
   const b = bIn / 255

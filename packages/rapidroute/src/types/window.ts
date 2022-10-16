@@ -34,7 +34,7 @@ declare global {
       z: number
     }
     /**
-     * last known location of following player
+     * last known location of the user
      */
     lastKnownLocation?: {
       x: number

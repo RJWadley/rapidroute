@@ -36,13 +36,17 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   }, [name])
 
   const [hue, setHue] = useState<number>()
+  const [saturation, setSaturation] = useState<number>()
   useEffect(() => {
     let isCancelled = false
     setHue(undefined)
     if (imageUrl)
-      averageImageHue(imageUrl).then(newHue => {
+      averageImageHue(imageUrl).then(newHSL => {
         setTimeout(() => {
-          if (!isCancelled) setHue(newHue)
+          if (!isCancelled) {
+            setHue(newHSL[0] * 360)
+            setSaturation(newHSL[1] * 300)
+          }
         }, 100)
       })
     return () => {
@@ -51,22 +55,22 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   }, [imageUrl])
 
   const isDark = useContext(darkModeContext)
-  const backgroundLightness = isDark ? 0.15 : 0.85
-  const textLightness = isDark ? 0.85 : 0.15
-  const midLightness = isDark ? 0.3 : 0.7
+  const backgroundLightness = isDark ? 15 : 85
+  const textLightness = isDark ? 85 : 15
+  const midLightness = isDark ? 30 : 70
 
   // get the next url from the current url
   const nextUrl = isBrowser()
-    ? new URLSearchParams(window.location.search).get("next") || "/"
+    ? `/${new URLSearchParams(window.location.search).get("redirect")}` || "/"
     : "/"
 
-  return hue && imageUrl ? (
+  return hue !== undefined && imageUrl ? (
     <Wrapper
-      backgroundColor={`hsl(${hue * 360}, 100%, ${backgroundLightness * 100}%)`}
-      textColor={`hsl(${hue * 360}, 100%, ${textLightness * 100}%)`}
+      backgroundColor={`hsl(${hue}, ${saturation}%, ${backgroundLightness}%)`}
+      textColor={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}
     >
       <Image
-        hue={hue}
+        color={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         src={imageUrl}
         alt={`${name} player head`}
         onError={() => {
@@ -83,8 +87,8 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
           window.following = name
           navigate(nextUrl)
         }}
-        backgroundColor={`hsl(${hue * 360}, 100%, ${midLightness * 100}%)`}
-        textColor={`hsl(${hue * 360}, 100%, ${textLightness * 100}%)`}
+        backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
+        textColor={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}
       >
         arrow_forward
       </CustomRound>
@@ -103,11 +107,11 @@ const Wrapper = styled.div<{ backgroundColor: string; textColor: string }>`
   grid-template-columns: auto 1fr auto;
 `
 
-const Image = styled.img<{ hue: number }>`
+const Image = styled.img<{ color: string }>`
   width: 80px;
   height: 80px;
   border-radius: 10px;
-  border: 2px solid ${props => `hsl(${props.hue * 360}, 100%, 50%)`};
+  border: 2px solid ${props => props.color};
 `
 
 const Name = styled.div`

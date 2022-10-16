@@ -1,5 +1,7 @@
 import { fabric } from "fabric"
 
+import { getLocal } from "utils/localUtils"
+
 import { WorldInfo } from "./worldInfoType"
 
 // with full param names
@@ -149,9 +151,12 @@ const updatePlayers = (canvas: fabric.Canvas) => {
       await Promise.allSettled(allProms)
       if (!(activeCanvas === canvas)) return
 
+      if (!getLocal("selectedPlayer")) window.lastKnownLocation = undefined
       players.forEach(player => {
-        if (!window.following) window.lastKnownLocation = undefined
-        if (isPlayerToFollow(player.account)) {
+        if (
+          player.account.toLowerCase() ===
+          getLocal("selectedPlayer")?.toString().toLowerCase()
+        ) {
           window.lastKnownLocation = { x: player.x, z: player.z }
         }
 
@@ -162,7 +167,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             zoomToPlayer(player.x, player.z, canvas)
           }
 
-          let img = previousPlayerRects[player.account]
+          const img = previousPlayerRects[player.account]
 
           // tween to new position over 5 seconds
           img.animate("left", player.x, {
