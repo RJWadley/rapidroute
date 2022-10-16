@@ -15,6 +15,7 @@ interface PlayerSelectProps {
 }
 
 export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
+  const fallbackUUID = "ec561538-f3fd-461d-aff5-086b22154bce"
   const name = nameIn.replace(/[^A-Za-z0-9_]/g, "").substring(0, 16)
   const [imageUrl, setImageUrl] = useState<string>()
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       .then(response => response.json())
       .then(uuidData => {
         return `https://crafatar.com/avatars/${
-          uuidData.id || "8667ba71-b85a-4004-af54-457a9734eed7"
+          uuidData.id || fallbackUUID
         }?overlay`
       })
       .then(url => {
@@ -61,7 +62,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
 
   // get the next url from the current url
   const nextUrl = isBrowser()
-    ? `/${new URLSearchParams(window.location.search).get("redirect")}` || "/"
+    ? `/${new URLSearchParams(window.location.search).get("redirect") || ""}`
     : "/"
 
   return hue !== undefined && imageUrl ? (
@@ -74,8 +75,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         src={imageUrl}
         alt={`${name} player head`}
         onError={() => {
-          const newSrc =
-            "https://crafatar.com/avatars/8667ba71-b85a-4004-af54-457a9734eed7?overlay=true"
+          const newSrc = `https://crafatar.com/avatars/${fallbackUUID}?overlay`
           setImageUrl(newSrc)
           setHue(undefined)
         }}

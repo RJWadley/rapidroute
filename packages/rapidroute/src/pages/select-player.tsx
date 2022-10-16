@@ -40,12 +40,16 @@ export default function SelectPlayer() {
     <Layout>
       <Header />
       <Content>
-        Select Player
-        <input
-          onChange={e => {
-            setSearch(e.target.value)
-          }}
-        />
+        <Title>Who are You?</Title>
+        <SearchContainer>
+          <Search
+            placeholder="Search for a player"
+            onChange={e => {
+              setSearch(e.target.value)
+            }}
+          />
+          <Icon>search</Icon>
+        </SearchContainer>
         <Players>
           {players
             .filter(
@@ -55,9 +59,10 @@ export default function SelectPlayer() {
             .map(player => (
               <PlayerSelect key={player} name={player} />
             ))}
-          {debouncedSearch && !players.includes(debouncedSearch) && (
-            <PlayerSelect name={debouncedSearch} />
-          )}
+          {debouncedSearch &&
+            players.every(
+              player => player.toLowerCase() !== search?.toLowerCase()
+            ) && <PlayerSelect name={debouncedSearch} />}
         </Players>
       </Content>
     </Layout>
@@ -70,6 +75,35 @@ const Content = styled.div`
   margin: 0 auto;
   margin-top: 200px;
   padding-bottom: 200px;
+`
+
+const Title = styled.h1`
+  text-align: center;
+  font-size: 48px;
+  color: var(--text-color);
+  font-weight: 700;
+  margin-bottom: 50px;
+`
+
+const SearchContainer = styled.div`
+  position: relative;
+`
+
+const Search = styled.input`
+  background-color: var(--default-card-background);
+  width: 100%;
+  padding: 30px;
+  margin-bottom: 20px;
+  border-radius: 30px;
+  font-size: 20px;
+`
+
+const Icon = styled.div`
+  font-family: "Material Symbols Outlined";
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  font-size: 40px;
 `
 
 const Players = styled.div`

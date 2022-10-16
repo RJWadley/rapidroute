@@ -34,6 +34,7 @@ const Wrapper = styled.div`
   left: 20px;
   scale: 0.75; // TODO this lazy af
   transform-origin: top left;
+  cursor: pointer;
 `
 
 const StyledLogo = styled(Logo)`
