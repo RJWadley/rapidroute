@@ -5,6 +5,7 @@ import styled from "styled-components"
 
 import averageImageHue from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
+import { setLocal } from "utils/localUtils"
 
 import { darkModeContext } from "./Providers/DarkMode"
 import RoundButton from "./RoundButton"
@@ -78,7 +79,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       <Name>{name}</Name>
       <CustomRound
         onClick={() => {
-          localStorage.setItem("rapidroute-player", name)
+          setLocal("selectedPlayer", name)
           window.following = name
           navigate(nextUrl)
         }}

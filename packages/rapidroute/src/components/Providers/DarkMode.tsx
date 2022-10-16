@@ -1,5 +1,6 @@
 import React, { createContext, ReactNode, useEffect, useState } from "react"
 
+import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"
 
 export const darkModeContext = createContext<boolean | undefined>(undefined)
@@ -14,7 +15,7 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
   const systemIsDark = useMedia("(prefers-color-scheme: dark)")
 
   useEffect(() => {
-    const savedPreference = localStorage.getItem("darkMode")
+    const savedPreference = getLocal("darkMode")
     if (isPreference(savedPreference)) {
       setPreference(savedPreference)
     } else setPreference("system")
@@ -22,7 +23,7 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (preference) {
-      localStorage.setItem("darkMode", preference)
+      setLocal("darkMode", preference)
       if (preference === "system") setIsDark(systemIsDark)
       else setIsDark(preference === "dark")
     }

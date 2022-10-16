@@ -8,32 +8,31 @@ import {
 import { ref, onValue } from "firebase/database"
 
 import { throttle } from "pathfinding/findPath/pathUtil"
-import { isBrowser } from "utils/functions"
 import isObject from "utils/isObject"
+import { getLocal, setLocal } from "utils/localUtils"
 
 import { database } from "./firebase"
 import isCoordinate from "./isCoordinate"
 
-const getItem = (itemName: string) =>
-  isBrowser() ? localStorage.getItem(itemName) : null
-const setItem = (itemName: string, itemValue: string) =>
-  isBrowser() ? localStorage.setItem(itemName, itemValue) : null
-const rawcache = getItem("databaseCache")
-const rawOneHash = getItem("oneHash")
-const rawAllHash = getItem("allHash")
-
-const databaseCache: DatabaseType = rawcache
-  ? JSON.parse(rawcache)
-  : {
-      locations: {},
-      pathfinding: {},
-      providers: {},
-      routes: {},
-      searchIndex: {},
-      worlds: {},
-    }
-const oneHashes: Hashes = rawOneHash ? JSON.parse(rawOneHash) : {}
-const allHashes: Hashes = rawAllHash ? JSON.parse(rawAllHash) : {}
+const defaultDatabaseCache: DatabaseType = {
+  locations: {},
+  pathfinding: {},
+  providers: {},
+  routes: {},
+  searchIndex: {},
+  worlds: {},
+}
+const defaultHashes: Hashes = {
+  locations: undefined,
+  pathfinding: undefined,
+  providers: undefined,
+  routes: undefined,
+  searchIndex: undefined,
+  worlds: undefined,
+}
+const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
+const oneHashes = getLocal("oneHash") ?? defaultHashes
+const allHashes = getLocal("allHash") ?? defaultHashes
 
 let databaseHashes: Hashes = {
   locations: "",
@@ -111,8 +110,8 @@ export async function getPath<T extends keyof DatabaseType>(
       }
       databaseCache[type][itemName] = data
       oneHashes[type] = hash
-      setItem("databaseCache", JSON.stringify(databaseCache))
-      setItem("oneHash", JSON.stringify(oneHashes))
+      setLocal("databaseCache", databaseCache)
+      setLocal("oneHash", oneHashes)
       return resolve(data)
     })
   })
@@ -179,9 +178,9 @@ export async function getAll<T extends keyof DatabaseType>(
       databaseCache[type] = data
       allHashes[type] = hash
       oneHashes[type] = hash
-      setItem("databaseCache", JSON.stringify(databaseCache))
-      setItem("allHash", JSON.stringify(allHashes))
-      setItem("oneHash", JSON.stringify(oneHashes))
+      setLocal("databaseCache", databaseCache)
+      setLocal("allHash", allHashes)
+      setLocal("oneHash", oneHashes)
       return resolve(data)
     })
   })

@@ -17,33 +17,29 @@ declare global {
     /**
      * true if should show debugging information
      */
-    isDebug: boolean | undefined
+    isDebug?: boolean
     /**
      * date of last pan or zoom on map
      */
-    lastMapInteraction: Date | undefined
+    lastMapInteraction?: Date
     /**
      * player to follow on map
      */
-    following: string | undefined
+    following?: string
     /**
      * point of interest to follow on map
      */
-    pointOfInterest:
-      | {
-          x: number
-          z: number
-        }
-      | undefined
+    pointOfInterest?: {
+      x: number
+      z: number
+    }
     /**
      * last known location of following player
      */
-    lastKnownLocation:
-      | {
-          x: number
-          z: number
-        }
-      | undefined
+    lastKnownLocation?: {
+      x: number
+      z: number
+    }
   }
 }
 
