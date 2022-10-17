@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
+import { navigate } from "gatsby-link"
 
 import isCoordinate from "data/isCoordinate"
+import getPlayerLocation from "pathfinding/getPlayerLocation"
+import { getLocal } from "utils/localUtils"
 
 import createCoordinateEdges from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"
@@ -42,7 +45,6 @@ export default class Pathfinder {
   }
 
   async start(preventReverse = false): Promise<ResultType[]> {
-    console.log("starting pathfinding from", this.from, "to", this.to)
     const frontier = new PriorityQueue<string>()
     const cameFrom: Record<string, string[]> = {}
     const costSoFar: Record<string, number> = {}
@@ -50,6 +52,20 @@ export default class Pathfinder {
     const edges = await rawEdges
     this.edges = edges
     const nodes = await rawNodes
+
+    if (this.from === "Current Location" || this.to === "Current Location") {
+      const player = getLocal("selectedPlayer")?.toString() || ""
+      const playerLocation = await getPlayerLocation(player)
+      if (!playerLocation) {
+        navigate("/select-player")
+        return []
+      }
+      if (this.from === "Current Location")
+        this.from = `Coordinate: ${playerLocation.x}, ${playerLocation.z}`
+      if (this.to === "Current Location")
+        this.to = `Coordinate: ${playerLocation.x}, ${playerLocation.z}`
+    }
+    console.log("starting pathfinding from", this.from, "to", this.to)
 
     // create coordinate edges if needed
     if (isCoordinate(this.from)) {

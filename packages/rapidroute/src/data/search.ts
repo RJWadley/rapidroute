@@ -43,11 +43,13 @@ export function search(query: string) {
     return 0
   })
 
-  if (/\d+, *\d+/g.test(query)) {
-    // add to beginning of results if it's a x,y coordinate
-    const xCoord = query.split(",")[0].replace(/\D/g, "")
-    const yCoord = query.split(",")[1].replace(/\D/g, "")
+  if (/\d+,? *\d+/g.test(query)) {
+    const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]
     results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
+  }
+
+  if ((query && query.length <= 2) || /cur|loca/.test(query)) {
+    results.unshift("Current Location")
   }
 
   return results.map(x => (typeof x === "number" ? x.toString() : x))

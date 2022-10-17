@@ -54,9 +54,18 @@ export default function SearchList({
   // update the search list when the search box changes
   useEffect(() => {
     const results = search(searchFor)
+    if (results.length === 0) {
+      setSearchResults([
+        {
+          uniqueId: "Current Location",
+          d: "Current Location",
+          i: "Current Location",
+        },
+      ])
+    }
     setSearchResults(
       results.flatMap(result => {
-        if (isCoordinate(result))
+        if (isCoordinate(result) || result === "Current Location")
           return [
             {
               uniqueId: result,
