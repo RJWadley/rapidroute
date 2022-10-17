@@ -17,22 +17,26 @@ export default function Changelog() {
 
           <h3>New Features</h3>
           <ul>
+            <li>visual redesign!</li>
             <li>The entire site has been rewritten from scratch in React</li>
             <li>Using a new, significantly faster searching algorithm</li>
             <li>
               Routing to and from arbitrary coordinates, just type them into the
               search bar
             </li>
-            <li>Now pulling airport locations from dynmap</li>
+            <li>Navigate to or from your current location</li>
+            <li>
+              Now pulling airport locations straight from dynmap where possible
+            </li>
+            <li>Better text to speech engine</li>
+            <li>Voice navigation rewrite</li>
+            <li>When navigating, auto recalculate route</li>
           </ul>
           <h3>Planned Features</h3>
           <ul>
             <li>More robust searching, showing information about places</li>
             <li>Automatically import routes from mrt wiki in some cases</li>
-            <li>Better text to speech engine</li>
             <li>Data editable on-site</li>
-            <li>Voice navigation rewrite</li>
-            <li>When navigating, auto recalculate route</li>
             <li>Selectable map</li>
           </ul>
 
