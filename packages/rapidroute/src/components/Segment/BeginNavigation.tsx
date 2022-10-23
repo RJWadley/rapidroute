@@ -1,12 +1,12 @@
 import React, { useContext } from "react"
 
-import { navigate } from "gatsby-link"
 import styled from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import RoundButton from "components/RoundButton"
 import invertLightness from "utils/invertLightness"
+import loadRoute from "utils/loadRoute"
 
 interface BeginNavigationProps {
   small: boolean
@@ -30,7 +30,7 @@ export default function BeginNavigation({
         onClick={() => {
           setPrefferedRoute(route)
           if (segments) setCurrentRoute(segments)
-          navigate("/navigate")
+          loadRoute("/navigate")
         }}
       >
         directions_alt

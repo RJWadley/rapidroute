@@ -110,14 +110,18 @@ export default async function getNavigationInstruction(
       const flightNumber = routeInfo?.number
       const provider = getProvider(routeInfo)
       proms.push(provider)
-      provider.then(providerName => {
-        addToList(
-          i === segment.routes.length - 1,
-          providerName?.name ?? "",
-          flightNumber ?? "",
-          gate
-        )
-      })
+      provider
+        .then(providerName => {
+          addToList(
+            i === segment.routes.length - 1,
+            providerName?.name ?? "",
+            flightNumber ?? "",
+            gate
+          )
+        })
+        .catch(e => {
+          console.error("Error getting provider", e)
+        })
     }
     await Promise.all(proms)
     return output

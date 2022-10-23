@@ -26,7 +26,12 @@ export default function MultiSingleBit({
   const isDark = useContext(darkModeContext)
 
   useMemo(() => {
-    getProvider(route).then(p => p && setProvider(p))
+    getProvider(route)
+      .then(p => p && setProvider(p))
+      .catch(e => {
+        console.error("Error getting provider info", e)
+        setProvider(null)
+      })
   }, [route])
 
   const image =
@@ -68,7 +73,7 @@ export default function MultiSingleBit({
           background={invertLightness(themeColor)}
           small={variant === "mobile"}
         >
-          <img src={image} alt={`${provider?.name} logo`} />
+          <img src={image} alt={`${provider?.name || "placeholder"} logo`} />
         </Logo>
       )}
       <div>

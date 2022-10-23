@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/*  max-lines */
 import { fabric } from "fabric"
 
 import invertLightness from "utils/invertLightness"

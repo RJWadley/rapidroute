@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react"
 
-import { navigate } from "gatsby-link"
 import styled from "styled-components"
 
+import { MineTools } from "types/MineTools"
 import averageImageHue from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
+import loadRoute from "utils/loadRoute"
 import { session, setLocal } from "utils/localUtils"
 
 import { darkModeContext } from "./Providers/DarkMode"
@@ -23,13 +24,17 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
     setImageUrl(undefined)
     fetch(`https://api.minetools.eu/uuid/${name}`)
       .then(response => response.json())
-      .then(uuidData => {
+      .then((uuidData: MineTools) => {
         return `https://crafatar.com/avatars/${
           uuidData.id || fallbackUUID
         }?overlay`
       })
       .then(url => {
         if (!isCancelled) setImageUrl(url)
+      })
+      .catch(e => {
+        console.error(`Error fetching UUID for player ${name}`, e)
+        if (!isCancelled) setImageUrl(undefined)
       })
     return () => {
       isCancelled = true
@@ -42,18 +47,26 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
     let isCancelled = false
     setHue(undefined)
     if (imageUrl)
-      averageImageHue(imageUrl).then(newHSL => {
-        setTimeout(() => {
+      averageImageHue(imageUrl)
+        .then(newHSL => {
+          setTimeout(() => {
+            if (!isCancelled) {
+              setHue(newHSL[0] * 360)
+              setSaturation(newHSL[1] * 300)
+            }
+          }, 100)
+        })
+        .catch(e => {
+          console.error(`Error fetching average hue for player ${name}`, e)
           if (!isCancelled) {
-            setHue(newHSL[0] * 360)
-            setSaturation(newHSL[1] * 300)
+            setHue(0)
+            setSaturation(0)
           }
-        }, 100)
-      })
+        })
     return () => {
       isCancelled = true
     }
-  }, [imageUrl])
+  }, [imageUrl, name])
 
   const isDark = useContext(darkModeContext)
   const backgroundLightness = isDark ? 15 : 85
@@ -65,7 +78,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
     ? `/${new URLSearchParams(window.location.search).get("redirect") || ""}`
     : "/"
 
-  return hue !== undefined && imageUrl ? (
+  return hue !== undefined && saturation !== undefined && imageUrl ? (
     <Wrapper
       backgroundColor={`hsl(${hue}, ${saturation}%, ${backgroundLightness}%)`}
       textColor={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}
@@ -85,7 +98,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         onClick={() => {
           setLocal("selectedPlayer", name)
           session.following = name
-          navigate(nextUrl)
+          loadRoute(nextUrl)
         }}
         backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         textColor={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}

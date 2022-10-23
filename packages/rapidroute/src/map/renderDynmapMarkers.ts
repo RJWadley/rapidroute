@@ -71,6 +71,9 @@ export default function renderDynmapMarkers(canvas: fabric.Canvas) {
 
       canvas.requestRenderAll()
     })
+    .catch(err => {
+      console.error("error fetching dynmap markers", err)
+    })
 
   return () => {
     isActive = false

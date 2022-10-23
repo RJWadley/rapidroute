@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
-import { navigate } from "gatsby-link"
 
 import isCoordinate from "data/isCoordinate"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
+import loadRoute from "utils/loadRoute"
 import { getLocal } from "utils/localUtils"
 
 import createCoordinateEdges from "./createCoordinateEdges"
@@ -57,7 +57,7 @@ export default class Pathfinder {
       const player = getLocal("selectedPlayer")?.toString() || ""
       const playerLocation = await getPlayerLocation(player)
       if (!playerLocation) {
-        navigate("/select-player")
+        loadRoute("/select-player")
         return []
       }
       if (this.from === "Current Location")
@@ -109,7 +109,7 @@ export default class Pathfinder {
       edges
         .filter(edge => edge.from === current)
         .filter(edge => costSoFar[current] + edge.weight < this.maxCost)
-        .forEach(async edge => {
+        .map(async edge => {
           // skip edges that are not allowed
           if (this.allowedModes.length === 0) {
             return
@@ -164,8 +164,6 @@ export default class Pathfinder {
         this.allowedModes
       ).start(true)
 
-      const end = performance.now()
-      console.log(`Pathfinding took ${end - start}ms`)
       reversed.forEach(result => result.path.reverse())
       return reversed
     }

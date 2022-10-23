@@ -20,6 +20,9 @@ export default function SelectPlayer() {
       .then((data: WorldInfo) => {
         setPlayers(data.players.map(player => player.name))
       })
+      .catch(e => {
+        console.error("Could not get information from dynmap", e)
+      })
   }
 
   useEffect(() => {

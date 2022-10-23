@@ -21,3 +21,5 @@ export interface SearchIndexItem {
 
 export const isSearchIndexItem = (obj: unknown): obj is SearchIndexItem =>
   TSON.is<SearchIndexItem>(obj)
+export const isWholeSearchIndex = (obj: unknown): obj is SearchIndex =>
+  TSON.is<SearchIndex>(obj)

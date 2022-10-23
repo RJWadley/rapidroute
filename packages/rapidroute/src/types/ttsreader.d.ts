@@ -1,4 +1,5 @@
-/* eslint-disable */
+/* eslint-disable import/prefer-default-export */
+/*  */
 declare module "ttsreader" {
   interface TtsListener {
     onInit?: () => void

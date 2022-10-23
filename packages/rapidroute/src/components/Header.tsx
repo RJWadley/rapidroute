@@ -1,13 +1,17 @@
 import React from "react"
 
-import { navigate } from "gatsby"
 import styled from "styled-components"
 
 import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
+import loadRoute from "utils/loadRoute"
 
 export default function Header() {
   return (
-    <Wrapper onClick={() => navigate("/")}>
+    <Wrapper
+      onClick={() => {
+        loadRoute("/")
+      }}
+    >
       <StyledLogo />
       <Text>
         <div>

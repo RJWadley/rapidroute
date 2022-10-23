@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef } from "react"
 
-import { navigate } from "gatsby-link"
 import styled from "styled-components"
 
 import useFollowedRoute from "navigation/useFollowedRoute"
 import useNavigation from "navigation/useNavigation"
 import { isBrowser } from "utils/functions"
+import loadRoute from "utils/loadRoute"
 
 import { NavigationContext } from "./Providers/NavigationContext"
 import Segment from "./Segment"
@@ -14,7 +14,9 @@ export default function NavigationSidebar() {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
 
-  if (isBrowser() && currentRoute.length === 0) navigate("/")
+  if (isBrowser() && currentRoute.length === 0) {
+    loadRoute("/")
+  }
 
   useNavigation()
   const followedRoute = useFollowedRoute(spokenRoute)

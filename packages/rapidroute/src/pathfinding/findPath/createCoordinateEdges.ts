@@ -38,8 +38,5 @@ export default async function createCoordinateEdges(
       ]
     })
 
-  // eslint-disable-next-line no-console
-  console.log("created coordinate edges", walkingEdges)
-
   return walkingEdges
 }

@@ -6,44 +6,40 @@ import {
   PlaceType,
 } from "@rapidroute/database-types"
 
-import {
-  LegacyRoute,
-  LegacyPlace,
-  LegacyProvider,
-  Aliases,
-} from "./fetchingTypes"
-import saveDataToFirebase from "./saveData"
+import getLegacyData from "./getSheetData"
 
 // can't contain ".", "#", "$", "[", "]", or "/" or "\"
-const makeSafe = (str: string) => {
-  return str.replace(/[.#$/[\]]/g, "_")
+// replace those with "_1", "_2", "_3", "_4", etc.
+// also replace " " with "_" and "_" with "__"
+const makeKeySafe = (str: string) => {
+  return str
+    .replace(/_/g, "__")
+    .replace(/\./g, "_1")
+    .replace(/#/g, "_2")
+    .replace(/\$/g, "_3")
+    .replace(/\[/g, "_4")
+    .replace(/\]/g, "_5")
+    .replace(/\//g, "_6")
+    .replace(/\\/g, "_7")
+    .replace(/ /g, "_")
 }
 
 /**
  * take the old data format and convert it to the new format
  */
-export default async function handoffData(
-  routes: LegacyRoute[],
-  places: LegacyPlace[],
-  providers: LegacyProvider[],
-  aliases: Aliases[],
-  spawnWarps: string[],
-  lightColors: {
-    [key: string]: string
-  },
-  darkColors: {
-    [key: string]: string
-  },
-  logos: Record<string, string>,
-  placeLocations: Record<
-    string,
-    {
-      x: number
-      y: number
-      z: number
-    }
-  >
-) {
+export default async function getConvertedData() {
+  const {
+    routes,
+    places,
+    providers,
+    aliases,
+    spawnWarps,
+    lightColors,
+    darkColors,
+    logos,
+    placeLocations,
+  } = await getLegacyData()
+
   const routesToIgnore: string[] = []
   const mappedRoutes: Route[] = routes
     .map(route => {
@@ -52,8 +48,9 @@ export default async function handoffData(
       // first, we need an unique id for the route that will always be the same
       const placeA = route.from > route.to ? route.to : route.from
       const placeB = route.from > route.to ? route.from : route.to
-      const routeId = makeSafe(
-        `${route.provider}-${routeNumber ?? placeA + placeB}`
+      const provider = route.provider ?? `unknown${route.from}${route.to}`
+      const routeId = makeKeySafe(
+        `${provider}-${routeNumber ?? placeA + placeB}`
       )
 
       // if we've already seen this route, ignore it the second time
@@ -69,7 +66,7 @@ export default async function handoffData(
       let locations: RouteLocations = {}
       const gates: Record<string, string> = {}
       routesWithSameNumber.forEach(y => {
-        locations[makeSafe(y.from)] = y.fromGate ?? "none"
+        locations[makeKeySafe(y.from)] = y.fromGate ?? "none"
 
         const fromGate = gates[y.from] || y.fromGate
         if (fromGate) gates[y.from] = fromGate
@@ -80,8 +77,8 @@ export default async function handoffData(
       // with a fallback for MRT stations bc they're special
       if (route.mode === "MRT") {
         locations = {
-          [makeSafe(route.from)]: "none",
-          [makeSafe(route.to)]: "none",
+          [makeKeySafe(route.from)]: "none",
+          [makeKeySafe(route.to)]: "none",
         }
       }
 
@@ -91,7 +88,7 @@ export default async function handoffData(
         name: undefined,
         description: undefined,
         locations,
-        provider: makeSafe(route.provider ?? ""),
+        provider: makeKeySafe(route.provider ?? ""),
         type: route.mode,
         number: routeNumber || undefined,
         numGates: Object.keys(gates).length || undefined,
@@ -111,7 +108,7 @@ export default async function handoffData(
     if (place.type === "town") locationType = "City"
 
     const location: Location = {
-      uniqueId: makeSafe(place.id),
+      uniqueId: makeKeySafe(place.id),
       name:
         place.displayName ??
         place.longName ??
@@ -140,8 +137,9 @@ export default async function handoffData(
         .map(y => {
           const placeA = y.from > y.to ? y.to : y.from
           const placeB = y.from > y.to ? y.from : y.to
-          const routeId = makeSafe(
-            `${y.provider}-${y.number ?? placeA + placeB}`
+          const provider = y.provider ?? `unknown${y.from}${y.to}`
+          const routeId = makeKeySafe(
+            `${provider}-${y.number ?? placeA + placeB}`
           )
           return routeId
         })
@@ -153,7 +151,7 @@ export default async function handoffData(
 
   const mappedProviders: Provider[] = providers.map(provider => {
     const newProvider: Provider = {
-      uniqueId: makeSafe(provider.name),
+      uniqueId: makeKeySafe(provider.name),
       name: provider.displayName ?? provider.name,
       alias: aliases
         .filter(x => x.actualProvider === provider.name)
@@ -178,5 +176,9 @@ export default async function handoffData(
     return newProvider
   })
 
-  saveDataToFirebase(mappedRoutes, mappedLocations, mappedProviders)
+  return {
+    routes: mappedRoutes,
+    locations: mappedLocations,
+    providers: mappedProviders,
+  }
 }

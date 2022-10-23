@@ -46,9 +46,14 @@ export default function SearchList({
 
   // get initial data for the search list locations
   useEffect(() => {
-    getAll("searchIndex").then(data => {
-      setAllLocations(Object.values(data))
-    })
+    getAll("searchIndex")
+      .then(data => {
+        setAllLocations(Object.values(data))
+      })
+      .catch(e => {
+        console.error("error getting all locations", e)
+        setAllLocations([])
+      })
   }, [])
 
   // update the search list when the search box changes

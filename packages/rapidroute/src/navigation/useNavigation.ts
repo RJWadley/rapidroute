@@ -57,16 +57,27 @@ export default function useNavigation() {
       pathfinder?.cancel()
       pathfinder = new FindPath(coordId, destinationId, allowedModes)
 
-      pathfinder.start().then(results => {
-        const result = results[0]
-        resultToSegments(result).then(segments => {
-          setCurrentRoute(segments)
+      pathfinder
+        .start()
+        .then(results => {
+          const result = results[0]
+          resultToSegments(result)
+            .then(segments => {
+              setCurrentRoute(segments)
 
-          // set point of interest
-          const poi = segments[0]?.to.location
-          session.pointOfInterest = poi
+              // set point of interest
+              const poi = segments[0]?.to.location
+              session.pointOfInterest = poi
+            })
+            .catch(e => {
+              console.error("error converting result to segments during nav", e)
+              setCurrentRoute([])
+            })
         })
-      })
+        .catch(e => {
+          console.error("Error while finding path during nav", e)
+          setCurrentRoute([])
+        })
     }
   }
 

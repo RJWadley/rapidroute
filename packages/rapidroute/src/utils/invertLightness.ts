@@ -23,8 +23,7 @@ export default function invertLightness(color: string) {
   const [h, s, l] = hexToHSL(colorToInvert)
 
   if (Number.isNaN(h) || Number.isNaN(s) || Number.isNaN(l)) {
-    // eslint-disable-next-line no-console
-    console.log("INVALID COLOR", color, colorToInvert)
+    console.error("INVALID COLOR", color, colorToInvert)
   }
 
   const newL = l > 0.5 ? 0.15 : 0.85
