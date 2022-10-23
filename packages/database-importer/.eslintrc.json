@@ -1,7 +1,6 @@
 {
   "extends": ["@rapidroute/eslint-config-base"],
   "rules": {
-    "max-lines": "off",
     // allow console.log
     "no-console": "off"
   },

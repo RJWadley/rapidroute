@@ -104,23 +104,24 @@ export async function setRoute(
       // for every location in the pathfinding index
       Object.keys(previousRoute.locations).forEach(locationId => {
         const location = pathfindingIndex[locationId]
-        // check every mode
+        // check every mode in that location
         shortHandMapKeys.forEach(shortHand => {
-          // remove this route from the location's list of routes
-          const thisMode = location?.[shortHand]
-          if (thisMode !== undefined) {
-            Object.entries(thisMode).forEach(([_, routeList]) => {
-              // this bit actually does the filtering
-              const index = routeList.findIndex(
-                entry => entry.n === routeId && entry.g === undefined
-              )
-              if (index !== -1) {
-                routeList.splice(index, 1)
+          // check every location in that mode
+          const secondLocation = location[shortHand]
+          if (secondLocation)
+            Object.entries(secondLocation).forEach(
+              ([secondLocId, routesToPlace]) => {
+                // actually remove the route from the list
+                const newRoutesToPlace = routesToPlace.filter(
+                  r => r.n !== routeId
+                )
+                // update the pathfinding index
+                pathfindingIndex[locationId][shortHand] = {
+                  ...secondLocation,
+                  [secondLocId]: newRoutesToPlace,
+                }
               }
-            })
-            // make sure to update the pathfinding index
-            pathfindingIndex[locationId][shortHand] = thisMode
-          }
+            )
         })
       })
     }
@@ -138,14 +139,18 @@ export async function setRoute(
           n: routeId,
           g: route.numGates,
         })
-        // make sure to update the pathfinding index
-        pathfindingIndex[locationId] = {
-          ...location,
-          [mode]: {
-            ...location[mode],
-            [routeId]: routes,
-          },
-        }
+        Object.keys(route.locations).forEach(toLocation => {
+          if (toLocation !== locationId) {
+            // add the route to the pathfinding index
+            pathfindingIndex[locationId] = {
+              ...location,
+              [mode]: {
+                ...location[mode],
+                [toLocation]: routes,
+              },
+            }
+          }
+        })
       })
     }
   }

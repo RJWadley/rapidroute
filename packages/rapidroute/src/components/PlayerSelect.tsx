@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react"
 
-import { navigate } from "gatsby-link"
 import styled from "styled-components"
 
 import { MineTools } from "types/MineTools"
 import averageImageHue from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
+import loadRoute from "utils/loadRoute"
 import { session, setLocal } from "utils/localUtils"
 
 import { darkModeContext } from "./Providers/DarkMode"
@@ -98,9 +98,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         onClick={() => {
           setLocal("selectedPlayer", name)
           session.following = name
-          navigate(nextUrl).catch(() => {
-            window.location.href = nextUrl
-          })
+          loadRoute(nextUrl)
         }}
         backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         textColor={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}
