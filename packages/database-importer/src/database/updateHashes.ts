@@ -8,5 +8,6 @@ export default function updateHashes() {
     database.ref("hashes/providers").set(newHash),
     database.ref("hashes/pathfinding").set(newHash),
     database.ref("hashes/searchIndex").set(newHash),
+    database.ref("lastImport").set(new Date().toISOString()),
   ])
 }
