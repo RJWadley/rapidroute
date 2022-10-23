@@ -31,12 +31,10 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
    * Create segments from route data
    */
   useMemo(async () => {
-    if (!dropdownOpen) return
-
     resultToSegments(route).then(newSegments => {
       setSegments(newSegments)
     })
-  }, [dropdownOpen, route])
+  }, [route])
 
   /**
    * animate opening and closing of dropdown

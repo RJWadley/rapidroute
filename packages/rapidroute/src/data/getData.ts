@@ -7,7 +7,6 @@ import {
 } from "@rapidroute/database-types"
 import { ref, onValue } from "firebase/database"
 
-import { throttle } from "pathfinding/findPath/pathUtil"
 import isObject from "utils/isObject"
 import { getLocal, setLocal } from "utils/localUtils"
 
@@ -98,6 +97,7 @@ export async function getPath<T extends keyof DatabaseType>(
   }
 
   // otherwise, get the value from the database
+  await databaseThrottle()
   const itemRef = ref(database, `${type}/${itemName}`)
   return new Promise(resolve => {
     onValue(itemRef, async lowerSnapshot => {
@@ -148,10 +148,10 @@ export async function getAll<T extends keyof DatabaseType>(
   }
 
   // otherwise, get the value from the database
+  await databaseThrottle()
   const itemRef = ref(database, type)
   return new Promise(resolve => {
     onValue(itemRef, async lowerSnapshot => {
-      await throttle()
       const rawData: unknown = lowerSnapshot.val()
       const data: GetAll<T> = {}
 
@@ -185,3 +185,24 @@ export async function getAll<T extends keyof DatabaseType>(
     })
   })
 }
+
+const queue: ((...args: unknown[]) => unknown)[] = []
+/**
+ * throttle function to prevent too many requests at once
+ */
+function databaseThrottle() {
+  return new Promise(resolve => {
+    queue.push(resolve)
+  })
+}
+/**
+ * interval to resolve promises in the queue one at a time
+ */
+const resolver = () => {
+  if (queue.length) {
+    console.log("Queue length", queue.length)
+    queue.shift()?.()
+  }
+  requestAnimationFrame(resolver)
+}
+resolver()
