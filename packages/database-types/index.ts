@@ -1,3 +1,5 @@
+import TSON from "typescript-json"
+import { AutoGenIndex, isAutoGenIndex } from "./src/autoGenIndex"
 import { Locations, Location, PlaceType, isLocation } from "./src/locations"
 import {
   isPathingPlace,
@@ -41,6 +43,10 @@ export interface DatabaseType {
    * information needed to perform searching
    */
   searchIndex: SearchIndex
+  /**
+   * auto-generated index of locations
+   */
+  autoGenIndex: AutoGenIndex
 }
 
 export type Hashes = Record<keyof DatabaseType, string | undefined>
@@ -56,6 +62,7 @@ export const databaseTypeGuards: {
   worlds: isWorld,
   pathfinding: isPathingPlace,
   searchIndex: isSearchIndexItem,
+  autoGenIndex: isAutoGenIndex,
 }
 
 export {

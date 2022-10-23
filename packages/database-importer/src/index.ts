@@ -14,7 +14,6 @@ import {
 import {
   afterRouteUpdate,
   beforeRouteUpdate,
-  disconnectRoutesListeners,
   setRoute,
 } from "./database/updateRoute"
 import getConvertedData from "./sheets/getConvertedData"
@@ -84,7 +83,6 @@ async function runImport() {
 
   console.log("UPDATED HASHES")
 
-  disconnectRoutesListeners()
   console.log("ALL DONE!")
 }
 

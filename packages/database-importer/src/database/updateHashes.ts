@@ -1,13 +1,13 @@
-import database from "./database"
+import { write } from "./database"
 
 export default function updateHashes() {
   const newHash = Math.random().toString(36).substring(2, 15)
   return Promise.allSettled([
-    database.ref("hashes/routes").set(newHash),
-    database.ref("hashes/locations").set(newHash),
-    database.ref("hashes/providers").set(newHash),
-    database.ref("hashes/pathfinding").set(newHash),
-    database.ref("hashes/searchIndex").set(newHash),
-    database.ref("lastImport").set(new Date().toISOString()),
+    write("hashes/routes", newHash),
+    write("hashes/locations", newHash),
+    write("hashes/providers", newHash),
+    write("hashes/pathfinding", newHash),
+    write("hashes/searchIndex", newHash),
+    write("lastImport", new Date().toISOString()),
   ])
 }
