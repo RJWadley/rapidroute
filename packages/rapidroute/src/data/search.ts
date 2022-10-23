@@ -21,7 +21,7 @@ getAll("searchIndex")
       displayLookup[key] = data[key].d
     })
   })
-  
+
   .catch(console.error)
 
 export function search(query: string) {

@@ -6,6 +6,7 @@ import {
   Location,
 } from "@rapidroute/database-types"
 import { ref, onValue } from "firebase/database"
+
 import { throttle } from "pathfinding/findPath/pathUtil"
 import isObject from "utils/isObject"
 import { getLocal, setLocal } from "utils/localUtils"

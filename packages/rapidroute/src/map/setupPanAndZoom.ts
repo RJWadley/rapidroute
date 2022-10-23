@@ -1,4 +1,5 @@
 import { fabric } from "fabric"
+
 import { session } from "utils/localUtils"
 
 export default function setupPanAndZoom(canvas: fabric.Canvas) {

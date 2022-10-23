@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 
-import { getPath } from "data/getData"
 import gsap from "gsap"
+import styled, { css } from "styled-components"
+
+import { getPath } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
-import styled, { css } from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 

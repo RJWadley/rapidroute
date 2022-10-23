@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
-import isCoordinate from "data/isCoordinate"
 import { navigate } from "gatsby-link"
+
+import isCoordinate from "data/isCoordinate"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
 import { getLocal } from "utils/localUtils"
 

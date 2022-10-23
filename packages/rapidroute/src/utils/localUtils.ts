@@ -47,7 +47,7 @@ export const getLocal = <T extends keyof LocalStorage>(
   if (value === null) {
     return null
   }
-  // -next-line @typescript-eslint/consistent-type-assertions
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return JSON.parse(value) as LocalStorage[T]
 }
 
