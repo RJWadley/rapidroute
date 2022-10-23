@@ -1,5 +1,5 @@
-/* eslint-disable ssr-friendly/no-dom-globals-in-module-scope */
-/* eslint-disable no-console */
+/*  ssr-friendly/no-dom-globals-in-module-scope */
+/*  no-console */
 import "the-new-css-reset/css/reset.css"
 import React, { ReactNode } from "react"
 import "hacktimer/HackTimer"

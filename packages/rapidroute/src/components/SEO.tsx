@@ -22,13 +22,13 @@ export default function SEO({
     description: defaultDescription,
     image: defaultImage,
     siteUrl,
-  } = useSiteMetadata()
+  } = useSiteMetadata() || {}
 
   const seo = {
-    title: title || defaultTitle,
-    description: description || defaultDescription,
-    image: image || defaultImage,
-    url: `${siteUrl}/${pathname || ``}`,
+    title: title || defaultTitle || "Untitled",
+    description: description || defaultDescription || "No description",
+    image: image || defaultImage || "",
+    url: `${siteUrl || ""}/${pathname || ``}`,
     creator,
   }
 
@@ -71,8 +71,8 @@ export default function SEO({
 }
 
 export const useSiteMetadata = () => {
-  const data = useStaticQuery(graphql`
-    query {
+  const data: Queries.MetadataQuery = useStaticQuery(graphql`
+    query Metadata {
       site {
         siteMetadata {
           title
@@ -83,5 +83,6 @@ export const useSiteMetadata = () => {
       }
     }
   `)
-  return data.site.siteMetadata
+
+  return data.site?.siteMetadata
 }

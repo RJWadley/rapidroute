@@ -13,7 +13,9 @@ import { getLocal } from "utils/localUtils"
 export default function Navigate() {
   useEffect(() => {
     if (isBrowser() && !getLocal("selectedPlayer"))
-      navigate("/select-player?redirect=navigate")
+      navigate("/select-player?redirect=navigate").catch(() => {
+        window.location.href = "/select-player?redirect=navigate"
+      })
   }, [])
 
   return (

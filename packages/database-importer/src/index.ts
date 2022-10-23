@@ -1,4 +1,4 @@
-/* eslint-disable no-await-in-loop */
+/*  no-await-in-loop */
 import throttledMap from "./database/throttledMap"
 import updateHashes from "./database/updateHashes"
 import {
@@ -88,7 +88,12 @@ async function runImport() {
   console.log("ALL DONE!")
 }
 
-runImport().then(() => {
-  console.log("Finished all operations")
-  process.exit(0)
-})
+runImport()
+  .then(() => {
+    console.log("Finished all operations")
+    process.exit(0)
+  })
+  .catch(error => {
+    console.error(error)
+    process.exit(1)
+  })

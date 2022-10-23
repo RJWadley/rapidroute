@@ -1,3 +1,4 @@
+/* recursion requires type assertions */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 export const isObject = (
   input: unknown

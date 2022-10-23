@@ -1,4 +1,4 @@
-/* eslint-disable max-lines */
+/*  max-lines */
 import React from "react"
 
 import { Link } from "gatsby"

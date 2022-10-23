@@ -7,7 +7,13 @@ import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
 
 export default function Header() {
   return (
-    <Wrapper onClick={() => navigate("/")}>
+    <Wrapper
+      onClick={() => {
+        navigate("/").catch(() => {
+          window.location.href = "/"
+        })
+      }}
+    >
       <StyledLogo />
       <Text>
         <div>

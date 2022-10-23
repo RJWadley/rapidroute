@@ -14,7 +14,11 @@ export default function NavigationSidebar() {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
 
-  if (isBrowser() && currentRoute.length === 0) navigate("/")
+  if (isBrowser() && currentRoute.length === 0) {
+    navigate("/").catch(() => {
+      window.location.href = "/"
+    })
+  }
 
   useNavigation()
   const followedRoute = useFollowedRoute(spokenRoute)

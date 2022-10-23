@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import styled, { css } from "styled-components"
 
 import { getTextboxName } from "data/search"
-import { sleep } from "utils/functions"
 import media from "utils/media"
 
 import { RoutingContext } from "../Providers/RoutingContext"
@@ -65,9 +64,10 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
     updateSize()
   }
 
-  const handleBlur = async () => {
-    await sleep(250)
-    setShowSearchList(false)
+  const handleBlur = () => {
+    setTimeout(() => {
+      setShowSearchList(false)
+    }, 200)
   }
 
   const highlightText = () => {

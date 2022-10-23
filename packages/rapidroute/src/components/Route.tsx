@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 
-import gsap from "gsap"
-import styled, { css } from "styled-components"
-
 import { getPath } from "data/getData"
+import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
+import styled, { css } from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -33,10 +32,17 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
   useMemo(async () => {
     if (!dropdownOpen) return
 
-    resultToSegments(route).then(newSegments => {
-      setSegments(newSegments)
-    })
-  }, [dropdownOpen, route])
+    resultToSegments(route)
+      .then(newSegments => {
+        setSegments(newSegments)
+      })
+      .catch(e => {
+        console.error("error creating segments", e)
+        setSegments(null)
+      })
+  }, [dropdownOpen, route]).catch(e => {
+    console.error("error while creating segments", e)
+  })
 
   /**
    * animate opening and closing of dropdown
@@ -141,37 +147,35 @@ const Dropdown = styled.div`
   height: 0;
 `
 
-export const resultToSegments = (result: ResultType) => {
-  return new Promise<SegmentType[]>(resolve => {
-    const promises = result.path.map(async locationId => {
-      return getPath("locations", locationId)
-    })
+// rewritten with async/await
+export const resultToSegments = async (result: ResultType) => {
+  const promises = result.path.map(async locationId => {
+    return getPath("locations", locationId)
+  })
 
-    Promise.all(promises).then(locations => {
-      // for each set of locations, get the routes they have in common
-      const routePromises = locations.map((location, index) => {
-        if (index === 0) {
-          return []
-        }
-        const previousLocation = locations[index - 1]
-        if (!previousLocation || !location) {
-          return [Promise.resolve(null)]
-        }
+  const locations = await Promise.all(promises)
 
-        const commonRoutes = (location.routes || []).filter(routeId =>
-          (previousLocation.routes || []).includes(routeId)
-        )
+  // for each set of locations, get the routes they have in common
+  const routePromises = locations.map((location, index) => {
+    if (index === 0) {
+      return []
+    }
+    const previousLocation = locations[index - 1]
+    if (!previousLocation || !location) {
+      return [Promise.resolve(null)]
+    }
 
-        return commonRoutes.map(async routeId => {
-          return getPath("routes", routeId)
-        })
-      })
+    const commonRoutes = (location.routes || []).filter(routeId =>
+      (previousLocation.routes || []).includes(routeId)
+    )
 
-      // wait for all promises to resolve
-      Promise.all(routePromises.map(p => Promise.all(p))).then(routes => {
-        routes.shift()
-        resolve(createSegments(locations, routes))
-      })
+    return commonRoutes.map(async routeId => {
+      return getPath("routes", routeId)
     })
   })
+
+  // wait for all promises to resolve
+  const routes = await Promise.all(routePromises.map(p => Promise.all(p)))
+  routes.shift()
+  return createSegments(locations, routes)
 }

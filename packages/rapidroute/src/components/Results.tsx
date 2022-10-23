@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
 
 import gsap from "gsap"
-import styled from "styled-components"
-
 import FindPath, { ResultType } from "pathfinding/findPath"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
+import styled from "styled-components"
 import { sleep } from "utils/functions"
 
 import { RoutingContext } from "./Providers/RoutingContext"
@@ -36,21 +35,31 @@ export default function Results() {
 
         const minTime = sleep(500)
 
-        findPath.start().then(async r => {
-          await minTime
-          await debouncer.current
-          if (canSave) {
-            const newResults = removeExtras(r).sort(
-              // fewer totalCost comes first
-              (a, b) => a.totalCost - b.totalCost
-            )
-            if (newResults.length && newResults[0].path.length > 1)
-              setResults(newResults)
-            else setResults("none")
-            debouncer.current = sleep(2000)
-          }
-        })
-      })()
+        findPath
+          .start()
+          .then(async r => {
+            await minTime
+            await debouncer.current
+            if (canSave) {
+              const newResults = removeExtras(r).sort(
+                // fewer totalCost comes first
+                (a, b) => a.totalCost - b.totalCost
+              )
+              if (newResults.length && newResults[0].path.length > 1)
+                setResults(newResults)
+              else setResults("none")
+              debouncer.current = sleep(2000)
+            }
+          })
+          .catch(async e => {
+            console.error("Error finding path", e)
+            await minTime
+            await debouncer.current
+            if (canSave) setResults("none")
+          })
+      })().catch(e => {
+        console.error("error while finding path", e)
+      })
 
       return () => {
         findPath.cancel()

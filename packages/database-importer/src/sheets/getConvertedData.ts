@@ -48,8 +48,9 @@ export default async function getConvertedData() {
       // first, we need an unique id for the route that will always be the same
       const placeA = route.from > route.to ? route.to : route.from
       const placeB = route.from > route.to ? route.from : route.to
+      const provider = route.provider ?? `unknown${route.from}${route.to}`
       const routeId = makeKeySafe(
-        `${route.provider}-${routeNumber ?? placeA + placeB}`
+        `${provider}-${routeNumber ?? placeA + placeB}`
       )
 
       // if we've already seen this route, ignore it the second time
@@ -136,8 +137,9 @@ export default async function getConvertedData() {
         .map(y => {
           const placeA = y.from > y.to ? y.to : y.from
           const placeB = y.from > y.to ? y.from : y.to
+          const provider = y.provider ?? `unknown${y.from}${y.to}`
           const routeId = makeKeySafe(
-            `${y.provider}-${y.number ?? placeA + placeB}`
+            `${provider}-${y.number ?? placeA + placeB}`
           )
           return routeId
         })

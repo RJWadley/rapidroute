@@ -7,13 +7,12 @@ import React, {
 } from "react"
 
 import { SearchIndex } from "@rapidroute/database-types"
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getAll } from "data/getData"
 import isCoordinate from "data/isCoordinate"
 import { search } from "data/search"
+import gsap from "gsap"
+import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -46,9 +45,14 @@ export default function SearchList({
 
   // get initial data for the search list locations
   useEffect(() => {
-    getAll("searchIndex").then(data => {
-      setAllLocations(Object.values(data))
-    })
+    getAll("searchIndex")
+      .then(data => {
+        setAllLocations(Object.values(data))
+      })
+      .catch(e => {
+        console.error("error getting all locations", e)
+        setAllLocations([])
+      })
   }, [])
 
   // update the search list when the search box changes

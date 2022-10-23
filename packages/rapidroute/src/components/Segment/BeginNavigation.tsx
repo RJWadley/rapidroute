@@ -30,7 +30,9 @@ export default function BeginNavigation({
         onClick={() => {
           setPrefferedRoute(route)
           if (segments) setCurrentRoute(segments)
-          navigate("/navigate")
+          navigate("/navigate").catch(() => {
+            window.location.href = "/navigate"
+          })
         }}
       >
         directions_alt

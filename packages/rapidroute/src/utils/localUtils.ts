@@ -47,7 +47,8 @@ export const getLocal = <T extends keyof LocalStorage>(
   if (value === null) {
     return null
   }
-  return JSON.parse(value)
+  // -next-line @typescript-eslint/consistent-type-assertions
+  return JSON.parse(value) as LocalStorage[T]
 }
 
 export const clearLocal = <T extends keyof LocalStorage>(key: T) => {

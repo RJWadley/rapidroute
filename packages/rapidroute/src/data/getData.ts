@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/*  eslint-disable no-console */
 import {
   DatabaseType,
   Hashes,
@@ -43,7 +43,11 @@ let databaseHashes: Hashes = {
 }
 const hashesExist = new Promise(resolve => {
   onValue(ref(database, "hashes"), snapshot => {
-    databaseHashes = snapshot.val()
+    // databaseHashes = snapshot.val()
+    const rawValue: unknown = snapshot.val()
+    if (isObject(rawValue)) {
+      databaseHashes = rawValue
+    }
     resolve(true)
   })
 })

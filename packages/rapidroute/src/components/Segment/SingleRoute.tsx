@@ -1,10 +1,9 @@
 import React, { useContext, useMemo, useState } from "react"
 
 import { Provider } from "@rapidroute/database-types"
-import styled from "styled-components"
-
 import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
+import styled from "styled-components"
 import invertLightness from "utils/invertLightness"
 import media from "utils/media"
 
@@ -51,7 +50,13 @@ export default function SingleRoute({
   const isDark = useContext(darkModeContext)
 
   useMemo(() => {
-    if (route) getProvider(route).then(p => p && setProvider(p))
+    if (route)
+      getProvider(route)
+        .then(p => p && setProvider(p))
+        .catch(e => {
+          console.error("Error getting provider info", e)
+          setProvider(null)
+        })
   }, [route])
 
   const image =
@@ -97,7 +102,10 @@ export default function SingleRoute({
               background={invertLightness(themeColor)}
               small={isMobile}
             >
-              <img src={image} alt={`${provider?.name} logo`} />
+              <img
+                src={image}
+                alt={`${provider?.name || "placeholder"} logo`}
+              />
             </Logo>
           )}
           <div>

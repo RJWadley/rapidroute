@@ -128,6 +128,14 @@ async function getTransitSheet(): Promise<SheetResponse> {
           .then((finalResult: SheetResponse) => {
             resolve(finalResult)
           })
+          .catch(err => {
+            console.error(err)
+            process.exit(1)
+          })
+      })
+      .catch(err => {
+        console.error(err)
+        process.exit(1)
       })
   })
 }
@@ -147,6 +155,10 @@ async function getDataSheet(): Promise<SheetResponse> {
       })
       .then((result: SheetResponse) => {
         resolve(result)
+      })
+      .catch(err => {
+        console.error(err)
+        process.exit(1)
       })
   })
 }
@@ -190,6 +202,10 @@ function getTowns() {
         })
         spawnWarps.push("Spawn")
         resolve(result)
+      })
+      .catch(err => {
+        console.error(err)
+        process.exit(1)
       })
   })
 }
@@ -449,8 +465,12 @@ function processAirlineMetadata(rawAirlineData: string[][]) {
 
     fetch(`${requestURL}&key=${API_KEY}`)
       .then(response => response.json())
-      .then(result => {
+      .then((result: SheetResponse) => {
         parseAirlineGateData(result, rawAirlineData, resolve)
+      })
+      .catch(e => {
+        console.error(e)
+        resolve(true)
       })
   })
 }
@@ -478,13 +498,13 @@ function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
       line = [`${lineCode}X`]
       const max = parseInt(item[maxNW], 10)
       for (let i = 0; i <= max; i += 1) {
-        line.push(lineCode + i)
+        line.push(`${lineCode}${i}`)
       }
     } else if (item[minSE] === "XHW") {
       line = [`${lineCode}X`, `${lineCode}H`, `${lineCode}W`]
       const max = parseInt(item[maxNW], 10)
       for (let i = 1; i <= max; i += 1) {
-        line.push(lineCode + i)
+        line.push(`${lineCode}${i}`)
       }
     } else if (item[nsew] === "NS") {
       const min = parseInt(item[minSE], 10)
@@ -509,7 +529,7 @@ function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
     } else {
       const max = parseInt(item[maxNW], 10)
       for (let i = 1; i <= max; i += 1) {
-        line.push(lineCode + i)
+        line.push(`${lineCode}${i}`)
       }
     }
 
@@ -654,6 +674,10 @@ function generateMrtFromMarkers(): Promise<boolean> {
             })
           })
         })
+      })
+      .catch(err => {
+        console.error(err)
+        resolve(false)
       })
   })
 }

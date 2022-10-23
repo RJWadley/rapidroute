@@ -13,13 +13,16 @@ const strictSearchWorker = new FlexSearch.Index({
 
 const displayLookup: Record<string, string> = {}
 
-getAll("searchIndex").then(data => {
-  Object.keys(data).forEach(key => {
-    searchWorker.add(key, data[key].i)
-    strictSearchWorker.add(key, data[key].i)
-    displayLookup[key] = data[key].d
+getAll("searchIndex")
+  .then(data => {
+    Object.keys(data).forEach(key => {
+      searchWorker.add(key, data[key].i)
+      strictSearchWorker.add(key, data[key].i)
+      displayLookup[key] = data[key].d
+    })
   })
-})
+  
+  .catch(console.error)
 
 export function search(query: string) {
   const strictResults = strictSearchWorker.search(query, {

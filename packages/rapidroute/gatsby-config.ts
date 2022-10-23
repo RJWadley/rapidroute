@@ -1,6 +1,6 @@
-import type { GatsbyConfig } from "gatsby"
+import path from "path"
 
-const path = require("path")
+import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
   siteMetadata: {

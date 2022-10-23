@@ -23,6 +23,10 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     const firstInstruction = await getNavigationInstruction(firstSegment)
     const nextInstruction = await getNavigationInstruction(nextSegment)
 
-    TtsEngine.speakOut(`${firstInstruction}, then ${nextInstruction}`)
-  }, [route])
+    if (firstInstruction && nextInstruction)
+      TtsEngine.speakOut(`${firstInstruction}, then ${nextInstruction}`)
+    else if (firstInstruction) TtsEngine.speakOut(firstInstruction)
+  }, [route]).catch(e => {
+    console.error("Error in voice navigation", e)
+  })
 }
