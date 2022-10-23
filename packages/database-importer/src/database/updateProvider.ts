@@ -1,6 +1,7 @@
 import { databaseTypeGuards, Provider } from "@rapidroute/database-types"
 
 import database from "./database"
+import deepCompare from "./deepCompare"
 import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
 import throttledMap from "./throttledMap"
 
@@ -11,8 +12,6 @@ export async function setProvider(
   providerId: string,
   provider: Provider | undefined | null
 ) {
-  console.log("starting provider", providerId)
-
   // remove the providerId from the unusedKeys
   Object.entries(unusedKeys).forEach(([key, value]) => {
     unusedKeys[key] = value.filter(id => id !== providerId)
@@ -24,6 +23,11 @@ export async function setProvider(
 
   // Validate the previous provider. If it's invalid, throw an error
   if (isObject(previousProvider)) previousProvider.uniqueId = providerId
+  // check for any changes
+  if (deepCompare(previousProvider, provider)) {
+    console.log("No changes to route", providerId)
+    return
+  }
   if (
     previousProvider !== undefined &&
     previousProvider !== null &&

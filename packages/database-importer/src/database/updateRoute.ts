@@ -10,6 +10,7 @@ import {
 } from "@rapidroute/database-types/dist/src/pathfinding"
 
 import database from "./database"
+import deepCompare from "./deepCompare"
 import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
 import throttledMap from "./throttledMap"
 
@@ -44,14 +45,14 @@ export async function setRoute(
     await database.ref(`routes/${routeId}`).get()
   ).val()
 
+  // Validate the previous route. If it's invalid, throw an error
+  if (isObject(previousRoute)) previousRoute.uniqueId = routeId
   // check for any changes
-  if (JSON.stringify(previousRoute) === JSON.stringify(route)) {
-    console.log("No changes for route", routeId)
+  if (deepCompare(previousRoute, route)) {
+    console.log("No changes to route", routeId)
     return
   }
 
-  // Validate the previous route. If it's invalid, throw an error
-  if (isObject(previousRoute)) previousRoute.uniqueId = routeId
   if (
     previousRoute !== undefined &&
     previousRoute !== null &&

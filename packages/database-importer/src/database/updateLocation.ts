@@ -3,6 +3,7 @@ import { PathingPlace } from "@rapidroute/database-types/dist/src/pathfinding"
 import { SearchIndexItem } from "@rapidroute/database-types/dist/src/searchIndex"
 
 import database from "./database"
+import deepCompare from "./deepCompare"
 import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
 import throttledMap from "./throttledMap"
 
@@ -13,8 +14,6 @@ export async function setLocation(
   locationId: string,
   location: Location | undefined | null
 ) {
-  console.log("starting location", locationId)
-
   // remove the locationId from the unusedKeys
   Object.entries(unusedKeys).forEach(([key, value]) => {
     unusedKeys[key] = value.filter(id => id !== locationId)
@@ -26,6 +25,11 @@ export async function setLocation(
 
   // Validate the previous location. If it's invalid, throw an error
   if (isObject(previousLocation)) previousLocation.uniqueId = locationId
+  // check for any changes
+  if (deepCompare(previousLocation, location)) {
+    console.log("No changes to route", locationId)
+    return
+  }
   if (
     previousLocation !== undefined &&
     previousLocation !== null &&
