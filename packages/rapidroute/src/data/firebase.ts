@@ -23,5 +23,5 @@ export const subscribe = (
   path: string,
   callback: (snapshot: unknown) => void
 ) => {
-  onValue(ref(database, path), callback)
+  onValue(ref(database, path), e => callback(e.val()))
 }
