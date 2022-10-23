@@ -6,13 +6,7 @@ import {
   PlaceType,
 } from "@rapidroute/database-types"
 
-import {
-  LegacyRoute,
-  LegacyPlace,
-  LegacyProvider,
-  Aliases,
-} from "./fetchingTypes"
-import saveDataToFirebase from "./saveData"
+import getLegacyData from "./getSheetData"
 
 // can't contain ".", "#", "$", "[", "]", or "/" or "\"
 const makeSafe = (str: string) => {
@@ -22,28 +16,19 @@ const makeSafe = (str: string) => {
 /**
  * take the old data format and convert it to the new format
  */
-export default async function handoffData(
-  routes: LegacyRoute[],
-  places: LegacyPlace[],
-  providers: LegacyProvider[],
-  aliases: Aliases[],
-  spawnWarps: string[],
-  lightColors: {
-    [key: string]: string
-  },
-  darkColors: {
-    [key: string]: string
-  },
-  logos: Record<string, string>,
-  placeLocations: Record<
-    string,
-    {
-      x: number
-      y: number
-      z: number
-    }
-  >
-) {
+export default async function getConvertedData() {
+  const {
+    routes,
+    places,
+    providers,
+    aliases,
+    spawnWarps,
+    lightColors,
+    darkColors,
+    logos,
+    placeLocations,
+  } = await getLegacyData()
+
   const routesToIgnore: string[] = []
   const mappedRoutes: Route[] = routes
     .map(route => {
@@ -178,5 +163,9 @@ export default async function handoffData(
     return newProvider
   })
 
-  saveDataToFirebase(mappedRoutes, mappedLocations, mappedProviders)
+  return {
+    routes: mappedRoutes,
+    locations: mappedLocations,
+    providers: mappedProviders,
+  }
 }

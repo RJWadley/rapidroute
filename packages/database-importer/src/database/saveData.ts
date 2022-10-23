@@ -12,8 +12,8 @@ import {
 } from "@rapidroute/database-types"
 import admin, { ServiceAccount } from "firebase-admin"
 
+import accountKeyRAW from "../serviceAccountKey.json"
 import makeSafeForDatabase from "./makeSafeForDatabase"
-import accountKeyRAW from "./serviceAccountKey.json"
 
 const accountKey: ServiceAccount = {
   clientEmail: accountKeyRAW.client_email,
