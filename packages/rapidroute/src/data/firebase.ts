@@ -1,6 +1,6 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
-import { getDatabase } from "firebase/database"
+import { getDatabase, onValue, ref } from "firebase/database"
 
 import { isBrowser } from "utils/functions"
 
@@ -18,3 +18,10 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 export const database = getDatabase(app)
 export const analytics = isBrowser() && getAnalytics(app)
+
+export const subscribe = (
+  path: string,
+  callback: (snapshot: unknown) => void
+) => {
+  onValue(ref(database, path), callback)
+}

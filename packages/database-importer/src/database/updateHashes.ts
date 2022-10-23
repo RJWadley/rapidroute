@@ -8,6 +8,7 @@ export default function updateHashes() {
     write("hashes/providers", newHash),
     write("hashes/pathfinding", newHash),
     write("hashes/searchIndex", newHash),
+    write("hashes/autoGenIndex", newHash),
     write("lastImport", new Date().toISOString()),
   ])
 }

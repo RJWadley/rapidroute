@@ -5,12 +5,11 @@ import {
   databaseTypeGuards,
   Location,
 } from "@rapidroute/database-types"
-import { ref, onValue } from "firebase/database"
 
 import isObject from "utils/isObject"
 import { getLocal, setLocal } from "utils/localUtils"
 
-import { database } from "./firebase"
+import { subscribe } from "./firebase"
 import isCoordinate from "./isCoordinate"
 
 const defaultDatabaseCache: DatabaseType = {
@@ -20,6 +19,7 @@ const defaultDatabaseCache: DatabaseType = {
   routes: {},
   searchIndex: {},
   worlds: {},
+  autoGenIndex: {},
 }
 const defaultHashes: Hashes = {
   locations: undefined,
@@ -28,6 +28,7 @@ const defaultHashes: Hashes = {
   routes: undefined,
   searchIndex: undefined,
   worlds: undefined,
+  autoGenIndex: undefined,
 }
 const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
 const oneHashes = getLocal("oneHash") ?? defaultHashes
@@ -40,13 +41,12 @@ let databaseHashes: Hashes = {
   routes: "",
   searchIndex: "",
   worlds: "",
+  autoGenIndex: "",
 }
 const hashesExist = new Promise(resolve => {
-  onValue(ref(database, "hashes"), snapshot => {
-    // databaseHashes = snapshot.val()
-    const rawValue: unknown = snapshot.val()
+  subscribe("hashes", rawValue => {
     if (isObject(rawValue)) {
-      databaseHashes = rawValue
+      databaseHashes = { ...defaultHashes, ...rawValue }
     }
     resolve(true)
   })
@@ -102,12 +102,9 @@ export async function getPath<T extends keyof DatabaseType>(
 
   // otherwise, get the value from the database
   await databaseThrottle()
-  const itemRef = ref(database, `${type}/${itemName}`)
   return new Promise(resolve => {
-    onValue(itemRef, async lowerSnapshot => {
-      if (!lowerSnapshot.exists()) return resolve(null)
-      const data: unknown = lowerSnapshot.val()
-      if (isObject(data)) data.uniqueId = itemName
+    subscribe(`${type}/${itemName}`, dataIn => {
+      const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
       if (!databaseTypeGuards[type](data)) {
         console.log("guard failed", type, data)
         return resolve(null)
@@ -153,10 +150,8 @@ export async function getAll<T extends keyof DatabaseType>(
 
   // otherwise, get the value from the database
   await databaseThrottle()
-  const itemRef = ref(database, type)
   return new Promise(resolve => {
-    onValue(itemRef, async lowerSnapshot => {
-      const rawData: unknown = lowerSnapshot.val()
+    subscribe(type, rawData => {
       const data: GetAll<T> = {}
 
       if (isObject(rawData)) {
