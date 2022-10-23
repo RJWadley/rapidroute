@@ -61,3 +61,5 @@ export const shortHandMapKeys = ["F", "S", "H", "M", "W", "P"] as const
 
 export const isPathingPlace = (obj: unknown): obj is PathingPlace =>
   TSON.is<PathingPlace>(obj)
+export const isWholePathfinding = (obj: unknown): obj is Pathfinding =>
+  TSON.is<Pathfinding>(obj)

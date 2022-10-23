@@ -364,7 +364,7 @@ function processAirportMetadata(rawAirportData: string[][]) {
 function parseAirlineGateData(
   result: SheetResponse,
   companies: string[][],
-  resolve: Function
+  resolve: (...args: unknown[]) => void
 ) {
   let gateData: string[][] = []
 

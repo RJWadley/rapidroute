@@ -51,5 +51,16 @@ module.exports = {
         assertionStyle: "never",
       },
     ],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/ban-types": "error",
+
+    // no unused variables should allow _prefixed variables
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      },
+    ],
   },
 }
