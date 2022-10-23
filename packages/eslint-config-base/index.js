@@ -1,5 +1,10 @@
 module.exports = {
-  extends: ["airbnb", "airbnb-typescript/base", "plugin:prettier/recommended"],
+  extends: [
+    "airbnb",
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:prettier/recommended",
+  ],
   rules: {
     /**
      *  Mandatory Rules
