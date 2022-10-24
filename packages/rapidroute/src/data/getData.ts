@@ -55,7 +55,7 @@ const hashesExist = new Promise(resolve => {
 type GetAll<T extends keyof DatabaseType> = DatabaseType[T]
 type GetOne<T extends keyof DatabaseType> = DatabaseType[T][string]
 
-export async function getPath<T extends keyof DatabaseType>(
+async function getPathRAW<T extends keyof DatabaseType>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
@@ -101,7 +101,6 @@ export async function getPath<T extends keyof DatabaseType>(
   }
 
   // otherwise, get the value from the database
-  await databaseThrottle()
   return new Promise(resolve => {
     subscribe(`${type}/${itemName}`, dataIn => {
       const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
@@ -118,7 +117,7 @@ export async function getPath<T extends keyof DatabaseType>(
   })
 }
 
-export async function getAll<T extends keyof DatabaseType>(
+async function getAllRAW<T extends keyof DatabaseType>(
   type: T
 ): Promise<GetAll<T>> {
   // first get the hash from the database
@@ -149,7 +148,6 @@ export async function getAll<T extends keyof DatabaseType>(
   }
 
   // otherwise, get the value from the database
-  await databaseThrottle()
   return new Promise(resolve => {
     subscribe(type, rawData => {
       const data: GetAll<T> = {}
@@ -185,23 +183,41 @@ export async function getAll<T extends keyof DatabaseType>(
   })
 }
 
-const queue: ((...args: unknown[]) => unknown)[] = []
-/**
- * throttle function to prevent too many requests at once
- */
-function databaseThrottle() {
+const queue: Array<() => Promise<unknown>> = []
+
+export async function runQueue() {
+  while (queue.length) {
+    const next = queue.shift()
+    // eslint-disable-next-line no-await-in-loop
+    if (next) await next()
+  }
+
+  setTimeout(() => {
+    runQueue().catch(console.error)
+  }, 100)
+}
+
+runQueue().catch(console.error)
+
+export function getPath<T extends keyof DatabaseType>(
+  type: T,
+  itemName: string
+): Promise<GetOne<T> | null> {
   return new Promise(resolve => {
-    queue.push(resolve)
+    queue.push(async () => {
+      const path = await getPathRAW(type, itemName)
+      resolve(path)
+    })
   })
 }
-/**
- * interval to resolve promises in the queue one at a time
- */
-const resolver = () => {
-  if (queue.length) {
-    console.log("Queue length", queue.length)
-    queue.shift()?.()
-  }
-  requestAnimationFrame(resolver)
+
+export function getAll<T extends keyof DatabaseType>(
+  type: T
+): Promise<GetAll<T>> {
+  return new Promise(resolve => {
+    queue.push(async () => {
+      const path = await getAllRAW(type)
+      resolve(path)
+    })
+  })
 }
-resolver()
