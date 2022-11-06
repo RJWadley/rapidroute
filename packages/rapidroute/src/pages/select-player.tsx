@@ -83,6 +83,7 @@ const Content = styled.div`
 const Title = styled.h1`
   text-align: center;
   font-size: 48px;
+  line-height: 48px;
   color: var(--text-color);
   font-weight: 700;
   margin-bottom: 50px;
@@ -99,6 +100,7 @@ const Search = styled.input`
   margin-bottom: 20px;
   border-radius: 30px;
   font-size: 20px;
+  line-height: 20px;
 `
 
 const Icon = styled.div`
@@ -107,6 +109,7 @@ const Icon = styled.div`
   right: 20px;
   top: 20px;
   font-size: 40px;
+  line-height: 40px;
 `
 
 const Players = styled.div`

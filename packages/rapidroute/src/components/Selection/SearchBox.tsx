@@ -122,6 +122,7 @@ const Label = styled.label`
 const Text = styled.textarea<{ isTo: boolean }>`
   color: var(--default-text);
   font-size: 20px;
+  line-height: 20px;
   height: 0px;
   text-align: ${props => (props.isTo ? "right" : "left")};
 
@@ -131,6 +132,7 @@ const Text = styled.textarea<{ isTo: boolean }>`
 
   @media ${media.mobile} {
     font-size: 14px;
+    line-height: 14px;
     text-align: left;
 
     ${props =>

@@ -184,6 +184,7 @@ const Wrapper = styled.div`
   border-radius: 30px;
   display: grid;
   font-size: 16px;
+  line-height: 16px;
   overflow: hidden;
   position: absolute;
   top: calc(100% - 30px);

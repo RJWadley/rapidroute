@@ -42,6 +42,7 @@ const StyledButton = styled.button<{ flipped: boolean }>`
   height: 80px;
   border-radius: 20px;
   font-size: 70px;
+  line-height: 70px;
   overflow: hidden;
 
   @media ${media.mobile} {
@@ -52,5 +53,6 @@ const StyledButton = styled.button<{ flipped: boolean }>`
     }
     border-radius: 15px;
     font-size: 40px;
+    line-height: 40px;
   }
 `

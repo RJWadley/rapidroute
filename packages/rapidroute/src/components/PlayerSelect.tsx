@@ -129,6 +129,7 @@ const Image = styled.img<{ color: string }>`
 
 const Name = styled.div`
   font-size: 40px;
+  line-height: 40px;
   font-weight: bold;
 `
 

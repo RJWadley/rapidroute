@@ -124,8 +124,10 @@ const Via = styled.div`
 
   padding: 10px 30px;
   font-size: 40px;
+  line-height: 40px;
   @media ${media.mobile} {
     font-size: 20px;
+    line-height: 20px;
   }
 `
 

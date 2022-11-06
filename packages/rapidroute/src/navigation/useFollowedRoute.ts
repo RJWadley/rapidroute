@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { SegmentType } from "components/createSegments"
 
 /**
- * given the most up-to-date route from the player to the destination, 
+ * given the most up-to-date route from the player to the destination,
  * track and return the player's path from the initial navigation start to the player
  * @param route the current route the player is following
  * @returns the path from navigation start to the player now
