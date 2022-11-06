@@ -9,6 +9,9 @@ import { session } from "utils/localUtils"
 import { stopToNumber } from "./getNavigationInstruction"
 import useVoiceNavigation from "./useVoiceNavigation"
 
+/**
+ * navigate to a destination, providing voice navigation and updating directions as needed
+ */
 export default function useNavigation() {
   const { currentRoute, setCurrentRoute, spokenRoute, setSpokenRoute } =
     useContext(NavigationContext)

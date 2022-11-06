@@ -7,8 +7,8 @@ import useNavigation from "navigation/useNavigation"
 import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
 
-import { NavigationContext } from "./Providers/NavigationContext"
-import Segment from "./Segment"
+import { NavigationContext } from "../components/Providers/NavigationContext"
+import Segment from "../components/Segment"
 
 export default function NavigationSidebar() {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)

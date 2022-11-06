@@ -3,7 +3,7 @@ import React, { useEffect } from "react"
 import styled from "styled-components"
 
 import Layout from "components/Layout"
-import NavigationSidebar from "components/NavigationSidebar"
+import NavigationSidebar from "navigation/NavigationSidebar"
 import SEO from "components/SEO"
 import MapCanvas from "map/MapCanvas"
 import { isBrowser } from "utils/functions"
