@@ -3,15 +3,15 @@ import React, { createContext, ReactNode, useMemo, useState } from "react"
 import { SegmentType } from "components/createSegments"
 
 export const NavigationContext = createContext<{
-  prefferedRoute: string[]
-  setPrefferedRoute: (prefferedRoute: string[]) => void
+  preferredRoute: string[]
+  setPreferredRoute: (preferredRoute: string[]) => void
   currentRoute: SegmentType[]
   setCurrentRoute: (currentRoute: SegmentType[]) => void
   spokenRoute: SegmentType[]
   setSpokenRoute: (spokenRoute: SegmentType[]) => void
 }>({
-  prefferedRoute: [],
-  setPrefferedRoute: () => {},
+  preferredRoute: [],
+  setPreferredRoute: () => {},
   currentRoute: [],
   setCurrentRoute: () => {},
   spokenRoute: [],
@@ -23,20 +23,20 @@ export function NavigationProvider({
 }: {
   children: ReactNode
 }): JSX.Element {
-  const [prefferedRoute, setPrefferedRoute] = useState<string[]>([])
+  const [preferredRoute, setPreferredRoute] = useState<string[]>([])
   const [currentRoute, setCurrentRoute] = useState<SegmentType[]>([])
   const [spokenRoute, setSpokenRoute] = useState<SegmentType[]>([])
 
   const value = useMemo(() => {
     return {
-      prefferedRoute,
-      setPrefferedRoute,
+      preferredRoute,
+      setPreferredRoute,
       currentRoute,
       setCurrentRoute,
       spokenRoute,
       setSpokenRoute,
     }
-  }, [currentRoute, prefferedRoute, spokenRoute])
+  }, [currentRoute, preferredRoute, spokenRoute])
 
   return (
     <NavigationContext.Provider value={value}>
