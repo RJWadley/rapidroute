@@ -83,6 +83,11 @@ const getLineDirection = (fromStop: string, toStop: string) => {
   return ""
 }
 
+/**
+ * given a route segment, return directions for the player to follow to complete the segment
+ * @param segment the segment to get directions for
+ * @returns a phrase with instructions for the player to follow
+ */
 export default async function getNavigationInstruction(
   segment: SegmentType | undefined
 ) {
