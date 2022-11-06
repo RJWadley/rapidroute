@@ -2,7 +2,7 @@
 /**
  * speed defined in meters per second
  */
-const SPEEDS = {
+export const SPEEDS = {
   MRT: 8,
   walk: 2,
 }
@@ -10,14 +10,14 @@ const SPEEDS = {
 /**
  * speed is constant regardless of distance
  */
-const STATIC_TIMES = {
+export const STATIC_TIMES = {
   flight: 500,
   seaplane: 500,
   heli: 500,
   spawnWarp: 500,
 }
 
-const GATE_PENALTY = {
+export const GATE_PENALTY = {
   flight: (n: number) => Math.max(2 - n, 0) * 60,
   seaplane: (n: number) => Math.max(2 - n, 0) * 60,
   heli: (n: number) => Math.max(2 - n, 0) * 60,

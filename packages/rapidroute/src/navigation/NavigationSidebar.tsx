@@ -9,12 +9,13 @@ import loadRoute from "utils/loadRoute"
 
 import { NavigationContext } from "../components/Providers/NavigationContext"
 import Segment from "../components/Segment"
+import Countdown from "./Countdown"
 
 export default function NavigationSidebar() {
-  const { currentRoute, spokenRoute } = useContext(NavigationContext)
+  const { spokenRoute, preferredRoute } = useContext(NavigationContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
 
-  if (isBrowser() && currentRoute.length === 0) {
+  if (isBrowser() && preferredRoute.length === 0) {
     loadRoute("/")
   }
 
@@ -37,6 +38,7 @@ export default function NavigationSidebar() {
         )
       })}
       <div ref={scrollMarker} />
+      <Countdown />
       {spokenRoute.map(segment => {
         return (
           <Segment forceMobile segment={segment} key={segment.to.uniqueId} />

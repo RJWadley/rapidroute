@@ -4,7 +4,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
 import FindPath from "pathfinding/findPath"
-import { session } from "utils/localUtils"
+import { getLocal, session } from "utils/localUtils"
 
 import { stopToNumber } from "./getNavigationInstruction"
 import useVoiceNavigation from "./useVoiceNavigation"
@@ -26,6 +26,11 @@ export default function useNavigation() {
    * start voice navigation
    */
   useVoiceNavigation(spokenRoute)
+
+  /**
+   * set player for map
+   */
+  session.following = getLocal("selectedPlayer")?.toString() ?? undefined
 
   /**
    * Update the spoken route when needed
@@ -114,7 +119,7 @@ export default function useNavigation() {
                  * Update the current route
                  */
                 // first, if the first segment is a walk, remove it
-                if (segments[0].routes.length === 0) {
+                if (segments[0].routes.length === 0 && segments.length > 1) {
                   segments.shift()
                 }
                 setCurrentRoute(segments)
