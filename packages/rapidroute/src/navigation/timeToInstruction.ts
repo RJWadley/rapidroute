@@ -17,12 +17,13 @@ export default function getTimeToInstruction(segment: SegmentType) {
   const numberOfStops = Math.abs(fromNumber - toNumber) - 1
 
   const mode = segment.routes[0]?.type ?? "walk"
-  const fromCoords = session.lastKnownLocation
-  const toCoords = segment.to.location
-  const distance = Math.sqrt(
-    ((fromCoords?.x ?? Infinity) - (toCoords?.x ?? Infinity)) ** 2 +
-      ((fromCoords?.z ?? Infinity) - (toCoords?.z ?? Infinity)) ** 2
-  )
+  const fromCoords = session.lastKnownLocation ?? { x: Infinity, z: Infinity }
+  const toCoords = segment.to.location ?? { x: Infinity, z: Infinity }
+  const diffX = Math.abs(fromCoords.x - toCoords.x)
+  const diffZ = Math.abs(fromCoords.z - toCoords.z)
+
+  // the distance is manhattan distance
+  const distance = Math.abs(diffX) + Math.abs(diffZ)
 
   if (inObject(mode, SPEEDS)) {
     return Math.max(distance / SPEEDS[mode]) + numberOfStops * 10
