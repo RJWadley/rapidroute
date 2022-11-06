@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
@@ -23,14 +24,8 @@ const CompletionThresholds: Record<PlaceType, number> = {
  * navigate to a destination, providing voice navigation and updating directions as needed
  */
 export default function useNavigation() {
-  const {
-    currentRoute,
-    setCurrentRoute,
-    spokenRoute,
-    setSpokenRoute,
-    setIsRouteComplete,
-    setNearEnd,
-  } = useContext(NavigationContext)
+  const { currentRoute, setCurrentRoute, spokenRoute, setSpokenRoute } =
+    useContext(NavigationContext)
   const { allowedModes } = useContext(RoutingContext)
 
   /**
@@ -86,13 +81,46 @@ export default function useNavigation() {
       }
     }
 
-    // if the new starting location matches the previous to destination, still valid
-    const previousTo = spokenRoute[1]?.to
-    const newFrom = currentRoute[0].from
-    if (previousTo && newFrom) {
-      if (previousTo.uniqueId === newFrom.uniqueId) {
+    const distanceBetweenLocs = Math.sqrt(
+      ((firstSpoken?.to?.location?.x ?? Infinity) -
+        (firstCurrent?.from?.location?.x ?? Infinity)) **
+        2 +
+        ((firstSpoken?.to?.location?.z ?? Infinity) -
+          (firstCurrent?.from?.location?.z ?? Infinity)) **
+          2
+    )
+
+    // check if the system has rerouted us before we get to the destination
+    // if the new from location is the same as the old to location
+    if (
+      firstSpoken &&
+      firstCurrent &&
+      // either the id's match
+      (firstSpoken.to.uniqueId === firstCurrent.from.uniqueId ||
+        // or they are within 100m of each other
+        distanceBetweenLocs < 100)
+    ) {
+      console.log("locations match")
+      // and we are too far away from that location
+      const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
+      const { x: toX, z: toZ } = firstSpoken.to.location || {}
+      const distance = Math.sqrt(
+        ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
+          ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
+      )
+
+      if (distance > CompletionThresholds[firstSpoken.to.type]) {
+        console.log("distance too far")
+        // we are not close enough to the destination to be considered there
+        // so leave the spoken route as is
         return undefined
       }
+      console.log("we are close enough to the destination")
+    } else {
+      console.log("locations do not match")
+      console.log("firstSpoken", firstSpoken)
+      console.log("firstCurrent", firstCurrent)
+      console.log("distanceBetweenLocs", distanceBetweenLocs)
     }
 
     // if we reach this point, the spoken route is no longer valid and we need to update it
@@ -125,39 +153,12 @@ export default function useNavigation() {
             resultToSegments(result)
               .then(segments => {
                 /**
-                 * Check if the player has reached the destination (within 200m)
-                 */
-                const lastSegment = segments[segments.length - 1]
-                const playerLocation = session.lastKnownLocation
-                if (playerLocation) {
-                  const { x: fromX, z: fromZ } = playerLocation
-                  const { x: toX, z: toZ } = lastSegment?.to.location || {}
-                  const distance = Math.sqrt(
-                    (fromX - (toX ?? Infinity)) ** 2 +
-                      (fromZ - (toZ ?? Infinity)) ** 2
-                  )
-
-                  if (
-                    distance <
-                    CompletionThresholds[lastSegment?.to.type ?? "Other"]
-                  ) {
-                    // player has reached the destination
-                    setIsRouteComplete(true)
-                    session.pointOfInterest = undefined
-                    return
-                  }
-                  setIsRouteComplete(false)
-                }
-
-                /**
                  * if we've reached the destination, but the player is not there,
                  * don't update the route
                  */
                 if (segments.length === 1) {
-                  setNearEnd(true)
                   return
                 }
-                setNearEnd(false)
 
                 /**
                  * Update the current route
@@ -167,12 +168,6 @@ export default function useNavigation() {
                   segments.shift()
                 }
                 setCurrentRoute(segments)
-
-                /**
-                 * set the point of interest
-                 */
-                const poi = segments[0]?.to.location
-                session.pointOfInterest = poi
               })
 
               /**
@@ -198,11 +193,5 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [
-    allowedModes,
-    destinationId,
-    setCurrentRoute,
-    setIsRouteComplete,
-    setNearEnd,
-  ])
+  }, [allowedModes, destinationId, setCurrentRoute])
 }

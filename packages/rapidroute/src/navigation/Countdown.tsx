@@ -8,7 +8,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import getTimeToInstruction from "./timeToInstruction"
 
 export default function Countdown() {
-  const { currentRoute, nearEnd } = useContext(NavigationContext)
+  const { spokenRoute } = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -18,14 +18,13 @@ export default function Countdown() {
    * and update the time to instruction
    */
   useDeepCompareEffect(() => {
-    if (currentRoute.length === 0) return undefined
+    if (spokenRoute.length === 0) return undefined
     let mounted = true
     const updateTimer = () => {
       if (!mounted) return
 
-      let time = Math.round(getTimeToInstruction(currentRoute[0]))
-      if (nearEnd) time -= 10
-      else time += 10
+      const time = Math.round(getTimeToInstruction(spokenRoute[0]))
+      // TODO time adjustment +- 10 seconds
       setTimeToInstruction(Math.max(time, 0))
       setCurrentTime(p => Math.max(0, p - 1))
 
@@ -36,7 +35,7 @@ export default function Countdown() {
     return () => {
       mounted = false
     }
-  }, [currentRoute, nearEnd])
+  }, [spokenRoute])
 
   /**
    * update the timer interval if the time to instruction changes
