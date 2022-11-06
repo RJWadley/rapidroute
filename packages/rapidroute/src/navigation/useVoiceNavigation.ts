@@ -19,6 +19,9 @@ if (isBrowser())
 export default function useVoiceNavigation(route: SegmentType[]) {
   const { isRouteComplete } = useContext(NavigationContext)
 
+  /**
+   * every time the spoken route changes, speak the next instruction
+   */
   useDeepCompareMemo(async () => {
     if (!route.length || !isBrowser()) return
 
@@ -40,5 +43,5 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     else if (firstInstruction) TtsEngine.speakOut(firstInstruction)
   }, [isRouteComplete, route]).catch(e => {
     console.error("Error in voice navigation", e)
-  })
+  })  
 }

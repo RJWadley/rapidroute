@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
 
@@ -42,6 +42,17 @@ export default function useNavigation() {
    * set player for map
    */
   session.following = getLocal("selectedPlayer")?.toString() ?? undefined
+
+  /**
+   * set initial spoken route to match current route
+   */
+  const firstRender = useRef(true)
+  useEffect(() => {
+    if (firstRender.current && currentRoute.length) {
+      firstRender.current = false
+      setSpokenRoute(currentRoute)
+    }
+  }, [currentRoute, setSpokenRoute])
 
   /**
    * Update the spoken route when needed
@@ -187,5 +198,11 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [allowedModes, destinationId, setCurrentRoute, setIsRouteComplete, setNearEnd])
+  }, [
+    allowedModes,
+    destinationId,
+    setCurrentRoute,
+    setIsRouteComplete,
+    setNearEnd,
+  ])
 }
