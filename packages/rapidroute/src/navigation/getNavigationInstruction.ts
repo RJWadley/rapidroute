@@ -7,6 +7,12 @@ const northSouthLines = ["Z", "E", "J", "W"]
 const inOutLines = ["A", "T", "I", "M", "D", "P", "V", "H", "F"]
 const circleLines = ["C"]
 
+/**
+ * takes a the name of an MRT station and returns the number of the
+ * station or its numerical position, for determining travel direction
+ * @param stop the name of the station
+ * @returns the number of the station or its numerical position (relative to the other stations on the same line)
+ */
 export const stopToNumber = (stop: string | undefined) => {
   if (!stop) return 0
 
@@ -14,9 +20,16 @@ export const stopToNumber = (stop: string | undefined) => {
   if (stop === "MH") return -0.3
   if (stop === "MW") return -0.2
 
+  // remove all non-numeric characters, then parse the number
   return parseInt(stop.replace(/\D/g, ""), 10)
 }
 
+/**
+ * given two MRT stations, return the direction of travel between them (according to in-game signs)
+ * @param fromStop the name of the station the player is currently at
+ * @param toStop the name of the station the player is traveling to
+ * @returns the direction of travel between the two stations
+ */
 const getLineDirection = (fromStop: string, toStop: string) => {
   const lineCode = fromStop[0]
   const lineModifier = fromStop[1]
@@ -24,9 +37,11 @@ const getLineDirection = (fromStop: string, toStop: string) => {
 
   const fromStopNumber = stopToNumber(fromStop)
   const toStopNumber = stopToNumber(toStop)
-
   const fromIsBigger = fromStopNumber > toStopNumber
 
+  /**
+   * handle east-west lines
+   */
   if (westEastLines.includes(lineCode)) {
     if (lineModifier === "E") {
       return fromIsBigger ? "east" : "west"
@@ -36,6 +51,10 @@ const getLineDirection = (fromStop: string, toStop: string) => {
     }
     return toLineModifier === "E" ? "east" : "west"
   }
+
+  /**
+   * handle north-south lines
+   */
   if (northSouthLines.includes(lineCode)) {
     if (lineModifier === "N") {
       return fromIsBigger ? "south" : "north"
@@ -45,12 +64,22 @@ const getLineDirection = (fromStop: string, toStop: string) => {
     }
     return toLineModifier === "N" ? "north" : "south"
   }
+
+  /**
+   * handle inbound/outbound lines
+   */
   if (inOutLines.includes(lineCode)) {
     return fromIsBigger ? "inbound" : "outbound"
   }
+
+  /**
+   * handle circle lines
+   */
   if (circleLines.includes(lineCode)) {
     return fromIsBigger ? "counterclockwise" : "clockwise"
   }
+
+  // if we get here, we don't know the direction
   return ""
 }
 
@@ -59,15 +88,22 @@ export default async function getNavigationInstruction(
 ) {
   if (!segment) return undefined
 
-  // WALKING
-  if (!segment.routes.length)
+  /**
+   * Instructions for walking to a location
+   * If we're transferring, say "Transfer to <line> at <station>"
+   * otherwise, say "Walk to <station>"
+   */
+  if (!segment.routes.length) 
     return `${
       segment.from.type === "MRT Station" && segment.to.type === "MRT Station"
         ? "transfer"
         : "walk"
     } to ${segment.to.shortName}, ${segment.to.name}`
 
-  // MRT Lines
+  /**
+   * Instructions for riding an MRT line
+   * Say "Take the <name> line <direction> to <station>"
+   */
   if (segment.routes[0]?.type === "MRT") {
     const route = segment.routes[0]
     return `take the ${route.provider} line ${getLineDirection(
@@ -76,8 +112,14 @@ export default async function getNavigationInstruction(
     )} to ${segment.to.shortName}, ${segment.to.name}`
   }
 
+  /**
+   * Instructions for taking a flight
+   * The instructions will vary depending on the number of flights
+   */
   if (segment.from.type === "Airport" && segment.to.type === "Airport") {
-    // Single flight
+    /**
+     * If we're taking a single flight, say "Take <provider> flight <number> to <airport> at <gate>"
+     */
     if (segment.routes.length === 1) {
       const routeInfo = segment.routes[0]
       if (!routeInfo) return undefined
@@ -90,8 +132,14 @@ export default async function getNavigationInstruction(
       }, ${segment.to.name} ${gate ? `at ${gate}` : ""}`
     }
 
-    // Multiple flights
-    let output = `take any flight to ${segment.to.shortName}. You have the following options:`
+    /**
+     * If there are multiple flights, first say the destination airport, then
+     * list the number of flights and information about each flight
+     */
+    let output = `take any flight to ${segment.to.shortName}. You have ${
+      segment.routes.length
+    } options:`
+
     const addToList = (
       last: boolean,
       providerName: string,
@@ -102,6 +150,8 @@ export default async function getNavigationInstruction(
         gate ? `at ${gate}` : ""
       }. `
     }
+    
+    // actual fetching of flight information happens here
     const proms: Promise<unknown>[] = []
     for (let i = 0; i < segment.routes.length; i += 1) {
       const routeInfo = segment.routes[i]
@@ -123,10 +173,12 @@ export default async function getNavigationInstruction(
           console.error("Error getting provider", e)
         })
     }
-    await Promise.all(proms)
+
+    await Promise.allSettled(proms)
     return output
   }
 
+  // if we get here, we don't know how to handle this segment, so give a generic instruction
   return `navigate from ${segment.from.shortName}, ${segment.from.name}, to 
   ${segment.to.shortName}, ${segment.to.name}`
 }
