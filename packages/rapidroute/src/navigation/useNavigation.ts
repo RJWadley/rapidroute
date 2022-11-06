@@ -1,5 +1,7 @@
 import { useContext, useEffect } from "react"
 
+import { PlaceType } from "@rapidroute/database-types"
+
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
@@ -8,6 +10,14 @@ import { getLocal, session } from "utils/localUtils"
 
 import { stopToNumber } from "./getNavigationInstruction"
 import useVoiceNavigation from "./useVoiceNavigation"
+
+const CompletionThresholds: Record<PlaceType, number> = {
+  "MRT Station": 100,
+  Airport: 500,
+  City: 500,
+  Coordinate: 100,
+  Other: 100,
+}
 
 /**
  * navigate to a destination, providing voice navigation and updating directions as needed
@@ -19,6 +29,7 @@ export default function useNavigation() {
     spokenRoute,
     setSpokenRoute,
     setIsRouteComplete,
+    setNearEnd,
   } = useContext(NavigationContext)
   const { allowedModes } = useContext(RoutingContext)
 
@@ -64,6 +75,15 @@ export default function useNavigation() {
       }
     }
 
+    // if the new starting location matches the previous to destination, still valid
+    const previousTo = spokenRoute[1]?.to
+    const newFrom = currentRoute[0].from
+    if (previousTo && newFrom) {
+      if (previousTo.uniqueId === newFrom.uniqueId) {
+        return undefined
+      }
+    }
+
     // if we reach this point, the spoken route is no longer valid and we need to update it
     return setSpokenRoute(currentRoute)
   }, [currentRoute, setSpokenRoute, spokenRoute])
@@ -106,20 +126,33 @@ export default function useNavigation() {
                       (fromZ - (toZ ?? Infinity)) ** 2
                   )
 
-                  if (distance < 200) {
+                  if (
+                    distance <
+                    CompletionThresholds[lastSegment?.to.type ?? "Other"]
+                  ) {
                     // player has reached the destination
-                    setCurrentRoute(segments)
                     setIsRouteComplete(true)
                     session.pointOfInterest = undefined
                     return
                   }
+                  setIsRouteComplete(false)
                 }
+
+                /**
+                 * if we've reached the destination, but the player is not there,
+                 * don't update the route
+                 */
+                if (segments.length === 1) {
+                  setNearEnd(true)
+                  return
+                }
+                setNearEnd(false)
 
                 /**
                  * Update the current route
                  */
-                // first, if the first segment is a walk, remove it
-                if (segments[0].routes.length === 0 && segments.length > 1) {
+                if (!segments[0].routes.length) {
+                  // if the first segment is a walk, remove it
                   segments.shift()
                 }
                 setCurrentRoute(segments)
@@ -154,5 +187,5 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [allowedModes, destinationId, setCurrentRoute, setIsRouteComplete])
+  }, [allowedModes, destinationId, setCurrentRoute, setIsRouteComplete, setNearEnd])
 }

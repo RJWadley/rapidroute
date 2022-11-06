@@ -19,7 +19,7 @@ export default function BeginNavigation({
   route,
   segments,
 }: BeginNavigationProps) {
-  const { setPreferredRoute: setpreferredRoute, setCurrentRoute } = useContext(NavigationContext)
+  const { setPreferredRoute, setCurrentRoute } = useContext(NavigationContext)
 
   return (
     <Wrapper>
@@ -28,7 +28,7 @@ export default function BeginNavigation({
       </Text>
       <RoundButton
         onClick={() => {
-          setpreferredRoute(route)
+          setPreferredRoute(route)
           if (segments) setCurrentRoute(segments)
           loadRoute("/navigate")
         }}

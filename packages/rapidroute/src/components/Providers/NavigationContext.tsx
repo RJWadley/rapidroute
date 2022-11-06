@@ -10,7 +10,7 @@ export const NavigationContext = createContext<{
   /**
    * Update the route the user would prefer to take, if possible
    */
-  setPreferredRoute: (preferredRoute: string[]) => void
+  setPreferredRoute: React.Dispatch<React.SetStateAction<string[]>>
   /**
    * The route the navigation system is currently trying to take
    */
@@ -18,7 +18,7 @@ export const NavigationContext = createContext<{
   /**
    * Update the route the navigation system is currently trying to take
    */
-  setCurrentRoute: (currentRoute: SegmentType[]) => void
+  setCurrentRoute: React.Dispatch<React.SetStateAction<SegmentType[]>>
   /**
    * The route the navigation system is using to give directions.
    * This often differs from the current route, since it won't update until
@@ -30,7 +30,7 @@ export const NavigationContext = createContext<{
   /**
    * Update the route the navigation system is using to give directions
    */
-  setSpokenRoute: (spokenRoute: SegmentType[]) => void
+  setSpokenRoute: React.Dispatch<React.SetStateAction<SegmentType[]>>
   /**
    * Has the user reached the end of the route?
    */
@@ -38,7 +38,15 @@ export const NavigationContext = createContext<{
   /**
    * Update whether the user has reached the end of the route
    */
-  setIsRouteComplete: (isRouteComplete: boolean) => void
+  setIsRouteComplete: React.Dispatch<React.SetStateAction<boolean>>
+  /**
+   * If we're close enough to the end that we're now just walking to it
+   */
+  nearEnd: boolean
+  /**
+   * Update whether we're close enough to the end that we're now just walking to it
+   */
+  setNearEnd: React.Dispatch<React.SetStateAction<boolean>>
 }>({
   preferredRoute: [],
   setPreferredRoute: () => {},
@@ -48,6 +56,8 @@ export const NavigationContext = createContext<{
   setSpokenRoute: () => {},
   isRouteComplete: false,
   setIsRouteComplete: () => {},
+  nearEnd: false,
+  setNearEnd: () => {},
 })
 
 export function NavigationProvider({
@@ -59,6 +69,7 @@ export function NavigationProvider({
   const [currentRoute, setCurrentRoute] = useState<SegmentType[]>([])
   const [spokenRoute, setSpokenRoute] = useState<SegmentType[]>([])
   const [isRouteComplete, setIsRouteComplete] = useState(false)
+  const [nearEnd, setNearEnd] = useState(false)
 
   const value = useMemo(() => {
     return {
@@ -70,8 +81,10 @@ export function NavigationProvider({
       setSpokenRoute,
       isRouteComplete,
       setIsRouteComplete,
+      nearEnd,
+      setNearEnd,
     }
-  }, [currentRoute, isRouteComplete, preferredRoute, spokenRoute])
+  }, [currentRoute, isRouteComplete, nearEnd, preferredRoute, spokenRoute])
 
   return (
     <NavigationContext.Provider value={value}>

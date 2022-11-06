@@ -8,7 +8,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import getTimeToInstruction from "./timeToInstruction"
 
 export default function Countdown() {
-  const { currentRoute } = useContext(NavigationContext)
+  const { currentRoute, nearEnd } = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -18,12 +18,15 @@ export default function Countdown() {
    * and update the time to instruction
    */
   useDeepCompareEffect(() => {
+    if (currentRoute.length === 0) return undefined
     let mounted = true
     const updateTimer = () => {
       if (!mounted) return
 
-      const time = Math.round(getTimeToInstruction(currentRoute[0]))
-      setTimeToInstruction(time)
+      let time = Math.round(getTimeToInstruction(currentRoute[0]))
+      if (nearEnd) time -= 10
+      else time += 10
+      setTimeToInstruction(Math.max(time, 0))
       setCurrentTime(p => Math.max(0, p - 1))
 
       setTimeout(updateTimer, timerInterval.current)
@@ -33,7 +36,7 @@ export default function Countdown() {
     return () => {
       mounted = false
     }
-  }, [currentRoute])
+  }, [currentRoute, nearEnd])
 
   /**
    * update the timer interval if the time to instruction changes
@@ -43,20 +46,18 @@ export default function Countdown() {
     if (!Number.isFinite(currentTime) && Number.isFinite(timeToInstruction)) {
       setCurrentTime(0)
     }
-    if (difference > 11) {
-      console.log("speeding up timer")
+    if (difference > 120) {
+      setCurrentTime(0)
+    } else if (difference > 11) {
       timerInterval.current -= 50
-      if (timerInterval.current < 10) {
-        timerInterval.current = 10
+      if (timerInterval.current < 100) {
+        timerInterval.current = 100
       }
     } else if (difference < -10) {
-      console.log("pausing timer for a bit")
       setCurrentTime(timeToInstruction - 10)
     } else if (difference < 0) {
-      console.log("slowing down timer")
       timerInterval.current = 1050
     } else {
-      console.log("keeping timer at 1s")
       timerInterval.current = 1000
     }
   }, [timeToInstruction, currentTime])
@@ -78,17 +79,15 @@ export default function Countdown() {
     const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes
 
     const hoursString = hours > 0 ? `${hours}:` : ""
-    const minutesString =
-      minutes > 0 ? `${hours > 0 ? paddedMinutes : minutes}:` : ""
-    const secondsString = seconds > 0 ? `${paddedSeconds}` : ""
+    const minutesString = `${hours > 0 ? paddedMinutes : minutes}:`
 
-    return `${hoursString}${minutesString}${secondsString}`
+    return `${hoursString}${minutesString}${paddedSeconds}`
   }
 
   return (
     <div>
       <h1>Countdown: {formatTime(currentTime)}</h1>
-      <h2>Actual Time: {formatTime(timeToInstruction)}</h2>
+      <h2>Actual Time: {timeToInstruction}</h2>
     </div>
   )
 }
