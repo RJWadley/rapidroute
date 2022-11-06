@@ -19,8 +19,7 @@ export default function BeginNavigation({
   route,
   segments,
 }: BeginNavigationProps) {
-  const { setPreferredRoute: setpreferredRoute, setCurrentRoute } =
-    useContext(NavigationContext)
+  const { setPreferredRoute: setpreferredRoute, setCurrentRoute } = useContext(NavigationContext)
 
   return (
     <Wrapper>

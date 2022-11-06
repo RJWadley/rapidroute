@@ -12,21 +12,18 @@ const Scoped = styled.div`
 
   h1 {
     font-size: 2rem;
-    line-height: 2rem;
     font-weight: bold;
     margin: 0;
   }
 
   h2 {
     font-size: 1.5rem;
-    line-height: 1.5rem;
     font-weight: bold;
     margin: 30px 0;
   }
 
   h3 {
     font-size: 1.25rem;
-    line-height: 1.25rem;
     font-weight: bold;
     margin: 20px 0;
   }
@@ -58,7 +55,6 @@ const Scoped = styled.div`
 
   .title {
     font-size: 2em;
-    line-height: 2em;
     position: relative;
   }
 

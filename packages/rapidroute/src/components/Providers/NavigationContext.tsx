@@ -23,7 +23,7 @@ export const NavigationContext = createContext<{
    * The route the navigation system is using to give directions.
    * This often differs from the current route, since it won't update until
    * the user has reached a point of interest
-   *
+   * 
    * (for example, while moving from stop to stop on an MRT line, updates are suppressed)
    */
   spokenRoute: SegmentType[]

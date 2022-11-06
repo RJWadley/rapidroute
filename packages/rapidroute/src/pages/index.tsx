@@ -35,7 +35,6 @@ export function Head() {
 const Title = styled.div`
   text-align: center;
   font-size: 40px;
-  line-height: 40px;
   margin-top: 200px;
   margin-bottom: 50px;
 `

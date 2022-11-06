@@ -101,7 +101,6 @@ export const Name = styled.div`
   font-family: "Inter";
   font-weight: 700;
   font-size: var(--medium);
-  line-height: var(--medium);
 `
 
 export const RouteNumber = styled.div`
@@ -109,12 +108,10 @@ export const RouteNumber = styled.div`
   font-style: normal;
   font-weight: 400;
   font-size: var(--small);
-  line-height: var(--small);
 `
 
 export const LongNames = styled.div`
   font-size: var(--small);
-  line-height: var(--small);
 `
 
 export const Symbols = styled.div<{
@@ -124,7 +121,6 @@ export const Symbols = styled.div<{
   justify-content: space-between;
   align-items: center;
   font-size: var(--large);
-  line-height: var(--large);
   font-weight: 700;
   white-space: pre;
   gap: 10px;
@@ -151,6 +147,5 @@ export const Symbols = styled.div<{
 
 export const GateNumber = styled.div`
   font-size: var(--small);
-  line-height: var(--small);
   font-weight: 400;
 `

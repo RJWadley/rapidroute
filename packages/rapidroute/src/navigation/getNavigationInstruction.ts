@@ -98,7 +98,7 @@ export default async function getNavigationInstruction(
    * If we're transferring, say "Transfer to <line> at <station>"
    * otherwise, say "Walk to <station>"
    */
-  if (!segment.routes.length)
+  if (!segment.routes.length) 
     return `${
       segment.from.type === "MRT Station" && segment.to.type === "MRT Station"
         ? "transfer"
@@ -141,7 +141,9 @@ export default async function getNavigationInstruction(
      * If there are multiple flights, first say the destination airport, then
      * list the number of flights and information about each flight
      */
-    let output = `take any flight to ${segment.to.shortName}. You have ${segment.routes.length} options:`
+    let output = `take any flight to ${segment.to.shortName}. You have ${
+      segment.routes.length
+    } options:`
 
     const addToList = (
       last: boolean,
@@ -153,7 +155,7 @@ export default async function getNavigationInstruction(
         gate ? `at ${gate}` : ""
       }. `
     }
-
+    
     // actual fetching of flight information happens here
     const proms: Promise<unknown>[] = []
     for (let i = 0; i < segment.routes.length; i += 1) {

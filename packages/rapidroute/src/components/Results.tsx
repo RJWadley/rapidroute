@@ -172,7 +172,6 @@ const OutWrapper = styled.div`
 
 const Message = styled.div<{ show: boolean }>`
   font-size: 2rem;
-  line-height: 2rem;
   font-weight: 700;
   text-align: center;
   margin-top: 100px;
