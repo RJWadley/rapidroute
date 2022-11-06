@@ -13,8 +13,13 @@ import useVoiceNavigation from "./useVoiceNavigation"
  * navigate to a destination, providing voice navigation and updating directions as needed
  */
 export default function useNavigation() {
-  const { currentRoute, setCurrentRoute, spokenRoute, setSpokenRoute } =
-    useContext(NavigationContext)
+  const {
+    currentRoute,
+    setCurrentRoute,
+    spokenRoute,
+    setSpokenRoute,
+    setIsRouteComplete,
+  } = useContext(NavigationContext)
   const { allowedModes } = useContext(RoutingContext)
 
   /**
@@ -84,8 +89,34 @@ export default function useNavigation() {
             resultToSegments(result)
               .then(segments => {
                 /**
+                 * Check if the player has reached the destination (within 200m)
+                 */
+                const lastSegment = segments[segments.length - 1]
+                const playerLocation = session.lastKnownLocation
+                if (playerLocation) {
+                  const { x: fromX, z: fromZ } = playerLocation
+                  const { x: toX, z: toZ } = lastSegment?.to.location || {}
+                  const distance = Math.sqrt(
+                    (fromX - (toX ?? Infinity)) ** 2 +
+                      (fromZ - (toZ ?? Infinity)) ** 2
+                  )
+
+                  if (distance < 200) {
+                    // player has reached the destination
+                    setCurrentRoute(segments)
+                    setIsRouteComplete(true)
+                    session.pointOfInterest = undefined
+                    return
+                  }
+                }
+
+                /**
                  * Update the current route
                  */
+                // first, if the first segment is a walk, remove it
+                if (segments[0].routes.length === 0) {
+                  segments.shift()
+                }
                 setCurrentRoute(segments)
 
                 /**
@@ -118,5 +149,5 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [allowedModes, destinationId, setCurrentRoute])
+  }, [allowedModes, destinationId, setCurrentRoute, setIsRouteComplete])
 }

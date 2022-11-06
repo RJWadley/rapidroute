@@ -1,7 +1,10 @@
+import { useContext } from "react"
+
 import { TtsEngine } from "ttsreader"
 import { useDeepCompareMemo } from "use-deep-compare"
 
 import { SegmentType } from "components/createSegments"
+import { NavigationContext } from "components/Providers/NavigationContext"
 import { isBrowser } from "utils/functions"
 
 import getNavigationInstruction from "./getNavigationInstruction"
@@ -14,8 +17,17 @@ if (isBrowser())
   })
 
 export default function useVoiceNavigation(route: SegmentType[]) {
+  const { isRouteComplete } = useContext(NavigationContext)
+
   useDeepCompareMemo(async () => {
     if (!route.length || !isBrowser()) return
+
+    if (isRouteComplete) {
+      const lastSegment = route[route.length - 1]
+      const { to } = lastSegment
+      TtsEngine.speakOut(`You have arrived at ${to.name}`)
+      return
+    }
 
     const firstSegment = route[0]
     const nextSegment = route[1]
