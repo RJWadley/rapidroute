@@ -7,7 +7,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
 import { stopToNumber } from "components/Segment/getLineDirections"
-import FindPath from "pathfinding/findPath"
+import FindPath, { ResultType } from "pathfinding/findPath"
 import { getLocal, session } from "utils/localUtils"
 
 import useVoiceNavigation from "./useVoiceNavigation"
@@ -30,6 +30,7 @@ export default function useNavigation() {
     spokenRoute,
     setSpokenRoute,
     setNavigationComplete,
+    preferredRoute,
   } = useContext(NavigationContext)
   const { allowedModes } = useContext(RoutingContext)
 
@@ -158,8 +159,27 @@ export default function useNavigation() {
         pathfinder
           .start()
           .then(results => {
-            const result = results[0]
-            resultToSegments(result)
+            // sort the results by distance
+            const sortedResults = results.sort(
+              (a, b) => a.totalCost - b.totalCost
+            )
+
+            // sort the results by how well they match the preferred route
+            // routes gain points for each stop that occurs in the preferred route
+            const calculateScore = (result: ResultType) => {
+              let score = 0
+              result.path.forEach(leg => {
+                if (preferredRoute.includes(leg)) {
+                  score += 1
+                }
+              })
+              return score
+            }
+            const sortedByPreferred = sortedResults.sort(
+              (a, b) => calculateScore(b) - calculateScore(a)
+            )
+
+            resultToSegments(sortedByPreferred[0])
               .then(segments => {
                 /**
                  * if we've reached the destination, but the player is not there,
@@ -245,7 +265,7 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [allowedModes, destinationId, setCurrentRoute, setNavigationComplete])
+  }, [allowedModes, destinationId, preferredRoute, setCurrentRoute, setNavigationComplete])
 
   /**
    * update point of interest on the map
