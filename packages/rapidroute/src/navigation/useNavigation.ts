@@ -178,7 +178,8 @@ export default function useNavigation() {
                     setNavigationComplete(true)
                   else setNavigationComplete(false)
 
-                  return
+                  // if the segment is a walk, don't update the route
+                  if (segments[0].routes.length === 0) return
                 }
 
                 /**

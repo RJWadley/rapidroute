@@ -9,7 +9,7 @@ import getTimeToInstruction from "./timeToInstruction"
 import { twoMinuteWarning } from "./useVoiceNavigation"
 
 export default function Countdown() {
-  const { spokenRoute } = useContext(NavigationContext)
+  const { currentRoute } = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -19,12 +19,12 @@ export default function Countdown() {
    * and update the time to instruction
    */
   useDeepCompareEffect(() => {
-    if (spokenRoute.length === 0) return undefined
+    if (currentRoute.length === 0) return undefined
     let mounted = true
     const updateTimer = () => {
       if (!mounted) return
 
-      const time = Math.round(getTimeToInstruction(spokenRoute[0]))
+      const time = Math.round(getTimeToInstruction(currentRoute[0]))
       setTimeToInstruction(Math.max(time, 0))
       setCurrentTime(p => Math.max(0, p - 1))
 
@@ -35,7 +35,7 @@ export default function Countdown() {
     return () => {
       mounted = false
     }
-  }, [spokenRoute])
+  }, [currentRoute])
 
   /**
    * update the timer interval if the time to instruction changes

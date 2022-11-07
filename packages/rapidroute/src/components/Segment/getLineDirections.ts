@@ -73,14 +73,19 @@ export const getLineDirection = (fromStop: string, toStop: string) => {
     const numberOfStops = circleLines[lineCode]
     const distanceBetweenStops = Math.abs(fromStopNumber - toStopNumber)
     const distanceAroundCircle = numberOfStops - distanceBetweenStops
-    const isShortestDistanceAroundCircle = distanceBetweenStops > distanceAroundCircle
+    const isShortestDistanceAroundCircle =
+      distanceBetweenStops > distanceAroundCircle
 
     const aroundCircleDirection = fromIsBigger
       ? "Clockwise"
       : "Counter-Clockwise"
-    const betweenStopsDirection = fromIsBigger ? "Counter-Clockwise" : "Clockwise"
+    const betweenStopsDirection = fromIsBigger
+      ? "Counter-Clockwise"
+      : "Clockwise"
 
-    return isShortestDistanceAroundCircle ? aroundCircleDirection : betweenStopsDirection
+    return isShortestDistanceAroundCircle
+      ? aroundCircleDirection
+      : betweenStopsDirection
   }
 
   // if we don't know the line, we can't determine the direction

@@ -121,9 +121,10 @@ export default function SingleRoute({
           </div>
         </ProviderName>
         <LongNames>
-          {segment.from.name} {
-            route?.type === "MRT" && getLineDirection(segment.from.shortName, segment.to.shortName)
-          } to <br />
+          {segment.from.name}{" "}
+          {route?.type === "MRT" &&
+            getLineDirection(segment.from.shortName, segment.to.shortName)}{" "}
+          to <br />
           {segment.to.name}
         </LongNames>
       </Left>
