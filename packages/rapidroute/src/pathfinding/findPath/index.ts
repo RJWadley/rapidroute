@@ -26,7 +26,7 @@ export default class Pathfinder {
 
   EXTRA_TIME = 100
 
-  distanceTravelled = 0
+  distanceTraveled = 0
 
   cancelled = false
 
@@ -41,7 +41,7 @@ export default class Pathfinder {
   }
 
   getPercentComplete() {
-    return this.distanceTravelled / (this.maxCost - this.EXTRA_TIME)
+    return this.distanceTraveled / (this.maxCost - this.EXTRA_TIME)
   }
 
   async start(preventReverse = false): Promise<ResultType[]> {
@@ -101,8 +101,8 @@ export default class Pathfinder {
       }
 
       this.updateMaxCost(nodes, current, costSoFar[current])
-      this.distanceTravelled = Math.max(
-        this.distanceTravelled,
+      this.distanceTraveled = Math.max(
+        this.distanceTraveled,
         costSoFar[current]
       )
 

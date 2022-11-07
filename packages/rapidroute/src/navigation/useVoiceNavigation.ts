@@ -1,5 +1,6 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 
+import { PlaceType } from "@rapidroute/database-types"
 import { TtsEngine } from "ttsreader"
 import { useDeepCompareMemo } from "use-deep-compare"
 
@@ -9,9 +10,19 @@ import NeutralMP3 from "audio/neutral.mp3"
 import SuccessMP3 from "audio/success.mp3"
 import { SegmentType } from "components/createSegments"
 import { NavigationContext } from "components/Providers/NavigationContext"
+import { stopToNumber } from "components/Segment/getLineDirections"
 import { isBrowser, sleep } from "utils/functions"
+import { session } from "utils/localUtils"
 
 import getNavigationInstruction from "./getNavigationInstruction"
+
+export const CompletionThresholds: Record<PlaceType, number> = {
+  "MRT Station": 100,
+  Airport: 500,
+  City: 500,
+  Coordinate: 100,
+  Other: 100,
+}
 
 if (isBrowser())
   TtsEngine.init({
@@ -61,8 +72,8 @@ export const thirtySecondWarning = () => {
 }
 
 export default function useVoiceNavigation(route: SegmentType[]) {
-  const { navigationComplete } = useContext(NavigationContext)
-
+  const { currentRoute, spokenRoute, setSpokenRoute, navigationComplete } =
+    useContext(NavigationContext)
   /**
    * every time the spoken route changes, speak the next instruction
    */
@@ -113,4 +124,78 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       )
     }
   }, [navigationComplete, route]).catch(console.error)
+
+  /**
+   * Update the spoken route when needed
+   */
+  useEffect(() => {
+    const firstSpoken = spokenRoute[0]
+    const spokenProvider = firstSpoken?.routes[0]?.provider
+    const spokenNumber = stopToNumber(firstSpoken?.from.uniqueId)
+
+    const firstCurrent = currentRoute[0]
+    const currentProvider = firstCurrent?.routes[0]?.provider
+    const currentNumber = stopToNumber(firstCurrent?.from.uniqueId)
+    const destinationNumber = stopToNumber(firstSpoken?.to.uniqueId)
+
+    // for MRT lines
+    if (firstSpoken && firstCurrent) {
+      // we are still going to the same stop
+      if (firstSpoken.to.uniqueId === firstCurrent.to.uniqueId) {
+        // and are still on the same line
+        if (spokenProvider === currentProvider) {
+          // and we are still within the bounds of the route we spoke
+          if (
+            (spokenNumber < currentNumber &&
+              currentNumber < destinationNumber) ||
+            (spokenNumber > currentNumber && currentNumber > destinationNumber)
+          ) {
+            // the spoken route is still valid
+            return undefined
+          }
+        }
+      }
+    }
+
+    const distanceBetweenLocs = Math.sqrt(
+      ((firstSpoken?.to?.location?.x ?? Infinity) -
+        (firstCurrent?.from?.location?.x ?? Infinity)) **
+        2 +
+        ((firstSpoken?.to?.location?.z ?? Infinity) -
+          (firstCurrent?.from?.location?.z ?? Infinity)) **
+          2
+    )
+
+    // check if the system has rerouted us before we get to the destination
+    // if the new from location is the same as the old to location
+    if (
+      firstSpoken &&
+      firstCurrent &&
+      // either the id's match
+      (firstSpoken.to.uniqueId === firstCurrent.from.uniqueId ||
+        // or they are within a reasonable distance of each other
+        distanceBetweenLocs <
+          Math.max(
+            CompletionThresholds[firstSpoken.to.type],
+            CompletionThresholds[firstCurrent.from.type]
+          ))
+    ) {
+      // and we are too far away from that location
+      const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
+      const { x: toX, z: toZ } = firstSpoken.to.location || {}
+      const distance = Math.sqrt(
+        ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
+          ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
+      )
+
+      if (distance > CompletionThresholds[firstSpoken.to.type]) {
+        // we are not close enough to the destination to be considered there
+        // so leave the spoken route as is
+        return undefined
+      }
+    }
+
+    // if we reach this point, the spoken route is no longer valid and we need to update it
+    return setSpokenRoute(currentRoute)
+  }, [currentRoute, setSpokenRoute, spokenRoute])
 }

@@ -10,7 +10,7 @@ import getTimeToInstruction from "./timeToInstruction"
 import { thirtySecondWarning, twoMinuteWarning } from "./useVoiceNavigation"
 
 export default function Countdown() {
-  const { currentRoute, spokenRoute} = useContext(NavigationContext)
+  const { currentRoute, spokenRoute } = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -18,7 +18,7 @@ export default function Countdown() {
   /**
    * decrease the current time once per second
    * and update the time to instruction
-   * 
+   *
    * use the spoken route for segment and the current route for calculating the number of stops
    */
   useDeepCompareEffect(() => {

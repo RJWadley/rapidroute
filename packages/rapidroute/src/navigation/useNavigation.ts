@@ -1,24 +1,13 @@
 /* eslint-disable no-console */
 import { useCallback, useContext, useEffect, useRef } from "react"
 
-import { PlaceType } from "@rapidroute/database-types"
-
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
-import { stopToNumber } from "components/Segment/getLineDirections"
 import FindPath, { ResultType } from "pathfinding/findPath"
 import { getLocal, session } from "utils/localUtils"
 
-import useVoiceNavigation from "./useVoiceNavigation"
-
-const CompletionThresholds: Record<PlaceType, number> = {
-  "MRT Station": 100,
-  Airport: 500,
-  City: 500,
-  Coordinate: 100,
-  Other: 100,
-}
+import useVoiceNavigation, { CompletionThresholds } from "./useVoiceNavigation"
 
 /**
  * navigate to a destination, providing voice navigation and updating directions as needed
@@ -54,88 +43,6 @@ export default function useNavigation() {
       setSpokenRoute(currentRoute)
     }
   }, [currentRoute, setSpokenRoute])
-
-  /**
-   * Update the spoken route when needed
-   */
-  useEffect(() => {
-    const firstSpoken = spokenRoute[0]
-    const spokenProvider = firstSpoken?.routes[0]?.provider
-    const spokenNumber = stopToNumber(firstSpoken?.from.uniqueId)
-
-    const firstCurrent = currentRoute[0]
-    const currentProvider = firstCurrent?.routes[0]?.provider
-    const currentNumber = stopToNumber(firstCurrent?.from.uniqueId)
-    const destinationNumber = stopToNumber(firstSpoken?.to.uniqueId)
-
-    // for MRT lines
-    if (firstSpoken && firstCurrent) {
-      // we are still going to the same stop
-      if (firstSpoken.to.uniqueId === firstCurrent.to.uniqueId) {
-        // and are still on the same line
-        if (spokenProvider === currentProvider) {
-          // and we are still within the bounds of the route we spoke
-          console.log(
-            "spokenNumber",
-            spokenNumber,
-            "currentNumber",
-            currentNumber,
-            "destinationNumber",
-            destinationNumber
-          )
-          if (
-            (spokenNumber < currentNumber &&
-              currentNumber < destinationNumber) ||
-            (spokenNumber > currentNumber && currentNumber > destinationNumber)
-          ) {
-            // the spoken route is still valid
-            return undefined
-          }
-        }
-      }
-    }
-
-    const distanceBetweenLocs = Math.sqrt(
-      ((firstSpoken?.to?.location?.x ?? Infinity) -
-        (firstCurrent?.from?.location?.x ?? Infinity)) **
-        2 +
-        ((firstSpoken?.to?.location?.z ?? Infinity) -
-          (firstCurrent?.from?.location?.z ?? Infinity)) **
-          2
-    )
-
-    // check if the system has rerouted us before we get to the destination
-    // if the new from location is the same as the old to location
-    if (
-      firstSpoken &&
-      firstCurrent &&
-      // either the id's match
-      (firstSpoken.to.uniqueId === firstCurrent.from.uniqueId ||
-        // or they are within a reasonable distance of each other
-        distanceBetweenLocs <
-          Math.max(
-            CompletionThresholds[firstSpoken.to.type],
-            CompletionThresholds[firstCurrent.from.type]
-          ))
-    ) {
-      // and we are too far away from that location
-      const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
-      const { x: toX, z: toZ } = firstSpoken.to.location || {}
-      const distance = Math.sqrt(
-        ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
-          ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
-      )
-
-      if (distance > CompletionThresholds[firstSpoken.to.type]) {
-        // we are not close enough to the destination to be considered there
-        // so leave the spoken route as is
-        return undefined
-      }
-    }
-
-    // if we reach this point, the spoken route is no longer valid and we need to update it
-    return setSpokenRoute(currentRoute)
-  }, [currentRoute, setSpokenRoute, spokenRoute])
 
   /**
    * Keep the current route up to date
@@ -265,7 +172,13 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [allowedModes, destinationId, preferredRoute, setCurrentRoute, setNavigationComplete])
+  }, [
+    allowedModes,
+    destinationId,
+    preferredRoute,
+    setCurrentRoute,
+    setNavigationComplete,
+  ])
 
   /**
    * update point of interest on the map
