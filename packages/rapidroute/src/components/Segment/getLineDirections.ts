@@ -1,7 +1,14 @@
 const westEastLines = ["X", "N", "S", "L"]
 const northSouthLines = ["Z", "E", "J", "W"]
 const inOutLines = ["A", "T", "I", "M", "D", "P", "V", "H", "F"]
-const circleLines = ["C"]
+// Record of id to number of stops so that we can determine which direction around the circle is the shortest
+const circleLines = {
+  C: 120, // 119 stations
+}
+
+const isCircleLineKey = (key: string): key is keyof typeof circleLines => {
+  return key in circleLines
+}
 
 /**
  * takes a the name of an MRT station and returns the number of the
@@ -28,37 +35,27 @@ export const stopToNumber = (stop: string | undefined) => {
  */
 export const getLineDirection = (fromStop: string, toStop: string) => {
   const lineCode = fromStop[0]
-  const lineModifier = fromStop[1]
+  const fromLineModifier = fromStop[1]
   const toLineModifier = toStop[1]
 
-  const fromStopNumber = stopToNumber(fromStop)
-  const toStopNumber = stopToNumber(toStop)
+  let fromStopNumber = stopToNumber(fromStop)
+  let toStopNumber = stopToNumber(toStop)
+  if (["S", "W"].includes(fromLineModifier)) fromStopNumber *= -1
+  if (["S", "W"].includes(toLineModifier)) toStopNumber *= -1
   const fromIsBigger = fromStopNumber > toStopNumber
 
   /**
    * handle east-west lines
    */
   if (westEastLines.includes(lineCode)) {
-    if (lineModifier === "E") {
-      return fromIsBigger ? "Eastbound" : "Westbound"
-    }
-    if (lineModifier === "W") {
-      return fromIsBigger ? "Westbound" : "Eastbound"
-    }
-    return toLineModifier === "E" ? "Eastbound" : "Westbound"
+    return fromIsBigger ? "Westbound" : "Eastbound"
   }
 
   /**
    * handle north-south lines
    */
   if (northSouthLines.includes(lineCode)) {
-    if (lineModifier === "N") {
-      return fromIsBigger ? "Southbound" : "Northbound"
-    }
-    if (lineModifier === "S") {
-      return fromIsBigger ? "Northbound" : "Southbound"
-    }
-    return toLineModifier === "N" ? "Northbound" : "Southbound"
+    return fromIsBigger ? "Southbound" : "Northbound"
   }
 
   /**
@@ -71,10 +68,21 @@ export const getLineDirection = (fromStop: string, toStop: string) => {
   /**
    * handle circle lines
    */
-  if (circleLines.includes(lineCode)) {
-    return fromIsBigger ? "Counter-Clockwise" : "Clockwise"
+  if (isCircleLineKey(lineCode)) {
+    // if the line is a circle line, we need to determine which direction around the circle is the shortest
+    const numberOfStops = circleLines[lineCode]
+    const distanceBetweenStops = Math.abs(fromStopNumber - toStopNumber)
+    const distanceAroundCircle = numberOfStops - distanceBetweenStops
+    const isShortestDistanceAroundCircle = distanceBetweenStops > distanceAroundCircle
+
+    const aroundCircleDirection = fromIsBigger
+      ? "Clockwise"
+      : "Counter-Clockwise"
+    const betweenStopsDirection = fromIsBigger ? "Counter-Clockwise" : "Clockwise"
+
+    return isShortestDistanceAroundCircle ? aroundCircleDirection : betweenStopsDirection
   }
 
-  // if we get here, we don't know the direction
+  // if we don't know the line, we can't determine the direction
   return ""
 }
