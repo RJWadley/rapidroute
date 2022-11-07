@@ -31,9 +31,9 @@ export default function Countdown() {
       const toNumber = stopToNumber(currentRoute[0].to.shortName)
       const numberOfStops = Math.abs(toNumber - fromNumber)
 
-      const time = Math.round(
-        getTimeToInstruction(spokenRoute[0], numberOfStops)
-      )
+      const numberToUse = Number.isFinite(numberOfStops) ? numberOfStops : 0
+
+      const time = Math.round(getTimeToInstruction(spokenRoute[0], numberToUse))
       setTimeToInstruction(Math.max(time, 0))
       setCurrentTime(p => Math.max(0, p - 1))
 
