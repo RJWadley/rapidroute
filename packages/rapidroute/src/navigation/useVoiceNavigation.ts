@@ -123,15 +123,16 @@ export default function useVoiceNavigation(route: SegmentType[]) {
   }, [navigationComplete, spokenRoute.length]).catch(console.error)
   useEffect(() => {
     if (route.length)
-    youHaveReached.current = `You have reached ${
-      route[route.length - 1]?.to.shortName
-    }, ${route[route.length - 1]?.to.name}`
+      youHaveReached.current = `You have reached ${
+        route[route.length - 1]?.to.shortName
+      }, ${route[route.length - 1]?.to.name}`
   }, [route])
 
   /**
    * Update the spoken route when needed
    */
   useEffect(() => {
+    if (spokenRoute === currentRoute) return
     const firstSpoken = spokenRoute[0]
     const spokenProvider = firstSpoken?.routes[0]?.provider
     const spokenNumber = stopToNumber(firstSpoken?.from.uniqueId)
@@ -154,7 +155,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
             (spokenNumber > currentNumber && currentNumber > destinationNumber)
           ) {
             // the spoken route is still valid
-            return undefined
+            return
           }
         }
       }
@@ -194,11 +195,15 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       if (distance > CompletionThresholds[firstSpoken.to.type]) {
         // we are not close enough to the destination to be considered there
         // so leave the spoken route as is
-        return undefined
+        return
       }
     }
 
+    // check if the routes are identical except for the first segment's from location
+    if (spokenRoute.every((segment, i) => segment.to === currentRoute[i]?.to))
+      return
+
     // if we reach this point, the spoken route is no longer valid and we need to update it
-    return setSpokenRoute(currentRoute)
+    setSpokenRoute(currentRoute)
   }, [currentRoute, setSpokenRoute, spokenRoute])
 }
