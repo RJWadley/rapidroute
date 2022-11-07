@@ -1,7 +1,10 @@
+import { useContext } from "react"
+
 import { TtsEngine } from "ttsreader"
 import { useDeepCompareMemo } from "use-deep-compare"
 
 import { SegmentType } from "components/createSegments"
+import { NavigationContext } from "components/Providers/NavigationContext"
 import { isBrowser } from "utils/functions"
 
 import getNavigationInstruction from "./getNavigationInstruction"
@@ -21,8 +24,18 @@ export const twoMinuteWarning = () => {
     canSayTwoMinuteWarning = false
   }
 }
+let thirtySecondWarningPhrase = "Thirty second warning"
+let canSayThirtySecondWarning = true
+export const thirtySecondWarning = () => {
+  if (canSayThirtySecondWarning) {
+    TtsEngine.speakOut(thirtySecondWarningPhrase)
+    canSayThirtySecondWarning = false
+  }
+}
 
 export default function useVoiceNavigation(route: SegmentType[]) {
+  const { navigationComplete } = useContext(NavigationContext)
+
   /**
    * every time the spoken route changes, speak the next instruction
    */
@@ -43,6 +56,10 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       : ""
     twoMinuteWarningPhrase = newTwoMinuteWarning
     canSayTwoMinuteWarning = true
+    const newThirtySecondWarning = nextInstruction
+      ? `At the next stop, ${nextInstruction}`
+      : ""
+    thirtySecondWarningPhrase = newThirtySecondWarning
 
     if (firstInstruction && nextInstruction)
       TtsEngine.speakOut(`${firstInstruction}, then ${nextInstruction}`)
@@ -50,4 +67,18 @@ export default function useVoiceNavigation(route: SegmentType[]) {
   }, [route]).catch(e => {
     console.error("Error in voice navigation", e)
   })
+
+  /**
+   * when the navigation is complete, say so
+   */
+  useDeepCompareMemo(() => {
+    if (navigationComplete)
+      TtsEngine.speakOut(
+        `Navigation complete, you have reached ${
+          route[route.length - 1].to.shortName
+        }, ${
+          route[route.length - 1].to.name
+        }`
+      )
+  },[navigationComplete, route])
 }

@@ -4,12 +4,13 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import { useDeepCompareEffect } from "use-deep-compare"
 
 import { NavigationContext } from "components/Providers/NavigationContext"
+import { stopToNumber } from "components/Segment/getLineDirections"
 
 import getTimeToInstruction from "./timeToInstruction"
-import { twoMinuteWarning } from "./useVoiceNavigation"
+import { thirtySecondWarning, twoMinuteWarning } from "./useVoiceNavigation"
 
 export default function Countdown() {
-  const { currentRoute } = useContext(NavigationContext)
+  const { currentRoute, spokenRoute} = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -17,14 +18,22 @@ export default function Countdown() {
   /**
    * decrease the current time once per second
    * and update the time to instruction
+   * 
+   * use the spoken route for segment and the current route for calculating the number of stops
    */
   useDeepCompareEffect(() => {
-    if (currentRoute.length === 0) return undefined
+    if (currentRoute.length === 0 || spokenRoute.length === 0) return undefined
     let mounted = true
     const updateTimer = () => {
       if (!mounted) return
 
-      const time = Math.round(getTimeToInstruction(currentRoute[0]))
+      const fromNumber = stopToNumber(currentRoute[0].from.shortName)
+      const toNumber = stopToNumber(currentRoute[0].to.shortName)
+      const numberOfStops = Math.abs(toNumber - fromNumber)
+
+      const time = Math.round(
+        getTimeToInstruction(spokenRoute[0], numberOfStops)
+      )
       setTimeToInstruction(Math.max(time, 0))
       setCurrentTime(p => Math.max(0, p - 1))
 
@@ -35,7 +44,7 @@ export default function Countdown() {
     return () => {
       mounted = false
     }
-  }, [currentRoute])
+  }, [currentRoute, spokenRoute])
 
   /**
    * update the timer interval if the time to instruction changes
@@ -89,6 +98,9 @@ export default function Countdown() {
   useEffect(() => {
     if (currentTime === 120) {
       twoMinuteWarning()
+    }
+    if (currentTime === 30) {
+      thirtySecondWarning()
     }
   }, [currentTime])
 
