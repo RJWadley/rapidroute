@@ -31,7 +31,7 @@ export default function Segment({
   const isWarp =
     initialAllowedModes.current.includes("spawnWarp") &&
     walkingRoute &&
-    (segment.from.uniqueId === "A0" || segment.to.uniqueId === "A0")
+    (segment.from.uniqueId === "Spawn" || segment.to.uniqueId === "Spawn")
 
   if (isWarp)
     return (

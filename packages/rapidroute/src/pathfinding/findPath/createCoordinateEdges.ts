@@ -35,6 +35,7 @@ export default async function createCoordinateEdges(
       return [
         { from: id, to, weight, mode: "walk" } as const,
         { to: id, from: to, weight, mode: "walk" } as const,
+        { from: id, to: "Spawn", weight: 120, mode: "spawnWarp" },
       ]
     })
 

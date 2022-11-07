@@ -80,7 +80,7 @@ export const rawEdges = getAll("pathfinding").then(data => {
           x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
         return { to, distance }
       })
-      // only include locations which have at least one route availabe at them
+      // only include locations which have at least one route available at them
       .filter(({ to }) => {
         const shortTypes = shortHandMapKeys
         return shortTypes.some(routeTypeShort => {
@@ -116,24 +116,24 @@ export const rawEdges = getAll("pathfinding").then(data => {
     if (isWarp) {
       return [
         {
-          from: "A0",
+          from: "Spawn",
           to: placeId,
-          weight: 500,
+          weight: 120,
           mode: "spawnWarp",
         },
         {
-          to: "A0",
+          to: "Spawn",
           from: placeId,
-          weight: 500,
+          weight: 120,
           mode: "spawnWarp",
         },
       ]
     }
     return [
       {
-        to: "A0",
+        to: "Spawn",
         from: placeId,
-        weight: 500,
+        weight: 120,
         mode: "spawnWarp",
       },
     ]
