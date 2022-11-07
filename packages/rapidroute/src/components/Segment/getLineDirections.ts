@@ -24,7 +24,11 @@ export const stopToNumber = (stop: string | undefined) => {
   if (stop === "MW") return -0.2
 
   // remove all non-numeric characters, then parse the number
-  return parseInt(stop.replace(/\D/g, ""), 10)
+  const rawNumber = parseInt(stop.replace(/\D/g, ""), 10)
+
+  // if S or W, then the number is negative
+  if (stop[1] === "S" || stop[1] === "W") return -rawNumber
+  return rawNumber
 }
 
 /**
@@ -35,13 +39,9 @@ export const stopToNumber = (stop: string | undefined) => {
  */
 export const getLineDirection = (fromStop: string, toStop: string) => {
   const lineCode = fromStop[0]
-  const fromLineModifier = fromStop[1]
-  const toLineModifier = toStop[1]
 
-  let fromStopNumber = stopToNumber(fromStop)
-  let toStopNumber = stopToNumber(toStop)
-  if (["S", "W"].includes(fromLineModifier)) fromStopNumber *= -1
-  if (["S", "W"].includes(toLineModifier)) toStopNumber *= -1
+  const fromStopNumber = stopToNumber(fromStop)
+  const toStopNumber = stopToNumber(toStop)
   const fromIsBigger = fromStopNumber > toStopNumber
 
   /**

@@ -74,6 +74,14 @@ export default function useNavigation() {
         // and are still on the same line
         if (spokenProvider === currentProvider) {
           // and we are still within the bounds of the route we spoke
+          console.log(
+            "spokenNumber",
+            spokenNumber,
+            "currentNumber",
+            currentNumber,
+            "destinationNumber",
+            destinationNumber
+          )
           if (
             (spokenNumber < currentNumber &&
               currentNumber < destinationNumber) ||
@@ -109,7 +117,6 @@ export default function useNavigation() {
             CompletionThresholds[firstCurrent.from.type]
           ))
     ) {
-      console.log("locations match")
       // and we are too far away from that location
       const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
       const { x: toX, z: toZ } = firstSpoken.to.location || {}
@@ -119,17 +126,10 @@ export default function useNavigation() {
       )
 
       if (distance > CompletionThresholds[firstSpoken.to.type]) {
-        console.log("distance too far")
         // we are not close enough to the destination to be considered there
         // so leave the spoken route as is
         return undefined
       }
-      console.log("we are close enough to the destination")
-    } else {
-      console.log("locations do not match")
-      console.log("firstSpoken", firstSpoken)
-      console.log("firstCurrent", firstCurrent)
-      console.log("distanceBetweenLocs", distanceBetweenLocs)
     }
 
     // if we reach this point, the spoken route is no longer valid and we need to update it
@@ -199,14 +199,11 @@ export default function useNavigation() {
                       newWalk &&
                       thirdSegment.from.uniqueId === newWalk.to.uniqueId
                     ) {
-                      console.log("using previous walk")
                       return [previousWalk, ...segments]
                     }
-                    console.log("not using previous walk")
                     return segments
                   })
                 } else {
-                  console.log("first segment is not a walk")
                   setCurrentRoute(segments)
                 }
               })
@@ -240,7 +237,6 @@ export default function useNavigation() {
    * update point of interest on the map
    */
   const updatePointOfInterest = useCallback(() => {
-    console.log("updatePointOfInterest")
     // point of interest is the from location if we're there, otherwise the to location
     const firstSpoken = spokenRoute[0]
     if (!firstSpoken) return
@@ -248,9 +244,7 @@ export default function useNavigation() {
     // if this is a walk, we want to use the to location always
     if (firstSpoken.routes.length === 0) {
       session.pointOfInterest = firstSpoken.to.location
-      console.log(
-        `point of interest is the to location${firstSpoken.to.shortName}`
-      )
+
       return
     }
 
@@ -260,16 +254,9 @@ export default function useNavigation() {
       ((playerX ?? Infinity) - (locationX ?? Infinity)) ** 2 +
         ((playerZ ?? Infinity) - (locationZ ?? Infinity)) ** 2
     )
-    console.log("distanceToStart", distance)
     if (distance < CompletionThresholds[firstSpoken?.from.type]) {
-      console.log(
-        `we are close enough to the start, using from${firstSpoken.from.shortName}`
-      )
       session.pointOfInterest = firstSpoken?.from.location
     } else {
-      console.log(
-        `we are not close enough to the start, using to ${firstSpoken?.to.shortName}`
-      )
       session.pointOfInterest = firstSpoken?.to.location
     }
   }, [spokenRoute])
