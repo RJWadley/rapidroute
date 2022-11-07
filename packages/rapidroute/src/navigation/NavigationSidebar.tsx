@@ -32,9 +32,13 @@ export default function NavigationSidebar() {
 
   return (
     <Wrapper>
-      {followedRoute.map(segment => {
+      {followedRoute.map((segment, i) => {
         return (
-          <Segment forceMobile segment={segment} key={segment.to.uniqueId} />
+          <Segment
+            forceMobile
+            segment={segment}
+            key={`${segment.to.uniqueId}-${i + 1}`}
+          />
         )
       })}
       <div ref={scrollMarker} />

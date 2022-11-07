@@ -97,8 +97,12 @@ export default function useNavigation() {
       firstCurrent &&
       // either the id's match
       (firstSpoken.to.uniqueId === firstCurrent.from.uniqueId ||
-        // or they are within 100m of each other
-        distanceBetweenLocs < 100)
+        // or they are within a reasonable distance of each other
+        distanceBetweenLocs <
+          Math.max(
+            CompletionThresholds[firstSpoken.to.type],
+            CompletionThresholds[firstCurrent.from.type]
+          ))
     ) {
       console.log("locations match")
       // and we are too far away from that location
