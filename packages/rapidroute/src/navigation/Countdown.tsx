@@ -24,7 +24,6 @@ export default function Countdown() {
       if (!mounted) return
 
       const time = Math.round(getTimeToInstruction(spokenRoute[0]))
-      // TODO time adjustment +- 10 seconds
       setTimeToInstruction(Math.max(time, 0))
       setCurrentTime(p => Math.max(0, p - 1))
 

@@ -13,7 +13,8 @@ const inObject = <K extends string, O>(key: K, object: O): key is K & keyof O =>
 export default function getTimeToInstruction(segment: SegmentType) {
   const fromNumber = stopToNumber(segment.from.shortName)
   const toNumber = stopToNumber(segment.to.shortName)
-  const numberOfStops = Math.abs(fromNumber - toNumber) - 1
+  let numberOfStops = Math.abs(fromNumber - toNumber) - 1
+  if (numberOfStops === 1) numberOfStops = 0
 
   const mode = segment.routes[0]?.type ?? "walk"
   const fromCoords = session.lastKnownLocation ?? { x: Infinity, z: Infinity }
