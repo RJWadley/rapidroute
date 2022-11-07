@@ -1,8 +1,7 @@
 import { SegmentType } from "components/createSegments"
+import { stopToNumber } from "components/Segment/getLineDirections"
 import { SPEEDS } from "pathfinding/findPath/getRouteTime"
 import { session } from "utils/localUtils"
-
-import { stopToNumber } from "./getNavigationInstruction"
 
 const inObject = <K extends string, O>(key: K, object: O): key is K & keyof O =>
   key in object

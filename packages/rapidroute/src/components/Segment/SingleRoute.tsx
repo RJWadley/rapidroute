@@ -8,6 +8,7 @@ import { darkModeContext } from "components/Providers/DarkMode"
 import invertLightness from "utils/invertLightness"
 import media from "utils/media"
 
+import { getLineDirection } from "./getLineDirections"
 import getProvider from "./getProvider"
 import {
   Wrapper,
@@ -120,7 +121,9 @@ export default function SingleRoute({
           </div>
         </ProviderName>
         <LongNames>
-          {segment.from.name} to <br />
+          {segment.from.name} {
+            route?.type === "MRT" && getLineDirection(segment.from.shortName, segment.to.shortName)
+          } to <br />
           {segment.to.name}
         </LongNames>
       </Left>

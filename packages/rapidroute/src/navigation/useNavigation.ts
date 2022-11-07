@@ -6,10 +6,10 @@ import { PlaceType } from "@rapidroute/database-types"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
+import { stopToNumber } from "components/Segment/getLineDirections"
 import FindPath from "pathfinding/findPath"
 import { getLocal, session } from "utils/localUtils"
 
-import { stopToNumber } from "./getNavigationInstruction"
 import useVoiceNavigation from "./useVoiceNavigation"
 
 const CompletionThresholds: Record<PlaceType, number> = {
