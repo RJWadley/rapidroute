@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
 import { TtsEngine } from "ttsreader"
@@ -113,17 +113,20 @@ export default function useVoiceNavigation(route: SegmentType[]) {
   /**
    * when the navigation is complete, say so
    */
+  const youHaveReached = useRef("")
   useDeepCompareMemo(async () => {
-    if (navigationComplete) {
+    if (navigationComplete && spokenRoute.length === 1) {
       playSound("complete")
       await sleep(500)
-      TtsEngine.speakOut(
-        `Navigation complete, you have reached ${
-          route[route.length - 1].to.shortName
-        }, ${route[route.length - 1].to.name}`
-      )
+      TtsEngine.speakOut(`Navigation complete. ${youHaveReached.current}`)
     }
-  }, [navigationComplete, route]).catch(console.error)
+  }, [navigationComplete, spokenRoute.length]).catch(console.error)
+  useEffect(() => {
+    if (route.length)
+    youHaveReached.current = `You have reached ${
+      route[route.length - 1]?.to.shortName
+    }, ${route[route.length - 1]?.to.name}`
+  }, [route])
 
   /**
    * Update the spoken route when needed

@@ -105,8 +105,13 @@ export default function useNavigation() {
                     setNavigationComplete(true)
                   else setNavigationComplete(false)
 
-                  // if the segment is a walk, don't update the route
-                  if (segments[0].routes.length === 0) return
+                  // if the segment is a walk, use the last segment from the previous route
+                  if (
+                    segments[0].routes.length === 0
+                  ) {
+                    setCurrentRoute(previous => previous.slice(-1))
+                    return
+                  }
                 }
 
                 /**

@@ -1,12 +1,11 @@
 /* eslint-disable no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
-import isCoordinate from "data/isCoordinate"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
 import loadRoute from "utils/loadRoute"
 import { getLocal } from "utils/localUtils"
 
-import createCoordinateEdges from "./createCoordinateEdges"
+import { generateAllCoordinateEdges } from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"
 import { GraphEdge, rawEdges, rawNodes } from "./mapEdges"
 import { getDistance, throttle } from "./pathUtil"
@@ -67,23 +66,7 @@ export default class Pathfinder {
     }
     console.log("starting pathfinding from", this.from, "to", this.to)
 
-    // create coordinate edges if needed
-    if (isCoordinate(this.from)) {
-      const [x, z] = this.from
-        .replace("Coordinate:", "")
-        .split(",")
-        .map(n => Number(n))
-      const coordinateEdges = await createCoordinateEdges(this.from, x, z)
-      edges.push(...coordinateEdges)
-    }
-    if (isCoordinate(this.to)) {
-      const [x, z] = this.to
-        .replace("Coordinate:", "")
-        .split(",")
-        .map(n => Number(n))
-      const coordinateEdges = await createCoordinateEdges(this.to, x, z)
-      edges.push(...coordinateEdges)
-    }
+    edges.push(...(await generateAllCoordinateEdges(this.from, this.to)))
 
     frontier.enqueue(this.from, 0)
     costSoFar[this.from] = 0
