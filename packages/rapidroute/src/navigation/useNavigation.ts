@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { useContext, useEffect, useRef } from "react"
+import { useCallback, useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
 
@@ -218,4 +218,51 @@ export default function useNavigation() {
       clearInterval(interval)
     }
   }, [allowedModes, destinationId, setCurrentRoute])
+
+  /**
+   * update point of interest on the map
+   */
+  const updatePointOfInterest = useCallback(() => {
+    console.log("updatePointOfInterest")
+    // point of interest is the from location if we're there, otherwise the to location
+    const firstSpoken = spokenRoute[0]
+    if (!firstSpoken) return
+
+    // if this is a walk, we want to use the to location always
+    if (firstSpoken.routes.length === 0) {
+      session.pointOfInterest = firstSpoken.to.location
+      console.log(
+        `point of interest is the to location${firstSpoken.to.shortName}`
+      )
+      return
+    }
+
+    const { x: playerX, z: playerZ } = session.lastKnownLocation || {}
+    const { x: locationX, z: locationZ } = firstSpoken?.from.location || {}
+    const distance = Math.sqrt(
+      ((playerX ?? Infinity) - (locationX ?? Infinity)) ** 2 +
+        ((playerZ ?? Infinity) - (locationZ ?? Infinity)) ** 2
+    )
+    console.log("distanceToStart", distance)
+    if (distance < CompletionThresholds[firstSpoken?.from.type]) {
+      console.log(
+        `we are close enough to the start, using from${firstSpoken.from.shortName}`
+      )
+      session.pointOfInterest = firstSpoken?.from.location
+    } else {
+      console.log(
+        `we are not close enough to the start, using to ${firstSpoken?.to.shortName}`
+      )
+      session.pointOfInterest = firstSpoken?.to.location
+    }
+  }, [spokenRoute])
+
+  // check every 1 seconds
+  useEffect(() => {
+    const interval = setInterval(updatePointOfInterest, 1 * 1000)
+    updatePointOfInterest()
+    return () => {
+      clearInterval(interval)
+    }
+  }, [updatePointOfInterest])
 }
