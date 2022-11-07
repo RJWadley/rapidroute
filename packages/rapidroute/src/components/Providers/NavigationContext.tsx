@@ -31,6 +31,14 @@ export const NavigationContext = createContext<{
    * Update the route the navigation system is using to give directions
    */
   setSpokenRoute: React.Dispatch<React.SetStateAction<SegmentType[]>>
+  /**
+   * navigationComplete is true when the user has reached their destination
+   */
+  navigationComplete: boolean
+  /**
+   * Update navigationComplete
+   */
+  setNavigationComplete: React.Dispatch<React.SetStateAction<boolean>>
 }>({
   preferredRoute: [],
   setPreferredRoute: () => {},
@@ -38,6 +46,8 @@ export const NavigationContext = createContext<{
   setCurrentRoute: () => {},
   spokenRoute: [],
   setSpokenRoute: () => {},
+  navigationComplete: false,
+  setNavigationComplete: () => {},
 })
 
 export function NavigationProvider({
@@ -48,6 +58,7 @@ export function NavigationProvider({
   const [preferredRoute, setPreferredRoute] = useState<string[]>([])
   const [currentRoute, setCurrentRoute] = useState<SegmentType[]>([])
   const [spokenRoute, setSpokenRoute] = useState<SegmentType[]>([])
+  const [navigationComplete, setNavigationComplete] = useState(false)
 
   const value = useMemo(() => {
     return {
@@ -57,8 +68,10 @@ export function NavigationProvider({
       setCurrentRoute,
       spokenRoute,
       setSpokenRoute,
+      navigationComplete,
+      setNavigationComplete,
     }
-  }, [currentRoute, preferredRoute, spokenRoute])
+  }, [currentRoute, navigationComplete, preferredRoute, spokenRoute])
 
   return (
     <NavigationContext.Provider value={value}>

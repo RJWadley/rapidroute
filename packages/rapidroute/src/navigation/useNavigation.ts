@@ -24,8 +24,13 @@ const CompletionThresholds: Record<PlaceType, number> = {
  * navigate to a destination, providing voice navigation and updating directions as needed
  */
 export default function useNavigation() {
-  const { currentRoute, setCurrentRoute, spokenRoute, setSpokenRoute } =
-    useContext(NavigationContext)
+  const {
+    currentRoute,
+    setCurrentRoute,
+    spokenRoute,
+    setSpokenRoute,
+    setNavigationComplete,
+  } = useContext(NavigationContext)
   const { allowedModes } = useContext(RoutingContext)
 
   /**
@@ -161,6 +166,18 @@ export default function useNavigation() {
                  * don't update the route
                  */
                 if (segments.length === 1) {
+                  // check if we've reached the destination
+                  const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
+                  const { x: toX, z: toZ } = segments[0].to.location || {}
+                  const distance = Math.sqrt(
+                    ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
+                      ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
+                  )
+
+                  if (distance < CompletionThresholds[segments[0].to.type])
+                    setNavigationComplete(true)
+                  else setNavigationComplete(false)
+
                   return
                 }
 
@@ -217,7 +234,7 @@ export default function useNavigation() {
     return () => {
       clearInterval(interval)
     }
-  }, [allowedModes, destinationId, setCurrentRoute])
+  }, [allowedModes, destinationId, setCurrentRoute, setNavigationComplete])
 
   /**
    * update point of interest on the map

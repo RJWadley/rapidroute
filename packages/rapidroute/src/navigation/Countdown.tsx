@@ -6,6 +6,7 @@ import { useDeepCompareEffect } from "use-deep-compare"
 import { NavigationContext } from "components/Providers/NavigationContext"
 
 import getTimeToInstruction from "./timeToInstruction"
+import { twoMinuteWarning } from "./useVoiceNavigation"
 
 export default function Countdown() {
   const { spokenRoute } = useContext(NavigationContext)
@@ -81,6 +82,15 @@ export default function Countdown() {
 
     return `${hoursString}${minutesString}${paddedSeconds}`
   }
+
+  /**
+   * give a two-minute warning
+   */
+  useEffect(() => {
+    if (currentTime === 120) {
+      twoMinuteWarning()
+    }
+  }, [currentTime])
 
   return (
     <div>
