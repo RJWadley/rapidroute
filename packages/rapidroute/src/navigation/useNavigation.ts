@@ -169,9 +169,29 @@ export default function useNavigation() {
                  */
                 if (!segments[0].routes.length) {
                   // if the first segment is a walk, remove it
-                  segments.shift()
+                  // UNLESS the walk's destination is the previous third segment's origin
+                  // because that means the walk is part of the original route
+                  // if this is the case, we want to use the walk from the original route
+                  setCurrentRoute(previousRoute => {
+                    const thirdSegment = previousRoute[2]
+                    const previousWalk = previousRoute[1]
+                    const newWalk = segments.shift()
+                    if (
+                      thirdSegment &&
+                      previousWalk &&
+                      newWalk &&
+                      thirdSegment.from.uniqueId === newWalk.to.uniqueId
+                    ) {
+                      console.log("using previous walk")
+                      return [previousWalk, ...segments]
+                    }
+                    console.log("not using previous walk")
+                    return segments
+                  })
+                } else {
+                  console.log("first segment is not a walk")
+                  setCurrentRoute(segments)
                 }
-                setCurrentRoute(segments)
               })
 
               /**
