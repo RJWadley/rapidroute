@@ -10,6 +10,7 @@ import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
 import media from "utils/media"
 import useAnimation from "utils/useAnimation"
+import useMedia from "utils/useMedia"
 
 import { NavigationContext } from "../components/Providers/NavigationContext"
 import Segment from "../components/Segment"
@@ -21,6 +22,7 @@ export default function NavigationSidebar() {
   const isDark = useContext(darkModeContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
   const wrapper = useRef<HTMLDivElement>(null)
+  const mobile = useMedia(media.mobile)
 
   if (isBrowser() && preferredRoute.length === 0) {
     loadRoute("/")
@@ -39,6 +41,8 @@ export default function NavigationSidebar() {
 
   useAnimation(() => {
     gsap.delayedCall(0.5, () => {
+      if (!mobile) return
+
       const elements = Array.from(
         wrapper.current?.querySelectorAll(".segment-followed") || []
       )
@@ -56,7 +60,9 @@ export default function NavigationSidebar() {
         ease: "power3.in",
       })
     })
-  })
+    // need extra deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobile, spokenRoute, followedRoute])
 
   /**
    * when the mouse goes down on the wrapper, enable pointer events
@@ -66,6 +72,7 @@ export default function NavigationSidebar() {
    *
    */
   useEffect(() => {
+    if (!mobile) return undefined
     const onMouseDown = () => {
       gsap.set(wrapper.current, { pointerEvents: "auto" })
     }
@@ -78,7 +85,7 @@ export default function NavigationSidebar() {
       // if the target is the wrapper, then enable pointer events, otherwise disable them
       if (
         e.target === wrapper.current ||
-        e.target instanceof Node && wrapper.current?.contains(e.target)
+        (e.target instanceof Node && wrapper.current?.contains(e.target))
       ) {
         gsap.set(wrapper.current, { pointerEvents: "auto" })
       } else {
@@ -87,7 +94,7 @@ export default function NavigationSidebar() {
     }
 
     const wrapperEl = wrapper.current
-    if (!wrapperEl) return () => {}
+    if (!wrapperEl) return undefined
 
     wrapperEl.addEventListener("mousedown", onMouseDown)
     wrapperEl.addEventListener("mouseup", onMouseUp)
@@ -103,8 +110,9 @@ export default function NavigationSidebar() {
       wrapperEl.removeEventListener("touchend", onMouseUp)
       wrapperEl.removeEventListener("touchcancel", onMouseUp)
       window.removeEventListener("wheel", handleScroll)
+      gsap.set(wrapperEl, { pointerEvents: "auto" })
     }
-  }, [])
+  }, [mobile])
 
   return (
     <Wrapper ref={wrapper}>
