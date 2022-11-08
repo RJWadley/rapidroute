@@ -117,7 +117,7 @@ export default function NavigationSidebar() {
   return (
     <Wrapper ref={wrapper}>
       <ExitNavigation />
-      {spokenRoute.map((segment, i) => {
+      {followedRoute.map((segment, i) => {
         return (
           <SegmentWrapper
             active={false}
