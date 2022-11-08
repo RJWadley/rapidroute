@@ -21,7 +21,7 @@ export default function MultiRoute({
   glassy = false,
 }: SegmentProps) {
   const themeColor = glassy
-    ? "var(--glassy-default-card-background"
+    ? "var(--glassy-default-card-background)"
     : "var(--default-card-background)"
 
   const isMobile = variant === "mobile" || forceMobile
