@@ -4,48 +4,40 @@ import { Link } from "gatsby"
 import styled from "styled-components"
 
 import { NavigationContext } from "components/Providers/NavigationContext"
+import media from "utils/media"
 
 export default function ExitNavigation() {
   const { currentRoute } = useContext(NavigationContext)
 
   const destination = currentRoute[currentRoute.length - 1]?.to
   return (
-    <>
-      <Blurred />
-      <Wrapper>
+    <Wrapper>
         <ExitButton to="/">&times;</ExitButton>
         <Text>
           <Head>Navigation to {destination?.shortName}</Head>
           <Sub>{destination?.name}</Sub>
         </Text>
       </Wrapper>
-    </>
   )
 }
-
-const Blurred = styled.div`
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 350px;
-  height: 80px;
-  z-index: -1; // the blur has to be behind the segments or we get a rendering bug
-  border-radius: 25px;
-  backdrop-filter: blur(3px);
-`
 
 const Wrapper = styled.div`
   background-color: var(--glassy-default-card-background);
   border-radius: 25px;
+  backdrop-filter: blur(3px);
 
-  position: sticky;
+  position: fixed;
   z-index: 2;
-  top: 0;
-  left: 0;
-  width: 100%;
+  top: 20px;
+  left: 20px;
+  width: 350px;
   height: 80px;
   padding: 15px;
   display: flex;
+
+  @media ${media.mobile} {
+    width: calc(100vw - 40px);
+  }
 `
 
 const ExitButton = styled(Link)`

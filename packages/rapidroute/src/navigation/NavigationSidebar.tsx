@@ -7,6 +7,7 @@ import useFollowedRoute from "navigation/useFollowedRoute"
 import useNavigation from "navigation/useNavigation"
 import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
+import media from "utils/media"
 
 import { NavigationContext } from "../components/Providers/NavigationContext"
 import Segment from "../components/Segment"
@@ -72,8 +73,9 @@ const Wrapper = styled.div`
 
   position: fixed;
   left: 20px;
-  top: 20px;
   bottom: 0;
+  top: 0;
+  padding-top: 120px;
   padding-bottom: 20px;
   width: 350px;
   z-index: 1;
@@ -85,7 +87,10 @@ const Wrapper = styled.div`
     display: none;
   }
 
-  border-radius: 25px 25px 0 0;
+  @media ${media.mobile} {
+    width: calc(100vw - 40px);
+    padding-top: 50vh
+  }
 `
 
 const SegmentWrapper = styled.div<{
