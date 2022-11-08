@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react"
 
+import gsap from "gsap"
 import styled from "styled-components"
 
 import { darkModeContext } from "components/Providers/DarkMode"
@@ -8,6 +9,7 @@ import useNavigation from "navigation/useNavigation"
 import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
 import media from "utils/media"
+import useAnimation from "utils/useAnimation"
 
 import { NavigationContext } from "../components/Providers/NavigationContext"
 import Segment from "../components/Segment"
@@ -18,6 +20,7 @@ export default function NavigationSidebar() {
   const { spokenRoute, preferredRoute } = useContext(NavigationContext)
   const isDark = useContext(darkModeContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
+  const wrapper = useRef<HTMLDivElement>(null)
 
   if (isBrowser() && preferredRoute.length === 0) {
     loadRoute("/")
@@ -34,15 +37,85 @@ export default function NavigationSidebar() {
     }
   }, [followedRoute, spokenRoute])
 
+  useAnimation(() => {
+    gsap.delayedCall(0.5, () => {
+      const elements = Array.from(
+        wrapper.current?.querySelectorAll(".segment-followed") || []
+      )
+
+      gsap.to(elements, {
+        y: "-70vh",
+        scrollTrigger: {
+          scroller: wrapper.current,
+          trigger: elements[elements.length - 1],
+          start: "top 70%",
+          end: "bottom 70%",
+          scrub: 1,
+        },
+        stagger: 0.05,
+        ease: "power3.in",
+      })
+    })
+  })
+
+  /**
+   * when the mouse goes down on the wrapper, enable pointer events
+   * when the mouse goes up on the wrapper, disable pointer events
+   *
+   * this is so that we can
+   *
+   */
+  useEffect(() => {
+    const onMouseDown = () => {
+      gsap.set(wrapper.current, { pointerEvents: "auto" })
+    }
+
+    const onMouseUp = () => {
+      gsap.set(wrapper.current, { pointerEvents: "none" })
+    }
+
+    const handleScroll = (e: WheelEvent) => {
+      // if the target is the wrapper, then enable pointer events, otherwise disable them
+      if (
+        e.target === wrapper.current ||
+        e.target instanceof Node && wrapper.current?.contains(e.target)
+      ) {
+        gsap.set(wrapper.current, { pointerEvents: "auto" })
+      } else {
+        gsap.set(wrapper.current, { pointerEvents: "none" })
+      }
+    }
+
+    const wrapperEl = wrapper.current
+    if (!wrapperEl) return () => {}
+
+    wrapperEl.addEventListener("mousedown", onMouseDown)
+    wrapperEl.addEventListener("mouseup", onMouseUp)
+    wrapperEl.addEventListener("touchstart", onMouseDown)
+    wrapperEl.addEventListener("touchend", onMouseUp)
+    wrapperEl.addEventListener("touchcancel", onMouseUp)
+    window.addEventListener("wheel", handleScroll)
+
+    return () => {
+      wrapperEl.removeEventListener("mousedown", onMouseDown)
+      wrapperEl.removeEventListener("mouseup", onMouseUp)
+      wrapperEl.removeEventListener("touchstart", onMouseDown)
+      wrapperEl.removeEventListener("touchend", onMouseUp)
+      wrapperEl.removeEventListener("touchcancel", onMouseUp)
+      window.removeEventListener("wheel", handleScroll)
+    }
+  }, [])
+
   return (
-    <Wrapper>
+    <Wrapper ref={wrapper}>
       <ExitNavigation />
-      {followedRoute.map((segment, i) => {
+      {spokenRoute.map((segment, i) => {
         return (
           <SegmentWrapper
             active={false}
             key={`${segment.to.uniqueId}-${i + 1}`}
             dark={isDark ?? false}
+            className="segment-followed"
           >
             <Segment forceMobile segment={segment} glassy />
           </SegmentWrapper>
@@ -89,7 +162,12 @@ const Wrapper = styled.div`
 
   @media ${media.mobile} {
     width: calc(100vw - 40px);
-    padding-top: 50vh
+    padding-top: 80vh;
+  }
+
+  pointer-events: none;
+  > * {
+    pointer-events: auto;
   }
 `
 

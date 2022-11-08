@@ -48,6 +48,7 @@ const bounce = keyframes`
 `
 
 const Loader = styled.div`
+  pointer-events: none;
   opacity: 0;
   margin-top: 100px;
   margin-bottom: 100px;

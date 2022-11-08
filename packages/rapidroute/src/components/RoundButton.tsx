@@ -37,6 +37,7 @@ const StyledButton = styled.button<{ flipped: boolean }>`
     rotate: ${props => (props.flipped ? "180deg" : "0deg")};
     transition: rotate 0.5s ease-in-out;
     height: 80px;
+    pointer-events: none;
   }
   width: 80px;
   height: 80px;
