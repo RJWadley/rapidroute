@@ -15,7 +15,7 @@ import renderDynmapMarkers from "./renderDynmapMarkers"
 import renderPlayers from "./renderPlayers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
-export default function MapCanvas() {
+export default function MapCanvas({className=""}: {className?: string}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const previousTransform = useRef<number[] | undefined>()
 
@@ -121,7 +121,7 @@ export default function MapCanvas() {
   }, [])
 
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <canvas ref={canvasRef} />
     </Wrapper>
   )

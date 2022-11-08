@@ -30,6 +30,7 @@ const lightColors = css`
   --default-text: #333;
   --button-green: #7cd48a;
   --background-green: #cff4d5;
+  --button-red: #ffbcba;
 
   /* invert versions */
   --invert-default-card-background: ${invertLightness("#eee")};
@@ -40,6 +41,12 @@ const lightColors = css`
   --invert-default-text: ${invertLightness("#333")};
   --invert-button-green: ${invertLightness("#7cd48a")};
   --invert-background-green: ${invertLightness("#cff4d5")};
+  --invert-button-red: ${invertLightness("#FFBCBA")};
+
+  /* glassy */
+  --glassy-default-card-background: #eeec;
+  --glassy-mid-background: #dddc;
+  --glassy-dark-background: #cccc;
 `
 
 const darkColors = css`
@@ -51,6 +58,7 @@ const darkColors = css`
   --default-text: #ccc;
   --button-green: #266a31;
   --background-green: #07380f;
+  --button-red: #ff5c5c;
 
   /* invert versions */
   --invert-default-card-background: ${invertLightness("#333")};
@@ -61,6 +69,12 @@ const darkColors = css`
   --invert-default-text: ${invertLightness("#ccc")};
   --invert-button-green: ${invertLightness("#266a31")};
   --invert-background-green: ${invertLightness("#07380f")};
+  --invert-button-red: ${invertLightness("#ff5c5c")};
+
+  /* glassy */
+  --glassy-default-card-background: #333c;
+  --glassy-mid-background: #444c;
+  --glassy-dark-background: #555c;
 `
 
 const GlobalStyle = createGlobalStyle<{ isDark?: boolean }>`

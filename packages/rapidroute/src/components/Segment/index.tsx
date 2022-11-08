@@ -15,11 +15,13 @@ import WarpRoute from "./WarpRoute"
 interface SegmentProps {
   segment: SegmentType
   forceMobile?: boolean
+  glassy?: boolean
 }
 
 export default function Segment({
   segment,
   forceMobile = false,
+  glassy = false,
 }: SegmentProps) {
   const variant = useMedia(media.mobile) ? "mobile" : "desktop"
   const wrapper = useRef<HTMLDivElement>(null)
@@ -51,6 +53,7 @@ export default function Segment({
           forceMobile={forceMobile}
           segment={segment}
           variant={variant}
+          glassy={glassy}
         />
       </Wrapper>
     )
@@ -62,12 +65,14 @@ export default function Segment({
           forceMobile={forceMobile}
           segment={segment}
           variant={variant}
+          glassy={glassy}
         />
       ) : (
         <MultiRoute
           forceMobile={forceMobile}
           segment={segment}
           variant={variant}
+          glassy={glassy}
         />
       )}
     </Wrapper>

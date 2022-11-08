@@ -10,14 +10,18 @@ interface SegmentProps {
   segment: SegmentType
   variant: "mobile" | "desktop"
   forceMobile: boolean
+  glassy?: boolean
 }
 
 export default function WalkingRoute({
   segment,
   variant,
   forceMobile,
+  glassy = false,
 }: SegmentProps) {
-  const themeColor = "var(--default-card-background)"
+  const themeColor = glassy
+    ? "var(--glassy-default-card-background)"
+    : "var(--default-card-background)"
 
   const name =
     segment.to.type === "City"

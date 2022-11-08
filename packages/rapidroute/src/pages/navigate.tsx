@@ -18,10 +18,8 @@ export default function Navigate() {
 
   return (
     <Layout>
-      <Wrapper>
-        <NavigationSidebar />
-        <MapCanvas />
-      </Wrapper>
+      <NavigationSidebar />
+      <StyledCanvas />
     </Layout>
   )
 }
@@ -30,8 +28,10 @@ export function Head() {
   return <SEO />
 }
 
-const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  height: 100vh;
+const StyledCanvas = styled(MapCanvas)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 `

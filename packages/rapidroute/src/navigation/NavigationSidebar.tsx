@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef } from "react"
 
 import styled from "styled-components"
 
+import { darkModeContext } from "components/Providers/DarkMode"
 import useFollowedRoute from "navigation/useFollowedRoute"
 import useNavigation from "navigation/useNavigation"
 import { isBrowser } from "utils/functions"
@@ -10,9 +11,11 @@ import loadRoute from "utils/loadRoute"
 import { NavigationContext } from "../components/Providers/NavigationContext"
 import Segment from "../components/Segment"
 import Countdown from "./Countdown"
+import ExitNavigation from "./ExitNavigation"
 
 export default function NavigationSidebar() {
   const { spokenRoute, preferredRoute } = useContext(NavigationContext)
+  const isDark = useContext(darkModeContext)
   const scrollMarker = useRef<HTMLDivElement>(null)
 
   if (isBrowser() && preferredRoute.length === 0) {
@@ -32,20 +35,29 @@ export default function NavigationSidebar() {
 
   return (
     <Wrapper>
+      <ExitNavigation />
       {followedRoute.map((segment, i) => {
         return (
-          <Segment
-            forceMobile
-            segment={segment}
+          <SegmentWrapper
+            active={false}
             key={`${segment.to.uniqueId}-${i + 1}`}
-          />
+            dark={isDark ?? false}
+          >
+            <Segment forceMobile segment={segment} glassy />
+          </SegmentWrapper>
         )
       })}
-      <div ref={scrollMarker} />
-      <Countdown />
-      {spokenRoute.map(segment => {
+      {spokenRoute.map((segment, i) => {
         return (
-          <Segment forceMobile segment={segment} key={segment.to.uniqueId} />
+          <SegmentWrapper
+            active={i === 0}
+            key={segment.to.uniqueId}
+            dark={isDark ?? false}
+          >
+            {i === 0 && <div ref={scrollMarker} />}
+            <Countdown show={i === 0} type={segment.routes[0]?.type} />
+            <Segment forceMobile segment={segment} glassy />
+          </SegmentWrapper>
         )
       })}
     </Wrapper>
@@ -53,14 +65,43 @@ export default function NavigationSidebar() {
 }
 
 const Wrapper = styled.div`
-  > * {
-    opacity: 1;
-    transform: none;
-  }
-  height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 25px;
-  gap: 25px;
+  gap: 20px;
+
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  bottom: 0;
+  padding-bottom: 20px;
+  width: 350px;
+  z-index: 1;
+
+  // hide scrollbar
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  border-radius: 25px 25px 0 0;
+`
+
+const SegmentWrapper = styled.div<{
+  active: boolean
+  dark: boolean
+}>`
+  background-color: ${({ dark }) => (dark ? "#1119" : "#eeea")};
+  backdrop-filter: blur(3px);
+  border-radius: 30px;
+  position: relative;
+
+  padding-top: ${({ active }) => (active ? "50px" : "0px")};
+  transition: padding-top 0.5s ease-in-out;
+
+  > div:last-child {
+    opacity: 1;
+    transform: none;
+  }
 `

@@ -26,6 +26,7 @@ interface SegmentProps {
   segment: SegmentType
   variant: "mobile" | "desktop"
   forceMobile: boolean
+  glassy?: boolean
 }
 
 export const expandGate = (gateString: string | null | undefined) => {
@@ -46,6 +47,7 @@ export default function SingleRoute({
   segment,
   variant,
   forceMobile,
+  glassy = false,
 }: SegmentProps) {
   const [provider, setProvider] = useState<Provider | null>(null)
   const route = segment.routes[0]
@@ -69,6 +71,10 @@ export default function SingleRoute({
   const themeColor =
     (isDark ? provider?.color?.dark : provider?.color?.light) ??
     "var(--default-card-background)"
+  const glassyThemeColor =
+    provider?.color?.light || provider?.color?.dark
+      ? `${themeColor}CC`
+      : "var(--glassy-default-card-background)"
 
   const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])
   const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
@@ -95,7 +101,10 @@ export default function SingleRoute({
   const isMobile = variant === "mobile" || forceMobile
 
   return (
-    <Wrapper backgroundColor={themeColor} small={isMobile}>
+    <Wrapper
+      backgroundColor={glassy ? glassyThemeColor : themeColor}
+      small={isMobile}
+    >
       <Left>
         <ProviderName>
           {image && (

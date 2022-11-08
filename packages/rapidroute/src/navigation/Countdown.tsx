@@ -1,15 +1,25 @@
 /* eslint-disable no-console */
 import React, { useContext, useEffect, useRef, useState } from "react"
 
+import { RouteMode } from "@rapidroute/database-types"
+import styled from "styled-components"
 import { useDeepCompareEffect } from "use-deep-compare"
 
+import { darkModeContext } from "components/Providers/DarkMode"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { stopToNumber } from "components/Segment/getLineDirections"
+import invertLightness from "utils/invertLightness"
 
 import getTimeToInstruction from "./timeToInstruction"
 import { thirtySecondWarning, twoMinuteWarning } from "./useVoiceNavigation"
 
-export default function Countdown() {
+export default function Countdown({
+  show = false,
+  type = "walk",
+}: {
+  show?: boolean
+  type: RouteMode | undefined
+}) {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
@@ -104,10 +114,56 @@ export default function Countdown() {
     }
   }, [currentTime])
 
+  const isDark = useContext(darkModeContext)
+  const backgroundColor = isDark ? "#07380f" : "#bbf7c5"
+  const textColor = invertLightness(backgroundColor)
+
   return (
-    <div>
-      <h1>Countdown: {formatTime(currentTime)}</h1>
-      <h2>Actual Time: {timeToInstruction}</h2>
-    </div>
+    <Wrapper show={show}>
+      {type === "MRT" ? (
+        <>
+          <Arriving>Arriving in</Arriving>
+          <Time textColor={textColor} backgroundColor={backgroundColor}>
+            {formatTime(currentTime)}
+          </Time>
+        </>
+      ) : (
+        <Arriving>Up Next</Arriving>
+      )}
+    </Wrapper>
   )
 }
+
+const Wrapper = styled.div<{
+  show: boolean
+}>`
+  position: absolute;
+  top: 0;
+  left: 30px;
+  right: 14px;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  opacity: ${p => (p.show ? 1 : 0)};
+  transition: opacity 0.5s ease-in-out;
+`
+
+const Arriving = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+`
+
+const Time = styled.div<{
+  textColor: string
+  backgroundColor: string
+}>`
+  background-color: ${p => p.backgroundColor}55;
+  border: 1px solid ${p => p.textColor};
+  color: ${p => p.textColor};
+  border-radius: 99px;
+  height: fit-content;
+  width: fit-content;
+  padding: 2px 15px;
+`
