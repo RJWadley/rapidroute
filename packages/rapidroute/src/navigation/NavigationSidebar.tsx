@@ -30,21 +30,22 @@ export default function NavigationSidebar() {
   useEffect(() => {
     if (!spokenRoute.length) return
 
-    gsap.set(".segment.previous, .segment.current", { display: "none" })
+    gsap.set(".segment.current", { display: "none" })
     gsap.set(".segment.removed", { display: "block" })
 
     const flipState = Flip.getState(".segment")
 
-    gsap.set(".segment.previous, .segment.current", { display: "block" })
+    gsap.set(".segment.current", { display: "block" })
     gsap.set(".segment.removed", { display: "none" })
+    gsap.set(wrapper.current, {
+      height: wrapper.current?.clientHeight,
+    })
 
     Flip.from(flipState, {
       targets: ".segment",
       duration: 1,
       absolute: true,
       stagger: 0.1,
-      zIndex: 1,
-      fade: true,
       onEnter: el =>
         gsap.fromTo(el, { xPercent: -150 },
           { xPercent: 0, duration: 1, stagger: 0.1 }),
@@ -55,6 +56,9 @@ export default function NavigationSidebar() {
         setTimeout(() => {
           previousSegments.current = spokenRoute
           gsap.set(".segment.removed", { display: "none" })
+          gsap.to(wrapper.current, {
+            height: "auto",
+          })
         }, 100)
       },
     })

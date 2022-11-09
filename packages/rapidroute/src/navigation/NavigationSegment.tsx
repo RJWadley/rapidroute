@@ -52,7 +52,7 @@ export default function NavigationSegment({
           ease: "power3.inOut",
         })
     }
-    updateScroll()
+    setTimeout(updateScroll, 2000)
     const interval = setInterval(updateScroll, 15000)
     return () => clearInterval(interval)
   }, [index, mobile, segmentPosition, spokenRoute, wrapper])
@@ -80,9 +80,10 @@ export default function NavigationSegment({
   const key = `${segment.from.uniqueId}${segment.to.uniqueId}${
     segmentPosition === "previous" ? index : ""
   }`
-  const flipId = `${segment.from.uniqueId}${segment.to.uniqueId}${
-    segmentPosition === "previous" ? "p" : "c"
-  }`
+  const flipId =
+    segmentPosition === "previous"
+      ? undefined
+      : `${segment.from.uniqueId}${segment.to.uniqueId}`
 
   return (
     <SegmentWrapper
