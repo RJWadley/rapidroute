@@ -13,13 +13,13 @@ import useMedia from "utils/useMedia"
 
 interface NavigationSegmentProps {
   segment: SegmentType
-  previous: boolean
+  segmentPosition: "previous" | "current" | "removed"
   index: number
 }
 
 export default function NavigationSegment({
   segment,
-  previous,
+  segmentPosition,
   index,
 }: NavigationSegmentProps) {
   const { spokenRoute } = useContext(NavigationContext)
@@ -41,7 +41,7 @@ export default function NavigationSegment({
 
     // gsap scroll plugin
     const updateScroll = () => {
-      if (wrapper && index === 0 && !previous)
+      if (wrapper && index === 0 && segmentPosition !== "previous")
         gsap.to(window, {
           duration: 5,
           scrollTo: {
@@ -55,14 +55,14 @@ export default function NavigationSegment({
     updateScroll()
     const interval = setInterval(updateScroll, 15000)
     return () => clearInterval(interval)
-  }, [index, mobile, previous, spokenRoute, wrapper])
+  }, [index, mobile, segmentPosition, spokenRoute, wrapper])
 
   /**
    * scroll-in animation for mobile
    */
   useAnimation(() => {
     gsap.delayedCall(0.5, () => {
-      if (!mobile || !previous) return
+      if (!mobile || segmentPosition !== "previous") return
 
       gsap.to(wrapper, {
         y: "-70vh",
@@ -75,23 +75,22 @@ export default function NavigationSegment({
         ease: "power3.inOut",
       })
     })
-  }, [index, mobile, previous, wrapper])
+  }, [index, mobile, segmentPosition, wrapper])
 
-  const key = `${segment.from.uniqueId}${segment.to.uniqueId}${index}${
-    previous ? "previous" : "next"
+  const key = `${segment.from.uniqueId}${segment.to.uniqueId}${index}${segmentPosition}`
+  const flipId = `${segment.from.uniqueId}${segment.to.uniqueId}${
+    segmentPosition === "previous" ? "" : "current"
   }`
-
-  useEffect(() => {
-    if (wrapper) gsap.set(wrapper.children, { autoAlpha: 1, y: 0 })
-  }, [wrapper])
 
   return (
     <SegmentWrapper
       dark={isDark}
-      active={index === 0 && !previous}
+      active={index === 0 && !segmentPosition}
       ref={e => setWrapper(e)}
       key={key}
-      data-flip-id={key}
+      data-flip-id={flipId}
+      id={key}
+      className={`segment ${segmentPosition}`}
     >
       <Segment forceMobile segment={segment} glassy />
     </SegmentWrapper>
@@ -107,4 +106,8 @@ const SegmentWrapper = styled.div<{
   border-radius: 30px;
   position: relative;
   margin-top: 20px;
+  > div {
+    transform: none;
+    opacity: 1;
+  }
 `
