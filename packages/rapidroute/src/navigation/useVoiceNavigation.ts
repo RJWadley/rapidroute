@@ -200,8 +200,12 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     }
 
     // check if the routes are identical except for the first segment's from location
-    if (spokenRoute.every((segment, i) => segment.to === currentRoute[i]?.to))
+    if (
+      spokenRoute.every((segment, i) => segment.to === currentRoute[i]?.to) &&
+      firstSpoken.from.uniqueId.includes("Coordinate")
+    ) {
       return
+    }
 
     // if we reach this point, the spoken route is no longer valid and we need to update it
     setSpokenRoute(currentRoute)

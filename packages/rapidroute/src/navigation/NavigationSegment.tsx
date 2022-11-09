@@ -41,7 +41,7 @@ export default function NavigationSegment({
 
     // gsap scroll plugin
     const updateScroll = () => {
-      if (wrapper && index === 0 && segmentPosition !== "previous")
+      if (wrapper && index === 0 && segmentPosition === "current")
         gsap.to(window, {
           duration: 5,
           scrollTo: {
@@ -77,9 +77,11 @@ export default function NavigationSegment({
     })
   }, [index, mobile, segmentPosition, wrapper])
 
-  const key = `${segment.from.uniqueId}${segment.to.uniqueId}${index}${segmentPosition}`
+  const key = `${segment.from.uniqueId}${segment.to.uniqueId}${
+    segmentPosition === "previous" ? index : ""
+  }`
   const flipId = `${segment.from.uniqueId}${segment.to.uniqueId}${
-    segmentPosition === "previous" ? "" : "current"
+    segmentPosition === "previous" ? "p" : "c"
   }`
 
   return (

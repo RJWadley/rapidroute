@@ -1,10 +1,9 @@
-import React, { useContext, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 
 import gsap from "gsap"
 import Flip from "gsap/Flip"
 import ScrollToPlugin from "gsap/ScrollToPlugin"
 import styled from "styled-components"
-import { useDeepCompareEffect } from "use-deep-compare"
 
 import { SegmentType } from "components/createSegments"
 import useFollowedRoute from "navigation/useFollowedRoute"
@@ -28,7 +27,7 @@ export default function NavigationSidebar() {
    * flip in the new segments and out the old
    */
   const previousSegments = useRef<SegmentType[]>([])
-  useDeepCompareEffect(() => {
+  useEffect(() => {
     if (!spokenRoute.length) return
 
     gsap.set(".segment.previous, .segment.current", { display: "none" })
@@ -55,6 +54,7 @@ export default function NavigationSidebar() {
       onComplete: () => {
         setTimeout(() => {
           previousSegments.current = spokenRoute
+          gsap.set(".segment.removed", { display: "none" })
         }, 100)
       },
     })
