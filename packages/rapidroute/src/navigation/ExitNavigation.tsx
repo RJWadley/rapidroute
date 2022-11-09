@@ -12,12 +12,12 @@ export default function ExitNavigation() {
   const destination = currentRoute[currentRoute.length - 1]?.to
   return (
     <Wrapper>
-        <ExitButton to="/">&times;</ExitButton>
-        <Text>
-          <Head>Navigation to {destination?.shortName}</Head>
-          <Sub>{destination?.name}</Sub>
-        </Text>
-      </Wrapper>
+      <ExitButton to="/">&times;</ExitButton>
+      <Text>
+        <Head>Navigation to {destination?.shortName}</Head>
+        <Sub>{destination?.name}</Sub>
+      </Text>
+    </Wrapper>
   )
 }
 
@@ -26,17 +26,19 @@ const Wrapper = styled.div`
   border-radius: 25px;
   backdrop-filter: blur(3px);
 
-  position: fixed;
+  position: sticky;
   z-index: 2;
   top: 20px;
-  left: 20px;
+
   width: 350px;
-  height: 80px;
+  min-height: 80px;
   padding: 15px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
 
   @media ${media.mobile} {
     width: calc(100vw - 40px);
+    margin-bottom: 60vh;
   }
 `
 
