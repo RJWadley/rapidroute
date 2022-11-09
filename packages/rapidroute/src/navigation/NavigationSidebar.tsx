@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef } from "react"
 
 import gsap from "gsap"
+import ScrollToPlugin from "gsap/ScrollToPlugin"
 import styled from "styled-components"
 
 import { darkModeContext } from "components/Providers/DarkMode"
@@ -17,13 +18,17 @@ import Segment from "../components/Segment"
 import Countdown from "./Countdown"
 import ExitNavigation from "./ExitNavigation"
 
+gsap.registerPlugin(ScrollToPlugin)
+
 export default function NavigationSidebar() {
   const { spokenRoute, preferredRoute } = useContext(NavigationContext)
   const isDark = useContext(darkModeContext)
-  const scrollMarker = useRef<HTMLDivElement>(null)
   const wrapper = useRef<HTMLDivElement>(null)
   const mobile = useMedia(media.mobile)
 
+  /**
+   * exit the page if the user is not navigating
+   */
   if (isBrowser() && preferredRoute.length === 0) {
     loadRoute("/")
   }
@@ -31,12 +36,21 @@ export default function NavigationSidebar() {
   useNavigation()
   const followedRoute = useFollowedRoute(spokenRoute)
 
+  /**
+   * Scroll to the current navigation segment
+   */
   useEffect(() => {
-    if (scrollMarker.current) {
-      scrollMarker.current.scrollIntoView({
-        behavior: "smooth",
+    // gsap scroll plugin
+    const updateScroll = () => {
+      gsap.to(wrapper.current, {
+        duration: 5,
+        scrollTo: { y: ".segment-active", offsetY: 120, autoKill: true },
+        ease: "power3.inOut",
       })
     }
+    updateScroll()
+    const interval = setInterval(updateScroll, 15000)
+    return () => clearInterval(interval)
   }, [followedRoute, spokenRoute])
 
   useAnimation(() => {
@@ -68,7 +82,7 @@ export default function NavigationSidebar() {
    * when the mouse goes down on the wrapper, enable pointer events
    * when the mouse goes up on the wrapper, disable pointer events
    *
-   * this is so that we can
+   * this is so that we can click through the wrapper to the map
    *
    */
   useEffect(() => {
@@ -121,7 +135,7 @@ export default function NavigationSidebar() {
         return (
           <SegmentWrapper
             active={false}
-            key={`${segment.to.uniqueId}-${i + 1}`}
+            key={`${segment.from.uniqueId}-${segment.to.uniqueId}-${i + 1}`}
             dark={isDark ?? false}
             className="segment-followed"
           >
@@ -136,7 +150,6 @@ export default function NavigationSidebar() {
             key={segment.to.uniqueId}
             dark={isDark ?? false}
           >
-            {i === 0 && <div ref={scrollMarker} />}
             <Countdown show={i === 0} type={segment.routes[0]?.type} />
             <Segment forceMobile segment={segment} glassy />
           </SegmentWrapper>
@@ -152,14 +165,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 20px;
 
-  position: fixed;
   left: 20px;
   bottom: 0;
   top: 0;
   padding-top: 120px;
   padding-bottom: 20px;
   width: 350px;
-  z-index: 1;
 
   // hide scrollbar
   scrollbar-width: none;
