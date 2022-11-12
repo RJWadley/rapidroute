@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef } from "react"
+/* eslint-disable no-console */
+import React, {
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 
 import gsap from "gsap"
 import Flip from "gsap/Flip"
@@ -6,7 +12,6 @@ import ScrollToPlugin from "gsap/ScrollToPlugin"
 import styled from "styled-components"
 import { useDeepCompareEffect } from "use-deep-compare"
 
-import { SegmentType } from "components/createSegments"
 import useFollowedRoute from "navigation/useFollowedRoute"
 import useNavigation from "navigation/useNavigation"
 import media from "utils/media"
@@ -18,41 +23,36 @@ import NavigationSegment from "./NavigationSegment"
 gsap.registerPlugin(ScrollToPlugin, Flip)
 
 export default function NavigationSidebar() {
+  const [activeSlot, setActiveSlot] = useState<"A" | "B">("A")
+  const [slotA, setSlotA] = useState<ReactNode>(null)
+  const [slotB, setSlotB] = useState<ReactNode>(null)
   const { spokenRoute } = useContext(NavigationContext)
-  const wrapper = useRef<HTMLDivElement>(null)
-
-  useNavigation()
   const followedRoute = useFollowedRoute(spokenRoute)
+  useNavigation()
 
   /**
    * flip in the new segments and out the old
    */
-  const previousSpoken = useRef<SegmentType[]>([])
-  const previousFollowed = useRef<SegmentType[]>([])
   useEffect(() => {
-    if (!spokenRoute.length) return
+    const newSlot = activeSlot === "A" ? ".slotA .segment" : ".slotB .segment"
+    const oldSlot = activeSlot === "A" ? ".slotB .segment" : ".slotA .segment"
 
-    gsap.set(".segment.current, .segment.previous", { display: "none" })
-    gsap.set(".segment.removed, .segment.previousFollowed", {
-      display: "block",
-    })
+    gsap.set(oldSlot, { display: "block" })
+    gsap.set(newSlot, { display: "none" })
+    console.log("swap, the old slot, ", oldSlot, "is visible")
 
-    setTimeout(() => {
-      gsap.set(".segment.current, .segment.previous", { display: "none" })
-      gsap.set(".segment.removed, .segment.previousFollowed", {
-        display: "block",
-      })
+    const timeout = setTimeout(() => {
+      // make sure initial state is correct
+      gsap.set(".slotB", { display: "block" })
+
+      console.log("flipping, the new slot, ", newSlot, "is becoming visible")
+      gsap.set(oldSlot, { display: "block" })
+      gsap.set(newSlot, { display: "none" })
 
       const flipState = Flip.getState(".segment")
 
-      gsap.set(".segment.current, .segment.previous", { display: "block" })
-      gsap.set(".segment.removed, .segment.previousFollowed", {
-        display: "none",
-      })
-
-      gsap.set(wrapper.current, {
-        height: wrapper.current?.clientHeight,
-      })
+      gsap.set(oldSlot, { display: "none" })
+      gsap.set(newSlot, { display: "block" })
 
       Flip.from(flipState, {
         targets: ".segment",
@@ -65,60 +65,61 @@ export default function NavigationSidebar() {
         onLeave: el =>
           gsap.fromTo(el, { xPercent: 0 },
             { xPercent: -150, duration: 1, stagger: 0.1 }),
-        onComplete: () => {
-          setTimeout(() => {
-            gsap.to(wrapper.current, {
-              height: "auto",
-            })
-          }, 100)
-        },
       })
     }, 1000)
-  }, [spokenRoute, followedRoute])
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [activeSlot])
 
   useDeepCompareEffect(() => {
-    setTimeout(() => {
-      previousSpoken.current = spokenRoute
-      previousFollowed.current = followedRoute
-    }, 2000)
-  }, [followedRoute, spokenRoute])
-
-  return (
-    <Wrapper ref={wrapper}>
-      <ExitNavigation />
-      {followedRoute.map((segment, i) => (
+    const debounced = setTimeout(() => {
+      const newFollowed = followedRoute.map((segment, i) => (
         <NavigationSegment
           segment={segment}
           segmentPosition="previous"
           index={i}
           key={`previous${segment.from.uniqueId}-${segment.to.uniqueId}`}
         />
-      ))}
-      <div className="scrollMarker" />
-      {spokenRoute.map((segment, i) => (
+      ))
+      const newSpoken = spokenRoute.map((segment, i) => (
         <NavigationSegment
           segment={segment}
           segmentPosition="current"
           index={i}
           key={`current${segment.from.uniqueId}-${segment.to.uniqueId}`}
         />
-      ))}
-      {previousFollowed.current.map((segment, i) => (
-        <NavigationSegment
-          segment={segment}
-          segmentPosition="previousFollowed"
-          index={i}
-          key={`previousFollowed${segment.from.uniqueId}-${segment.to.uniqueId}`}
-        />
-      ))}
-      {previousSpoken.current.map((segment, i) => (
-        <NavigationSegment
-          segment={segment}
-          segmentPosition="removed"
-          index={i}
-          key={`removed${segment.from.uniqueId}-${segment.to.uniqueId}`}
-        />
-      ))}
+      ))
+
+      const newContent = (
+        <>
+          {newFollowed}
+          {newSpoken}
+        </>
+      )
+
+      setActiveSlot(previousSlot => {
+        if (previousSlot === "A") {
+          setSlotB(newContent)
+          console.log("updating inactive slot B")
+          return "B"
+        }
+        setSlotA(newContent)
+        console.log("updating inactive slot A")
+        return "A"
+      })
+    }, 100)
+    return () => clearTimeout(debounced)
+  }, [followedRoute, spokenRoute])
+
+  return (
+    <Wrapper>
+      <ExitNavigation />
+      <div className="slotA">{slotA}</div>
+      <div className="slotB" style={{ display: "none" }}>
+        {slotB}
+      </div>
     </Wrapper>
   )
 }
@@ -139,16 +140,20 @@ const Wrapper = styled.div`
     pointer-events: auto;
   }
 
-  .removed {
-    border: 10px solid red;
+  .slotA {
+    .current {
+      border: 10px solid red;
+    }
+    .previous {
+      border: 10px solid orange;
+    }
   }
-  .previousFollowed {
-    border: 10px solid orange;
-  }
-  .current {
-    border: 10px solid green;
-  }
-  .previous {
-    border: 10px solid blue;
+  .slotB {
+    .current {
+      border: 10px solid green;
+    }
+    .previous {
+      border: 10px solid blue;
+    }
   }
 `
