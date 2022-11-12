@@ -1,20 +1,17 @@
 /* eslint-disable no-console */
-import React, {
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
+import React, { ReactNode, useContext, useEffect, useState } from "react"
 
 import gsap from "gsap"
 import Flip from "gsap/Flip"
 import ScrollToPlugin from "gsap/ScrollToPlugin"
+import ScrollTrigger from "gsap/ScrollTrigger"
 import styled from "styled-components"
 import { useDeepCompareEffect } from "use-deep-compare"
 
 import useFollowedRoute from "navigation/useFollowedRoute"
 import useNavigation from "navigation/useNavigation"
 import media from "utils/media"
+import useMedia from "utils/useMedia"
 
 import { NavigationContext } from "../components/Providers/NavigationContext"
 import ExitNavigation from "./ExitNavigation"
@@ -28,6 +25,7 @@ export default function NavigationSidebar() {
   const [slotB, setSlotB] = useState<ReactNode>(null)
   const { spokenRoute } = useContext(NavigationContext)
   const followedRoute = useFollowedRoute(spokenRoute)
+  const mobile = useMedia(media.mobile)
   useNavigation()
 
   /**
@@ -48,6 +46,27 @@ export default function NavigationSidebar() {
       console.log("flipping, the new slot, ", newSlot, "is becoming visible")
       gsap.set(oldSlot, { display: "block" })
       gsap.set(newSlot, { display: "none" })
+
+      if (mobile) {
+        // pull transforms from the old slot previous segments
+        const oldSegments = Array.from(
+          document.querySelectorAll(`${oldSlot}.previous > div`)
+        )
+        const newSegments = Array.from(
+          document.querySelectorAll(`${newSlot}.previous > div`)
+        )
+        oldSegments.forEach((oldSegment, index) => {
+          if (!(oldSegment instanceof HTMLElement)) return
+          const newSegment = newSegments[index]
+          if (!(newSegment instanceof HTMLElement)) return
+
+          console.log("old transform", oldSegment.style.transform)
+          console.log("new transform", newSegment.style.transform)
+
+          const oldTransform = oldSegment.style.transform
+          newSegment.style.transform = oldTransform
+        })
+      }
 
       const flipState = Flip.getState(".segment")
 
@@ -71,8 +90,11 @@ export default function NavigationSidebar() {
     return () => {
       clearTimeout(timeout)
     }
-  }, [activeSlot])
+  }, [activeSlot, mobile])
 
+  /**
+   * update the current slot when the route changes
+   */
   useDeepCompareEffect(() => {
     const debounced = setTimeout(() => {
       const newFollowed = followedRoute.map((segment, i) => (
@@ -113,6 +135,78 @@ export default function NavigationSidebar() {
     return () => clearTimeout(debounced)
   }, [followedRoute, spokenRoute])
 
+  /**
+   * scroll to the current segment
+   */
+  useEffect(() => {
+    const searchClass =
+      activeSlot === "A" ? ".slotA .current" : ".slotB .current"
+    const elementToScrollTo = document.querySelector(searchClass)
+    const getMobileScrollPoint = () =>
+      // taller than 30 % of the screen?
+      (elementToScrollTo?.clientHeight ?? 0) > window.innerHeight * 0.3 - 20
+        ? // if yes, position relative to bottom of screen
+          window.innerHeight - (elementToScrollTo?.clientHeight ?? 0) - 20
+        : // otherwise, position relative to middle
+          window.innerHeight * 0.7
+
+    // gsap scroll plugin
+    const updateScroll = () => {
+      if (elementToScrollTo)
+        gsap.to(window, {
+          duration: 5,
+          scrollTo: {
+            y: elementToScrollTo,
+            offsetY: mobile ? getMobileScrollPoint() : 120,
+            autoKill: true,
+          },
+          ease: "power3.inOut",
+        })
+    }
+    const timeout = setTimeout(updateScroll, 3000)
+    const interval = setInterval(updateScroll, 15000)
+    return () => {
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [activeSlot, mobile])
+
+  /**
+   * animate up and down the previous segments
+   */
+  useEffect(() => {
+    if (!slotA && !slotB) return undefined
+
+    const trigger = ScrollTrigger.create({
+      trigger: document.querySelector(".current"),
+      start: "top 71%",
+      end: "top 71%",
+      markers: true,
+      onEnter: () => {
+        gsap.to(".segment.previous > div", {
+          y: "-70vh",
+          yPercent: -100,
+          duration: 1,
+          stagger: 0.05,
+          ease: "power3.in",
+        })
+      },
+      onLeaveBack: () => {
+        gsap.to(".segment.previous > div", {
+          y: 0,
+          yPercent: 0,
+          duration: 1,
+          stagger: -0.05,
+          ease: "power3.out",
+        })
+      },
+    })
+
+    return () => {
+      trigger.kill()
+    }
+  }, [slotA, slotB])
+
   return (
     <Wrapper>
       <ExitNavigation />
@@ -128,7 +222,7 @@ const Wrapper = styled.div`
   width: 350px;
   margin: 20px;
   margin-top: 120px;
-  margin-bottom: 70vh;
+  margin-bottom: 50vh;
 
   @media ${media.mobile} {
     margin-top: 70vh;
@@ -138,22 +232,5 @@ const Wrapper = styled.div`
   pointer-events: none;
   > * {
     pointer-events: auto;
-  }
-
-  .slotA {
-    .current {
-      border: 10px solid red;
-    }
-    .previous {
-      border: 10px solid orange;
-    }
-  }
-  .slotB {
-    .current {
-      border: 10px solid green;
-    }
-    .previous {
-      border: 10px solid blue;
-    }
   }
 `
