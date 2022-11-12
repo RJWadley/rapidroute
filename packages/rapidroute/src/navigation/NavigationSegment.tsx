@@ -13,7 +13,7 @@ import useMedia from "utils/useMedia"
 
 interface NavigationSegmentProps {
   segment: SegmentType
-  segmentPosition: "previous" | "current" | "removed" | "previousFollowed"
+  segmentPosition: "previous" | "current"
   index: number
 }
 
@@ -65,30 +65,27 @@ export default function NavigationSegment({
   /**
    * scroll-in animation for mobile
    */
-  useAnimation(() => {
-    if (
-      mobile &&
-      (segmentPosition === "previous" || segmentPosition === "previousFollowed")
-    ) {
-      gsap.fromTo(wrapper, {
-          y: 0,
-          x: 0,
-        },
-        {
-          y: "-70vh",
-          x: 0,
+  // useAnimation(() => {
+    // if (mobile && segmentPosition === "previous") {
+    //   gsap.fromTo(wrapper, {
+    //       y: 0,
+    //       x: 0,
+    //     },
+    //     {
+    //       y: "-70vh",
+    //       x: 0,
 
-          scrollTrigger: {
-            trigger: ".scrollMarker",
-            start: "top 70%",
-            end: "bottom 70%",
-            markers: true,
-            scrub: 5 + index * 0.5,
-          },
-          ease: "power3.inOut",
-        })
-    }
-  }, [index, mobile, segmentPosition, wrapper])
+    //       scrollTrigger: {
+    //         trigger: ".scrollMarker",
+    //         start: "top 70%",
+    //         end: "bottom 70%",
+    //         markers: true,
+    //         scrub: 5 + index * 0.5,
+    //       },
+    //       ease: "power3.inOut",
+    //     })
+    // }
+  // }, [index, mobile, segmentPosition, wrapper])
 
   const key = `${segmentPosition}-${segment.from.uniqueId}-${
     segment.to.uniqueId
