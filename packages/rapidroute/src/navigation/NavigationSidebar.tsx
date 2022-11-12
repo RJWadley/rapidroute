@@ -4,6 +4,7 @@ import gsap from "gsap"
 import Flip from "gsap/Flip"
 import ScrollToPlugin from "gsap/ScrollToPlugin"
 import styled from "styled-components"
+import { useDeepCompareEffect } from "use-deep-compare"
 
 import { SegmentType } from "components/createSegments"
 import useFollowedRoute from "navigation/useFollowedRoute"
@@ -30,39 +31,48 @@ export default function NavigationSidebar() {
   useEffect(() => {
     if (!spokenRoute.length) return
 
-    gsap.set(".segment.current", { display: "none" })
+    gsap.set(".segment.current, .segment.previous", { display: "none" })
     gsap.set(".segment.removed", { display: "block" })
 
-    const flipState = Flip.getState(".segment")
+    setTimeout(() => {
+      gsap.set(".segment.current, .segment.previous", { display: "none" })
+      gsap.set(".segment.removed", { display: "block" })
+      const flipState = Flip.getState(".segment")
 
-    gsap.set(".segment.current", { display: "block" })
-    gsap.set(".segment.removed", { display: "none" })
-    gsap.set(wrapper.current, {
-      height: wrapper.current?.clientHeight,
-    })
+      gsap.set(".segment.current, .segment.previous", { display: "block" })
+      gsap.set(".segment.removed", { display: "none" })
 
-    Flip.from(flipState, {
-      targets: ".segment",
-      duration: 1,
-      absolute: true,
-      stagger: 0.1,
-      onEnter: el =>
-        gsap.fromTo(el, { xPercent: -150 },
-          { xPercent: 0, duration: 1, stagger: 0.1 }),
-      onLeave: el =>
-        gsap.fromTo(el, { xPercent: 0 },
-          { xPercent: -150, duration: 1, stagger: 0.1 }),
-      onComplete: () => {
-        setTimeout(() => {
-          previousSegments.current = spokenRoute
-          gsap.set(".segment.removed", { display: "none" })
-          gsap.to(wrapper.current, {
-            height: "auto",
-          })
-        }, 100)
-      },
-    })
+      gsap.set(wrapper.current, {
+        height: wrapper.current?.clientHeight,
+      })
+
+      Flip.from(flipState, {
+        targets: ".segment",
+        duration: 1,
+        absolute: true,
+        stagger: 0.1,
+        onEnter: el =>
+          gsap.fromTo(el, { xPercent: -150 },
+            { xPercent: 0, duration: 1, stagger: 0.1 }),
+        onLeave: el =>
+          gsap.fromTo(el, { xPercent: 0 },
+            { xPercent: -150, duration: 1, stagger: 0.1 }),
+        onComplete: () => {
+          setTimeout(() => {
+            gsap.to(wrapper.current, {
+              height: "auto",
+            })
+          }, 100)
+        },
+      })
+    }, 1000)
   }, [spokenRoute, followedRoute])
+
+  useDeepCompareEffect(() => {
+    setTimeout(() => {
+      previousSegments.current = [...followedRoute, ...spokenRoute]
+    }, 2000)
+  }, [followedRoute, spokenRoute])
 
   return (
     <Wrapper ref={wrapper}>
@@ -104,15 +114,5 @@ const Wrapper = styled.div`
   pointer-events: none;
   > * {
     pointer-events: auto;
-  }
-
-  .previous {
-    border: 10px solid blue;
-  }
-  .current {
-    border: 10px solid green;
-  }
-  .removed {
-    border: 10px solid red;
   }
 `

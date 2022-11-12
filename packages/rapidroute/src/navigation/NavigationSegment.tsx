@@ -31,17 +31,17 @@ export default function NavigationSegment({
    * Scroll to the current navigation segment
    */
   useEffect(() => {
-    const getMobileScrollPoint = () =>
-      // taller than 30 % of the screen?
-      (wrapper?.clientHeight ?? 0) > window.innerHeight * 0.3 - 20
-        ? // if yes, position relative to bottom of screen
-          window.innerHeight - (wrapper?.clientHeight ?? 0) - 20
-        : // otherwise, position relative to middle
-          window.innerHeight * 0.7
+    if (wrapper && index === 0 && segmentPosition === "current") {
+      const getMobileScrollPoint = () =>
+        // taller than 30 % of the screen?
+        (wrapper?.clientHeight ?? 0) > window.innerHeight * 0.3 - 20
+          ? // if yes, position relative to bottom of screen
+            window.innerHeight - (wrapper?.clientHeight ?? 0) - 20
+          : // otherwise, position relative to middle
+            window.innerHeight * 0.7
 
-    // gsap scroll plugin
-    const updateScroll = () => {
-      if (wrapper && index === 0 && segmentPosition === "current")
+      // gsap scroll plugin
+      const updateScroll = () => {
         gsap.to(window, {
           duration: 5,
           scrollTo: {
@@ -51,10 +51,15 @@ export default function NavigationSegment({
           },
           ease: "power3.inOut",
         })
+      }
+      const timeout = setTimeout(updateScroll, 3000)
+      const interval = setInterval(updateScroll, 15000)
+      return () => {
+        clearInterval(interval)
+        clearTimeout(timeout)
+      }
     }
-    setTimeout(updateScroll, 2000)
-    const interval = setInterval(updateScroll, 15000)
-    return () => clearInterval(interval)
+    return () => {}
   }, [index, mobile, segmentPosition, spokenRoute, wrapper])
 
   /**
