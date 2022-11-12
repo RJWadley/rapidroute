@@ -18,18 +18,24 @@ import gsap from "gsap"
  */
 const useAnimation = (
   createAnimations: EffectCallback,
-  deps?: DependencyList
+  deps: DependencyList = [],
+  options?: {
+    scope?: string | object | Element | null
+    kill?: boolean
+  }
 ) => {
   useEffect(() => {
     // create animations using a gsap context so they can be reverted easily
-    const ctx = gsap.context(createAnimations)
+    const ctx = gsap.context(createAnimations, options?.scope || undefined)
     return () => {
-      ctx.revert()
+      if (options?.kill) {
+        ctx.kill()
+      } else ctx.revert()
     }
 
-    // createAnimations changes reference every run, so exclude it from the deps
+    // have to spread deps here
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps || [])
+  }, [options?.kill, options?.scope, ...deps])
 }
 
 export default useAnimation
