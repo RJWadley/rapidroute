@@ -13,7 +13,7 @@ import useMedia from "utils/useMedia"
 
 interface NavigationSegmentProps {
   segment: SegmentType
-  segmentPosition: "previous" | "current" | "removed"
+  segmentPosition: "previous" | "current" | "removed" | "previousFollowed"
   index: number
 }
 
@@ -66,26 +66,34 @@ export default function NavigationSegment({
    * scroll-in animation for mobile
    */
   useAnimation(() => {
-    gsap.delayedCall(0.5, () => {
-      if (!mobile || segmentPosition !== "previous") return
-
-      gsap.to(wrapper, {
-        y: "-70vh",
-        scrollTrigger: {
-          trigger: ".scrollMarker",
-          start: "top 70%",
-          end: "bottom 70%",
-          scrub: 2 + index * 0.5,
+    if (
+      mobile &&
+      (segmentPosition === "previous" || segmentPosition === "previousFollowed")
+    ) {
+      gsap.fromTo(wrapper, {
+          y: 0,
+          x: 0,
         },
-        ease: "power3.inOut",
-      })
-    })
+        {
+          y: "-70vh",
+          x: 0,
+
+          scrollTrigger: {
+            trigger: ".scrollMarker",
+            start: "top 70%",
+            end: "bottom 70%",
+            markers: true,
+            scrub: 5 + index * 0.5,
+          },
+          ease: "power3.inOut",
+        })
+    }
   }, [index, mobile, segmentPosition, wrapper])
 
-  const key = `${segment.from.uniqueId}${segment.to.uniqueId}${
-    segmentPosition === "previous" ? index : ""
-  }`
-  const flipId = `${segment.from.uniqueId}${segment.to.uniqueId}`
+  const key = `${segmentPosition}-${segment.from.uniqueId}-${
+    segment.to.uniqueId
+  }${segmentPosition === "previous" ? index : ""}`
+  const flipId = `${segment.from.uniqueId}-${segment.to.uniqueId}`
 
   return (
     <SegmentWrapper

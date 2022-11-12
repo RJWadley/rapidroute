@@ -27,20 +27,28 @@ export default function NavigationSidebar() {
   /**
    * flip in the new segments and out the old
    */
-  const previousSegments = useRef<SegmentType[]>([])
+  const previousSpoken = useRef<SegmentType[]>([])
+  const previousFollowed = useRef<SegmentType[]>([])
   useEffect(() => {
     if (!spokenRoute.length) return
 
     gsap.set(".segment.current, .segment.previous", { display: "none" })
-    gsap.set(".segment.removed", { display: "block" })
+    gsap.set(".segment.removed, .segment.previousFollowed", {
+      display: "block",
+    })
 
     setTimeout(() => {
       gsap.set(".segment.current, .segment.previous", { display: "none" })
-      gsap.set(".segment.removed", { display: "block" })
+      gsap.set(".segment.removed, .segment.previousFollowed", {
+        display: "block",
+      })
+
       const flipState = Flip.getState(".segment")
 
       gsap.set(".segment.current, .segment.previous", { display: "block" })
-      gsap.set(".segment.removed", { display: "none" })
+      gsap.set(".segment.removed, .segment.previousFollowed", {
+        display: "none",
+      })
 
       gsap.set(wrapper.current, {
         height: wrapper.current?.clientHeight,
@@ -70,7 +78,8 @@ export default function NavigationSidebar() {
 
   useDeepCompareEffect(() => {
     setTimeout(() => {
-      previousSegments.current = [...followedRoute, ...spokenRoute]
+      previousSpoken.current = spokenRoute
+      previousFollowed.current = followedRoute
     }, 2000)
   }, [followedRoute, spokenRoute])
 
@@ -82,6 +91,7 @@ export default function NavigationSidebar() {
           segment={segment}
           segmentPosition="previous"
           index={i}
+          key={`previous${segment.from.uniqueId}-${segment.to.uniqueId}`}
         />
       ))}
       <div className="scrollMarker" />
@@ -90,13 +100,23 @@ export default function NavigationSidebar() {
           segment={segment}
           segmentPosition="current"
           index={i}
+          key={`current${segment.from.uniqueId}-${segment.to.uniqueId}`}
         />
       ))}
-      {previousSegments.current.map((segment, i) => (
+      {previousFollowed.current.map((segment, i) => (
+        <NavigationSegment
+          segment={segment}
+          segmentPosition="previousFollowed"
+          index={i}
+          key={`previousFollowed${segment.from.uniqueId}-${segment.to.uniqueId}`}
+        />
+      ))}
+      {previousSpoken.current.map((segment, i) => (
         <NavigationSegment
           segment={segment}
           segmentPosition="removed"
           index={i}
+          key={`removed${segment.from.uniqueId}-${segment.to.uniqueId}`}
         />
       ))}
     </Wrapper>
@@ -107,13 +127,28 @@ const Wrapper = styled.div`
   width: 350px;
   margin: 20px;
   margin-top: 120px;
+  margin-bottom: 70vh;
 
   @media ${media.mobile} {
+    margin-top: 70vh;
     width: calc(100vw - 40px);
   }
 
   pointer-events: none;
   > * {
     pointer-events: auto;
+  }
+
+  .removed {
+    border: 10px solid red;
+  }
+  .previousFollowed {
+    border: 10px solid orange;
+  }
+  .current {
+    border: 10px solid green;
+  }
+  .previous {
+    border: 10px solid blue;
   }
 `
