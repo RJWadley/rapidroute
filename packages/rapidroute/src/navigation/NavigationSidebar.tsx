@@ -105,4 +105,14 @@ const Wrapper = styled.div`
   > * {
     pointer-events: auto;
   }
+
+  .previous {
+    border: 10px solid blue;
+  }
+  .current {
+    border: 10px solid green;
+  }
+  .removed {
+    border: 10px solid red;
+  }
 `

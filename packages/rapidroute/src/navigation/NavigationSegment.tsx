@@ -80,10 +80,7 @@ export default function NavigationSegment({
   const key = `${segment.from.uniqueId}${segment.to.uniqueId}${
     segmentPosition === "previous" ? index : ""
   }`
-  const flipId =
-    segmentPosition === "previous"
-      ? undefined
-      : `${segment.from.uniqueId}${segment.to.uniqueId}`
+  const flipId = `${segment.from.uniqueId}${segment.to.uniqueId}`
 
   return (
     <SegmentWrapper

@@ -36,5 +36,24 @@ export default function useFollowedRoute(route: SegmentType[]) {
     setPreviousRoute(route)
   }, [followedRoute, previousRoute, route])
 
+  // remove any results that are in the current route
   return followedRoute
+    .filter(
+      segment =>
+        !route.find(
+          r =>
+            r.from.uniqueId === segment.from.uniqueId &&
+            r.to.uniqueId === segment.to.uniqueId
+        )
+    )
+    .filter(
+      // filter out any duplicate segments
+      (segment, index, self) =>
+        index ===
+        self.findIndex(
+          s =>
+            s.from.uniqueId === segment.from.uniqueId &&
+            s.to.uniqueId === segment.to.uniqueId
+        )
+    )
 }
