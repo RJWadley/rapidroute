@@ -106,6 +106,7 @@ export default function NavigationSidebar() {
 const Wrapper = styled.div`
   width: 350px;
   margin: 20px;
+  margin-top: 120px;
 
   @media ${media.mobile} {
     width: calc(100vw - 40px);
