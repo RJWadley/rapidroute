@@ -32,7 +32,7 @@ if (isBrowser())
   })
 
 export const playSound = (
-  sound: "alert" | "complete" | "neutral" | "success"
+  sound: "alert" | "complete" | "neutral" | "intercom"
 ) => {
   const audio = new Audio()
   switch (sound) {
@@ -56,7 +56,7 @@ let twoMinuteWarningPhrase = "Two minute warning"
 let canSayTwoMinuteWarning = true
 export const twoMinuteWarning = () => {
   if (canSayTwoMinuteWarning) {
-    playSound("success")
+    playSound("intercom")
     TtsEngine.speakOut(twoMinuteWarningPhrase)
     canSayTwoMinuteWarning = false
   }
@@ -65,7 +65,7 @@ let thirtySecondWarningPhrase = "Thirty second warning"
 let canSayThirtySecondWarning = true
 export const thirtySecondWarning = () => {
   if (canSayThirtySecondWarning) {
-    playSound("success")
+    playSound("intercom")
     TtsEngine.speakOut(thirtySecondWarningPhrase)
     canSayThirtySecondWarning = false
   }
@@ -74,6 +74,8 @@ export const thirtySecondWarning = () => {
 export default function useVoiceNavigation(route: SegmentType[]) {
   const { currentRoute, spokenRoute, setSpokenRoute, navigationComplete } =
     useContext(NavigationContext)
+  const rerouted = useRef(false)
+
   /**
    * every time the spoken route changes, speak the next instruction
    */
@@ -100,7 +102,10 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       : ""
     thirtySecondWarningPhrase = newThirtySecondWarning
 
-    playSound("success")
+    if (rerouted.current) {
+      playSound("neutral")
+      rerouted.current = false
+    } else playSound("intercom")
     if (firstInstruction && nextInstruction) {
       TtsEngine.speakOut(`${firstInstruction}, then ${nextInstruction}`)
     } else if (firstInstruction) {
@@ -205,6 +210,18 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       firstSpoken?.from.uniqueId.includes("Coordinate")
     ) {
       return
+    }
+
+    // if the first from is not in the previous route, then we have been rerouted
+    // and should play a sound
+    if (
+      !spokenRoute.some(
+        segment =>
+          segment.from.uniqueId === firstCurrent?.from.uniqueId ||
+          segment.to.uniqueId === firstCurrent?.from.uniqueId
+      )
+    ) {
+      rerouted.current = true
     }
 
     // if we reach this point, the spoken route is no longer valid and we need to update it
