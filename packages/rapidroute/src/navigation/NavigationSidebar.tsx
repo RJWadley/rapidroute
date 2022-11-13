@@ -43,30 +43,12 @@ export default function NavigationSidebar() {
       // make sure initial state is correct
       gsap.set(".slotB", { display: "block" })
 
+      // kill all scroll triggers
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+
       console.log("flipping, the new slot, ", newSlot, "is becoming visible")
       gsap.set(oldSlot, { display: "block" })
       gsap.set(newSlot, { display: "none" })
-
-      if (mobile) {
-        // pull transforms from the old slot previous segments
-        const oldSegments = Array.from(
-          document.querySelectorAll(`${oldSlot}.previous > div`)
-        )
-        const newSegments = Array.from(
-          document.querySelectorAll(`${newSlot}.previous > div`)
-        )
-        oldSegments.forEach((oldSegment, index) => {
-          if (!(oldSegment instanceof HTMLElement)) return
-          const newSegment = newSegments[index]
-          if (!(newSegment instanceof HTMLElement)) return
-
-          console.log("old transform", oldSegment.style.transform)
-          console.log("new transform", newSegment.style.transform)
-
-          const oldTransform = oldSegment.style.transform
-          newSegment.style.transform = oldTransform
-        })
-      }
 
       const flipState = Flip.getState(".segment")
 
@@ -170,42 +152,6 @@ export default function NavigationSidebar() {
       clearTimeout(timeout)
     }
   }, [activeSlot, mobile])
-
-  /**
-   * animate up and down the previous segments
-   */
-  useEffect(() => {
-    if (!slotA && !slotB) return undefined
-
-    const trigger = ScrollTrigger.create({
-      trigger: document.querySelector(".current"),
-      start: "top 71%",
-      end: "top 71%",
-      markers: true,
-      onEnter: () => {
-        gsap.to(".segment.previous > div", {
-          y: "-70vh",
-          yPercent: -100,
-          duration: 1,
-          stagger: 0.05,
-          ease: "power3.in",
-        })
-      },
-      onLeaveBack: () => {
-        gsap.to(".segment.previous > div", {
-          y: 0,
-          yPercent: 0,
-          duration: 1,
-          stagger: -0.05,
-          ease: "power3.out",
-        })
-      },
-    })
-
-    return () => {
-      trigger.kill()
-    }
-  }, [slotA, slotB])
 
   return (
     <Wrapper>

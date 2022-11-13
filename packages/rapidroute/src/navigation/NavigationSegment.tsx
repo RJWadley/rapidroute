@@ -1,10 +1,14 @@
-import React, { useContext,  } from "react"
+import React, { useContext, useRef } from "react"
 
+import gsap from "gsap"
 import styled from "styled-components"
 
 import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
 import Segment from "components/Segment"
+import media from "utils/media"
+import useAnimation from "utils/useAnimation"
+import useMedia from "utils/useMedia"
 
 interface NavigationSegmentProps {
   segment: SegmentType
@@ -18,11 +22,41 @@ export default function NavigationSegment({
   index,
 }: NavigationSegmentProps) {
   const isDark = useContext(darkModeContext) ?? false
- 
+  const wrapper = useRef<HTMLDivElement>(null)
+  const mobile = useMedia(media.mobile)
+
   const key = `${segmentPosition}-${segment.from.uniqueId}-${
     segment.to.uniqueId
   }${segmentPosition === "previous" ? index : ""}`
   const flipId = `${segment.from.uniqueId}-${segment.to.uniqueId}`
+
+  useAnimation(() => {
+    if (mobile && segmentPosition === "previous"){
+      gsap.delayedCall(3, () => {
+        gsap.to(wrapper.current, {
+          y: "-70vh",
+          duration: 1,
+          scrollTrigger: {
+            trigger: wrapper.current,
+            start: "top 70%",
+            onEnter: () => {
+              gsap.to(wrapper.current, {
+                y: "-100vh",
+                duration: 1,
+              })
+            },
+            onLeaveBack: () => {
+              gsap.to(wrapper.current, {
+                y: 0,
+                duration: 1,
+              })
+            }
+          }
+        })
+      })
+
+    }
+  }, [mobile, segmentPosition])
 
   return (
     <SegmentWrapper
@@ -32,6 +66,7 @@ export default function NavigationSegment({
       data-flip-id={flipId}
       id={key}
       className={`segment ${segmentPosition}`}
+      ref={wrapper}
     >
       <Segment forceMobile segment={segment} glassy />
     </SegmentWrapper>
@@ -50,25 +85,5 @@ const SegmentWrapper = styled.div<{
   > div {
     transform: none;
     opacity: 1;
-  }
-
-  &.previous {
-    background: none;
-    backdrop-filter: none;
-    > div {
-      transform: translate(0, 0);
-      :before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: ${({ dark }) => (dark ? "#1119" : "#eeea")};
-        backdrop-filter: blur(3px);
-        border-radius: 30px;
-        z-index: -1;
-      }
-    }
   }
 `
