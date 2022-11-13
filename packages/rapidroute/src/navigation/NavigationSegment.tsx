@@ -33,9 +33,13 @@ export default function NavigationSegment({
     // this animation only happens on mobile
     if (mobile && segmentPosition === "previous") {
       const call = gsap.delayedCall(3, () => {
-        // clear transforms on wrapper (they may be wrong if the trigger is killed)
-        gsap.to(wrapper.current, {
-          y: 0,
+        // clear transforms on wrapper
+        // since we want the trigger to be based on the original position
+        const context = gsap.context(() => {
+          gsap.set(wrapper.current, {
+            y: 0,
+            yPercent: 0,
+          })
         })
         ScrollTrigger.create({
           trigger: wrapper.current,
@@ -58,6 +62,7 @@ export default function NavigationSegment({
             })
           },
         })
+        context.revert() // this moves the wrapper back to its original position, before we created the trigger
       })
       return () => {
         call.kill()
@@ -73,6 +78,22 @@ export default function NavigationSegment({
       call.kill()
     }
   }, [mobile, segmentPosition])
+
+  /**
+   * if, when this segment is created, there's another segment that has a matching flipId, copy its transform
+   */
+  useEffect(() => {
+    if (mobile) {
+      const otherSegment = Array.from(
+        document.querySelectorAll(`[data-flip-id="${flipId}"]`)
+      ).filter(el => el !== wrapper.current)[0]
+
+      if (otherSegment instanceof HTMLElement && wrapper.current) {
+        const { transform } = otherSegment.style
+        wrapper.current.style.transform = transform
+      }
+    }
+  }, [mobile, flipId])
 
   return (
     <SegmentWrapper
