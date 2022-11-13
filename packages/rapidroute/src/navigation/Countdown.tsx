@@ -2,6 +2,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { RouteMode } from "@rapidroute/database-types"
+import gsap from "gsap"
+import TextPlugin from "gsap/TextPlugin"
 import styled from "styled-components"
 import { useDeepCompareEffect } from "use-deep-compare"
 
@@ -13,6 +15,8 @@ import invertLightness from "utils/invertLightness"
 import getTimeToInstruction from "./timeToInstruction"
 import { thirtySecondWarning, twoMinuteWarning } from "./useVoiceNavigation"
 
+gsap.registerPlugin(TextPlugin)
+
 export default function Countdown({
   type = "walk",
 }: {
@@ -22,6 +26,8 @@ export default function Countdown({
   const timerInterval = useRef<number>(1000)
   const [timeToInstruction, setTimeToInstruction] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
+  const arriving = useRef<HTMLDivElement>(null)
+  const timer = useRef<HTMLDivElement>(null)
 
   /**
    * decrease the current time once per second
@@ -87,7 +93,6 @@ export default function Countdown({
    * @param numSeconds the number of seconds to format
    */
   const formatTime = (numSeconds: number) => {
-
     if (!Number.isFinite(numSeconds)) return "Waiting"
 
     const hours = Math.floor(numSeconds / 3600)
@@ -115,23 +120,41 @@ export default function Countdown({
     }
   }, [currentTime])
 
+  /**
+   * animations
+   */
+  useEffect(() => {
+    gsap.to(timer.current, {
+      opacity: type === "MRT" ? 1 : 0,
+      duration: 1
+    })
+    gsap.to(arriving.current, {
+      text: {
+        value: type === "MRT" ? "Arriving in" : "Up Next",
+      },
+      duration: 1
+    })
+  }, [type])
+
   const isDark = useContext(darkModeContext)
   const backgroundColor = isDark ? "#07380f" : "#bbf7c5"
   const textColor = invertLightness(backgroundColor)
 
   return (
-    <Wrapper className="segment" data-flip-id="countdown" dark={isDark ?? false}>
+    <Wrapper
+      className="segment"
+      data-flip-id="countdown"
+      dark={isDark ?? false}
+    >
       <Inner>
-        {type === "MRT" ? (
-          <>
-            <Arriving>Arriving in</Arriving>
-            <Time textColor={textColor} backgroundColor={backgroundColor}>
-              {formatTime(currentTime)}
-            </Time>
-          </>
-        ) : (
-          <Arriving>Up Next</Arriving>
-        )}
+        <Arriving ref={arriving} />
+        <Time
+          textColor={textColor}
+          backgroundColor={backgroundColor}
+          ref={timer}
+        >
+          {formatTime(currentTime)}
+        </Time>
       </Inner>
     </Wrapper>
   )

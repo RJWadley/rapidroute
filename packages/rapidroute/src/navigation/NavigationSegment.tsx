@@ -32,7 +32,7 @@ export default function NavigationSegment({
   useEffect(() => {
     // this animation only happens on mobile
     if (mobile && segmentPosition === "previous") {
-      gsap.delayedCall(3, () => {
+      const call = gsap.delayedCall(3, () => {
         // clear transforms on wrapper (they may be wrong if the trigger is killed)
         gsap.to(wrapper.current, {
           y: 0,
@@ -59,14 +59,20 @@ export default function NavigationSegment({
           },
         })
       })
-    } else {
+      return () => {
+        call.kill()
+      }
+    } 
       // make sure position is reset
-      gsap.delayedCall(3, () => {
+      const call = gsap.delayedCall(3, () => {
         gsap.to(wrapper.current, {
           y: 0,
         })
       })
-    }
+      return () => {
+        call.kill()
+      }
+    
   }, [mobile, segmentPosition])
 
   return (
