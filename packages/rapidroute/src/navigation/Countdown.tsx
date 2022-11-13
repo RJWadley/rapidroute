@@ -14,11 +14,9 @@ import getTimeToInstruction from "./timeToInstruction"
 import { thirtySecondWarning, twoMinuteWarning } from "./useVoiceNavigation"
 
 export default function Countdown({
-  show = false,
   type = "walk",
 }: {
-  show?: boolean
-  type: RouteMode | undefined
+  type?: RouteMode | undefined
 }) {
   const { currentRoute, spokenRoute } = useContext(NavigationContext)
   const timerInterval = useRef<number>(1000)
@@ -122,35 +120,68 @@ export default function Countdown({
   const textColor = invertLightness(backgroundColor)
 
   return (
-    <Wrapper show={show}>
-      {type === "MRT" ? (
-        <>
-          <Arriving>Arriving in</Arriving>
-          <Time textColor={textColor} backgroundColor={backgroundColor}>
-            {formatTime(currentTime)}
-          </Time>
-        </>
-      ) : (
-        <Arriving>Up Next</Arriving>
-      )}
+    <Wrapper className="segment" data-flip-id="countdown" dark={isDark ?? false}>
+      <Inner>
+        {type === "MRT" ? (
+          <>
+            <Arriving>Arriving in</Arriving>
+            <Time textColor={textColor} backgroundColor={backgroundColor}>
+              {formatTime(currentTime)}
+            </Time>
+          </>
+        ) : (
+          <Arriving>Up Next</Arriving>
+        )}
+      </Inner>
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div<{
-  show: boolean
+  dark: boolean
 }>`
-  position: absolute;
-  top: 0;
-  left: 30px;
-  right: 14px;
-  height: 50px;
+  margin-top: 20px;
+  margin-bottom: -50px;
+  height: 80px;
+  position: relative;
+  z-index: 1;
+  background-color: ${({ dark }) => (dark ? "#1119" : "#eeea")};
+  border-radius: 20px 20px 0 0;
+  transition: border-radius 0.5s;
+  backdrop-filter: blur(3px);
+
+  // a shadow to fade out the bottom of the countdown
+  &:after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(
+      to bottom,
+      ${({ dark }) => (dark ? "#1119" : "#eeea")} 0%,
+      transparent 100%
+    );
+    opacity: 1;
+    transition: opacity 0.1s;
+  }
+
+  &.flipping {
+    border-radius: 20px;
+    &:after {
+      opacity: 0;
+    }
+  }
+`
+
+const Inner = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  opacity: ${p => (p.show ? 1 : 0)};
-  transition: opacity 0.5s ease-in-out;
+  width: 100%;
+  height: 50px;
+  padding: 0 30px;
 `
 
 const Arriving = styled.div`

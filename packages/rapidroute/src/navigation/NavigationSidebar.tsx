@@ -14,6 +14,7 @@ import media from "utils/media"
 import useMedia from "utils/useMedia"
 
 import { NavigationContext } from "../components/Providers/NavigationContext"
+import Countdown from "./Countdown"
 import ExitNavigation from "./ExitNavigation"
 import NavigationSegment from "./NavigationSegment"
 
@@ -67,6 +68,7 @@ export default function NavigationSidebar() {
         duration: 1,
         absoluteOnLeave: true,
         stagger: 0.1,
+        toggleClass: "flipping",
         onEnter: el =>
           gsap.fromTo(el, { xPercent: -150 },
             { xPercent: 0, duration: 1, stagger: 0.1 }),
@@ -113,6 +115,7 @@ export default function NavigationSidebar() {
       const newContent = (
         <>
           {newFollowed}
+          <Countdown type={spokenRoute[0]?.routes[0]?.type} />
           {newSpoken}
         </>
       )

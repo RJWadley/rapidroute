@@ -85,6 +85,7 @@ const SegmentWrapper = styled.div<{
   backdrop-filter: blur(3px);
   border-radius: 30px;
   position: relative;
+  z-index: 2;
   margin-top: 20px;
   > div {
     transform: none;
