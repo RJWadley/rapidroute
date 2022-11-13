@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 
 import gsap from "gsap"
 import ScrollTrigger from "gsap/ScrollTrigger"
@@ -8,7 +8,6 @@ import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
 import Segment from "components/Segment"
 import media from "utils/media"
-import useAnimation from "utils/useAnimation"
 import useMedia from "utils/useMedia"
 
 interface NavigationSegmentProps {
@@ -31,19 +30,18 @@ export default function NavigationSegment({
   }${segmentPosition === "previous" ? index : ""}`
   const flipId = `${segment.from.uniqueId}-${segment.to.uniqueId}`
 
-  useAnimation(() => {
-    if (mobile && segmentPosition === "previous"){
-      gsap.delayedCall(3, () => {
+  useEffect(() => {
+    if (mobile && segmentPosition === "previous") {
+      const timeout = gsap.delayedCall(5, () => {
+        // clear transforms on wrapper
         gsap.to(wrapper.current, {
           y: 0,
-          duration: 1,
         })
-
         ScrollTrigger.create({
           trigger: wrapper.current,
-          start: "top 70%",
-          end: "bottom+=20 70%",
-          markers: true,
+          start: "top 71%",
+          end: "bottom+=20 71%",
+          // markers: true,
           onLeave: () => {
             gsap.to(wrapper.current, {
               y: "-100vh",
@@ -59,7 +57,11 @@ export default function NavigationSegment({
         })
       })
 
+      return () => {
+        timeout.kill()
+      }
     }
+    return () => {}
   }, [mobile, segmentPosition])
 
   return (

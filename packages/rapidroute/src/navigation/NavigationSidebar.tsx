@@ -44,7 +44,11 @@ export default function NavigationSidebar() {
       gsap.set(".slotB", { display: "block" })
 
       // kill all scroll triggers
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+
+      const initialScroll = window.scrollY
+
+      console.log("initial scroll", initialScroll)
 
       console.log("flipping, the new slot, ", newSlot, "is becoming visible")
       gsap.set(oldSlot, { display: "block" })
@@ -55,10 +59,13 @@ export default function NavigationSidebar() {
       gsap.set(oldSlot, { display: "none" })
       gsap.set(newSlot, { display: "block" })
 
+      // restore scroll position
+      window.scrollTo(0, initialScroll)
+
       Flip.from(flipState, {
         targets: ".segment",
         duration: 1,
-        absolute: true,
+        absoluteOnLeave: true,
         stagger: 0.1,
         onEnter: el =>
           gsap.fromTo(el, { xPercent: -150 },
@@ -156,22 +163,21 @@ export default function NavigationSidebar() {
   return (
     <Wrapper>
       <ExitNavigation />
+      <BeforeSpacer />
       <div className="slotA">{slotA}</div>
       <div className="slotB" style={{ display: "none" }}>
         {slotB}
       </div>
+      <AfterSpacer />
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div`
   width: 350px;
-  margin: 20px;
-  margin-top: 120px;
-  margin-bottom: 50vh;
+  margin: 0 20px;
 
   @media ${media.mobile} {
-    margin-top: 70vh;
     width: calc(100vw - 40px);
   }
 
@@ -179,4 +185,32 @@ const Wrapper = styled.div`
   > * {
     pointer-events: auto;
   }
+
+  /* .slotA {
+    .previous {
+      border: 10px solid red;
+    }
+    .current {
+      border: 10px solid orange;
+    }
+  }
+  .slotB {
+    .previous {
+      border: 10px solid green;
+    }
+    .current {
+      border: 10px solid blue;
+    }
+  } */
+`
+
+const BeforeSpacer = styled.div`
+  height: 120px;
+  @media ${media.mobile} {
+    height: 70vh;
+  }
+`
+
+const AfterSpacer = styled.div`
+  height: 80vh;
 `
