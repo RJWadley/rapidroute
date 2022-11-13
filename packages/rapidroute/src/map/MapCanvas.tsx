@@ -81,22 +81,15 @@ export default function MapCanvas({ className = "" }: { className?: string }) {
       const resize = () => {
         if (canvasRef.current) {
           canvas.setDimensions({
-            width: 0,
-            height: 0,
+            width:
+              canvasRef.current.parentElement?.parentElement?.offsetWidth ||
+              100,
+            height:
+              canvasRef.current.parentElement?.parentElement?.offsetHeight ||
+              100,
           })
-          setTimeout(() => {
-            if (canvasRef.current)
-              canvas.setDimensions({
-                width:
-                  canvasRef.current.parentElement?.parentElement?.offsetWidth ||
-                  100,
-                height:
-                  canvasRef.current.parentElement?.parentElement
-                    ?.offsetHeight || 100,
-              })
-          }, 1)
+          canvas.requestRenderAll()
         }
-        canvas.requestRenderAll()
       }
 
       window.addEventListener("resize", resize)
