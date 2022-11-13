@@ -1,6 +1,7 @@
 import React, { useContext, useRef } from "react"
 
 import gsap from "gsap"
+import ScrollTrigger from "gsap/ScrollTrigger"
 import styled from "styled-components"
 
 import { SegmentType } from "components/createSegments"
@@ -34,24 +35,27 @@ export default function NavigationSegment({
     if (mobile && segmentPosition === "previous"){
       gsap.delayedCall(3, () => {
         gsap.to(wrapper.current, {
-          y: "-70vh",
+          y: 0,
           duration: 1,
-          scrollTrigger: {
-            trigger: wrapper.current,
-            start: "top 70%",
-            onEnter: () => {
-              gsap.to(wrapper.current, {
-                y: "-100vh",
-                duration: 1,
-              })
-            },
-            onLeaveBack: () => {
-              gsap.to(wrapper.current, {
-                y: 0,
-                duration: 1,
-              })
-            }
-          }
+        })
+
+        ScrollTrigger.create({
+          trigger: wrapper.current,
+          start: "top 70%",
+          end: "bottom+=20 70%",
+          markers: true,
+          onLeave: () => {
+            gsap.to(wrapper.current, {
+              y: "-100vh",
+              duration: 1,
+            })
+          },
+          onEnterBack: () => {
+            gsap.to(wrapper.current, {
+              y: 0,
+              duration: 1,
+            })
+          },
         })
       })
 
