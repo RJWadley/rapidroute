@@ -55,6 +55,9 @@ export default function NavigationSidebar() {
       gsap.set(oldSlot, { display: "block" })
       gsap.set(newSlot, { display: "none" })
 
+      // make wrappers visible so that Flip can see everything
+      gsap.set(".slotA, .slotB", { display: "block" })
+
       const flipState = Flip.getState(".segment")
 
       gsap.set(oldSlot, { display: "none" })
@@ -78,8 +81,10 @@ export default function NavigationSidebar() {
         onComplete: () => {
           if (activeSlot === "A") {
             setSlotB(null)
+            gsap.set(".slotB", { display: "none" })
           } else {
             setSlotA(null)
+            gsap.set(".slotA", { display: "none" })
           }
         },
       })
