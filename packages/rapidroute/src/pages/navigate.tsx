@@ -58,6 +58,32 @@ export default function Navigate() {
     return () => window.removeEventListener("resize", updatePadding)
   }, [mobile])
 
+  /**
+   * acquire a wake lock while the user is navigating
+   */
+  useEffect(() => {
+    if (isBrowser() && "wakeLock" in navigator) {
+      let wakeLock: WakeLockSentinel
+
+      const acquireWakeLock = async () => {
+        try {
+          wakeLock = await navigator.wakeLock.request("screen")
+        } catch (err) {
+          console.error("unable to acquire wake lock")
+        }
+      }
+
+      acquireWakeLock().catch(() => {
+        console.error("unable to acquire wake lock")
+      })
+
+      return () => {
+        if (wakeLock) wakeLock.release().catch(console.error)
+      }
+    }
+    return () => {}
+  }, [])
+
   return (
     <Layout>
       <StyledCanvas />

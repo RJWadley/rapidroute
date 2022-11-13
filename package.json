@@ -8,6 +8,7 @@
     "services/*"
   ],
   "dependencies": {
+    "@types/dom-screen-wake-lock": "^1.0.0",
     "prettier": "^2.7.1"
   },
   "scripts": {
