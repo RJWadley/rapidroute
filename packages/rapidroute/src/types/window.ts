@@ -19,7 +19,7 @@ declare global {
     /**
      * access to session for debugging
      */
-    session?: Session
+    session?: Partial<Session>
   }
 }
 

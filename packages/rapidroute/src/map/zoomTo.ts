@@ -30,18 +30,36 @@ export const zoomToPlayer = (
     zoomToTwoPoints({ x, z }, session.pointOfInterest, canvas)
     return
   }
+  const cameraPadding = session.cameraPadding ?? {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  }
+
+  const getPad = (padding: keyof typeof cameraPadding) => {
+    return cameraPadding[padding]
+  }
 
   if (!(activeCanvas === canvas)) return
   if (!canMoveCamera()) return
-  const duration = 5000
+  const duration = 500
   const start = Date.now()
   const startZoom = canvas.getZoom()
   const startX = canvas.viewportTransform?.[4] ?? 0
   const startZ = canvas.viewportTransform?.[5] ?? 0
   const end = start + duration
   const endZoom = 1
-  const endX = -x * endZoom + canvas.getWidth() / 2
-  const endZ = -z * endZoom + canvas.getHeight() / 2
+  const endZ =
+    -z * endZoom +
+    canvas.getHeight() / 2 +
+    -getPad("bottom") / 2 +
+    getPad("top") / 2
+  const endX =
+    -x * endZoom +
+    canvas.getWidth() / 2 +
+    -getPad("right") / 2 +
+    getPad("left") / 2
   const animate = () => {
     if (!(activeCanvas === canvas)) return
     if (!canMoveCamera()) return
@@ -75,13 +93,26 @@ export const zoomToTwoPoints = (
   b: { x: number; z: number },
   canvas: fabric.Canvas
 ) => {
+  const cameraPadding = session.cameraPadding ?? {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  }
+
+  const getPad = (padding: keyof typeof cameraPadding) => {
+    return cameraPadding[padding] / canvas.getZoom()
+  }
+
   if (!(activeCanvas === canvas)) return
   if (!canMoveCamera()) return
   const padding = 100 / canvas.getZoom()
-  const width = Math.abs(a.x - b.x) + padding * 2
-  const height = Math.abs(a.z - b.z) + padding * 2
-  const centerX = (a.x + b.x) / 2
-  const centerZ = (a.z + b.z) / 2
+  const width =
+    Math.abs(a.x - b.x) + padding * 2 + getPad("left") + getPad("right")
+  const height =
+    Math.abs(a.z - b.z) + padding * 2 + getPad("top") + getPad("bottom")
+  const centerX = (a.x + b.x) / 2 - (getPad("left") - getPad("right")) / 2
+  const centerZ = (a.z + b.z) / 2 - (getPad("top") - getPad("bottom")) / 2
   const MAX_ZOOM = 10
   const endZoom = Math.min(
     canvas.getWidth() / width,

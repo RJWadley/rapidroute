@@ -203,10 +203,11 @@ export const renderDuplicateStops = (
 
         if (canvas.getZoom() < 0.1) return
 
+        const r = 12.5 * (duplicateStopSet.length - i)
         if (
           lineIsOnScreen(
-            { x: averageX + 10, y: averageZ + radius / 10 },
-            { x: averageX - 10, y: averageZ - radius / 10 },
+            { x: averageX - r, y: averageZ - r },
+            { x: averageX + r, y: averageZ + r },
             canvas
           )
         ) {

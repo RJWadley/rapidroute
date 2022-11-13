@@ -15,7 +15,7 @@ import renderDynmapMarkers from "./renderDynmapMarkers"
 import renderPlayers from "./renderPlayers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
-export default function MapCanvas({className=""}: {className?: string}) {
+export default function MapCanvas({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const previousTransform = useRef<number[] | undefined>()
 
@@ -115,6 +115,7 @@ export default function MapCanvas({className=""}: {className?: string}) {
         clearTiles()
         previousTransform.current = canvas.viewportTransform
         canvas.dispose()
+        canvas.requestRenderAll = () => canvas
       }
     }
     return () => {}

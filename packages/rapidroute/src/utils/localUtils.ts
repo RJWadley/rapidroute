@@ -71,27 +71,40 @@ export interface Session {
   /**
    * date of last pan or zoom on map
    */
-  lastMapInteraction?: Date
+  lastMapInteraction: Date
   /**
    * player to follow on map
    */
-  following?: string
+  following: string
   /**
    * point of interest to follow on map
    */
-  pointOfInterest?: {
+  pointOfInterest: {
     x: number
     z: number
   }
   /**
    * last known location of the user
    */
-  lastKnownLocation?: {
+  lastKnownLocation: {
     x: number
     z: number
   }
+  /**
+   * how much padding the camera should have around the edge of the screen
+   */
+  cameraPadding: {
+    top: number
+    bottom: number
+    left: number
+    right: number
+  }
 }
 
-export const session: Session = {
+export const session: Partial<Session> = {
   isDebug: false,
+}
+
+if (isBrowser()) {
+  window.session = session
 }
