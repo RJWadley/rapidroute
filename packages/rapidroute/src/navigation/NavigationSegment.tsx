@@ -39,19 +39,23 @@ export default function NavigationSegment({
         })
         ScrollTrigger.create({
           trigger: wrapper.current,
-          start: "top 71%",
-          end: "bottom+=20 71%",
+          start: "top 61%",
+          end: "bottom+=20 61%",
           // markers: true,
           onLeave: () => {
             gsap.to(wrapper.current, {
-              y: "-100vh",
+              y: "-60vh",
+              yPercent: -100,
               duration: 1,
+              ease: "power3.in"
             })
           },
           onEnterBack: () => {
             gsap.to(wrapper.current, {
               y: 0,
+              yPercent: 0,
               duration: 1,
+              ease: "power3.out"
             })
           },
         })

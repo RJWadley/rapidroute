@@ -42,7 +42,7 @@ export default function Navigate() {
           top: 120,
           left: 0,
           right: 0,
-          bottom: window.innerHeight * 0.3 + 20,
+          bottom: window.innerHeight * 0.4 + 20,
         }
       } else {
         session.cameraPadding = {

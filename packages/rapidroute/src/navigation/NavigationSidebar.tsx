@@ -36,6 +36,7 @@ export default function NavigationSidebar() {
     const oldSlot = activeSlot === "A" ? ".slotB .segment" : ".slotA .segment"
 
     gsap.set(oldSlot, { display: "block" })
+    gsap.set(newSlot, { clearProps: "all" })
     gsap.set(newSlot, { display: "none" })
     console.log("swap, the old slot, ", oldSlot, "is visible")
 
@@ -133,11 +134,11 @@ export default function NavigationSidebar() {
     const elementToScrollTo = document.querySelector(searchClass)
     const getMobileScrollPoint = () =>
       // taller than 30 % of the screen?
-      (elementToScrollTo?.clientHeight ?? 0) > window.innerHeight * 0.3 - 20
+      (elementToScrollTo?.clientHeight ?? 0) > window.innerHeight * 0.4 - 20
         ? // if yes, position relative to bottom of screen
           window.innerHeight - (elementToScrollTo?.clientHeight ?? 0) - 20
         : // otherwise, position relative to middle
-          window.innerHeight * 0.7
+          window.innerHeight * 0.6
 
     // gsap scroll plugin
     const updateScroll = () => {
