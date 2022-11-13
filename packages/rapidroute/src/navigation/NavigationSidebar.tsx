@@ -33,51 +33,46 @@ export default function NavigationSidebar() {
    * flip in the new segments and out the old
    */
   useEffect(() => {
-    const newSlot = activeSlot === "A" ? ".slotA .segment" : ".slotB .segment"
-    const oldSlot = activeSlot === "A" ? ".slotB .segment" : ".slotA .segment"
-
-    gsap.set(oldSlot, { display: "block" })
-    gsap.set(newSlot, { display: "none" })
-    console.log("swap, the old slot, ", oldSlot, "is visible")
-
-    const timeout = setTimeout(() => {
-      // make sure initial state is correct
-      gsap.set(".slotB", { display: "block" })
+    // debounce the animation to prevent it from running multiple times
+    const debounced = setTimeout(() => {
+      const newSlot = activeSlot === "A" ? ".slotA .segment" : ".slotB .segment"
+      const oldSlot = activeSlot === "A" ? ".slotB .segment" : ".slotA .segment"
 
       // kill all scroll triggers
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
 
+      // save the scroll position to prevent the page from jumping when the contents change
       const initialScroll = window.scrollY
 
-      console.log("initial scroll", initialScroll)
-
-      console.log("flipping, the new slot, ", newSlot, "is becoming visible")
-      gsap.set(oldSlot, { display: "block" })
-      gsap.set(newSlot, { display: "none" })
-
-      // make wrappers visible so that Flip can see everything
+      // make both wrappers visible so that Flip can see everything
       gsap.set(".slotA, .slotB", { display: "block" })
 
+      // "First" state
+      gsap.set(oldSlot, { display: "block" })
+      gsap.set(newSlot, { display: "none" })
       const flipState = Flip.getState(".segment")
 
+      // Last state
       gsap.set(oldSlot, { display: "none" })
       gsap.set(newSlot, { display: "block" })
 
-      // restore scroll position
+      // Invert and Play
       window.scrollTo(0, initialScroll)
-
       Flip.from(flipState, {
         targets: ".segment",
         duration: 1,
         absoluteOnLeave: true,
         stagger: 0.1,
         toggleClass: "flipping",
+        // animate in from the left
         onEnter: el =>
           gsap.fromTo(el, { xPercent: -150 },
             { xPercent: 0, duration: 1, stagger: 0.1 }),
+        // animate out to the right
         onLeave: el =>
           gsap.fromTo(el, { xPercent: 0 },
             { xPercent: -150, duration: 1, stagger: 0.1 }),
+        // hide the old slot after the animation is done
         onComplete: () => {
           if (activeSlot === "A") {
             setSlotB(null)
@@ -91,7 +86,7 @@ export default function NavigationSidebar() {
     }, 1000)
 
     return () => {
-      clearTimeout(timeout)
+      clearTimeout(debounced)
     }
   }, [activeSlot, mobile])
 
@@ -128,11 +123,9 @@ export default function NavigationSidebar() {
       setActiveSlot(previousSlot => {
         if (previousSlot === "A") {
           setSlotB(newContent)
-          console.log("updating inactive slot B")
           return "B"
         }
         setSlotA(newContent)
-        console.log("updating inactive slot A")
         return "A"
       })
     }, 100)
@@ -147,11 +140,11 @@ export default function NavigationSidebar() {
       activeSlot === "A" ? ".slotA .current" : ".slotB .current"
     const elementToScrollTo = document.querySelector(searchClass)
     const getMobileScrollPoint = () =>
-      // taller than 30 % of the screen?
+      // taller than 40 % of the screen?
       (elementToScrollTo?.clientHeight ?? 0) > window.innerHeight * 0.4 - 20
         ? // if yes, position relative to bottom of screen
           window.innerHeight - (elementToScrollTo?.clientHeight ?? 0) - 20
-        : // otherwise, position relative to middle
+        : // otherwise, position relative to the 60% mark
           window.innerHeight * 0.6
 
     // gsap scroll plugin
@@ -201,7 +194,8 @@ const Wrapper = styled.div`
     pointer-events: auto;
   }
 
-  /* .slotA {
+  /* // Debug Colors
+  .slotA {
     .previous {
       border: 10px solid red;
     }

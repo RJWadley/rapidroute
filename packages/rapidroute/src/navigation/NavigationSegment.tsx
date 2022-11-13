@@ -24,16 +24,16 @@ export default function NavigationSegment({
   const isDark = useContext(darkModeContext) ?? false
   const wrapper = useRef<HTMLDivElement>(null)
   const mobile = useMedia(media.mobile)
-
-  const key = `${segmentPosition}-${segment.from.uniqueId}-${
-    segment.to.uniqueId
-  }${segmentPosition === "previous" ? index : ""}`
   const flipId = `${segment.from.uniqueId}-${segment.to.uniqueId}`
 
+  /**
+   * animate out the top of the screen
+   */
   useEffect(() => {
-    if (mobile && segmentPosition === "previous") {
+    // this animation only happens on mobile
+    if (mobile && segmentPosition === "previous") { 
       gsap.delayedCall(3, () => {
-        // clear transforms on wrapper
+        // clear transforms on wrapper (they may be wrong if the trigger is killed)
         gsap.to(wrapper.current, {
           y: 0,
         })
@@ -60,15 +60,14 @@ export default function NavigationSegment({
         })
       })
     }
-  }, [key, mobile, segmentPosition])
+  }, [mobile, segmentPosition])
 
   return (
     <SegmentWrapper
       dark={isDark}
       active={index === 0 && !segmentPosition}
-      key={key}
+      key={flipId}
       data-flip-id={flipId}
-      id={key}
       className={`segment ${segmentPosition}`}
       ref={wrapper}
     >

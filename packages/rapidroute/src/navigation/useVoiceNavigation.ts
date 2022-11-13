@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
@@ -28,7 +27,7 @@ export const CompletionThresholds: Record<PlaceType, number> = {
 if (isBrowser())
   TtsEngine.init({
     onInit: () => {
-      // TtsEngine.setBestMatchingVoice(null, null, "en")
+      TtsEngine.setBestMatchingVoice(null, null, "en")
     },
   })
 
@@ -79,7 +78,6 @@ export default function useVoiceNavigation(route: SegmentType[]) {
    * every time the spoken route changes, speak the next instruction
    */
   useDeepCompareMemo(async () => {
-    return
     await sleep(100)
     if (!route.length || !isBrowser()) return
 
