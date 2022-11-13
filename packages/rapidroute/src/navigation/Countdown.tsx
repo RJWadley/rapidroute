@@ -126,13 +126,13 @@ export default function Countdown({
   useEffect(() => {
     gsap.to(timer.current, {
       opacity: type === "MRT" ? 1 : 0,
-      duration: 1
+      duration: 1,
     })
     gsap.to(arriving.current, {
       text: {
         value: type === "MRT" ? "Arriving in" : "Up Next",
       },
-      duration: 1
+      duration: 1,
     })
   }, [type])
 

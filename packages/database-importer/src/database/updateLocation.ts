@@ -69,7 +69,7 @@ export async function setLocation(
     const newValue: Omit<PathingPlace, "uniqueId"> = {
       x: location.location?.x,
       z: location.location?.z,
-      w: location.isSpawnWarp
+      w: location.isSpawnWarp,
     }
     await update(`pathfinding/${locationId}`, makeSafeForDatabase(newValue))
   } else {
