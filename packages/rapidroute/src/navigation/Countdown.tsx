@@ -94,6 +94,7 @@ export default function Countdown({
    */
   const formatTime = (numSeconds: number) => {
     if (!Number.isFinite(numSeconds)) return "Waiting"
+    if (numSeconds === 0) return "—:—"
 
     const hours = Math.floor(numSeconds / 3600)
     const minutes = Math.floor((numSeconds - hours * 3600) / 60)
