@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 
 import { Link } from "gatsby"
 import styled from "styled-components"
@@ -6,12 +6,14 @@ import styled from "styled-components"
 import Header from "components/Header"
 import Layout from "components/Layout"
 import PlayerSelect from "components/PlayerSelect"
+import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
 import { WorldInfo } from "map/worldInfoType"
 
 export default function SelectPlayer() {
   const [players, setPlayers] = React.useState<string[]>([])
   const [search, setSearch] = React.useState<string>()
+  const {from, to, setFrom, setTo} = useContext(RoutingContext)
 
   const updatePlayers = () => {
     fetch(
@@ -52,7 +54,10 @@ export default function SelectPlayer() {
         </Sub>
 
         <SearchContainer>
-          <Cancel to="/">Cancel</Cancel>
+          <Cancel to="/" onClick={()=>{
+            if (from === "Current Location") setFrom(null)
+            if (to === "Current Location") setTo(null)
+          }}>Cancel</Cancel>
           <Search
             placeholder="Search for a player"
             onChange={e => {
