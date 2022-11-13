@@ -32,7 +32,7 @@ export default function NavigationSegment({
 
   useEffect(() => {
     if (mobile && segmentPosition === "previous") {
-      const timeout = gsap.delayedCall(5, () => {
+      gsap.delayedCall(3, () => {
         // clear transforms on wrapper
         gsap.to(wrapper.current, {
           y: 0,
@@ -41,7 +41,6 @@ export default function NavigationSegment({
           trigger: wrapper.current,
           start: "top 61%",
           end: "bottom+=20 61%",
-          // markers: true,
           onLeave: () => {
             gsap.to(wrapper.current, {
               y: "-60vh",
@@ -60,13 +59,8 @@ export default function NavigationSegment({
           },
         })
       })
-
-      return () => {
-        timeout.kill()
-      }
     }
-    return () => {}
-  }, [mobile, segmentPosition])
+  }, [key, mobile, segmentPosition])
 
   return (
     <SegmentWrapper

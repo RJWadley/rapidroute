@@ -36,7 +36,6 @@ export default function NavigationSidebar() {
     const oldSlot = activeSlot === "A" ? ".slotB .segment" : ".slotA .segment"
 
     gsap.set(oldSlot, { display: "block" })
-    gsap.set(newSlot, { clearProps: "all" })
     gsap.set(newSlot, { display: "none" })
     console.log("swap, the old slot, ", oldSlot, "is visible")
 
@@ -74,6 +73,13 @@ export default function NavigationSidebar() {
         onLeave: el =>
           gsap.fromTo(el, { xPercent: 0 },
             { xPercent: -150, duration: 1, stagger: 0.1 }),
+        onComplete: () => {
+          if (activeSlot === "A") {
+            setSlotB(null)
+          } else {
+            setSlotA(null)
+          }
+        },
       })
     }, 1000)
 
