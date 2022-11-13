@@ -124,6 +124,7 @@ const Text = styled.textarea<{ isTo: boolean }>`
   font-size: 20px;
   height: 0px;
   text-align: ${props => (props.isTo ? "right" : "left")};
+  overflow: hidden;
 
   //vertically center text
   display: flex;

@@ -88,7 +88,7 @@ export default function NavigationSidebar() {
     return () => {
       clearTimeout(debounced)
     }
-  }, [activeSlot, mobile, slotA, slotB])
+  }, [activeSlot])
 
   /**
    * update the current slot when the route changes

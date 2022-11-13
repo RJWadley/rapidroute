@@ -102,11 +102,14 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       : ""
     thirtySecondWarningPhrase = newThirtySecondWarning
 
+    const routeType = firstSegment?.routes[0]?.type ?? "walk"
+    const needsNextInstruction = routeType === "walk" || routeType === "MRT" || routeType === "spawnWarp"
+
     if (rerouted.current) {
       playSound("neutral")
       rerouted.current = false
     } else playSound("intercom")
-    if (firstInstruction && nextInstruction) {
+    if (firstInstruction && nextInstruction && needsNextInstruction) {
       TtsEngine.speakOut(`${firstInstruction}, then ${nextInstruction}`)
     } else if (firstInstruction) {
       TtsEngine.speakOut(firstInstruction)
