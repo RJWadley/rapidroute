@@ -27,7 +27,7 @@ const Wrapper = styled.div`
   backdrop-filter: blur(3px);
 
   position: fixed;
-  z-index: 2;
+  z-index: 3;
   top: 20px;
 
   width: 350px;

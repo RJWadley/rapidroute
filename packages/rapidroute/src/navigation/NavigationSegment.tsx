@@ -31,7 +31,7 @@ export default function NavigationSegment({
    */
   useEffect(() => {
     // this animation only happens on mobile
-    if (mobile && segmentPosition === "previous") { 
+    if (mobile && segmentPosition === "previous") {
       gsap.delayedCall(3, () => {
         // clear transforms on wrapper (they may be wrong if the trigger is killed)
         gsap.to(wrapper.current, {
@@ -46,7 +46,7 @@ export default function NavigationSegment({
               y: "-60vh",
               yPercent: -100,
               duration: 1,
-              ease: "power3.in"
+              ease: "power3.in",
             })
           },
           onEnterBack: () => {
@@ -54,9 +54,16 @@ export default function NavigationSegment({
               y: 0,
               yPercent: 0,
               duration: 1,
-              ease: "power3.out"
+              ease: "power3.out",
             })
           },
+        })
+      })
+    } else {
+      // make sure position is reset
+      gsap.delayedCall(3, () => {
+        gsap.to(wrapper.current, {
+          y: 0,
         })
       })
     }

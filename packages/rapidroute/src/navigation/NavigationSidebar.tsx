@@ -154,7 +154,7 @@ export default function NavigationSidebar() {
           duration: 5,
           scrollTo: {
             y: elementToScrollTo,
-            offsetY: mobile ? getMobileScrollPoint() : 120,
+            offsetY: mobile ? getMobileScrollPoint() : 170,
             autoKill: true,
           },
           ease: "power3.inOut",
