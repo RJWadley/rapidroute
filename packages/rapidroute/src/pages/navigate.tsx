@@ -63,7 +63,7 @@ export default function Navigate() {
    */
   useEffect(() => {
     if (isBrowser() && "wakeLock" in navigator) {
-      let wakeLock: WakeLockSentinel
+      let wakeLock: WakeLockSentinel | undefined
 
       const acquireWakeLock = async () => {
         try {
