@@ -14,6 +14,12 @@ export default async function getNavigationInstruction(
   if (!segment) return undefined
 
   /**
+   * If we're going to or from Spawn, say "Warp"
+   */
+  if (segment.from.uniqueId === "Spawn" || segment.to.uniqueId === "Spawn")
+    return `Warp to ${segment.to.shortName}, ${segment.to.name}`
+
+  /**
    * Instructions for walking to a location
    * If we're transferring, say "Transfer to <line> at <station>"
    * otherwise, say "Walk to <station>"

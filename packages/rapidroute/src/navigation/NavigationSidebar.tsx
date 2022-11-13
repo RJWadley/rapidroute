@@ -141,7 +141,9 @@ export default function NavigationSidebar() {
     const elementToScrollTo = document.querySelector(searchClass)
     const getMobileScrollPoint = () =>
       // taller than 40 % of the screen?
-      (elementToScrollTo?.clientHeight ?? 0) > window.innerHeight * 0.4 - 20
+      (elementToScrollTo?.clientHeight ?? 0) > window.innerHeight * 0.4 - 20 ||
+      // matches :last-child?
+      elementToScrollTo?.matches(":last-child")
         ? // if yes, position relative to bottom of screen
           window.innerHeight - (elementToScrollTo?.clientHeight ?? 0) - 20
         : // otherwise, position relative to the 60% mark
