@@ -24,7 +24,7 @@ export default function NavigationSidebar() {
   const [activeSlot, setActiveSlot] = useState<"A" | "B">("A")
   const [slotA, setSlotA] = useState<ReactNode>(null)
   const [slotB, setSlotB] = useState<ReactNode>(null)
-  const { spokenRoute } = useContext(NavigationContext)
+  const { spokenRoute, headerHeight } = useContext(NavigationContext)
   const followedRoute = useFollowedRoute(spokenRoute)
   const mobile = useMedia(media.mobile)
   useNavigation()
@@ -88,7 +88,7 @@ export default function NavigationSidebar() {
     return () => {
       clearTimeout(debounced)
     }
-  }, [activeSlot, mobile])
+  }, [activeSlot, mobile, slotA, slotB])
 
   /**
    * update the current slot when the route changes
@@ -156,7 +156,7 @@ export default function NavigationSidebar() {
           duration: 5,
           scrollTo: {
             y: elementToScrollTo,
-            offsetY: mobile ? getMobileScrollPoint() : 170,
+            offsetY: mobile ? getMobileScrollPoint() : 90 + headerHeight,
             autoKill: true,
           },
           ease: "power3.inOut",
@@ -168,12 +168,12 @@ export default function NavigationSidebar() {
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [activeSlot, mobile])
+  }, [activeSlot, headerHeight, mobile])
 
   return (
     <Wrapper>
       <ExitNavigation />
-      <BeforeSpacer />
+      <BeforeSpacer navHeight={headerHeight} />
       <div className="slotA">{slotA}</div>
       <div className="slotB" style={{ display: "none" }}>
         {slotB}
@@ -215,8 +215,10 @@ const Wrapper = styled.div`
   } */
 `
 
-const BeforeSpacer = styled.div`
-  height: 120px;
+const BeforeSpacer = styled.div<{
+  navHeight: number
+}>`
+  height: calc(${props => props.navHeight}px + 20px);
   @media ${media.mobile} {
     height: 70vh;
   }

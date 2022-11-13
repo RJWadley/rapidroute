@@ -53,10 +53,13 @@ export default class Pathfinder {
     const nodes = await rawNodes
 
     if (this.from === "Current Location" || this.to === "Current Location") {
-      const player = getLocal("selectedPlayer")?.toString() || ""
+      const player = getLocal("selectedPlayer")?.toString()
+      if (!player) {
+        loadRoute("/select-player")
+        return []
+      }
       const playerLocation = await getPlayerLocation(player)
       if (!playerLocation) {
-        loadRoute("/select-player")
         return []
       }
       if (this.from === "Current Location")

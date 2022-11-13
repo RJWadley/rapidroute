@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 
+import { Link } from "gatsby"
 import styled from "styled-components"
 
 import Header from "components/Header"
@@ -18,7 +19,9 @@ export default function SelectPlayer() {
     )
       .then(response => response.json())
       .then((data: WorldInfo) => {
-        setPlayers(data.players.map(player => player.name))
+        setPlayers(prev => [...prev, ...data.players.map(player => player.name)].filter(
+          (value, index, self) => self.indexOf(value) === index
+        ))
       })
       .catch(e => {
         console.error("Could not get information from dynmap", e)
@@ -44,7 +47,12 @@ export default function SelectPlayer() {
       <Header />
       <Content>
         <Title>Who are You?</Title>
+        <Sub>
+          In order to determine your location, we&apos;ll need your name
+        </Sub>
+
         <SearchContainer>
+          <Cancel to="/">Cancel</Cancel>
           <Search
             placeholder="Search for a player"
             onChange={e => {
@@ -85,11 +93,33 @@ const Title = styled.h1`
   font-size: 48px;
   color: var(--text-color);
   font-weight: 700;
+  margin-bottom: 20px;
+`
+
+const Sub = styled.p`
+  text-align: center;
+  font-size: 24px;
+  color: var(--text-color);
+  font-weight: 400;
   margin-bottom: 50px;
 `
 
 const SearchContainer = styled.div`
   position: relative;
+  display: flex;
+`
+
+const Cancel = styled(Link)`
+  background: var(--button-red);
+  color: var(--invert-button-red);
+  margin-bottom: 20px;
+  margin-right: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 0 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 30px;
 `
 
 const Search = styled.input`

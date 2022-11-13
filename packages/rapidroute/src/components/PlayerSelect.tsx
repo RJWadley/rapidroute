@@ -106,7 +106,12 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         arrow_forward
       </CustomRound>
     </Wrapper>
-  ) : null
+  ) : (
+    <Wrapper
+      backgroundColor="var(--page-background)"
+      textColor="var(--page-background)"
+    />
+  )
 }
 
 const Wrapper = styled.div<{ backgroundColor: string; textColor: string }>`
@@ -118,6 +123,7 @@ const Wrapper = styled.div<{ backgroundColor: string; textColor: string }>`
   padding: 20px;
   border-radius: 30px;
   grid-template-columns: auto 1fr auto;
+  min-height: 120px;
 `
 
 const Image = styled.img<{ color: string }>`
@@ -136,6 +142,6 @@ const CustomRound = styled(RoundButton)<{
   backgroundColor: string
   textColor: string
 }>`
-  background-color: ${props => props.backgroundColor};
-  color: ${props => props.textColor};
+  background-color: ${props => props.backgroundColor} !important;
+  color: ${props => props.textColor} !important;
 `

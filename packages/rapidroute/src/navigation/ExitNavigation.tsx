@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 
 import { Link } from "gatsby"
 import styled from "styled-components"
@@ -7,11 +7,16 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import media from "utils/media"
 
 export default function ExitNavigation() {
-  const { currentRoute } = useContext(NavigationContext)
+  const { currentRoute, setHeaderHeight } = useContext(NavigationContext)
+  const wrapper = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setHeaderHeight(wrapper.current?.clientHeight ?? 80)
+  })
 
   const destination = currentRoute[currentRoute.length - 1]?.to
   return (
-    <Wrapper>
+    <Wrapper ref={wrapper}>
       <ExitButton to="/">&times;</ExitButton>
       <Text>
         <Head>Navigation to {destination?.shortName}</Head>
@@ -33,6 +38,7 @@ const Wrapper = styled.div`
   width: 350px;
   min-height: 80px;
   padding: 15px;
+  padding-right: 25px;
   display: grid;
   grid-template-columns: auto 1fr;
 
@@ -61,6 +67,7 @@ const Text = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 5px;
 `
 
 const Head = styled.div`

@@ -39,6 +39,14 @@ export const NavigationContext = createContext<{
    * Update navigationComplete
    */
   setNavigationComplete: React.Dispatch<React.SetStateAction<boolean>>
+  /**
+   * Height of the navigation header
+   */
+  headerHeight: number
+  /**
+   * Update the height of the navigation header
+   */
+  setHeaderHeight: React.Dispatch<React.SetStateAction<number>>
 }>({
   preferredRoute: [],
   setPreferredRoute: () => {},
@@ -48,6 +56,8 @@ export const NavigationContext = createContext<{
   setSpokenRoute: () => {},
   navigationComplete: false,
   setNavigationComplete: () => {},
+  headerHeight: 80,
+  setHeaderHeight: () => {},
 })
 
 export function NavigationProvider({
@@ -59,6 +69,7 @@ export function NavigationProvider({
   const [currentRoute, setCurrentRoute] = useState<SegmentType[]>([])
   const [spokenRoute, setSpokenRoute] = useState<SegmentType[]>([])
   const [navigationComplete, setNavigationComplete] = useState(false)
+  const [headerHeight, setHeaderHeight] = useState(80)
 
   const value = useMemo(() => {
     return {
@@ -70,8 +81,10 @@ export function NavigationProvider({
       setSpokenRoute,
       navigationComplete,
       setNavigationComplete,
+      headerHeight,
+      setHeaderHeight,
     }
-  }, [currentRoute, navigationComplete, preferredRoute, spokenRoute])
+  }, [currentRoute, headerHeight, navigationComplete, preferredRoute, spokenRoute])
 
   return (
     <NavigationContext.Provider value={value}>

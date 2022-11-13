@@ -215,6 +215,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     // if the first from is not in the previous route, then we have been rerouted
     // and should play a sound
     if (
+      firstSpoken &&
       !spokenRoute.some(
         segment =>
           segment.from.uniqueId === firstCurrent?.from.uniqueId ||

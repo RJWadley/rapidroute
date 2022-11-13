@@ -25,6 +25,7 @@ const lightColors = css`
   --default-card-background: #eee;
   --mid-background: #ddd;
   --dark-background: #ccc;
+  --page-background: #fff;
 
   --low-contrast-text: #555;
   --default-text: #333;
@@ -53,6 +54,7 @@ const darkColors = css`
   --default-card-background: #333;
   --mid-background: #444;
   --dark-background: #555;
+  --page-background: #111;
 
   --low-contrast-text: #aaa;
   --default-text: #ccc;
@@ -95,16 +97,7 @@ const GlobalStyle = createGlobalStyle<{ isDark?: boolean }>`
   }
 
   body {
-    @media (prefers-color-scheme: dark) {
-      background-color: #111;
-      ${({ isDark }) =>
-        isDark !== undefined && !isDark && "background-color: #fff;"}
-    }
-    @media (prefers-color-scheme: light) {
-      background-color: #fff;
-      ${({ isDark }) =>
-        isDark !== undefined && isDark && "background-color: #111;"}
-    }
+    background-color: var(--page-background);
     font-family: Inter;
   }
 `
