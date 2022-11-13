@@ -62,17 +62,16 @@ export default function NavigationSegment({
       return () => {
         call.kill()
       }
-    } 
-      // make sure position is reset
-      const call = gsap.delayedCall(3, () => {
-        gsap.to(wrapper.current, {
-          y: 0,
-        })
+    }
+    // make sure position is reset
+    const call = gsap.delayedCall(3, () => {
+      gsap.to(wrapper.current, {
+        y: 0,
       })
-      return () => {
-        call.kill()
-      }
-    
+    })
+    return () => {
+      call.kill()
+    }
   }, [mobile, segmentPosition])
 
   return (
@@ -102,5 +101,15 @@ const SegmentWrapper = styled.div<{
   > div {
     transform: none;
     opacity: 1;
+  }
+
+  // add an invisible panel to catch any scrolling in the 20px above the segment
+  &:before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 20px;
   }
 `

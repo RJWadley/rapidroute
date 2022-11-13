@@ -180,14 +180,14 @@ const Wrapper = styled.div<{
     top: 100%;
     left: 0;
     width: 100%;
-    height: 50px;
+    height: 100px;
     background: linear-gradient(
       to bottom,
       ${({ dark }) => (dark ? "#1119" : "#eeea")} 0%,
       transparent 100%
     );
     opacity: 1;
-    transition: opacity 0.1s;
+    transition: opacity 0.3s;
   }
 
   &.flipping {
@@ -195,6 +195,16 @@ const Wrapper = styled.div<{
     &:after {
       opacity: 0;
     }
+  }
+
+  // add an invisible panel to catch any scrolling in the 20px above the segment
+  &:before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 20px;
   }
 `
 
