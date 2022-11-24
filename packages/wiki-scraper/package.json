@@ -12,13 +12,13 @@
   "main": "dist/index.js",
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
-    "firebase": "^9.10.0",
-    "flexsearch": "^0.7.21",
+    "firebase": "^9.14.0",
+    "flexsearch": "^0.7.31",
     "web-scraper-headless": "^1.0.7"
   },
   "devDependencies": {
     "@types/flexsearch": "^0.7.3",
     "@rapidroute/eslint-config-base": "^1.0.0",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.3"
   }
 }
