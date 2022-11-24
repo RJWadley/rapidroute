@@ -1,9 +1,6 @@
 import { SegmentType } from "components/createSegments"
-import { SPEEDS } from "pathfinding/findPath/getRouteTime"
+import { inObject, SPEEDS } from "pathfinding/findPath/getRouteTime"
 import { session } from "utils/localUtils"
-
-const inObject = <K extends string, O>(key: K, object: O): key is K & keyof O =>
-  key in object
 
 /**
  * calculates the time it takes to travel from the player's current position to the next instruction

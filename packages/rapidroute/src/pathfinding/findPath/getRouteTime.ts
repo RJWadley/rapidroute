@@ -24,8 +24,13 @@ export const GATE_PENALTY = {
 }
 
 type Mode = keyof typeof SPEEDS | keyof typeof STATIC_TIMES
-const inObject = <K extends string, O>(key: K, object: O): key is K & keyof O =>
-  key in object
+export const inObject = <
+  K extends string,
+  O extends Record<string | number, unknown>
+>(
+  key: K,
+  object: O
+): key is K & keyof O => key in object
 
 export default function getRouteTime(
   distance: number,
