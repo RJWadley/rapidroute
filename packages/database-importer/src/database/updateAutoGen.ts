@@ -1,12 +1,13 @@
 import { DatabaseType } from "@rapidroute/database-types"
 import { isWholeAutoGenIndex } from "@rapidroute/database-types/dist/src/autoGenIndex"
 
-import { subscribe, write } from "./database"
+import { read, subscribe, write } from "./database"
 import makeSafeForDatabase from "./makeSafeForDatabase"
 
 let autoGenIndex: DatabaseType["autoGenIndex"] | undefined
 
-subscribe("autoGenIndex", newValue => {
+subscribe(() => {
+  const newValue = read("autoGenIndex")
   if (newValue === null || newValue === undefined) {
     autoGenIndex = {}
   }

@@ -1,4 +1,5 @@
 /*  no-await-in-loop */
+import { setupDatabase } from "./database/database"
 import throttledMap from "./database/throttledMap"
 import updateHashes from "./database/updateHashes"
 import {
@@ -22,6 +23,8 @@ async function runImport() {
   const { routes, providers, locations } = await getConvertedData()
   // saveDataToFirebase(oldData.routes, oldData.locations, oldData.providers)
   const promises: Promise<unknown>[] = []
+
+  await setupDatabase()
 
   /* ----------------- PROVIDERS ----------------- */
 
@@ -82,6 +85,8 @@ async function runImport() {
   await updateHashes()
 
   console.log("UPDATED HASHES")
+
+  // await saveDatabase()
 
   console.log("ALL DONE!")
 }

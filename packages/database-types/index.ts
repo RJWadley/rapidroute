@@ -34,7 +34,7 @@ export interface DatabaseType {
   /**
    * information about the world
    */
-  worlds: Worlds
+  // worlds: Worlds
   /**
    * information needed to perform pathfinding
    */
@@ -59,11 +59,17 @@ export const databaseTypeGuards: {
   providers: isProvider,
   locations: isLocation,
   routes: isRoute,
-  worlds: isWorld,
+  // worlds: isWorld,
   pathfinding: isPathingPlace,
   searchIndex: isSearchIndexItem,
   autoGenIndex: isAutoGenIndex,
 }
+
+export const isPartialWholeDatabase = (
+  value: unknown
+): value is Partial<DatabaseType> => TSON.is<Partial<DatabaseType>>(value)
+export const validateDatabase = (value: unknown) =>
+  TSON.validate<DatabaseType>(value)
 
 export {
   Provider,
