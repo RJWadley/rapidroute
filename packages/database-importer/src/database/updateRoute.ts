@@ -104,7 +104,6 @@ export async function setRoute(
           if (secondLocation)
             Object.entries(secondLocation).forEach(
               ([secondLocId, routesToPlace]) => {
-                console.log("Checking", secondLocId, routesToPlace)
                 // actually remove the route from the list
                 const newRoutesToPlace = routesToPlace.filter(
                   r => r.n !== routeId

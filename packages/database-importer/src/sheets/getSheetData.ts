@@ -144,7 +144,7 @@ async function getDataSheet(): Promise<SheetResponse> {
   return new Promise(resolve => {
     fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${DATA_SHEET_ID}/values:batchGet?` +
-        `ranges='MRT'!B2:H19` + // mrt info
+        `ranges='MRT'!B2:H25` + // mrt info
         `&ranges='Airports'!A3:F500` +
         `&ranges='Companies'!A2:F200` +
         `&ranges='CodeSharing'!A3:F200` +

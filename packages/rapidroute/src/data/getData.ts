@@ -18,7 +18,6 @@ const defaultDatabaseCache: DatabaseType = {
   providers: {},
   routes: {},
   searchIndex: {},
-  worlds: {},
   autoGenIndex: {},
 }
 const defaultHashes: Hashes = {
@@ -27,7 +26,6 @@ const defaultHashes: Hashes = {
   providers: undefined,
   routes: undefined,
   searchIndex: undefined,
-  worlds: undefined,
   autoGenIndex: undefined,
 }
 const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
@@ -40,7 +38,6 @@ let databaseHashes: Hashes = {
   providers: "",
   routes: "",
   searchIndex: "",
-  worlds: "",
   autoGenIndex: "",
 }
 const hashesExist = new Promise(resolve => {

@@ -1,4 +1,4 @@
-const MAX_CONCURRENT_REQUESTS = 100
+const MAX_CONCURRENT_REQUESTS = 500
 
 /**
  * map over a list of async functions, running a maximum of MAX_CONCURRENT_REQUESTS at a time

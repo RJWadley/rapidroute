@@ -31,6 +31,7 @@ export interface Sets {
   jungle: Jungle
   desert: Desert
   circle: Circle
+  union: Union
   markers: SetsMarkers
 }
 
@@ -240,6 +241,16 @@ export interface Western {
   layerprio: number
 }
 
+export interface Union {
+  hide: boolean
+  circles: CirclesClass
+  areas: CirclesClass
+  label: string
+  markers: { [key: string]: Marker }
+  lines: SharedLinesType
+  layerprio: number
+}
+
 export interface WorldborderMarkerset {
   hide: boolean
   circles: CirclesClass
@@ -287,6 +298,7 @@ type MRTLines =
   | "jungle"
   | "desert"
   | "circle"
+  | "union"
 
 export const isMRTLine = (line: string): line is MRTLines => {
   return (
@@ -307,7 +319,8 @@ export const isMRTLine = (line: string): line is MRTLines => {
     line === "western" ||
     line === "jungle" ||
     line === "desert" ||
-    line === "circle"
+    line === "circle" ||
+    line === "union"
   )
 }
 
