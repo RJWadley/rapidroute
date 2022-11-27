@@ -94,7 +94,7 @@ export default function Countdown({
    */
   const formatTime = (numSeconds: number) => {
     if (!Number.isFinite(numSeconds)) return "Player Offline"
-    if (numSeconds === 0) return "—:—"
+    if (numSeconds === 0 || numSeconds > 100 * 60 * 60) return "—:—"
 
     const hours = Math.floor(numSeconds / 3600)
     const minutes = Math.floor((numSeconds - hours * 3600) / 60)

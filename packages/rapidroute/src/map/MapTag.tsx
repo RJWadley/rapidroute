@@ -32,4 +32,5 @@ const Logo = styled.img`
 
 const Text = styled.div`
   font-size: var(--extra-small);
+  color: #ccc;
 `
