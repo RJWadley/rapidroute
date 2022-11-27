@@ -4,6 +4,7 @@ import styled from "styled-components"
 
 import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
 import loadRoute from "utils/loadRoute"
+import media from "utils/media"
 
 export default function Header() {
   return (
@@ -29,7 +30,6 @@ export default function Header() {
 }
 
 const Wrapper = styled.div`
-  height: 75px;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -42,7 +42,8 @@ const Wrapper = styled.div`
 `
 
 const StyledLogo = styled(Logo)`
-  height: 100%;
+  height: var(--symbol);
+  width:
 `
 
 const Text = styled.div`
@@ -56,8 +57,8 @@ const Strong = styled.strong`
 `
 
 const Colors = styled.div`
-  height: 6px;
-  width: 120px;
+  height: 5px;
+  width: 100px;
   display: flex;
   border-radius: 3px;
   overflow: hidden;
@@ -78,5 +79,10 @@ const Colors = styled.div`
   }
   div:nth-child(4) {
     background-color: var(--rapid-green);
+  }
+
+  @media ${media.mobile} {
+    width: 77px;
+    height: 4px;
   }
 `
