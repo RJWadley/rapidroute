@@ -22,10 +22,12 @@ export function setLocation(
   })
 
   // Get the previous location from the database
-  const previousLocation: Location = {
-    ...database.locations[locationId],
-    uniqueId: locationId,
-  }
+  const previousLocation: Location | undefined = database.locations[locationId]
+    ? {
+        ...database.locations[locationId],
+        uniqueId: locationId,
+      }
+    : undefined
 
   // check for any changes
   if (deepCompare(previousLocation, location)) {

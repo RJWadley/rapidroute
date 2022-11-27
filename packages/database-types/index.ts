@@ -69,7 +69,6 @@ export const databaseTypeGuards: {
   providers: isProvider,
   locations: isLocation,
   routes: isRoute,
-  // worlds: isWorld,
   pathfinding: isPathingPlace,
   searchIndex: isSearchIndexItem,
 }

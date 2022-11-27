@@ -19,10 +19,12 @@ export function setProvider(
   })
 
   // Get the previous provider from the database
-  const previousProvider: Provider = {
-    ...database.providers[providerId],
-    uniqueId: providerId,
-  }
+  const previousProvider: Provider | undefined = database.providers[providerId]
+    ? {
+        ...database.providers[providerId],
+        uniqueId: providerId,
+      }
+    : undefined
 
   // Validate the previous provider. If it's invalid, throw an error
   if (isObject(previousProvider)) previousProvider.uniqueId = providerId

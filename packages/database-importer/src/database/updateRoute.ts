@@ -21,11 +21,12 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
   })
 
   // Get the previous route from the database
-  // const previousRoute = await read(`routes/${routeId}`)
-  const previousRoute: Route = {
-    ...database.routes[routeId],
-    uniqueId: routeId,
-  }
+  const previousRoute: Route | undefined = database.routes[routeId]
+    ? {
+        ...database.routes[routeId],
+        uniqueId: routeId,
+      }
+    : undefined
 
   // Validate the previous route. If it's invalid, throw an error
   if (isObject(previousRoute)) previousRoute.uniqueId = routeId
