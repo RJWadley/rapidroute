@@ -23,13 +23,13 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-plugin-manifest",
       options: {
-        name: "MRT RapidRoute", // TODO add name
-        short_name: "RapidRoute", // TODO add short name
+        name: "MRT RapidRoute",
+        short_name: "RapidRoute",
         start_url: "/",
         background_color: "#ffffff", // TODO add theme color
         theme_color: "#ffffff",
         display: "minimal-ui",
-        icon: "./src/images/global/icon.png", // TODO add favicon
+        icon: "./src/images/global/RapidRouteLogo.svg", // TODO add favicon
       },
     },
     {
