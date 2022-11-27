@@ -8,6 +8,7 @@ import usePlayerHead from "utils/usePlayerHead"
 
 import RoundButton from "../RoundButton"
 import DarkModeSetting from "./DarkModeSetting"
+import RateSetting from "./RateSetting"
 import SelectedPlayerSetting from "./SelectedPlayerSetting"
 import VoiceSetting from "./VoiceSetting"
 
@@ -40,7 +41,6 @@ export default function Settings() {
    * handle click outside of menu
    */
   useEffect(() => {
-    return undefined
     const handleClick = (e: MouseEvent) => {
       if (open && e.target instanceof HTMLElement && !menu.current?.contains(e.target)
         && !openButton?.contains(e.target)
@@ -66,6 +66,7 @@ export default function Settings() {
         <SelectedPlayerSetting />
         <DarkModeSetting />
         <VoiceSetting />
+        <RateSetting/>
       </Menu>
     </>
   ) : null

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react"
 
 import gsap from "gsap"
+import { ScrollToPlugin } from "gsap/all"
 import styled, { css } from "styled-components"
 import { TtsEngine } from "ttsreader"
 
@@ -10,6 +11,8 @@ import { getLocal, setLocal } from "utils/localUtils"
 if (isBrowser()) {
   TtsEngine.init({})
 }
+
+gsap.registerPlugin(ScrollToPlugin)
 
 export default function VoiceSetting() {
   const bestVoice = useMemo(() => {
@@ -34,6 +37,7 @@ export default function VoiceSetting() {
       height: open ? 30 * 12.5 : 40,
       ease: "power3",
       duration: 0.5,
+      scrollTo: { y: 0 },
     })
     gsap.set(dropdownRef.current, {
       overflow: open ? "scroll" : "hidden",
@@ -50,7 +54,7 @@ export default function VoiceSetting() {
     setLocal("voice", voice)
 
     TtsEngine.setVoiceByUri(voice)
-    TtsEngine.setRate(1)
+    TtsEngine.setRate(getLocal("speechRate") ?? 1)
     TtsEngine.speakOut(`Hi, my name is ${voice
       .replace("default", bestVoice)
       .replace(/\([\s\S]+\)/g, "")}.
@@ -91,7 +95,7 @@ export default function VoiceSetting() {
             setOpen(!open)
           }}
         >
-          Select Voice
+          {open ? "Close Dropdown" : "Select Voice"}
         </Voice>
         <Voice
           active={false}
@@ -128,6 +132,8 @@ const Dropdown = styled.div`
   padding: 10px 20px 0;
   background: var(--mid-background);
   border-radius: 20px;
+  z-index: 101;
+  position: relative;
 `
 
 const Voice = styled.button<{ active: boolean }>`

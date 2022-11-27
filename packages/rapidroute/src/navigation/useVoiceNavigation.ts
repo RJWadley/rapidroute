@@ -30,6 +30,7 @@ const updateVoice = () => {
   const voice = getLocal("voice")
   if (voice && voice !== "default") TtsEngine.setVoiceByUri(voice)
   else TtsEngine.setBestMatchingVoice(null, null, "en")
+  TtsEngine.setRate(getLocal("speechRate") ?? 1)
 }
 
 export const playSound = (
