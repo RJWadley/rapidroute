@@ -4,6 +4,7 @@ import gsap from "gsap"
 import styled from "styled-components"
 
 import { getLocal } from "utils/localUtils"
+import media from "utils/media"
 import usePlayerHead from "utils/usePlayerHead"
 
 import RoundButton from "../RoundButton"
@@ -81,6 +82,11 @@ const Open = styled.button`
   width: 50px;
   height: 50px;
   border-radius: 10px;
+
+  @media ${media.mobile} {
+    top: 10px;
+    right: 10px;
+  }
 `
 
 const PlayerHead = styled.img`
@@ -94,7 +100,6 @@ const Menu = styled.div`
   top: 10px;
   right: 10px;
   max-width: calc(100vw - 20px);
-  min-width: 350px;
   background: var(--default-card-background);
   z-index: 100;
   border-radius: 30px;
@@ -103,6 +108,11 @@ const Menu = styled.div`
   clip-path: circle(0% ${circlePosition});
   display: grid;
   gap: 20px;
+
+  @media ${media.mobile} {
+    padding: 30px;
+    min-width: none;
+  }
 `
 
 const Heading = styled.h1`
