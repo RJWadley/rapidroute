@@ -43,7 +43,6 @@ const Wrapper = styled.div`
 
 const StyledLogo = styled(Logo)`
   height: var(--symbol);
-  width:
 `
 
 const Text = styled.div`

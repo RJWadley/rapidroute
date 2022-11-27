@@ -41,7 +41,7 @@ export default function NavigationSegment({
             yPercent: 0,
           })
         })
-        ScrollTrigger.create({
+        const trigger = ScrollTrigger.create({
           trigger: wrapper.current,
           start: "top 61%",
           end: "bottom+=20 61%",
@@ -63,6 +63,7 @@ export default function NavigationSegment({
           },
         })
         context.revert() // this moves the wrapper back to its original position, before we created the trigger
+        return () => trigger.kill()
       })
       return () => {
         call.kill()

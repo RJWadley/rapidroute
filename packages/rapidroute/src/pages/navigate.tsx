@@ -6,6 +6,7 @@ import Layout from "components/Layout"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import SEO from "components/SEO"
 import MapCanvas from "map/MapCanvas"
+import MapTag from "map/MapTag"
 import NavigationSidebar from "navigation/NavigationSidebar"
 import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
@@ -86,6 +87,7 @@ export default function Navigate() {
 
   return (
     <Layout>
+      <StyledMapTag />
       <StyledCanvas />
       <NavigationSidebar />
     </Layout>
@@ -95,6 +97,25 @@ export default function Navigate() {
 export function Head() {
   return <SEO />
 }
+
+const StyledMapTag = styled(MapTag)`
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1;
+
+  @media ${media.mobile} {
+    transform-origin: bottom right;
+    transform: rotate(-90deg) translateX(100%);
+    right: 2.5px;
+    bottom: 5px;
+
+    img {
+      width: 15px;
+      height: 15px;
+    }
+  }
+`
 
 const StyledCanvas = styled(MapCanvas)`
   position: fixed;

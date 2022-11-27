@@ -93,7 +93,7 @@ export default function Countdown({
    * @param numSeconds the number of seconds to format
    */
   const formatTime = (numSeconds: number) => {
-    if (!Number.isFinite(numSeconds)) return "Waiting"
+    if (!Number.isFinite(numSeconds)) return "Player Offline"
     if (numSeconds === 0) return "—:—"
 
     const hours = Math.floor(numSeconds / 3600)

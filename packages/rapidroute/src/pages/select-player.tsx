@@ -51,7 +51,9 @@ export default function SelectPlayer() {
       <Content>
         <Title>Who are You?</Title>
         <Sub>
-          In order to determine your in-game<br />location, we&apos;ll need your player name
+          In order to determine your in-game
+          <br />
+          location, we&apos;ll need your player name
         </Sub>
 
         <SearchContainer>
