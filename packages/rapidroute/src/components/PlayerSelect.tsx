@@ -3,12 +3,12 @@ import React, { useContext, useEffect, useState } from "react"
 import gsap from "gsap"
 import styled from "styled-components"
 
-import { MineTools } from "types/MineTools"
 import averageImageHue from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
 import { session, setLocal } from "utils/localUtils"
 import media from "utils/media"
+import usePlayerHead from "utils/usePlayerHead"
 
 import { darkModeContext } from "./Providers/DarkMode"
 import RoundButton from "./RoundButton"
@@ -18,32 +18,9 @@ interface PlayerSelectProps {
 }
 
 export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
-  const fallbackUUID = "ec561538-f3fd-461d-aff5-086b22154bce"
   const name = nameIn.replace(/[^A-Za-z0-9_]/g, "").substring(0, 16)
-  const [imageUrl, setImageUrl] = useState<string>()
+  const imageUrl = usePlayerHead(name)
   const wrapperRef = React.useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    let isCancelled = false
-    setImageUrl(undefined)
-    fetch(`https://api.minetools.eu/uuid/${name}`)
-      .then(response => response.json())
-      .then((uuidData: MineTools) => {
-        return `https://crafatar.com/avatars/${
-          uuidData.id || fallbackUUID
-        }?overlay`
-      })
-      .then(url => {
-        if (!isCancelled) setImageUrl(url)
-      })
-      .catch(e => {
-        console.error(`Error fetching UUID for player ${name}`, e)
-        if (!isCancelled) setImageUrl(undefined)
-      })
-    return () => {
-      isCancelled = true
-    }
-  }, [name])
 
   const [hue, setHue] = useState<number>()
   const [saturation, setSaturation] = useState<number>()
@@ -104,11 +81,6 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         color={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         src={imageUrl}
         alt={`${name} player head`}
-        onError={() => {
-          const newSrc = `https://crafatar.com/avatars/${fallbackUUID}?overlay`
-          setImageUrl(newSrc)
-          setHue(undefined)
-        }}
       />
       <Name>{name}</Name>
       <CustomRound

@@ -6,30 +6,35 @@ import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
 import loadRoute from "utils/loadRoute"
 import media from "utils/media"
 
+import Settings from "./Settings"
+
 export default function Header() {
   return (
-    <Wrapper
-      onClick={() => {
-        loadRoute("/")
-      }}
-    >
-      <StyledLogo />
-      <Text>
-        <div>
-          <Strong>MRT</Strong> Rapidroute
-        </div>
-        <Colors>
-          <div />
-          <div />
-          <div />
-          <div />
-        </Colors>
-      </Text>
-    </Wrapper>
+    <>
+      <LogoWrapper
+        onClick={() => {
+          loadRoute("/")
+        }}
+      >
+        <StyledLogo />
+        <Text>
+          <div>
+            <Strong>MRT</Strong> Rapidroute
+          </div>
+          <Colors>
+            <div />
+            <div />
+            <div />
+            <div />
+          </Colors>
+        </Text>
+      </LogoWrapper>
+      <Settings />
+    </>
   )
 }
 
-const Wrapper = styled.div`
+const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;

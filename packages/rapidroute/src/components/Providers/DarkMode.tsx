@@ -9,17 +9,21 @@ type Preference = "dark" | "light" | "system"
 const isPreference = (value?: string | null): value is Preference =>
   ["dark", "light", "system"].includes(value || "")
 
+let setSignal: React.Dispatch<React.SetStateAction<boolean>> | undefined
+
 export function DarkModeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreference] = useState<Preference | undefined>()
   const [isDark, setIsDark] = useState<boolean | undefined>()
   const systemIsDark = useMedia("(prefers-color-scheme: dark)")
+  const [refreshSignal, setRefreshSignal] = useState(false)
+  setSignal = setRefreshSignal
 
   useEffect(() => {
     const savedPreference = getLocal("darkMode")
     if (isPreference(savedPreference)) {
       setPreference(savedPreference)
     } else setPreference("system")
-  }, [])
+  }, [refreshSignal])
 
   useEffect(() => {
     if (preference) {
@@ -35,3 +39,5 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
     </darkModeContext.Provider>
   )
 }
+
+export const triggerRecalculation = () => setSignal?.(prev => !prev)
