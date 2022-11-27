@@ -18,23 +18,37 @@ export default function SelectedPlayerSetting() {
   const textLightness = isDark ? 85 : 15
   const midLightness = isDark ? 30 : 70
 
-  return player && hue !== undefined && saturation !== undefined && playerHead ? (
+  return player &&
+    hue !== undefined &&
+    saturation !== undefined &&
+    playerHead ? (
     <Wrapper
       background={`hsl(${hue}, ${saturation}%, ${backgroundLightness}%)`}
       $color={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}
     >
       <Name>{player}</Name>
       {playerHead && <Head src={playerHead} alt="your player head" />}
-      <Swap href="/select-player" background={
-        `hsl(${hue}, ${saturation}%, ${midLightness}%)`
-      }>Swap Player</Swap>
+      <Swap
+        href="/select-player"
+        background={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
+      >
+        Swap Player
+      </Swap>
     </Wrapper>
-  ) : null
+  ) : (
+    <Wrapper background="var(--mid-background)" $color="var(--text-color)">
+      <Name>Player Name</Name>
+      {playerHead && <Head src={playerHead} alt="steve player head" />}
+      <Swap href="/select-player" background="var(--dark-background)">
+        Select Player
+      </Swap>
+    </Wrapper>
+  )
 }
 
 const Wrapper = styled.div<{
-    background: string
-    $color: string
+  background: string
+  $color: string
 }>`
   display: grid;
   grid-template-columns: 1fr auto;
@@ -44,7 +58,6 @@ const Wrapper = styled.div<{
   border-radius: 20px;
   background-color: ${({ background }) => background};
   color: ${({ $color }) => $color};
-  
 `
 
 const Name = styled.div`
@@ -59,11 +72,11 @@ const Head = styled.img`
 `
 
 const Swap = styled.a<{ background: string }>`
-    font-size: var(--medium);
-    border-radius: 10px;
-    padding: 10px;
-    grid-column: span 2;
-    text-align: center;
-    font-weight: bold;
-    background-color: ${({ background }) => background};
+  font-size: var(--medium);
+  border-radius: 10px;
+  padding: 10px;
+  grid-column: span 2;
+  text-align: center;
+  font-weight: bold;
+  background-color: ${({ background }) => background};
 `
