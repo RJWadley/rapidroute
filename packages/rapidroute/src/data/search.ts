@@ -55,7 +55,11 @@ export function search(query: string) {
     results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
   }
 
-  if ((query && query.length <= 2) || /cur|loca/.test(query)) {
+  if (
+    (query && query.length < 2) ||
+    /cur|loca/.test(query) ||
+    results.length < 1
+  ) {
     results.unshift("Current Location")
   }
 
