@@ -1,6 +1,5 @@
 /*  no-await-in-loop */
 import { saveDatabase, setupDatabase } from "./database/database"
-import throttledMap from "./database/throttledMap"
 import updateHashes from "./database/updateHashes"
 import {
   beforeLocationUpdate,
@@ -29,18 +28,16 @@ async function runImport() {
 
   console.log("STARTING PROVIDERS")
 
-  await beforeProviderUpdate()
-  await beforeProviderUpdate("transit")
+  beforeProviderUpdate()
+  beforeProviderUpdate("transit")
 
   const providersToSave = [...providers]
 
-  await throttledMap(providersToSave, provider =>
-    setProvider(provider.uniqueId, provider)
-  )
+  providersToSave.forEach(provider => setProvider(provider.uniqueId, provider))
 
   await Promise.allSettled(promises)
-  await afterProviderUpdate("transit")
-  await afterProviderUpdate()
+  afterProviderUpdate("transit")
+  afterProviderUpdate()
 
   console.log("SAVED ALL PROVIDERS")
 
@@ -48,18 +45,16 @@ async function runImport() {
 
   console.log("STARTING LOCATIONS")
 
-  await beforeLocationUpdate()
-  await beforeLocationUpdate("transit")
+  beforeLocationUpdate()
+  beforeLocationUpdate("transit")
 
   const locationsToSave = [...locations]
 
-  await throttledMap(locationsToSave, location =>
-    setLocation(location.uniqueId, location)
-  )
+  locationsToSave.forEach(location => setLocation(location.uniqueId, location))
 
   await Promise.allSettled(promises)
-  await afterLocationUpdate("transit")
-  await afterLocationUpdate()
+  afterLocationUpdate("transit")
+  afterLocationUpdate()
 
   console.log("SAVED ALL LOCATIONS")
 
@@ -67,21 +62,21 @@ async function runImport() {
 
   console.log("STARTING ROUTES")
 
-  await beforeRouteUpdate()
-  await beforeRouteUpdate("transit")
+  beforeRouteUpdate()
+  beforeRouteUpdate("transit")
 
   const routesToSave = [...routes]
 
-  await throttledMap(routesToSave, route => setRoute(route.uniqueId, route))
+  routesToSave.forEach(route => setRoute(route.uniqueId, route))
 
   await Promise.all(promises)
 
-  await afterRouteUpdate("transit")
-  await afterRouteUpdate()
+  afterRouteUpdate("transit")
+  afterRouteUpdate()
 
   console.log("SAVED ALL ROUTES")
 
-  await updateHashes()
+  updateHashes()
 
   console.log("UPDATED HASHES")
 

@@ -46,13 +46,24 @@ export interface DatabaseType {
   /**
    * auto-generated index of locations
    */
-  autoGenIndex: AutoGenIndex
+  // autoGenIndex: AutoGenIndex
+  /**
+   * hashes used for validating client-side data
+   */
+  hashes: Hashes
+  /**
+   * date of last import
+   */
+  lastImport: string
 }
 
-export type Hashes = Record<keyof DatabaseType, string | undefined>
+export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
+export type DataDatabaseType = Omit<DatabaseType, "hashes" | "lastImport">
+
+export type Hashes = Record<DatabaseDataKeys, string | undefined>
 
 export const databaseTypeGuards: {
-  [key in keyof DatabaseType]: (
+  [key in DatabaseDataKeys]: (
     value: unknown
   ) => value is DatabaseType[key][string]
 } = {
@@ -62,7 +73,6 @@ export const databaseTypeGuards: {
   // worlds: isWorld,
   pathfinding: isPathingPlace,
   searchIndex: isSearchIndexItem,
-  autoGenIndex: isAutoGenIndex,
 }
 
 export const isPartialWholeDatabase = (

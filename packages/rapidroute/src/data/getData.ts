@@ -1,9 +1,10 @@
 /*  eslint-disable no-console */
 import {
-  DatabaseType,
   Hashes,
   databaseTypeGuards,
   Location,
+  DatabaseDataKeys,
+  DataDatabaseType,
 } from "@rapidroute/database-types"
 
 import isObject from "utils/isObject"
@@ -12,13 +13,12 @@ import { getLocal, setLocal } from "utils/localUtils"
 import { subscribe } from "./firebase"
 import isCoordinate from "./isCoordinate"
 
-const defaultDatabaseCache: DatabaseType = {
+const defaultDatabaseCache: DataDatabaseType = {
   locations: {},
   pathfinding: {},
   providers: {},
   routes: {},
   searchIndex: {},
-  autoGenIndex: {},
 }
 const defaultHashes: Hashes = {
   locations: undefined,
@@ -26,7 +26,6 @@ const defaultHashes: Hashes = {
   providers: undefined,
   routes: undefined,
   searchIndex: undefined,
-  autoGenIndex: undefined,
 }
 const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
 const oneHashes = getLocal("oneHash") ?? defaultHashes
@@ -38,7 +37,6 @@ let databaseHashes: Hashes = {
   providers: "",
   routes: "",
   searchIndex: "",
-  autoGenIndex: "",
 }
 const hashesExist = new Promise(resolve => {
   subscribe("hashes", rawValue => {
@@ -49,10 +47,10 @@ const hashesExist = new Promise(resolve => {
   })
 })
 
-type GetAll<T extends keyof DatabaseType> = DatabaseType[T]
-type GetOne<T extends keyof DatabaseType> = DatabaseType[T][string]
+type GetAll<T extends DatabaseDataKeys> = DataDatabaseType[T]
+type GetOne<T extends DatabaseDataKeys> = DataDatabaseType[T][string]
 
-async function getPathRAW<T extends keyof DatabaseType>(
+async function getPathRAW<T extends DatabaseDataKeys>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
@@ -114,7 +112,7 @@ async function getPathRAW<T extends keyof DatabaseType>(
   })
 }
 
-async function getAllRAW<T extends keyof DatabaseType>(
+async function getAllRAW<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
   // first get the hash from the database
@@ -196,7 +194,7 @@ export async function runQueue() {
 
 runQueue().catch(console.error)
 
-export function getPath<T extends keyof DatabaseType>(
+export function getPath<T extends DatabaseDataKeys>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
@@ -208,7 +206,7 @@ export function getPath<T extends keyof DatabaseType>(
   })
 }
 
-export function getAll<T extends keyof DatabaseType>(
+export function getAll<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
   return new Promise(resolve => {

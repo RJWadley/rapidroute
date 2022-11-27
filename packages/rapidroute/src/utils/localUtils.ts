@@ -1,4 +1,4 @@
-import { DatabaseType, Hashes } from "@rapidroute/database-types"
+import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"
 
@@ -11,7 +11,7 @@ interface LocalStorage {
   /**
    * cache for the database
    */
-  databaseCache: DatabaseType
+  databaseCache: DataDatabaseType
   /**
    * hashes for the database
    */

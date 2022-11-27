@@ -1,41 +1,31 @@
+import { databaseTypeGuards, Route } from "@rapidroute/database-types"
 import {
-  databaseTypeGuards,
-  Pathfinding,
-  Route,
-} from "@rapidroute/database-types"
-import {
-  isWholePathfinding,
   reverseShortHandMap,
   shortHandMapKeys,
 } from "@rapidroute/database-types/dist/src/pathfinding"
 
-import { read, write, subscribe } from "./database"
+import { database } from "./database"
 import deepCompare from "./deepCompare"
-import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
-import throttledMap from "./throttledMap"
-import updateAutoGen from "./updateAutoGen"
+import { isObject } from "./makeSafeForDatabase"
 
 const isRoute = databaseTypeGuards.routes
-let pathfindingIndex: Pathfinding
-subscribe(() => {
-  const newValue = read("pathfinding")
-  if (isWholePathfinding(newValue)) {
-    pathfindingIndex = newValue
-  }
-})
 const unusedKeys: Record<string, string[]> = {}
 
-export async function setRoute(
-  routeId: string,
-  route: Route | undefined | null
-) {
+export function setRoute(routeId: string, route: Route | undefined | null) {
+  if (!database.routes) database.routes = {}
+  if (!database.pathfinding) database.pathfinding = {}
+
   // remove the routeId from the unusedKeys
   Object.entries(unusedKeys).forEach(([key, value]) => {
     unusedKeys[key] = value.filter(id => id !== routeId)
   })
 
   // Get the previous route from the database
-  const previousRoute = await read(`routes/${routeId}`)
+  // const previousRoute = await read(`routes/${routeId}`)
+  const previousRoute: Route = {
+    ...database.routes[routeId],
+    uniqueId: routeId,
+  }
 
   // Validate the previous route. If it's invalid, throw an error
   if (isObject(previousRoute)) previousRoute.uniqueId = routeId
@@ -71,13 +61,8 @@ export async function setRoute(
   }
 
   // Save the new route to the database
-  await write(`routes/${routeId}`, makeSafeForDatabase(route))
-  await updateAutoGen("routes", previousRoute, route)
-
-  // Update the route information in the pathfinding index
-  if (pathfindingIndex === undefined) {
-    throw new Error(`Pathfinding index is undefined: ${routeId}`)
-  }
+  if (route) database.routes[routeId] = route
+  else delete database.routes[routeId]
 
   // if the route locations don't match the previous route, update the pathfinding index
   if (
@@ -96,11 +81,11 @@ export async function setRoute(
     if (previousRoute) {
       // for every location in the pathfinding index
       Object.keys(previousRoute.locations).forEach(locationId => {
-        const location = pathfindingIndex[locationId]
+        const location = database.pathfinding?.[locationId]
         // check every mode in that location
         shortHandMapKeys.forEach(shortHand => {
           // check every location in that mode
-          const secondLocation = location[shortHand]
+          const secondLocation = location?.[shortHand]
           if (secondLocation)
             Object.entries(secondLocation).forEach(
               ([secondLocId, routesToPlace]) => {
@@ -109,7 +94,12 @@ export async function setRoute(
                   r => r.n !== routeId
                 )
                 // update the pathfinding index
-                pathfindingIndex[locationId][shortHand] = {
+                if (!database.pathfinding) database.pathfinding = {}
+                if (!database.pathfinding[locationId])
+                  database.pathfinding[locationId] = {}
+                if (!database.pathfinding[locationId][shortHand])
+                  database.pathfinding[locationId][shortHand] = {}
+                database.pathfinding[locationId][shortHand] = {
                   ...secondLocation,
                   [secondLocId]: newRoutesToPlace,
                 }
@@ -122,7 +112,7 @@ export async function setRoute(
     // add this route to the locations it's in
     if (route) {
       Object.keys(route.locations).forEach(locationId => {
-        const location = pathfindingIndex[locationId] || {}
+        const location = database.pathfinding?.[locationId] || {}
         const mode = reverseShortHandMap[route.type]
         if (location?.[mode] === undefined) {
           location[mode] = {}
@@ -135,7 +125,8 @@ export async function setRoute(
         Object.keys(route.locations).forEach(toLocation => {
           if (toLocation !== locationId) {
             // add the route to the pathfinding index
-            pathfindingIndex[locationId] = {
+            if (!database.pathfinding) database.pathfinding = {}
+            database.pathfinding[locationId] = {
               ...location,
               [mode]: {
                 ...location[mode],
@@ -148,9 +139,6 @@ export async function setRoute(
     }
   }
 
-  // Save the updated pathfinding index to the database
-  await write("pathfinding", makeSafeForDatabase(pathfindingIndex))
-
   console.log(
     route
       ? `Successfully saved route ${routeId}`
@@ -161,25 +149,22 @@ export async function setRoute(
 /**
  * save a list of every route key in the database, organized by source
  */
-export async function beforeRouteUpdate(source: string | true = true) {
-  const sourceAsKey = source === true ? "true" : source
+export function beforeRouteUpdate(source: string | true = true) {
   // get all the routes from the database where autoGenerated matches source
-  const keys = (await read(`autoGenIndex/${sourceAsKey}`)) || []
-  if (!databaseTypeGuards.autoGenIndex(keys)) {
-    throw new Error("Invalid autoGenIndex")
-  }
-  unusedKeys[sourceAsKey] = keys.routes || []
+  const keys = Object.keys(database.routes || {}).filter(
+    key => database.routes?.[key]?.autoGenerated === source
+  )
+  const sourceAsKey = source === true ? "true" : source
+  unusedKeys[sourceAsKey] = keys || []
 }
 
 /**
  * remove any routes that weren't updated during the update
  */
-export async function afterRouteUpdate(source: string | true = true) {
+export function afterRouteUpdate(source: string | true = true) {
   const sourceAsKey = typeof source === "string" ? source : "true"
   const keysToRemove = unusedKeys[sourceAsKey]
-  if (keysToRemove === undefined) {
-    return Promise.resolve()
+  if (keysToRemove !== undefined) {
+    keysToRemove.forEach(key => setRoute(key, undefined))
   }
-
-  return throttledMap(keysToRemove, key => setRoute(key, undefined))
 }
