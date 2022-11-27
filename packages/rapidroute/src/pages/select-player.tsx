@@ -3,12 +3,12 @@ import React, { useContext, useEffect } from "react"
 import { Link } from "gatsby"
 import styled from "styled-components"
 
-import Header from "components/Header"
 import Layout from "components/Layout"
 import PlayerSelect from "components/PlayerSelect"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
 import { WorldInfo } from "map/worldInfoType"
+import media from "utils/media"
 
 export default function SelectPlayer() {
   const [players, setPlayers] = React.useState<string[]>([])
@@ -48,11 +48,10 @@ export default function SelectPlayer() {
 
   return (
     <Layout>
-      <Header />
       <Content>
         <Title>Who are You?</Title>
         <Sub>
-          In order to determine your location, we&apos;ll need your name
+          In order to determine your in-game<br />location, we&apos;ll need your player name
         </Sub>
 
         <SearchContainer>
@@ -97,7 +96,7 @@ const Content = styled.div`
   width: 1000px;
   margin: 0 auto;
   margin-top: 200px;
-  padding-bottom: 200px;
+  padding-bottom: 400px;
 `
 
 const Title = styled.h1`
@@ -119,6 +118,10 @@ const Sub = styled.p`
 const SearchContainer = styled.div`
   position: relative;
   display: flex;
+
+  @media ${media.mobile} {
+    display: grid;
+  }
 `
 
 const Cancel = styled(Link)`
@@ -132,6 +135,14 @@ const Cancel = styled(Link)`
   display: grid;
   place-items: center;
   border-radius: 30px;
+
+  @media ${media.mobile} {
+    min-height: 35px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    border-radius: 13px;
+  }
 `
 
 const Search = styled.input`
@@ -140,15 +151,20 @@ const Search = styled.input`
   padding: 30px;
   margin-bottom: 20px;
   border-radius: 30px;
-  font-size: var(--small);
+  font-size: var(--medium);
 `
 
 const Icon = styled.div`
   font-family: "Material Symbols Outlined";
   position: absolute;
   right: 20px;
-  top: 20px;
-  font-size: var(--symbol);
+  bottom: 40px;
+  font-size: 40px;
+
+  @media ${media.mobile} {
+    bottom: 40px;
+    font-size: 35px;
+  }
 `
 
 const Players = styled.div`
