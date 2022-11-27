@@ -27,10 +27,8 @@ const config: GatsbyConfig = {
         name: "MRT RapidRoute",
         short_name: "RapidRoute",
         start_url: "/",
-        background_color: "#ffffff", // TODO add theme color
-        theme_color: "#ffffff",
-        display: "minimal-ui",
-        icon: "./src/images/global/RapidRouteLogo.svg", // TODO add favicon
+        display: "standalone",
+        icon: "./src/images/global/RapidRouteLogo.svg",
       },
     },
     {
