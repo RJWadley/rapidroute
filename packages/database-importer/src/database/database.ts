@@ -1,6 +1,6 @@
 import {
   DatabaseType,
-  isPartialWholeDatabase,
+  isWholeDatabase,
   validateDatabase,
 } from "@rapidroute/database-types"
 import admin, { ServiceAccount } from "firebase-admin"
@@ -29,7 +29,7 @@ export const setupDatabase = async () => {
   const data: unknown = snapshot.val() ?? {}
 
   console.log(validateDatabase(data))
-  if (!isPartialWholeDatabase(data)) throw new Error("Database is not valid")
+  if (!isWholeDatabase(data)) throw new Error("Database is not valid")
 
   Object.assign(database, data)
   return database

@@ -1,5 +1,4 @@
-import TSON from "typescript-json"
-import { AutoGenIndex, isAutoGenIndex } from "./src/autoGenIndex"
+import TSON, { validate } from "typescript-json"
 import { Locations, Location, PlaceType, isLocation } from "./src/locations"
 import {
   isPathingPlace,
@@ -16,21 +15,21 @@ import {
   SearchIndex,
   SearchIndexItem,
 } from "./src/searchIndex"
-import { Worlds, World, isWorld } from "./src/worlds"
+import { Worlds, World } from "./src/worlds"
 
 export interface DatabaseType {
   /**
    * companies, train lines, etc.
    */
-  providers: Providers
+  providers?: Providers
   /**
    * stations, stops, towns, etc.
    */
-  locations: Locations
+  locations?: Locations
   /**
    * route by train, bus, etc.
    */
-  routes: Routes
+  routes?: Routes
   /**
    * information about the world
    */
@@ -38,11 +37,11 @@ export interface DatabaseType {
   /**
    * information needed to perform pathfinding
    */
-  pathfinding: Pathfinding
+  pathfinding?: Pathfinding
   /**
    * information needed to perform searching
    */
-  searchIndex: SearchIndex
+  searchIndex?: SearchIndex
   /**
    * auto-generated index of locations
    */
@@ -50,11 +49,11 @@ export interface DatabaseType {
   /**
    * hashes used for validating client-side data
    */
-  hashes: Hashes
+  hashes?: Hashes
   /**
    * date of last import
    */
-  lastImport: string
+  lastImport?: string
 }
 
 export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
@@ -75,9 +74,8 @@ export const databaseTypeGuards: {
   searchIndex: isSearchIndexItem,
 }
 
-export const isPartialWholeDatabase = (
-  value: unknown
-): value is Partial<DatabaseType> => TSON.is<Partial<DatabaseType>>(value)
+export const isWholeDatabase = (value: unknown): value is DatabaseType =>
+  TSON.is<DatabaseType>(value)
 export const validateDatabase = (value: unknown) =>
   TSON.validate<DatabaseType>(value)
 
