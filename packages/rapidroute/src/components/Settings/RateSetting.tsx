@@ -30,6 +30,7 @@ export default function RateSetting() {
         onChange={e => {
           setRate(parseFloat(e.target.value))
           setLocal("speechRate", parseFloat(e.target.value))
+          TtsEngine.setVoiceByUri(getLocal("voice") ?? "")
           TtsEngine.setRate(parseFloat(e.target.value))
           TtsEngine.speakOut("This is how fast I'll speak to you.")
         }}
@@ -80,4 +81,5 @@ const RateDisplay = styled.div`
   right: 28px;
   top: 50%;
   transform: translateY(-50%);
+  pointer-events: none;
 `
