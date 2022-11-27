@@ -31,10 +31,7 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
   // Validate the previous route. If it's invalid, throw an error
   if (isObject(previousRoute)) previousRoute.uniqueId = routeId
   // check for any changes
-  if (deepCompare(previousRoute, route)) {
-    console.log("No changes to route", routeId)
-    return
-  }
+  if (deepCompare(previousRoute, route)) return
 
   if (
     previousRoute !== undefined &&

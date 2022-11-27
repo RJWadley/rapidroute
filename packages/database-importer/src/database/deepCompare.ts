@@ -1,6 +1,22 @@
 import { isObject } from "./makeSafeForDatabase"
 
 /**
+ * return true every entry in the object is a) undefined | null | [] | {} or b) an object that passes the same test recursively
+ */
+const objectIsDeepUndefined = (
+  obj: Record<string | number | symbol, unknown>
+): boolean => {
+  return Object.values(obj).every(
+    value =>
+      value === undefined ||
+      value === null ||
+      (Array.isArray(value) && value.length === 0) ||
+      (isObject(value) && Object.keys(value).length === 0) ||
+      (isObject(value) && objectIsDeepUndefined(value))
+  )
+}
+
+/**
  * deep compare two objects
  * null and undefined are considered equal
  */
@@ -11,6 +27,20 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
   // null and undefined are equal
   if (a === null && b === undefined) return true
   if (a === undefined && b === null) return true
+
+  // because of how firebase works, [] and undefined are equal
+  if (Array.isArray(a) && a.length === 0) return deepCompare(undefined, b)
+  if (Array.isArray(b) && b.length === 0) return deepCompare(a, undefined)
+
+  // same for objects
+  if (isObject(a) && Object.keys(a).length === 0)
+    return deepCompare(undefined, b)
+  if (isObject(b) && Object.keys(b).length === 0)
+    return deepCompare(a, undefined)
+
+  // recursively undefined objects are the same as undefined
+  if (isObject(a) && objectIsDeepUndefined(a)) return deepCompare(undefined, b)
+  if (isObject(b) && objectIsDeepUndefined(b)) return deepCompare(a, undefined)
 
   // if one is null or undefined, but not both, they are not equal
   if (a === null || a === undefined || b === null || b === undefined)
@@ -34,6 +64,9 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
     for (let i = 0; i < a.length; i += 1) {
       if (!deepCompare(a[i], b[i])) return false
     }
+
+    // if we made it this far, they are equal
+    return true
   }
 
   // if they are both objects, compare them as objects

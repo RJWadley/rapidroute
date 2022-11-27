@@ -40,11 +40,6 @@ function transpose<T>(a: T[][]): T[][] {
     return []
   }
 
-  /**
-   * @var {Number} i Counter
-   * @var {Number} j Counter
-   * @var {Array} t Transposed data is stored in this array.
-   */
   let i: number
   let j: number
   const t: T[][] = []
