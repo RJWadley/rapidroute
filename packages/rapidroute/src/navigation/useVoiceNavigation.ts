@@ -12,7 +12,7 @@ import { SegmentType } from "components/createSegments"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { stopToNumber } from "components/Segment/getLineDirections"
 import { isBrowser, sleep } from "utils/functions"
-import { session } from "utils/localUtils"
+import { getLocal, session } from "utils/localUtils"
 
 import getNavigationInstruction from "./getNavigationInstruction"
 
@@ -80,6 +80,8 @@ export default function useVoiceNavigation(route: SegmentType[]) {
    * every time the spoken route changes, speak the next instruction
    */
   useDeepCompareMemo(async () => {
+    if (!getLocal("selectedPlayer")) return
+
     await sleep(100)
     if (!route.length || !isBrowser()) return
 

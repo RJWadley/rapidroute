@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+
 /**
  * return the average hue of an image
  */
@@ -71,4 +73,27 @@ const rgbToHsl = (
   }
 
   return [h, s, l]
+}
+
+export const useImageHSL = (imageURL: string | null) => {
+  const [hue, setHue] = useState<number>()
+  const [saturation, setSaturation] = useState<number>()
+  const [lightness, setLightness] = useState<number>()
+
+  useEffect(() => {
+    setHue(undefined)
+    if (imageURL)
+      averageImageHSL(imageURL)
+        .then(newHSL => {
+          setHue(newHSL[0] * 360)
+          setSaturation(newHSL[1] * 300)
+          setLightness(newHSL[2] * 300)
+        })
+        .catch(() => {
+          setHue(0)
+          setSaturation(0)
+          setLightness(0)
+        })
+  }, [imageURL])
+  return [hue, saturation, lightness]
 }

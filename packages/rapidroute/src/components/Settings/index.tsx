@@ -8,6 +8,7 @@ import usePlayerHead from "utils/usePlayerHead"
 
 import RoundButton from "../RoundButton"
 import DarkModeSetting from "./DarkModeSetting"
+import SelectedPlayerSetting from "./SelectedPlayerSetting"
 
 const circlePosition = "at calc(100% - 35px) 35px"
 
@@ -34,6 +35,23 @@ export default function Settings() {
     })
   }, [open])
 
+  /**
+   * handle click outside of menu
+   */
+  useEffect(() => {
+    return undefined
+    const handleClick = (e: MouseEvent) => {
+      if (open && e.target instanceof HTMLElement && !menu.current?.contains(e.target)
+        && !openButton?.contains(e.target)
+      ) {
+        setOpen(false)
+      }
+    }
+  
+    window.addEventListener("click", handleClick)
+    return () => window.removeEventListener("click", handleClick)
+  }, [open, openButton])
+
   return playerHead ? (
     <>
       <Open ref={el => setOpenButton(el)} onClick={() => setOpen(!open)}>
@@ -44,6 +62,7 @@ export default function Settings() {
           <div>Settings</div>
           <CloseButton onClick={() => setOpen(!open)}>close</CloseButton>
         </Heading>
+        <SelectedPlayerSetting />
         <DarkModeSetting />
       </Menu>
     </>
@@ -71,8 +90,8 @@ const Menu = styled.div`
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 350px;
   max-width: calc(100vw - 20px);
+  min-width: 350px;
   background: var(--default-card-background);
   z-index: 100;
   border-radius: 30px;

@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect } from "react"
 
 import gsap from "gsap"
 import styled from "styled-components"
 
-import averageImageHue from "utils/averageImageColor"
+import { useImageHSL } from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
 import loadRoute from "utils/loadRoute"
 import { session, setLocal } from "utils/localUtils"
@@ -22,32 +22,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   const imageUrl = usePlayerHead(name)
   const wrapperRef = React.useRef<HTMLDivElement>(null)
 
-  const [hue, setHue] = useState<number>()
-  const [saturation, setSaturation] = useState<number>()
-  useEffect(() => {
-    let isCancelled = false
-    setHue(undefined)
-    if (imageUrl)
-      averageImageHue(imageUrl)
-        .then(newHSL => {
-          setTimeout(() => {
-            if (!isCancelled) {
-              setHue(newHSL[0] * 360)
-              setSaturation(newHSL[1] * 300)
-            }
-          }, 100)
-        })
-        .catch(e => {
-          console.error(`Error fetching average hue for player ${name}`, e)
-          if (!isCancelled) {
-            setHue(0)
-            setSaturation(0)
-          }
-        })
-    return () => {
-      isCancelled = true
-    }
-  }, [imageUrl, name])
+  const [hue, saturation] = useImageHSL(imageUrl ?? "")
 
   useEffect(() => {
     if (hue !== undefined && saturation !== undefined && imageUrl) {
