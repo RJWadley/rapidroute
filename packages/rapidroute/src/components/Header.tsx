@@ -47,7 +47,7 @@ const StyledLogo = styled(Logo)`
 
 const Text = styled.div`
   font-family: Inter;
-  font-size: 40px;
+  font-size: var(--large);
   margin-bottom: 10px;
 `
 

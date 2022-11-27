@@ -91,7 +91,7 @@ const Wrapper = styled.div`
 
 const FilterButton = styled.button`
   margin: 10px 30px;
-  font-size: 16px;
+  font-size: var(--extra-small);
   font-weight: 300;
   color: var(--low-contrast-text);
   cursor: pointer;

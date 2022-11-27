@@ -183,7 +183,7 @@ const Wrapper = styled.div`
   padding-top: 60px;
   border-radius: 30px;
   display: grid;
-  font-size: 16px;
+  font-size: var(--extra-small);
   overflow: hidden;
   position: absolute;
   top: calc(100% - 30px);

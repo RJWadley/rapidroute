@@ -3,6 +3,7 @@ import React, { ReactNode, useContext } from "react"
 import styled, { createGlobalStyle, css } from "styled-components"
 
 import invertLightness from "utils/invertLightness"
+import media from "utils/media"
 
 import { darkModeContext } from "./Providers/DarkMode"
 
@@ -79,7 +80,7 @@ const darkColors = css`
   --glassy-dark-background: #555c;
 `
 
-const GlobalStyle = createGlobalStyle<{ isDark?: boolean }>`
+const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
   :root {
     --rapid-red: #f15152;
     --rapid-blue: #416788;
@@ -94,13 +95,29 @@ const GlobalStyle = createGlobalStyle<{ isDark?: boolean }>`
       ${lightColors}
       ${({ isDark }) => isDark !== undefined && isDark && darkColors}
     }
+
+    --extra-small: 16px;
+    --small: 20px;
+    --medium: 24px;
+    --large: 32px;
+    --extra-large: 48px;
+    --symbol: 60px;
+
+    @media ${media.mobile} {
+      --extra-small: 12px;
+      --small: 12px;
+      --medium: 16px;
+      --large: 24px;
+      --extra-large: 32px;
+      --symbol: 40px;
+    }
   }
 
   body {
     background-color: var(--page-background);
     font-family: Inter;
   }
-`
+`}`
 
 const Wrapper = styled.div`
   color: var(--default-text);

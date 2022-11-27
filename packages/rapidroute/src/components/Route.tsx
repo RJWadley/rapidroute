@@ -123,10 +123,7 @@ const Via = styled.div`
   justify-content: space-between;
 
   padding: 10px 30px;
-  font-size: 40px;
-  @media ${media.mobile} {
-    font-size: 20px;
-  }
+  font-size: var(--large);
 `
 
 const CustomSpinner = styled(Spinner)<{ show: boolean }>`

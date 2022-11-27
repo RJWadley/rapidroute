@@ -219,7 +219,7 @@ const Inner = styled.div`
 `
 
 const Arriving = styled.div`
-  font-size: 24px;
+  font-size: var(--medium);
   font-weight: bold;
 `
 

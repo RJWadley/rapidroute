@@ -16,19 +16,11 @@ export const Wrapper = styled.div<{
   gap: 50px;
   align-items: center;
 
-  --small: 20px;
-  --medium: 24px;
-  --large: 48px;
-
   ${({ small }) =>
     small &&
     css`
       grid-template-columns: 1fr;
       gap: 10px;
-
-      --small: 12px;
-      --medium: 16px;
-      --large: 24px;
     `}
 `
 
@@ -120,7 +112,7 @@ export const Symbols = styled.div<{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--large);
+  font-size: var(--extra-large);
   font-weight: 700;
   white-space: pre;
   gap: 10px;

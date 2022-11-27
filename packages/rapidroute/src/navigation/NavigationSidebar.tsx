@@ -213,6 +213,13 @@ const Wrapper = styled.div`
       border: 10px solid blue;
     }
   } */
+
+  --extra-small: 12px;
+  --small: 12px;
+  --medium: 16px;
+  --large: 24px;
+  --extra-large: 32px;
+  --symbol: 40px;
 `
 
 const BeforeSpacer = styled.div<{

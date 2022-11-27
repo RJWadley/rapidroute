@@ -42,7 +42,7 @@ const StyledButton = styled.button<{ flipped: boolean }>`
   width: 80px;
   height: 80px;
   border-radius: 20px;
-  font-size: 70px;
+  font-size: var(--symbol);
   line-height: 80px;
   overflow: hidden;
 
@@ -53,7 +53,6 @@ const StyledButton = styled.button<{ flipped: boolean }>`
       height: 50px;
     }
     border-radius: 15px;
-    font-size: 40px;
     line-height: 50px;
   }
 `

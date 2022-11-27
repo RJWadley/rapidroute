@@ -121,7 +121,7 @@ const Label = styled.label`
 
 const Text = styled.textarea<{ isTo: boolean }>`
   color: var(--default-text);
-  font-size: 20px;
+  font-size: var(--small);
   height: 0px;
   text-align: ${props => (props.isTo ? "right" : "left")};
   overflow: hidden;
@@ -131,7 +131,6 @@ const Text = styled.textarea<{ isTo: boolean }>`
   align-items: center;
 
   @media ${media.mobile} {
-    font-size: 14px;
     text-align: left;
 
     ${props =>

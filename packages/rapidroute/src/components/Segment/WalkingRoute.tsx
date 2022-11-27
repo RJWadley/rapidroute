@@ -62,15 +62,12 @@ const WalkWrapper = styled(Wrapper)`
 
 const WalkIcon = styled.div<{ small: boolean }>`
   font-family: "Material Symbols Outlined";
-  ${({ small }) =>
-    small
-      ? css`
-          font-size: 40px;
-          grid-row: span 2;
-          height: 50px;
-          width: 40px;
-        `
-      : css`
-          font-size: 60px;
-        `}
+  font-size: var(--symbol);
+    ${({ small }) =>
+      small &&
+      css`
+        grid-row: span 2;
+        height: 50px;
+        width: 40px;
+      `};
 `

@@ -95,7 +95,7 @@ const Content = styled.div`
 
 const Title = styled.h1`
   text-align: center;
-  font-size: 48px;
+  font-size: var(--extra-large);
   color: var(--text-color);
   font-weight: 700;
   margin-bottom: 20px;
@@ -103,7 +103,7 @@ const Title = styled.h1`
 
 const Sub = styled.p`
   text-align: center;
-  font-size: 24px;
+  font-size: var(--medium);
   color: var(--text-color);
   font-weight: 400;
   margin-bottom: 50px;
@@ -119,7 +119,7 @@ const Cancel = styled(Link)`
   color: var(--invert-button-red);
   margin-bottom: 20px;
   margin-right: 20px;
-  font-size: 20px;
+  font-size: var(--small);
   font-weight: 700;
   padding: 0 30px;
   display: grid;
@@ -133,7 +133,7 @@ const Search = styled.input`
   padding: 30px;
   margin-bottom: 20px;
   border-radius: 30px;
-  font-size: 20px;
+  font-size: var(--small);
 `
 
 const Icon = styled.div`
@@ -141,7 +141,7 @@ const Icon = styled.div`
   position: absolute;
   right: 20px;
   top: 20px;
-  font-size: 40px;
+  font-size: var(--symbol);
 `
 
 const Players = styled.div`
