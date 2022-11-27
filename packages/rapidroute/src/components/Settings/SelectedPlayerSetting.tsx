@@ -53,8 +53,8 @@ const Wrapper = styled.div<{
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 10px 20px;
-  padding: 10px;
+  gap: 20px;
+  padding: 20px;
   border-radius: 20px;
   background-color: ${({ background }) => background};
   color: ${({ $color }) => $color};

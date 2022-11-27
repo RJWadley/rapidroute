@@ -17,7 +17,7 @@ gsap.registerPlugin(ScrollToPlugin)
 export default function VoiceSetting() {
   const bestVoice = useMemo(() => {
     if (isBrowser()) {
-      return TtsEngine.setBestMatchingVoice()
+      return TtsEngine.setBestMatchingVoice(null, null, "en")
     }
     return ""
   }, [])

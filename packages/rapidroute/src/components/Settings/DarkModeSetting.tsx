@@ -8,6 +8,8 @@ import { getLocal, setLocal } from "utils/localUtils"
 
 type Mode = "dark" | "light" | "system"
 
+const PAD = 10
+
 export default function DarkModeSetting() {
   const [mode, setMode] = React.useState<Mode>("system")
   const overlay = useRef<HTMLDivElement>(null)
@@ -29,10 +31,10 @@ export default function DarkModeSetting() {
 
     if (mode === "light") {
       offset = 100
-      x = 8
+      x = PAD * 2
     } else if (mode === "system") {
       offset = 200
-      x = 16
+      x = PAD * 4
     }
 
     gsap.to(overlay.current, {
@@ -80,11 +82,11 @@ const Button = styled.button`
 const Overlay = styled.div`
   pointer-events: none;
   position: absolute;
-  top: 4px;
-  left: 4px;
-  width: calc(calc(100% / 3) - 8px);
-  height: calc(100% - 8px);
+  top: ${PAD}px;
+  left: ${PAD}px;
+  width: calc(calc(100% / 3) - ${PAD * 2}px);
+  height: calc(100% - ${PAD * 2}px);
   background-color: var(--dark-background);
   z-index: 0;
-  border-radius: 18px;
+  border-radius: 10px;
 `

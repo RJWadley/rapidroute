@@ -110,7 +110,7 @@ const Menu = styled.div`
   gap: 20px;
 
   @media ${media.mobile} {
-    padding: 30px;
+    padding: 20px;
     min-width: none;
   }
 `
