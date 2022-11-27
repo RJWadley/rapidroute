@@ -84,13 +84,7 @@ export function NavigationProvider({
       headerHeight,
       setHeaderHeight,
     }
-  }, [
-    currentRoute,
-    headerHeight,
-    navigationComplete,
-    preferredRoute,
-    spokenRoute,
-  ])
+  }, [currentRoute, headerHeight, navigationComplete, preferredRoute, spokenRoute])
 
   return (
     <NavigationContext.Provider value={value}>

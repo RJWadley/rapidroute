@@ -29,6 +29,10 @@ interface LocalStorage {
    * version of local storage
    */
   version: number
+  /**
+   * voice to use for tts
+   */
+  voice: string
 }
 
 export const setLocal = <T extends keyof LocalStorage>(

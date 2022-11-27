@@ -9,6 +9,7 @@ import usePlayerHead from "utils/usePlayerHead"
 import RoundButton from "../RoundButton"
 import DarkModeSetting from "./DarkModeSetting"
 import SelectedPlayerSetting from "./SelectedPlayerSetting"
+import VoiceSetting from "./VoiceSetting"
 
 const circlePosition = "at calc(100% - 35px) 35px"
 
@@ -64,6 +65,7 @@ export default function Settings() {
         </Heading>
         <SelectedPlayerSetting />
         <DarkModeSetting />
+        <VoiceSetting />
       </Menu>
     </>
   ) : null

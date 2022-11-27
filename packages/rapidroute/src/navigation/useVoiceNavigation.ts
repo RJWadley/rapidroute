@@ -24,12 +24,13 @@ export const CompletionThresholds: Record<PlaceType, number> = {
   Other: 100,
 }
 
-if (isBrowser())
-  TtsEngine.init({
-    onInit: () => {
-      TtsEngine.setBestMatchingVoice(null, null, "en")
-    },
-  })
+if (isBrowser()) TtsEngine.init({})
+
+const updateVoice = () => {
+  const voice = getLocal("voice")
+  if (voice && voice !== "default") TtsEngine.setVoiceByUri(voice)
+  else TtsEngine.setBestMatchingVoice(null, null, "en")
+}
 
 export const playSound = (
   sound: "alert" | "complete" | "neutral" | "intercom"
@@ -81,6 +82,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
    */
   useDeepCompareMemo(async () => {
     if (!getLocal("selectedPlayer")) return
+    updateVoice()
 
     await sleep(100)
     if (!route.length || !isBrowser()) return
