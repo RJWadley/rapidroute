@@ -63,17 +63,7 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
   else delete database.routes[routeId]
 
   // if the route locations don't match the previous route, update the pathfinding index
-  if (
-    !(
-      route &&
-      previousRoute &&
-      Object.keys(route.locations).length ===
-        Object.keys(previousRoute.locations).length &&
-      Object.keys(route.locations).every(
-        key => route.locations[key] === previousRoute.locations[key]
-      )
-    )
-  ) {
+  if (!deepCompare(previousRoute?.locations, route?.locations)) {
     console.log("Updating pathfinding index for", routeId)
     // remove this route from any locations it was previously in
     if (previousRoute) {

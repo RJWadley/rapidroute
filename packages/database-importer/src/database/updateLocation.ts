@@ -75,7 +75,10 @@ export function setLocation(
       z: location.location?.z,
       w: location.isSpawnWarp,
     }
-    database.pathfinding[locationId] = newValue
+    database.pathfinding[locationId] = {
+      ...database.pathfinding[locationId],
+      ...newValue,
+    }
   } else {
     delete database.pathfinding[locationId]
   }
