@@ -6,8 +6,6 @@ import styled, { css } from "styled-components"
 import { getPath } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
-import media from "utils/media"
-import useMedia from "utils/useMedia"
 
 import createSegments, { SegmentType } from "./createSegments"
 import RoundButton from "./RoundButton"
@@ -73,7 +71,6 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
   }, [dropdownOpen, segments])
 
   const destination = segments?.[segments.length - 1].to
-  const isMobile = useMedia(media.mobile)
 
   return (
     <Wrapper>
@@ -91,7 +88,6 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
         {segments && (
           <>
             <BeginNavigation
-              small={isMobile}
               route={route.path}
               segments={segments}
             />
@@ -99,7 +95,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
               <Segment key={segment.from.uniqueId} segment={segment} />
             ))}
             {destination && (
-              <WillArrive destination={destination} small={isMobile} />
+              <WillArrive destination={destination} />
             )}
           </>
         )}

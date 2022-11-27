@@ -9,13 +9,11 @@ import invertLightness from "utils/invertLightness"
 import loadRoute from "utils/loadRoute"
 
 interface BeginNavigationProps {
-  small: boolean
   route: string[]
   segments: SegmentType[] | null
 }
 
 export default function BeginNavigation({
-  small,
   route,
   segments,
 }: BeginNavigationProps) {
@@ -28,7 +26,7 @@ export default function BeginNavigation({
 
   return (
     <Wrapper>
-      <Text small={small}>
+      <Text>
         Begin <Strong>Navigation</Strong>
       </Text>
       <RoundButton
@@ -61,8 +59,8 @@ const Wrapper = styled.div`
   max-width: calc(100vw - 40px);
 `
 
-const Text = styled.div<{ small: boolean }>`
-  font-size: ${props => (props.small ? "20px" : "30px")};
+const Text = styled.div`
+  font-size: var(--medium)
 `
 
 const Strong = styled.strong`

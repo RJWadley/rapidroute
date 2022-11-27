@@ -6,15 +6,14 @@ import styled from "styled-components"
 import invertLightness from "utils/invertLightness"
 
 interface WillArriveProps {
-  small: boolean
   destination: Location
 }
 
-export default function WillArrive({ small, destination }: WillArriveProps) {
+export default function WillArrive({  destination }: WillArriveProps) {
   return (
     <Wrapper>
-      <Icon small={small}>check</Icon>
-      <Text small={small}>
+      <Icon>check</Icon>
+      <Text>
         You will arrive at <br />
         <Strong>{destination.name}</Strong>
       </Text>
@@ -37,12 +36,12 @@ const Wrapper = styled.div`
   max-width: calc(100vw - 40px);
 `
 
-const Icon = styled.div<{ small: boolean }>`
+const Icon = styled.div`
   font-family: "Material Symbols Outlined";
   font-size: var(--symbol);
 `
 
-const Text = styled.div<{ small: boolean }>`
+const Text = styled.div`
   font-size: var(--medium)
 `
 

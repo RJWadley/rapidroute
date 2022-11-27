@@ -109,6 +109,6 @@ export const Wrapper = styled.div<{
 
   ${GateNumber} {
     text-align: right;
-    font-size: ${({ small }) => (small ? "12px" : "16px")};
+    font-size: var(--extra-small)
   }
 `
