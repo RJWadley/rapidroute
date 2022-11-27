@@ -52,7 +52,76 @@ type GetOne<T extends DatabaseDataKeys> = NonNullable<
   DataDatabaseType[T]
 >[string]
 
-async function getPathRAW<T extends DatabaseDataKeys>(
+async function getPathFromDatabase<T extends DatabaseDataKeys>(
+  type: T,
+  itemName: string
+): Promise<GetOne<T> | null> {
+  return new Promise(resolve => {
+    subscribe(`${type}/${itemName}`, dataIn => {
+      const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
+      if (!databaseTypeGuards[type](data)) {
+        console.log("guard failed", type, data)
+        return resolve(null)
+      }
+      databaseCache[type] = {
+        ...databaseCache[type],
+        [itemName]: data,
+      }
+      return resolve(data)
+    })
+  })
+}
+
+async function getAllFromDatabase<T extends DatabaseDataKeys>(
+  type: T
+): Promise<GetAll<T>> {
+  // otherwise, get the value from the database
+  return new Promise(resolve => {
+    subscribe(type, rawData => {
+      const data: GetAll<T> = {}
+
+      if (isObject(rawData)) {
+        // for each item, add the uniqueId
+        Object.keys(rawData).forEach(key => {
+          const item = rawData[key]
+          if (isObject(item)) item.uniqueId = key
+        })
+
+        // filter out values that don't match the type guard
+        Object.entries(rawData).forEach(([key, item]) => {
+          // if key is a symbol, it's not a valid key
+          if (typeof key === "symbol") return
+
+          if (databaseTypeGuards[type](item)) {
+            data[key] = item
+          } else {
+            console.log("guard failed", type, item)
+          }
+        })
+      }
+
+      return resolve(data)
+    })
+  })
+}
+
+const queue: Array<() => Promise<unknown>> = []
+
+export async function runQueue() {
+  while (queue.length) {
+    const next = queue.shift()
+    // eslint-disable-next-line no-await-in-loop
+    if (next) await next()
+  }
+
+  setTimeout(() => {
+    runQueue().catch(console.error)
+  }, 100)
+}
+
+runQueue().catch(console.error)
+
+export async function getPath<T extends DatabaseDataKeys>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
@@ -97,27 +166,18 @@ async function getPathRAW<T extends DatabaseDataKeys>(
     console.log("cache miss", type, itemName)
   }
 
-  // otherwise, get the value from the database
   return new Promise(resolve => {
-    subscribe(`${type}/${itemName}`, dataIn => {
-      const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
-      if (!databaseTypeGuards[type](data)) {
-        console.log("guard failed", type, data)
-        return resolve(null)
-      }
-      databaseCache[type] = {
-        ...databaseCache[type],
-        [itemName]: data,
-      }
+    queue.push(async () => {
+      const path = await getPathFromDatabase(type, itemName)
       oneHashes[type] = hash
       setLocal("databaseCache", databaseCache)
       setLocal("oneHash", oneHashes)
-      return resolve(data)
+      resolve(path)
     })
   })
 }
 
-async function getAllRAW<T extends DatabaseDataKeys>(
+export async function getAll<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
   // first get the hash from the database
@@ -147,77 +207,16 @@ async function getAllRAW<T extends DatabaseDataKeys>(
     console.log("cache miss", type)
   }
 
-  // otherwise, get the value from the database
   return new Promise(resolve => {
-    subscribe(type, rawData => {
-      const data: GetAll<T> = {}
-
-      if (isObject(rawData)) {
-        // for each item, add the uniqueId
-        Object.keys(rawData).forEach(key => {
-          const item = rawData[key]
-          if (isObject(item)) item.uniqueId = key
-        })
-
-        // filter out values that don't match the type guard
-        Object.entries(rawData).forEach(([key, item]) => {
-          // if key is a symbol, it's not a valid key
-          if (typeof key === "symbol") return
-
-          if (databaseTypeGuards[type](item)) {
-            data[key] = item
-          } else {
-            console.log("guard failed", type, item)
-          }
-        })
-      }
-
+    queue.push(async () => {
+      const data = await getAllFromDatabase(type)
       databaseCache[type] = data
       allHashes[type] = hash
       oneHashes[type] = hash
       setLocal("databaseCache", databaseCache)
       setLocal("allHash", allHashes)
       setLocal("oneHash", oneHashes)
-      return resolve(data)
-    })
-  })
-}
-
-const queue: Array<() => Promise<unknown>> = []
-
-export async function runQueue() {
-  while (queue.length) {
-    const next = queue.shift()
-    // eslint-disable-next-line no-await-in-loop
-    if (next) await next()
-  }
-
-  setTimeout(() => {
-    runQueue().catch(console.error)
-  }, 100)
-}
-
-runQueue().catch(console.error)
-
-export function getPath<T extends DatabaseDataKeys>(
-  type: T,
-  itemName: string
-): Promise<GetOne<T> | null> {
-  return new Promise(resolve => {
-    queue.push(async () => {
-      const path = await getPathRAW(type, itemName)
-      resolve(path)
-    })
-  })
-}
-
-export function getAll<T extends DatabaseDataKeys>(
-  type: T
-): Promise<GetAll<T>> {
-  return new Promise(resolve => {
-    queue.push(async () => {
-      const path = await getAllRAW(type)
-      resolve(path)
+      resolve(data)
     })
   })
 }
