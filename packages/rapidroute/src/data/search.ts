@@ -58,7 +58,7 @@ export function search(query: string) {
   if (
     (query && query.length < 2) ||
     /cur|loca/.test(query) ||
-    results.length < 1
+    (results.length < 1 && query.length > 2)
   ) {
     results.unshift("Current Location")
   }
