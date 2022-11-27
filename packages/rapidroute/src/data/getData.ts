@@ -47,8 +47,10 @@ const hashesExist = new Promise(resolve => {
   })
 })
 
-type GetAll<T extends DatabaseDataKeys> = DataDatabaseType[T]
-type GetOne<T extends DatabaseDataKeys> = DataDatabaseType[T][string]
+type GetAll<T extends DatabaseDataKeys> = NonNullable<DataDatabaseType[T]>
+type GetOne<T extends DatabaseDataKeys> = NonNullable<
+  DataDatabaseType[T]
+>[string]
 
 async function getPathRAW<T extends DatabaseDataKeys>(
   type: T,
@@ -80,9 +82,9 @@ async function getPathRAW<T extends DatabaseDataKeys>(
   const hash = databaseHashes[type]
 
   // if the hash matches the one we have, return the cached value
-  if (hash === oneHashes[type] && databaseCache[type][itemName]) {
+  if (hash === oneHashes[type] && databaseCache[type]?.[itemName]) {
     console.log("cache hit", type, itemName)
-    const output = databaseCache[type][itemName]
+    const output = databaseCache[type]?.[itemName]
     if (databaseTypeGuards[type](output)) return output
     console.log("guard failed", type, output)
   }
@@ -103,7 +105,10 @@ async function getPathRAW<T extends DatabaseDataKeys>(
         console.log("guard failed", type, data)
         return resolve(null)
       }
-      databaseCache[type][itemName] = data
+      databaseCache[type] = {
+        ...databaseCache[type],
+        [itemName]: data,
+      }
       oneHashes[type] = hash
       setLocal("databaseCache", databaseCache)
       setLocal("oneHash", oneHashes)
@@ -122,7 +127,7 @@ async function getAllRAW<T extends DatabaseDataKeys>(
   // if the hash matches the one we have, return the cached value
   if (hash === allHashes[type] && databaseCache[type]) {
     console.log("cache hit", type)
-    const output = databaseCache[type]
+    const output: GetAll<T> = databaseCache[type] ?? {}
 
     // filter out values that don't match the type guard
     Object.keys(output).forEach(key => {

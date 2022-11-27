@@ -64,7 +64,7 @@ export type Hashes = Record<DatabaseDataKeys, string | undefined>
 export const databaseTypeGuards: {
   [key in DatabaseDataKeys]: (
     value: unknown
-  ) => value is DatabaseType[key][string]
+  ) => value is NonNullable<DatabaseType[key]>[string]
 } = {
   providers: isProvider,
   locations: isLocation,
