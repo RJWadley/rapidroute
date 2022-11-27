@@ -3,6 +3,7 @@ import React from "react"
 import styled from "styled-components"
 
 import Layout from "components/Layout"
+import MapBackground from "map/MapBackground"
 import MapCanvas from "map/MapCanvas"
 import MapTag from "map/MapTag"
 
@@ -10,6 +11,7 @@ export default function MapTest() {
   return (
     <Layout>
       <Wrapper>
+        <MapBackground/>
         <MapCanvas />
         <StyledMapTag />
       </Wrapper>
@@ -22,6 +24,7 @@ const Wrapper = styled.div`
   height: 100vh;
   background-color: black;
   overscroll-behavior: none;
+  position: relative;
 `
 
 const StyledMapTag = styled(MapTag)`

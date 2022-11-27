@@ -5,6 +5,7 @@ import styled from "styled-components"
 import Layout from "components/Layout"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import SEO from "components/SEO"
+import MapBackground from "map/MapBackground"
 import MapCanvas from "map/MapCanvas"
 import MapTag from "map/MapTag"
 import NavigationSidebar from "navigation/NavigationSidebar"
@@ -87,6 +88,7 @@ export default function Navigate() {
 
   return (
     <Layout>
+      <MapBackground />
       <StyledMapTag />
       <StyledCanvas />
       <NavigationSidebar />
