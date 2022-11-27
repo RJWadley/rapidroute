@@ -1,15 +1,19 @@
-import FlexSearch from "flexsearch-ts"
+import { Index } from "flexsearch-ts"
 
 import { getAll } from "./getData"
 
-const searchWorker = new FlexSearch.Index({
-  tokenize: "reverse",
-  charset: "latin:simple",
-})
+const searchWorker =
+  Index &&
+  new Index({
+    tokenize: "reverse",
+    charset: "latin:simple",
+  })
 
-const strictSearchWorker = new FlexSearch.Index({
-  tokenize: "strict",
-})
+const strictSearchWorker =
+  Index &&
+  new Index({
+    tokenize: "strict",
+  })
 
 const displayLookup: Record<string, string> = {}
 
