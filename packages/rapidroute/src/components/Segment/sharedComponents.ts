@@ -15,13 +15,14 @@ export const Wrapper = styled.div<{
   grid-template-columns: 1fr 1fr;
   gap: 50px;
   align-items: center;
+  max-width: calc(100vw - 40px);
 
   ${({ small }) =>
     small &&
     css`
       grid-template-columns: 1fr;
       gap: 10px;
-    `}
+    `};
 `
 
 export const Left = styled.div`
@@ -109,9 +110,11 @@ export const LongNames = styled.div`
 export const Symbols = styled.div<{
   singleLine: boolean
 }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  place-items: center;
+  justify-content: center;
+  max-width: calc(100vw - 100px);
   font-size: var(--extra-large);
   font-weight: 700;
   white-space: pre;

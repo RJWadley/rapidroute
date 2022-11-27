@@ -51,12 +51,14 @@ const Wrapper = styled.div`
   color: ${invertLightness("var(--background-green)")};
   border-radius: 30px;
   padding: 30px;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 30px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   transform: translate(0, 200px);
   opacity: 0;
+  max-width: calc(100vw - 40px);
 `
 
 const Text = styled.div<{ small: boolean }>`

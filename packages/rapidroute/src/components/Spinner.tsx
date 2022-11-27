@@ -3,6 +3,8 @@ import React, { useEffect, useRef } from "react"
 import gsap from "gsap"
 import styled, { keyframes } from "styled-components"
 
+import media from "utils/media"
+
 export default function Spinner({
   show,
   className = "",
@@ -59,14 +61,23 @@ const Loader = styled.div`
   align-items: center;
   gap: 50px;
 
+  @media ${media.mobile} {
+    gap: 25px;
+  }
+
   div {
     display: inline-block;
     width: 40px;
     height: 40px;
+    border-radius: 10px;
+    @media ${media.mobile} {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+    }
     background-color: red;
     animation: ${bounce} 2s infinite;
     animation-timing-function: cubic-bezier(0.66, 0, 0.33, 1);
-    border-radius: 10px;
   }
 
   div:nth-child(1) {

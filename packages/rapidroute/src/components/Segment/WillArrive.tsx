@@ -27,21 +27,23 @@ const Wrapper = styled.div`
   color: ${invertLightness("var(--background-green)")};
   border-radius: 30px;
   padding: 30px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   gap: 30px;
   align-items: center;
+  justify-content: center;
   transform: translate(0, 200px);
   opacity: 0;
+  max-width: calc(100vw - 40px);
 `
 
 const Icon = styled.div<{ small: boolean }>`
   font-family: "Material Symbols Outlined";
-  font-size: ${props => (props.small ? "40px" : "60px")};
-  grid-row: ${props => props.small && "span 2"};
+  font-size: var(--symbol);
 `
 
 const Text = styled.div<{ small: boolean }>`
-  font-size: ${props => (props.small ? "20px" : "30px")};
+  font-size: var(--medium)
 `
 
 const Strong = styled.strong`
