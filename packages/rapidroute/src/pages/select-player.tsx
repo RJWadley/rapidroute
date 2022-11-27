@@ -13,7 +13,7 @@ import { WorldInfo } from "map/worldInfoType"
 export default function SelectPlayer() {
   const [players, setPlayers] = React.useState<string[]>([])
   const [search, setSearch] = React.useState<string>()
-  const {from, to, setFrom, setTo} = useContext(RoutingContext)
+  const { from, to, setFrom, setTo } = useContext(RoutingContext)
 
   const updatePlayers = () => {
     fetch(
@@ -21,9 +21,11 @@ export default function SelectPlayer() {
     )
       .then(response => response.json())
       .then((data: WorldInfo) => {
-        setPlayers(prev => [...prev, ...data.players.map(player => player.name)].filter(
-          (value, index, self) => self.indexOf(value) === index
-        ))
+        setPlayers(prev =>
+          [...prev, ...data.players.map(player => player.name)].filter(
+            (value, index, self) => self.indexOf(value) === index
+          )
+        )
       })
       .catch(e => {
         console.error("Could not get information from dynmap", e)
@@ -54,10 +56,15 @@ export default function SelectPlayer() {
         </Sub>
 
         <SearchContainer>
-          <Cancel to="/" onClick={()=>{
-            if (from === "Current Location") setFrom(null)
-            if (to === "Current Location") setTo(null)
-          }}>Cancel</Cancel>
+          <Cancel
+            to="/"
+            onClick={() => {
+              if (from === "Current Location") setFrom(null)
+              if (to === "Current Location") setTo(null)
+            }}
+          >
+            Cancel
+          </Cancel>
           <Search
             placeholder="Search for a player"
             onChange={e => {

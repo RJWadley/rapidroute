@@ -87,16 +87,11 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
       <Dropdown ref={dropdownContent}>
         {segments && (
           <>
-            <BeginNavigation
-              route={route.path}
-              segments={segments}
-            />
+            <BeginNavigation route={route.path} segments={segments} />
             {segments?.map(segment => (
               <Segment key={segment.from.uniqueId} segment={segment} />
             ))}
-            {destination && (
-              <WillArrive destination={destination} />
-            )}
+            {destination && <WillArrive destination={destination} />}
           </>
         )}
       </Dropdown>

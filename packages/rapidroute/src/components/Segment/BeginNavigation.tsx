@@ -60,7 +60,7 @@ const Wrapper = styled.div`
 `
 
 const Text = styled.div`
-  font-size: var(--medium)
+  font-size: var(--medium);
 `
 
 const Strong = styled.strong`

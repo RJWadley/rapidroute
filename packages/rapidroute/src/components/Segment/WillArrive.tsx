@@ -9,7 +9,7 @@ interface WillArriveProps {
   destination: Location
 }
 
-export default function WillArrive({  destination }: WillArriveProps) {
+export default function WillArrive({ destination }: WillArriveProps) {
   return (
     <Wrapper>
       <Icon>check</Icon>
@@ -42,7 +42,7 @@ const Icon = styled.div`
 `
 
 const Text = styled.div`
-  font-size: var(--medium)
+  font-size: var(--medium);
 `
 
 const Strong = styled.strong`

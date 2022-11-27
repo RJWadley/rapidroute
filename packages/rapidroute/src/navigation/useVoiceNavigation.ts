@@ -103,7 +103,8 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     thirtySecondWarningPhrase = newThirtySecondWarning
 
     const routeType = firstSegment?.routes[0]?.type ?? "walk"
-    const needsNextInstruction = routeType === "walk" || routeType === "MRT" || routeType === "spawnWarp"
+    const needsNextInstruction =
+      routeType === "walk" || routeType === "MRT" || routeType === "spawnWarp"
 
     if (rerouted.current) {
       playSound("neutral")
