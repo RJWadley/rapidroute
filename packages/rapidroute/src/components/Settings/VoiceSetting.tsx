@@ -53,7 +53,7 @@ export default function VoiceSetting() {
     setCurrentVoice(voice)
     setLocal("voice", voice)
 
-    TtsEngine.setVoiceByUri(voice)
+    TtsEngine.setVoiceByUri(voice === "default" ? bestVoice : voice)
     TtsEngine.setRate(getLocal("speechRate") ?? 1)
     TtsEngine.speakOut(`Hi, my name is ${voice
       .replace("default", bestVoice)
