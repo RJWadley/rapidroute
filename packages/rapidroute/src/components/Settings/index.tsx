@@ -34,7 +34,7 @@ export default function Settings() {
         ? `circle(200% ${circlePosition})`
         : `circle(0% ${circlePosition})`,
       ease: open ? "power4.in" : "power4.out",
-      duration: .3,
+      duration: 0.3,
     })
   }, [open])
 
@@ -43,13 +43,16 @@ export default function Settings() {
    */
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (open && e.target instanceof HTMLElement && !menu.current?.contains(e.target)
-        && !openButton?.contains(e.target)
+      if (
+        open &&
+        e.target instanceof HTMLElement &&
+        !menu.current?.contains(e.target) &&
+        !openButton?.contains(e.target)
       ) {
         setOpen(false)
       }
     }
-  
+
     window.addEventListener("click", handleClick)
     return () => window.removeEventListener("click", handleClick)
   }, [open, openButton])
@@ -67,7 +70,7 @@ export default function Settings() {
         <SelectedPlayerSetting />
         <DarkModeSetting />
         <VoiceSetting />
-        <RateSetting/>
+        <RateSetting />
       </Menu>
     </>
   ) : null

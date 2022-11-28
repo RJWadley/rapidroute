@@ -11,7 +11,7 @@ export default function MapTest() {
   return (
     <Layout>
       <Wrapper>
-        <MapBackground/>
+        <MapBackground />
         <MapCanvas />
         <StyledMapTag />
       </Wrapper>
