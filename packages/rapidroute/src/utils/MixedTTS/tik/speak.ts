@@ -101,7 +101,18 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
           voice,
         }),
       })
-        .then(res => res.json())
+        .then(res => {
+          if (res.ok) {
+            return res.json()
+          }
+          if (res.status === 429) {
+            setTimeout(() => {
+              preloadedAudio[voice][text] = undefined
+              preloadAudio(text, voice).catch(console.error)
+            }, 10000 + Math.random() * 10000)
+          }
+          return undefined
+        })
         .then((resp: unknown) => {
           if (isSpeechResponse(resp)) {
             resolve(resp.data)

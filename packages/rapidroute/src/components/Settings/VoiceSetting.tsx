@@ -113,7 +113,7 @@ export default function VoiceSetting() {
               updateVoice(v)
             }}
           >
-            {v.name}
+            {v.name.replace("(Characters)", "")}
           </Voice>
         ))}
       </Dropdown>
