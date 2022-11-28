@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
-import { TtsEngine } from "ttsreader"
 import { useDeepCompareMemo } from "use-deep-compare"
 
 import AlertMP3 from "audio/alert.mp3"
@@ -13,6 +12,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import { stopToNumber } from "components/Segment/getLineDirections"
 import { isBrowser, sleep } from "utils/functions"
 import { getLocal, session } from "utils/localUtils"
+import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
 
 import getNavigationInstruction from "./getNavigationInstruction"
 
@@ -24,13 +24,11 @@ export const CompletionThresholds: Record<PlaceType, number> = {
   Other: 100,
 }
 
-if (isBrowser()) TtsEngine.init({})
-
 const updateVoice = () => {
   const voice = getLocal("voice")
-  if (voice && voice !== "default") TtsEngine.setVoiceByUri(voice)
-  else TtsEngine.setBestMatchingVoice(null, null, "en")
-  TtsEngine.setRate(getLocal("speechRate") ?? 1)
+  const rate = getLocal("speechRate")
+  if (voice) setVoiceById(voice)
+  if (rate) setSpeechRate(rate)
 }
 
 export const playSound = (
@@ -59,7 +57,7 @@ let canSayTwoMinuteWarning = true
 export const twoMinuteWarning = () => {
   if (canSayTwoMinuteWarning) {
     playSound("intercom")
-    TtsEngine.speakOut(twoMinuteWarningPhrase)
+    speak(twoMinuteWarningPhrase).catch(console.error)
     canSayTwoMinuteWarning = false
   }
 }
@@ -68,7 +66,7 @@ let canSayThirtySecondWarning = true
 export const thirtySecondWarning = () => {
   if (canSayThirtySecondWarning) {
     playSound("intercom")
-    TtsEngine.speakOut(thirtySecondWarningPhrase)
+    speak(thirtySecondWarningPhrase).catch(console.error)
     canSayThirtySecondWarning = false
   }
 }
@@ -116,9 +114,9 @@ export default function useVoiceNavigation(route: SegmentType[]) {
       rerouted.current = false
     } else playSound("intercom")
     if (firstInstruction && nextInstruction && needsNextInstruction) {
-      TtsEngine.speakOut(`${firstInstruction}, then ${nextInstruction}`)
+      speak(`${firstInstruction}, then ${nextInstruction}`).catch(console.error)
     } else if (firstInstruction) {
-      TtsEngine.speakOut(firstInstruction)
+      speak(firstInstruction).catch(console.error)
     }
   }, [route]).catch(e => {
     console.error("Error in voice navigation", e)
@@ -132,7 +130,9 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     if (navigationComplete && spokenRoute.length === 1) {
       playSound("complete")
       await sleep(500)
-      TtsEngine.speakOut(`Navigation complete. ${youHaveReached.current}`)
+      speak(`Navigation complete. ${youHaveReached.current}`).catch(
+        console.error
+      )
     }
   }, [navigationComplete, spokenRoute.length]).catch(console.error)
   useEffect(() => {

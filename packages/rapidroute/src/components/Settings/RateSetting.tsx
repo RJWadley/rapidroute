@@ -1,14 +1,9 @@
 import React, { useEffect } from "react"
 
 import styled from "styled-components"
-import { TtsEngine } from "ttsreader"
 
-import { isBrowser } from "utils/functions"
 import { getLocal, setLocal } from "utils/localUtils"
-
-if (isBrowser()) {
-  TtsEngine.init({})
-}
+import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
 
 export default function RateSetting() {
   const [rate, setRate] = React.useState(1)
@@ -30,9 +25,9 @@ export default function RateSetting() {
         onChange={e => {
           setRate(parseFloat(e.target.value))
           setLocal("speechRate", parseFloat(e.target.value))
-          TtsEngine.setVoiceByUri(getLocal("voice") ?? "")
-          TtsEngine.setRate(parseFloat(e.target.value))
-          TtsEngine.speakOut("This is how fast I'll speak to you.")
+          setVoiceById(getLocal("voice") ?? "")
+          setSpeechRate(parseFloat(e.target.value))
+          speak("This is how fast I'll speak to you.").catch(console.error)
         }}
       />
       <RateDisplay>{rate}</RateDisplay>

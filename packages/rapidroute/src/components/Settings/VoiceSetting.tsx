@@ -1,36 +1,29 @@
-import React, { useEffect, useMemo } from "react"
+import React, { useEffect, useState } from "react"
 
 import gsap from "gsap"
 import { ScrollToPlugin } from "gsap/all"
 import styled, { css } from "styled-components"
-import { TtsEngine } from "ttsreader"
 
-import { isBrowser } from "utils/functions"
-import { getLocal, setLocal } from "utils/localUtils"
-
-if (isBrowser()) {
-  TtsEngine.init({})
-}
+import { clearLocal, getLocal, setLocal } from "utils/localUtils"
+import {
+  getDefaultVoice,
+  getVoiceById,
+  getVoices,
+  setSpeechRate,
+  setVoiceById,
+  speak,
+  UniversalVoice,
+} from "utils/MixedTTS"
 
 gsap.registerPlugin(ScrollToPlugin)
 
 export default function VoiceSetting() {
-  const bestVoice = useMemo(() => {
-    if (isBrowser()) {
-      return TtsEngine.setBestMatchingVoice(null, null, "en")
-    }
-    return ""
-  }, [])
-  const allVoice = useMemo(() => {
-    if (isBrowser()) {
-      return TtsEngine.voices.filter(v => v.lang.startsWith("en"))
-    }
-    return []
-  }, [])
+  const bestVoice = getDefaultVoice()
+  const allVoice = getVoices("en")
 
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
-  const [currentVoice, setCurrentVoice] = React.useState(bestVoice)
+  const [currentVoice, setCurrentVoice] = useState<UniversalVoice>()
 
   useEffect(() => {
     gsap.to(dropdownRef.current, {
@@ -45,27 +38,34 @@ export default function VoiceSetting() {
     })
   }, [open])
 
-  const updateVoice = (voice: string) => {
+  const updateVoice = (voice: UniversalVoice | "default") => {
     if (!open) {
       setOpen(true)
       return
     }
-    setCurrentVoice(voice)
-    setLocal("voice", voice)
-
-    TtsEngine.setVoiceByUri(voice === "default" ? bestVoice : voice)
-    TtsEngine.setRate(getLocal("speechRate") ?? 1)
-    TtsEngine.speakOut(`Hi, my name is ${voice
-      .replace("default", bestVoice)
-      .replace(/\([\s\S]+\)/g, "")}.
-        This is what I'll sound like when I'm helping you find your
-        way around on the Mine cart Rapid Transit Server.
-    `)
+    if (voice === "default") {
+      clearLocal("voice")
+      setCurrentVoice(undefined)
+      setVoiceById(bestVoice.id)
+      setSpeechRate(getLocal("speechRate") ?? 1)
+    } else {
+      setCurrentVoice(voice)
+      setLocal("voice", voice.id)
+      setVoiceById(voice.id)
+      setSpeechRate(getLocal("speechRate") ?? 1)
+    }
+    const voiceForName = voice === "default" ? bestVoice : voice
+    speak(`Hi, my name is ${voiceForName.name.replaceAll(/\([\s\S]+\)/g, "")}.
+    This is what I'll sound like when I'm helping you find your way around on the Mine cart Rapid Transit Server.`).catch(
+      console.error
+    )
   }
 
   useEffect(() => {
-    setCurrentVoice(getLocal("voice") ?? "default")
-  }, [])
+    const localVoice = getLocal("voice")
+    const newVoice = localVoice && getVoiceById(localVoice)
+    if (newVoice) setCurrentVoice(newVoice)
+  }, [bestVoice.id])
 
   /**
    * handle click outside
@@ -103,14 +103,14 @@ export default function VoiceSetting() {
             updateVoice("default")
           }}
         >
-          Default ({bestVoice})
+          Default ({bestVoice.name})
         </Voice>
         {allVoice.map(v => (
           <Voice
-            active={v.name === currentVoice}
-            key={v.name}
+            active={v.id === currentVoice?.id}
+            key={v.id}
             onClick={() => {
-              updateVoice(v.name)
+              updateVoice(v)
             }}
           >
             {v.name}
