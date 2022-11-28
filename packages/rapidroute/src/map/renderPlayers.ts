@@ -1,6 +1,6 @@
 import { fabric } from "fabric"
 
-import { MineTools } from "types/MineTools"
+import { MojangUUIDResponse } from "types/Mojang"
 import { getLocal, session } from "utils/localUtils"
 
 import { WorldInfo } from "./worldInfoType"
@@ -33,7 +33,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
           !playerUUIDs[player.account] &&
           fetch(`https://api.minetools.eu/uuid/${player.account}`)
             .then(response => response.json())
-            .then((uuidData: MineTools) => {
+            .then((uuidData: MojangUUIDResponse) => {
               if (uuidData.id) playerUUIDs[player.account] = uuidData.id
             })
       )

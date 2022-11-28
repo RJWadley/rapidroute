@@ -4,6 +4,7 @@ import { Link } from "gatsby"
 import styled from "styled-components"
 
 import Layout from "components/Layout"
+import searchForPlayer from "components/players/searchPlayers"
 import PlayerSelect from "components/PlayerSelect"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
@@ -46,6 +47,13 @@ export default function SelectPlayer() {
     return () => clearTimeout(timeout)
   }, [search])
 
+  const playerResults = search && searchForPlayer(search)
+  const searchInResults =
+    playerResults &&
+    playerResults
+      .map(x => x.toString().toLowerCase())
+      .includes(search.toLowerCase())
+
   return (
     <Layout>
       <Content>
@@ -84,9 +92,14 @@ export default function SelectPlayer() {
               <PlayerSelect key={player} name={player} />
             ))}
           {debouncedSearch &&
+            !searchInResults &&
             players.every(
               player => player.toLowerCase() !== search?.toLowerCase()
             ) && <PlayerSelect key="SearchName" name={debouncedSearch} />}
+          {playerResults &&
+            playerResults.map(player => (
+              <PlayerSelect key={player} name={player.toString()} />
+            ))}
         </Players>
       </Content>
     </Layout>
@@ -144,6 +157,7 @@ const Cancel = styled(Link)`
     top: 20px;
     left: 20px;
     border-radius: 13px;
+    z-index: 101;
   }
 `
 

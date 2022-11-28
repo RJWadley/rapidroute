@@ -72,7 +72,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       ref={wrapperRef}
       backgroundColor="var(--default-page-background)"
       textColor="var(--page-background)"
-      loading
+      $loading
     />
   )
 }
@@ -89,7 +89,7 @@ const pulse = keyframes`
 const Wrapper = styled.div<{
   backgroundColor: string
   textColor: string
-  loading?: boolean
+  $loading?: boolean
 }>`
   background-color: ${props => props.backgroundColor};
   color: ${props => props.textColor};
@@ -119,7 +119,7 @@ const Wrapper = styled.div<{
     background-size: 200% 100%;
     animation: ${pulse} 2s ease infinite;
     border-radius: 30px;
-    opacity: ${props => (props.loading ? 1 : 0)};
+    opacity: ${props => (props.$loading ? 1 : 0)};
     transition: opacity 0.5s;
     pointer-events: none;
   }
@@ -129,7 +129,7 @@ const Wrapper = styled.div<{
   }
 
   @media ${media.mobile} {
-    min-height: 0px; //TODO
+    min-height: 140px;
     grid-template-columns: 1fr auto;
   }
 `
