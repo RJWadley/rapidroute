@@ -10,7 +10,7 @@ const searchWorker =
   })
 
 players.split("\n").forEach(player => {
-  searchWorker.add(player, player)
+  searchWorker?.add(player, player)
 })
 
 export default function searchForPlayer(query: string) {
