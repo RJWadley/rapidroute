@@ -1,5 +1,6 @@
 import React, { useContext } from "react"
 
+import { Link } from "gatsby"
 import styled from "styled-components"
 
 import { darkModeContext } from "components/Providers/DarkMode"
@@ -29,7 +30,7 @@ export default function SelectedPlayerSetting() {
       <Name>{player}</Name>
       {playerHead && <Head src={playerHead} alt="your player head" />}
       <Swap
-        href="/select-player"
+        to="/select-player"
         background={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
       >
         Swap Player
@@ -39,7 +40,7 @@ export default function SelectedPlayerSetting() {
     <Wrapper background="var(--mid-background)" $color="var(--text-color)">
       <Name>Player Name</Name>
       {playerHead && <Head src={playerHead} alt="steve player head" />}
-      <Swap href="/select-player" background="var(--dark-background)">
+      <Swap to="/select-player" background="var(--dark-background)">
         Select Player
       </Swap>
     </Wrapper>
@@ -71,7 +72,7 @@ const Head = styled.img`
   border-radius: 10px;
 `
 
-const Swap = styled.a<{ background: string }>`
+const Swap = styled(Link)<{ background: string }>`
   font-size: var(--medium);
   border-radius: 10px;
   padding: 10px;
