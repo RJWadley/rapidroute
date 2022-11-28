@@ -2,6 +2,17 @@ import { fabric } from "fabric"
 
 import { session } from "utils/localUtils"
 
+let viewPort:
+  | {
+      tl: fabric.Point
+      br: fabric.Point
+      tr: fabric.Point
+      bl: fabric.Point
+    }
+  | undefined
+
+let hasRanThisFrame = false
+
 /**
  * checks if the line between two points intersects the canvas viewport
  */
@@ -12,7 +23,13 @@ export default function lineIsOnScreen(
   lineWidth: number = 0
 ) {
   const debugCull = session.isDebug ? 100 / canvas.getZoom() : 0
-  const viewPort = canvas.calcViewportBoundaries()
+  if (!viewPort || !hasRanThisFrame) {
+    viewPort = canvas.calcViewportBoundaries()
+    hasRanThisFrame = true
+    requestAnimationFrame(() => {
+      hasRanThisFrame = false
+    })
+  }
   const minX = viewPort.tl.x + debugCull - lineWidth
   const maxX = viewPort.br.x - debugCull + lineWidth
   const minY = viewPort.tl.y + debugCull - lineWidth
