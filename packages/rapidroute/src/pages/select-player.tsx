@@ -86,7 +86,7 @@ export default function SelectPlayer() {
           {debouncedSearch &&
             players.every(
               player => player.toLowerCase() !== search?.toLowerCase()
-            ) && <PlayerSelect name={debouncedSearch} />}
+            ) && <PlayerSelect key="SearchName" name={debouncedSearch} />}
         </Players>
       </Content>
     </Layout>

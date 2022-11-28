@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react"
 
 import gsap from "gsap"
-import styled from "styled-components"
+import styled, { css, keyframes } from "styled-components"
 
 import { useImageHSL } from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
@@ -24,17 +24,12 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
 
   const [hue, saturation] = useImageHSL(imageUrl ?? "")
 
-  useEffect(() => {
-    if (hue !== undefined && saturation !== undefined && imageUrl) {
-      gsap.to(wrapperRef.current, {
-        opacity: 1,
+  const imageLoad = () => {
+    if (wrapperRef.current)
+      gsap.to(wrapperRef.current.children, {
+        autoAlpha: 1,
       })
-    } else {
-      gsap.set(wrapperRef.current, {
-        opacity: 0,
-      })
-    }
-  }, [hue, imageUrl, saturation])
+  }
 
   const isDark = useContext(darkModeContext)
   const backgroundLightness = isDark ? 15 : 85
@@ -56,6 +51,8 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         color={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         src={imageUrl}
         alt={`${name} player head`}
+        onLoad={imageLoad}
+        onError={imageLoad}
       />
       <Name>{name}</Name>
       <CustomRound
@@ -73,13 +70,27 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   ) : (
     <Wrapper
       ref={wrapperRef}
-      backgroundColor="var(--page-background)"
+      backgroundColor="var(--default-page-background)"
       textColor="var(--page-background)"
+      loading
     />
   )
 }
 
-const Wrapper = styled.div<{ backgroundColor: string; textColor: string }>`
+const pulse = keyframes`
+  0% {
+    background-position: 40% 0;
+  }
+  100% {
+    background-position: -160% 0;
+  }
+`
+
+const Wrapper = styled.div<{
+  backgroundColor: string
+  textColor: string
+  loading?: boolean
+}>`
   background-color: ${props => props.backgroundColor};
   color: ${props => props.textColor};
   display: grid;
@@ -89,7 +100,32 @@ const Wrapper = styled.div<{ backgroundColor: string; textColor: string }>`
   border-radius: 30px;
   grid-template-columns: auto 1fr auto;
   min-height: 120px;
-  opacity: 0;
+  transition: background-color 0.5s, color 0.5s;
+  position: relative;
+
+  :before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to right,
+      var(--page-background) 0%,
+      var(--default-card-background) 10%,
+      var(--page-background) 20%
+    );
+    background-size: 200% 100%;
+    animation: ${pulse} 2s ease infinite;
+    border-radius: 30px;
+    opacity: ${props => (props.loading ? 1 : 0)};
+    transition: opacity 0.5s;
+  }
+
+  > * {
+    opacity: 0;
+  }
 
   @media ${media.mobile} {
     min-height: 0px; //TODO
