@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext } from "react"
 
 import gsap from "gsap"
-import styled, { css, keyframes } from "styled-components"
+import styled, { keyframes } from "styled-components"
 
 import { useImageHSL } from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
@@ -121,6 +121,7 @@ const Wrapper = styled.div<{
     border-radius: 30px;
     opacity: ${props => (props.loading ? 1 : 0)};
     transition: opacity 0.5s;
+    pointer-events: none;
   }
 
   > * {
