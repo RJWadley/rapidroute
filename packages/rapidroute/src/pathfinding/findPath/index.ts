@@ -1,10 +1,6 @@
 /* eslint-disable no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
-import getPlayerLocation from "pathfinding/getPlayerLocation"
-import loadRoute from "utils/loadRoute"
-import { getLocal } from "utils/localUtils"
-
 import { generateAllCoordinateEdges } from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"
 import { GraphEdge, rawEdges } from "./mapEdges"
@@ -60,21 +56,6 @@ export default class Pathfinder {
     this.edges = edges
     const nodes = this.pathfindingIndex
 
-    if (this.from === "Current Location" || this.to === "Current Location") {
-      const player = getLocal("selectedPlayer")?.toString()
-      if (!player) {
-        loadRoute("/select-player")
-        return []
-      }
-      const playerLocation = await getPlayerLocation(player)
-      if (!playerLocation) {
-        return []
-      }
-      if (this.from === "Current Location")
-        this.from = `Coordinate: ${playerLocation.x}, ${playerLocation.z}`
-      if (this.to === "Current Location")
-        this.to = `Coordinate: ${playerLocation.x}, ${playerLocation.z}`
-    }
     console.log("starting pathfinding from", this.from, "to", this.to)
 
     edges.push(...(await generateAllCoordinateEdges(this.from, this.to, nodes)))

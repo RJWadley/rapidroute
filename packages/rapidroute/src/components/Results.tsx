@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 
 import gsap from "gsap"
 import styled from "styled-components"
@@ -6,9 +6,12 @@ import styled from "styled-components"
 import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
+import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
 import { isBrowser, sleep } from "utils/functions"
+import loadRoute from "utils/loadRoute"
+import { getLocal } from "utils/localUtils"
 import { wrap } from "utils/promise-worker"
 
 import { RoutingContext } from "./Providers/RoutingContext"
@@ -34,6 +37,18 @@ export default function Results() {
 
   const debouncer = useRef<Promise<unknown>>(Promise.resolve())
 
+  const playerLocation = useMemo(async () => {
+    if (from === "Current Location" || to === "Current Location") {
+      const player = getLocal("selectedPlayer")?.toString()
+      if (player) {
+        const { x, z } = (await getPlayerLocation(player)) ?? {}
+        if (!x || !z) return undefined
+        return `Coordinate: ${x}, ${z}`
+      }
+    }
+    return undefined
+  }, [from, to])
+
   useEffect(() => {
     if (from && to) {
       let canSave = true
@@ -42,6 +57,18 @@ export default function Results() {
         const wrapper = await rawWrapper
         if (!wrapper) return
         await debouncer.current
+        const fromToUse =
+          from === "Current Location" ? await playerLocation : from
+        const toToUse = to === "Current Location" ? await playerLocation : to
+
+        if (!fromToUse || !toToUse) {
+          if (!getLocal("selectedPlayer")) {
+            loadRoute("/select-player")
+            return
+          }
+          setResults("none")
+          return
+        }
 
         animateOut()
         setResults("loading")
@@ -49,7 +76,7 @@ export default function Results() {
         const minTime = sleep(500)
 
         wrapper
-          .findPath(from, to, allowedModes, await pathfindingIndex)
+          .findPath(fromToUse, toToUse, allowedModes, await pathfindingIndex)
           .then(async r => {
             await minTime
             await debouncer.current
@@ -79,7 +106,7 @@ export default function Results() {
       }
     }
     return undefined
-  }, [allowedModes, from, to])
+  }, [allowedModes, from, playerLocation, to])
 
   const animateOut = () => {
     // copy the old results to the animation out holder
