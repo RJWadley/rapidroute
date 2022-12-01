@@ -36,6 +36,10 @@ export default function Settings() {
       ease: open ? "power4.in" : "power4.out",
       duration: 0.3,
     })
+    gsap.set(menu.current, {
+      autoAlpha: open ? 1 : 0,
+      delay: open ? 0.3 : 0,
+    })
   }, [open])
 
   /**
@@ -100,6 +104,7 @@ const PlayerHead = styled.img`
 
 const Menu = styled.div`
   position: absolute;
+  visibility: hidden;
   top: 10px;
   right: 10px;
   max-width: calc(100vw - 20px);

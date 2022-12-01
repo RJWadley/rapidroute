@@ -104,9 +104,9 @@ const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
     --symbol: 60px;
 
     @media ${media.mobile} {
-      --extra-small: 12px;
-      --small: 12px;
-      --medium: 16px;
+      --extra-small: 16px;
+      --small: 16px;
+      --medium: 18px;
       --large: 24px;
       --extra-large: 32px;
       --symbol: 40px;
