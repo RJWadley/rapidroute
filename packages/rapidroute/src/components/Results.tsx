@@ -24,7 +24,13 @@ const rawWrapper = (async () => {
     new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
   return worker && wrap<WorkerFunctions>(worker)
 })()
-const pathfindingIndex = getAll("pathfinding")
+
+getAll("pathfinding")
+  .then(async data => {
+    const wrapper = await rawWrapper
+    if (wrapper) wrapper.initPathfinder(data).catch(console.error)
+  })
+  .catch(console.error)
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext)
@@ -76,7 +82,7 @@ export default function Results() {
         const minTime = sleep(500)
 
         wrapper
-          .findPath(fromToUse, toToUse, allowedModes, await pathfindingIndex)
+          .findPath(fromToUse, toToUse, allowedModes)
           .then(async r => {
             await minTime
             await debouncer.current

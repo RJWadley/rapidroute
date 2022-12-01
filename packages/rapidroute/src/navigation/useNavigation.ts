@@ -19,7 +19,12 @@ const rawWrapper = (async () => {
     new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
   return worker && wrap<WorkerFunctions>(worker)
 })()
-const pathfindingIndex = getAll("pathfinding")
+getAll("pathfinding")
+  .then(async data => {
+    const wrapper = await rawWrapper
+    if (wrapper) wrapper.initPathfinder(data).catch(console.error)
+  })
+  .catch(console.error)
 
 /**
  * navigate to a destination, providing voice navigation and updating directions as needed
@@ -74,12 +79,7 @@ export default function useNavigation() {
         const coordId = `Coordinate: ${x}, ${z}`
 
         wrapper
-          .findPath(
-            coordId,
-            destinationId,
-            allowedModes,
-            await pathfindingIndex
-          )
+          .findPath(coordId, destinationId, allowedModes)
           .then(results => {
             // sort the results by distance
             const sortedResults = results.sort(

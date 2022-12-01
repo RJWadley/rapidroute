@@ -3,7 +3,7 @@ import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
 import { generateAllCoordinateEdges } from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"
-import { GraphEdge, rawEdges } from "./mapEdges"
+import { GraphEdge, pathfindingIndex, rawEdges } from "./mapEdges"
 import { getDistance, throttle } from "./pathUtil"
 import PriorityQueue from "./PriorityQueue"
 
@@ -29,18 +29,10 @@ export default class Pathfinder {
 
   edges: GraphEdge[] = []
 
-  pathfindingIndex: Pathfinding
-
-  constructor(
-    from: string,
-    to: string,
-    allowedModes: RouteMode[],
-    pathfindingIndex: Pathfinding
-  ) {
+  constructor(from: string, to: string, allowedModes: RouteMode[]) {
     this.from = from
     this.to = to
     this.allowedModes = [...allowedModes]
-    this.pathfindingIndex = pathfindingIndex
   }
 
   getPercentComplete() {
@@ -52,9 +44,9 @@ export default class Pathfinder {
     const cameFrom: Record<string, string[]> = {}
     const costSoFar: Record<string, number> = {}
     const modeTo: Record<string, RouteMode[]> = {}
-    const edges = rawEdges(this.pathfindingIndex)
+    const edges = rawEdges
     this.edges = edges
-    const nodes = this.pathfindingIndex
+    const nodes = pathfindingIndex
 
     console.log("starting pathfinding from", this.from, "to", this.to)
 
@@ -136,8 +128,7 @@ export default class Pathfinder {
       const reversed = await new Pathfinder(
         this.to,
         this.from,
-        this.allowedModes,
-        this.pathfindingIndex
+        this.allowedModes
       ).start(true)
 
       reversed.forEach(result => result.path.reverse())

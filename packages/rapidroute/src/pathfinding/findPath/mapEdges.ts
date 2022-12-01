@@ -19,10 +19,15 @@ export interface GraphEdge {
 
 const isMRT = (id: string) => id.match(/^[a-zA-Z]{1,2}\d{1,3}$/g)
 
+export const rawEdges: GraphEdge[] = []
+export const pathfindingIndex: Pathfinding = {}
+
 /**
  * first the database must be mapped to a graph
  */
-export const rawEdges = (data: Pathfinding) => {
+export const generateRawEdges = (data: Pathfinding) => {
+  Object.assign(pathfindingIndex, data)
+
   const edgeIds = Object.keys(data)
 
   // for each route type in each nodes, generate edges to all listed nodes
@@ -138,5 +143,6 @@ export const rawEdges = (data: Pathfinding) => {
     ]
   })
 
-  return [...walkingEdges, ...routeEdges, ...warpEdges]
+  rawEdges.length = 0
+  rawEdges.push(...walkingEdges, ...routeEdges, ...warpEdges)
 }
