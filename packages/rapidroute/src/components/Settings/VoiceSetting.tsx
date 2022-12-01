@@ -105,17 +105,34 @@ export default function VoiceSetting() {
         >
           Default ({bestVoice.name})
         </Voice>
-        {allVoice.map(v => (
-          <Voice
-            active={v.id === currentVoice?.id}
-            key={v.id}
-            onClick={() => {
-              updateVoice(v)
-            }}
-          >
-            {v.name.replace("(Characters)", "")}
-          </Voice>
-        ))}
+        <VoicesLabel>Local Voices</VoicesLabel>
+        {allVoice
+          .filter(x => x.source === "easy-speech")
+          .map(v => (
+            <Voice
+              active={v.id === currentVoice?.id}
+              key={v.id}
+              onClick={() => {
+                updateVoice(v)
+              }}
+            >
+              {v.name}
+            </Voice>
+          ))}
+        <VoicesLabel>Remote Voices</VoicesLabel>
+        {allVoice
+          .filter(x => x.source === "tik")
+          .map(v => (
+            <Voice
+              active={v.id === currentVoice?.id}
+              key={v.id}
+              onClick={() => {
+                updateVoice(v)
+              }}
+            >
+              <span>{v.name.replace("(Characters)", "")}</span>
+            </Voice>
+          ))}
       </Dropdown>
     </PositionWrapper>
   )
@@ -152,4 +169,19 @@ const Voice = styled.button<{ active: boolean }>`
   :last-child {
     margin-bottom: 10px;
   }
+
+  // line clamp to 3 lines
+  span {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`
+
+const VoicesLabel = styled.div`
+  font-weight: 700;
+  padding: 20px 0 10px;
+  color: var(--low-contrast-text);
 `

@@ -108,7 +108,7 @@ const Menu = styled.div`
   top: 10px;
   right: 10px;
   max-width: calc(100vw - 20px);
-  width: 450px;
+  min-width: 450px;
   background: var(--default-card-background);
   z-index: 100;
   border-radius: 30px;
@@ -120,8 +120,8 @@ const Menu = styled.div`
 
   @media ${media.mobile} {
     padding: 20px;
-    width: none;
-    min-width: none;
+    min-width: 0;
+    width: 450px;
   }
 `
 
