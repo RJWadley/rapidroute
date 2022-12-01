@@ -122,7 +122,7 @@ export default function SingleRoute({
           <div>
             <Name>
               {letterCode && (
-                <Box color={invertLightness(themeColor)}>{letterCode}</Box>
+                <Box $color={invertLightness(themeColor)}>{letterCode}</Box>
               )}
               {providerName ?? "Loading name..."}
             </Name>
@@ -152,7 +152,7 @@ export default function SingleRoute({
   )
 }
 
-const Box = styled.span<{ color: string }>`
+const Box = styled.span<{ $color: string }>`
   display: inline-flex;
   border: 3px solid ${({ color }) => color};
   padding: 2px;

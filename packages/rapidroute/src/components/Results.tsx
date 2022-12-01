@@ -14,12 +14,10 @@ import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
 import Spinner from "./Spinner"
 
-const getWorker = () =>
-  isBrowser() &&
-  new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
-const worker = getWorker()
-// const wrapper = await wrap<WorkerFunctions>(new DemoWorker())
 const rawWrapper = (async () => {
+  const worker =
+    isBrowser() &&
+    new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
   return worker && wrap<WorkerFunctions>(worker)
 })()
 
@@ -36,7 +34,6 @@ export default function Results() {
 
   useEffect(() => {
     if (from && to) {
-      // const findPath = new FindPath(from, to, allowedModes)
       let canSave = true
 
       ;(async () => {

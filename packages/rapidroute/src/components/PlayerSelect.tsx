@@ -48,7 +48,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       ref={wrapperRef}
     >
       <Image
-        color={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
+        $color={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         src={imageUrl}
         alt={`${name} player head`}
         onLoad={imageLoad}
@@ -134,7 +134,7 @@ const Wrapper = styled.div<{
   }
 `
 
-const Image = styled.img<{ color: string }>`
+const Image = styled.img<{ $color: string }>`
   width: 80px;
   height: 80px;
   border-radius: 10px;

@@ -4,10 +4,20 @@ import { useCallback, useContext, useEffect, useRef } from "react"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
-import FindPath, { ResultType } from "pathfinding/findPath"
+import { ResultType } from "pathfinding/findPath"
+import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
+import { isBrowser } from "utils/functions"
 import { getLocal, session } from "utils/localUtils"
+import { wrap } from "utils/promise-worker"
 
 import useVoiceNavigation, { CompletionThresholds } from "./useVoiceNavigation"
+
+const rawWrapper = (async () => {
+  const worker =
+    isBrowser() &&
+    new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
+  return worker && wrap<WorkerFunctions>(worker)
+})()
 
 /**
  * navigate to a destination, providing voice navigation and updating directions as needed
@@ -52,19 +62,17 @@ export default function useNavigation() {
     /**
      * Calculate and save a new route
      */
-    const updateRoute = () => {
-      let pathfinder: FindPath | undefined
+    const updateRoute = async () => {
+      const wrapper = await rawWrapper
+      if (!wrapper) return
 
       const playersLocation = session.lastKnownLocation
       if (playersLocation) {
         const { x, z } = playersLocation
         const coordId = `Coordinate: ${x}, ${z}`
 
-        pathfinder?.cancel()
-        pathfinder = new FindPath(coordId, destinationId, allowedModes)
-
-        pathfinder
-          .start()
+        wrapper
+          .findPath(coordId, destinationId, allowedModes)
           .then(results => {
             // sort the results by distance
             const sortedResults = results.sort(
@@ -171,7 +179,9 @@ export default function useNavigation() {
     }
 
     // update every 10 seconds
-    const interval = setInterval(updateRoute, 10 * 1000)
+    const interval = setInterval(() => {
+      updateRoute().catch(console.error)
+    }, 10 * 1000)
     return () => {
       clearInterval(interval)
     }
