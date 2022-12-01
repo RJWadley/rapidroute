@@ -3,14 +3,25 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import styled from "styled-components"
 
-import FindPath, { ResultType } from "pathfinding/findPath"
+import { ResultType } from "pathfinding/findPath"
+import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
-import { sleep } from "utils/functions"
+import { isBrowser, sleep } from "utils/functions"
+import { wrap } from "utils/promise-worker"
 
 import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
 import Spinner from "./Spinner"
+
+const getWorker = () =>
+  isBrowser() &&
+  new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
+const worker = getWorker()
+// const wrapper = await wrap<WorkerFunctions>(new DemoWorker())
+const rawWrapper = (async () => {
+  return worker && wrap<WorkerFunctions>(worker)
+})()
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext)
@@ -25,10 +36,12 @@ export default function Results() {
 
   useEffect(() => {
     if (from && to) {
-      const findPath = new FindPath(from, to, allowedModes)
+      // const findPath = new FindPath(from, to, allowedModes)
       let canSave = true
 
       ;(async () => {
+        const wrapper = await rawWrapper
+        if (!wrapper) return
         await debouncer.current
 
         animateOut()
@@ -36,8 +49,8 @@ export default function Results() {
 
         const minTime = sleep(500)
 
-        findPath
-          .start()
+        wrapper
+          .findPath(from, to, allowedModes)
           .then(async r => {
             await minTime
             await debouncer.current
@@ -63,7 +76,6 @@ export default function Results() {
       })
 
       return () => {
-        findPath.cancel()
         canSave = false
       }
     }

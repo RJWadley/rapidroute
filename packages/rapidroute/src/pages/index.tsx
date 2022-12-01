@@ -7,33 +7,6 @@ import Layout from "components/Layout"
 import Results from "components/Results"
 import Selection from "components/Selection"
 import SEO from "components/SEO"
-import { isBrowser } from "utils/functions"
-import { wrap } from "utils/promise-worker"
-import type { WorkerFunctions } from "utils/testworker"
-
-const worker = isBrowser() && new Worker(new URL("utils/testworker", import.meta.url))
-
-async function run() {
-  if (!worker) return
-  
-  // Create the worker & wrapper
-  const wrapper = await wrap<WorkerFunctions>(worker)
-
-  // Use the worker
-  const a = 2;
-    const b = 5
-
-  const added = await wrapper.add(2, 5)
-  const multiplied = await wrapper.multiply(2, 5)
-
-  console.log(`${a} + ${b} = ${added}`)
-  console.log(`${a} * ${b} = ${multiplied}`)
-
-  // Terminate the worker
-  wrapper.terminate()
-}
-
-if (isBrowser()) run()
 
 export default function Home() {
   return (

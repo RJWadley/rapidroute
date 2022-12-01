@@ -1,7 +1,7 @@
 let threadStarted = performance.now()
 export async function throttle() {
-  // if thread has been working for more than 6ms, await next thread
-  if (performance.now() - threadStarted > 6) {
+  // if thread has been working for more than 100ms, await next thread
+  if (performance.now() - threadStarted > 100) {
     await new Promise<void>(resolve => {
       setTimeout(() => {
         resolve()
