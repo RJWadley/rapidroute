@@ -10,6 +10,11 @@ export default function usePlayerHead(name: string) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!name) {
+      setImageUrl(`https://crafatar.com/avatars/${fallbackUUID}?overlay`)
+      return
+    }
+
     if (name in fetchedNames) {
       fetchedNames[name].then(setImageUrl).catch(console.error)
       return

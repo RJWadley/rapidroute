@@ -1,5 +1,4 @@
-/*  ssr-friendly/no-dom-globals-in-module-scope */
-/*  no-console */
+/* eslint-disable ssr-friendly/no-dom-globals-in-module-scope */
 import "the-new-css-reset/css/reset.css"
 import React, { ReactNode } from "react"
 import "hacktimer/HackTimer"
@@ -18,4 +17,11 @@ export const wrapRootElement = ({ element }: { element: ReactNode }) => {
 
 export const wrapPageElement = ({ element }: { element: ReactNode }) => {
   return element
+}
+
+// disable gsap null warnings when not on localhost
+if (!window.location.hostname.includes("localhost")) {
+  gsap.config({
+    nullTargetWarn: false,
+  })
 }

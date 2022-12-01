@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react"
 import gsap from "gsap"
 import styled from "styled-components"
 
+import { isBrowser } from "utils/functions"
 import { getLocal } from "utils/localUtils"
 import media from "utils/media"
 import usePlayerHead from "utils/usePlayerHead"
@@ -25,7 +26,12 @@ export default function Settings() {
   const menu = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    gsap.to(openButton, { opacity: 1, duration: 0.5 })
+    if (isBrowser())
+      gsap.to(openButton, {
+        delay: 0.5,
+        opacity: 1,
+        duration: 0.5,
+      })
   }, [openButton])
 
   useEffect(() => {
@@ -38,7 +44,7 @@ export default function Settings() {
     })
     gsap.set(menu.current, {
       autoAlpha: open ? 1 : 0,
-      delay: open ? 0.3 : 0,
+      delay: open ? 0 : 0.3,
     })
   }, [open])
 
