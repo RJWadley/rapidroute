@@ -6,6 +6,7 @@
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
     "@types/fabric": "^4.5.12",
+    "easy-speech": "^1.2.0",
     "fabric": "^5.2.4",
     "firebase": "^9.10.0",
     "flexsearch-ts": "^0.7.31",
@@ -15,6 +16,7 @@
     "gatsby-plugin-layout": "^3.24.0",
     "gatsby-plugin-manifest": "^4.24.0",
     "gatsby-plugin-netlify": "^5.0.1",
+    "gatsby-plugin-offline": "^5.24.0",
     "gatsby-plugin-root-import": "^2.0.8",
     "gatsby-plugin-sharp": "^4.24.0",
     "gatsby-plugin-sitemap": "^5.24.0",
@@ -29,9 +31,7 @@
     "react-scripts": "^5.0.1",
     "styled-components": "^5.3.6",
     "the-new-css-reset": "^1.7.3",
-    "ttsreader": "^1.0.25",
-    "use-deep-compare": "^1.1.0",
-    "gatsby-plugin-offline": "^5.24.0"
+    "use-deep-compare": "^1.1.0"
   },
   "devDependencies": {
     "@rapidroute/eslint-config-base": "^1.0.0",
