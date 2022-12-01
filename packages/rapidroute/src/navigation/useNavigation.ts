@@ -4,6 +4,7 @@ import { useCallback, useContext, useEffect, useRef } from "react"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
+import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import { isBrowser } from "utils/functions"
@@ -18,6 +19,7 @@ const rawWrapper = (async () => {
     new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
   return worker && wrap<WorkerFunctions>(worker)
 })()
+const pathfindingIndex = getAll("pathfinding")
 
 /**
  * navigate to a destination, providing voice navigation and updating directions as needed
@@ -72,7 +74,12 @@ export default function useNavigation() {
         const coordId = `Coordinate: ${x}, ${z}`
 
         wrapper
-          .findPath(coordId, destinationId, allowedModes)
+          .findPath(
+            coordId,
+            destinationId,
+            allowedModes,
+            await pathfindingIndex
+          )
           .then(results => {
             // sort the results by distance
             const sortedResults = results.sort(

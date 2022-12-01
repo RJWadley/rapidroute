@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import styled from "styled-components"
 
+import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import resultDiff from "pathfinding/postProcessing/diff"
@@ -20,6 +21,7 @@ const rawWrapper = (async () => {
     new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
   return worker && wrap<WorkerFunctions>(worker)
 })()
+const pathfindingIndex = getAll("pathfinding")
 
 export default function Results() {
   const { from, to } = useContext(RoutingContext)
@@ -47,7 +49,7 @@ export default function Results() {
         const minTime = sleep(500)
 
         wrapper
-          .findPath(from, to, allowedModes)
+          .findPath(from, to, allowedModes, await pathfindingIndex)
           .then(async r => {
             await minTime
             await debouncer.current

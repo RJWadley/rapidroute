@@ -1,4 +1,4 @@
-import { RouteMode } from "@rapidroute/database-types"
+import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
 import { expose } from "utils/promise-worker"
 
@@ -9,11 +9,12 @@ let pathfinderInstance: Pathfinder | undefined
 export async function findPath(
   from: string,
   to: string,
-  allowedModes: RouteMode[]
+  allowedModes: RouteMode[],
+  pathfindingIndex: Pathfinding
 ) {
   pathfinderInstance?.cancel()
 
-  pathfinderInstance = new Pathfinder(from, to, allowedModes)
+  pathfinderInstance = new Pathfinder(from, to, allowedModes, pathfindingIndex)
 
   const result = await pathfinderInstance.start()
 

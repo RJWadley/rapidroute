@@ -7,7 +7,7 @@ import { getLocal } from "utils/localUtils"
 
 import { generateAllCoordinateEdges } from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"
-import { GraphEdge, rawEdges, rawNodes } from "./mapEdges"
+import { GraphEdge, rawEdges } from "./mapEdges"
 import { getDistance, throttle } from "./pathUtil"
 import PriorityQueue from "./PriorityQueue"
 
@@ -33,10 +33,18 @@ export default class Pathfinder {
 
   edges: GraphEdge[] = []
 
-  constructor(from: string, to: string, allowedModes: RouteMode[]) {
+  pathfindingIndex: Pathfinding
+
+  constructor(
+    from: string,
+    to: string,
+    allowedModes: RouteMode[],
+    pathfindingIndex: Pathfinding
+  ) {
     this.from = from
     this.to = to
     this.allowedModes = [...allowedModes]
+    this.pathfindingIndex = pathfindingIndex
   }
 
   getPercentComplete() {
@@ -48,9 +56,9 @@ export default class Pathfinder {
     const cameFrom: Record<string, string[]> = {}
     const costSoFar: Record<string, number> = {}
     const modeTo: Record<string, RouteMode[]> = {}
-    const edges = await rawEdges
+    const edges = rawEdges(this.pathfindingIndex)
     this.edges = edges
-    const nodes = await rawNodes
+    const nodes = this.pathfindingIndex
 
     if (this.from === "Current Location" || this.to === "Current Location") {
       const player = getLocal("selectedPlayer")?.toString()
@@ -69,7 +77,7 @@ export default class Pathfinder {
     }
     console.log("starting pathfinding from", this.from, "to", this.to)
 
-    edges.push(...(await generateAllCoordinateEdges(this.from, this.to)))
+    edges.push(...(await generateAllCoordinateEdges(this.from, this.to, nodes)))
 
     frontier.enqueue(this.from, 0)
     costSoFar[this.from] = 0
@@ -147,7 +155,8 @@ export default class Pathfinder {
       const reversed = await new Pathfinder(
         this.to,
         this.from,
-        this.allowedModes
+        this.allowedModes,
+        this.pathfindingIndex
       ).start(true)
 
       reversed.forEach(result => result.path.reverse())

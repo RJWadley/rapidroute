@@ -2,9 +2,8 @@ import {
   RouteMode,
   shortHandMap,
   shortHandMapKeys,
+  Pathfinding,
 } from "@rapidroute/database-types"
-
-import { getAll } from "data/getData"
 
 import getRouteTime from "./getRouteTime"
 import { getDistance } from "./pathUtil"
@@ -23,7 +22,7 @@ const isMRT = (id: string) => id.match(/^[a-zA-Z]{1,2}\d{1,3}$/g)
 /**
  * first the database must be mapped to a graph
  */
-export const rawEdges = getAll("pathfinding").then(data => {
+export const rawEdges = (data: Pathfinding) => {
   const edgeIds = Object.keys(data)
 
   // for each route type in each nodes, generate edges to all listed nodes
@@ -140,5 +139,4 @@ export const rawEdges = getAll("pathfinding").then(data => {
   })
 
   return [...walkingEdges, ...routeEdges, ...warpEdges]
-})
-export const rawNodes = getAll("pathfinding")
+}
