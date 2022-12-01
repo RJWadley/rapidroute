@@ -91,13 +91,11 @@ export const Logo = styled.div<{
 `
 
 export const Name = styled.div`
-  font-family: "Inter";
   font-weight: 700;
   font-size: var(--medium);
 `
 
 export const RouteNumber = styled.div`
-  font-family: "Inter";
   font-style: normal;
   font-weight: 400;
   font-size: var(--small);
