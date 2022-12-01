@@ -113,7 +113,7 @@ const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
     }
   }
 
-  body {
+  html {
     background-color: var(--page-background);
     font-family: Inter;
   }

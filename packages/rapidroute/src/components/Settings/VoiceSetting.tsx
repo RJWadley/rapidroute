@@ -119,7 +119,7 @@ export default function VoiceSetting() {
               {v.name}
             </Voice>
           ))}
-        <VoicesLabel>Remote Voices</VoicesLabel>
+        <VoicesLabel>Online Voices</VoicesLabel>
         {allVoice
           .filter(x => x.source === "tik")
           .map(v => (
