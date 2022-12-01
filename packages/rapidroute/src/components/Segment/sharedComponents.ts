@@ -104,7 +104,7 @@ export const RouteNumber = styled.div`
 `
 
 export const LongNames = styled.div`
-  font-size: var(--small);
+  font-size: var(--extra-small);
 `
 
 export const Symbols = styled.div<{

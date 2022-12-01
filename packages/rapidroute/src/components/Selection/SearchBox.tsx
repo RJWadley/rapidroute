@@ -121,7 +121,7 @@ const Label = styled.label`
 
 const Text = styled.textarea<{ isTo: boolean }>`
   color: var(--default-text);
-  font-size: var(--small);
+  font-size: var(--extra-small);
   height: 0px;
   text-align: ${props => (props.isTo ? "right" : "left")};
   overflow: hidden;

@@ -19,7 +19,7 @@ export default function Header() {
         <StyledLogo />
         <Text>
           <div>
-            <Strong>MRT</Strong> Rapidroute
+            <Strong>MRT</Strong>&nbsp;Rapidroute
           </div>
           <Colors>
             <div />
