@@ -36,6 +36,7 @@
   "devDependencies": {
     "@rapidroute/eslint-config-base": "^1.0.0",
     "@rjwadley/eslint-plugin-format-gsap": "^0.1.1",
+    "@types/easy-speech": "^1.2.0",
     "@types/flexsearch": "^0.7.3",
     "@types/node": "^18.8.0",
     "@types/react": "^18.0.21",
