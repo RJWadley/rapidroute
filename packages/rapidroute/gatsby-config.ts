@@ -32,25 +32,25 @@ const config: GatsbyConfig = {
         theme_color: "#111111",
         icons: [
           {
-            src: "./src/images/pwa/Maskable.png",
+            src: "/icons/Maskable.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
           },
           {
-            src: "./src/images/pwa/Circle.png",
+            src: "/icons/Circle.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "./src/images/pwa/Maskable-192.png",
+            src: "/icons/Maskable-192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "maskable",
           },
           {
-            src: "./src/images/pwa/Circle-192.png",
+            src: "/icons/Circle-192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
