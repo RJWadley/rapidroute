@@ -26,18 +26,21 @@ const preloadedAudio: Record<
   Record<string, Promise<string | null> | undefined>
 > = {}
 
-let currentAudio: HTMLAudioElement | null = null
+let currentAudio: HTMLAudioElement | undefined
 
 async function playAudio(data: string, rate: number) {
-  const audio = new Audio(`data:audio/mpeg;base64,${data}`)
-  audio.playbackRate = rate
-  currentAudio?.pause()
-  await audio.play()
-  currentAudio = audio
+  if (!currentAudio) currentAudio = new Audio()
+  currentAudio.src = `data:audio/mpeg;base64,${data}`
+  currentAudio.playbackRate = rate
+
+  await currentAudio.play().catch(() => {
+    // eslint-disable-next-line no-console
+    console.log("interrupted")
+  })
 
   // wait for the audio to finish playing
   await new Promise(resolve => {
-    audio.addEventListener("ended", resolve)
+    currentAudio?.addEventListener("ended", resolve)
   })
 }
 

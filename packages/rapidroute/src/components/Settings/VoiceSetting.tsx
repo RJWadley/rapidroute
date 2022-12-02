@@ -21,7 +21,7 @@ gsap.registerPlugin(ScrollToPlugin)
 export default function VoiceSetting() {
   const voicesProm = useMemo(() => getVoices("en"), [])
   const bestVoiceProm = useMemo(() => getDefaultVoice(), [])
-  const [bestVoice] =  usePromise(bestVoiceProm, [])
+  const [bestVoice] = usePromise(bestVoiceProm, [])
   const [allVoice] = usePromise(voicesProm, [])
 
   const [open, setOpen] = React.useState(false)
@@ -67,7 +67,10 @@ export default function VoiceSetting() {
 
   useMemo(async () => {
     const localVoice = getLocal("voice")
-    const newVoice = localVoice && (await getVoiceById(localVoice))
+    const newVoice =
+      localVoice === "default" || !localVoice
+        ? await getDefaultVoice()
+        : await getVoiceById(localVoice)
     if (newVoice) setCurrentVoice(newVoice)
   }, []).catch(console.error)
 
@@ -101,14 +104,16 @@ export default function VoiceSetting() {
         >
           {open ? "Close Dropdown" : "Select Voice"}
         </Voice>
-        {bestVoice && <Voice
-          active={false}
-          onClick={() => {
-            updateVoice("default").catch(console.error)
-          }}
-        >
-          Default ({bestVoice.name})
-        </Voice>}
+        {bestVoice && (
+          <Voice
+            active={false}
+            onClick={() => {
+              updateVoice("default").catch(console.error)
+            }}
+          >
+            Default ({bestVoice.name})
+          </Voice>
+        )}
         <VoicesLabel>Local Voices</VoicesLabel>
         {allVoice
           ?.filter(x => x.source === "easy-speech")

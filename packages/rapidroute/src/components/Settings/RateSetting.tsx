@@ -25,9 +25,12 @@ export default function RateSetting() {
         onChange={e => {
           setRate(parseFloat(e.target.value))
           setLocal("speechRate", parseFloat(e.target.value))
-          setVoiceById(getLocal("voice") ?? "")
           setSpeechRate(parseFloat(e.target.value))
-          speak("This is how fast I'll speak to you.").catch(console.error)
+          setVoiceById(getLocal("voice") ?? "")
+            .then(() => {
+              speak("This is how fast I'll speak to you.").catch(console.error)
+            })
+            .catch(console.error)
         }}
       />
       <RateDisplay>{rate}</RateDisplay>

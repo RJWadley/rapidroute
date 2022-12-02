@@ -27,7 +27,7 @@ export const CompletionThresholds: Record<PlaceType, number> = {
 const updateVoice = () => {
   const voice = getLocal("voice")
   const rate = getLocal("speechRate")
-  if (voice) setVoiceById(voice)
+  if (voice) setVoiceById(voice).catch(console.error)
   if (rate) setSpeechRate(rate)
 }
 

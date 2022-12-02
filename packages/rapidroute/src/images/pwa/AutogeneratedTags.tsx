@@ -1,4 +1,4 @@
-/* eslint hates these tags lol */
+/* lint hates these tags lol */
 /* eslint-disable */
 import React from "react"
 
