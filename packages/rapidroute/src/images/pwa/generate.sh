@@ -3,9 +3,6 @@
 # enter this directory
 cd "$(dirname "$0")"
 
-# favicon
-npx pwa-asset-generator src/images/pwa/RawLogo.png static --index src/images/pwa/index.html --xhtml --favicon --padding 0%
-
 # splash screens
 npx pwa-asset-generator src/images/pwa/RawLogo.png static --dark-mode --index src/images/pwa/index.html --background '#111111' --padding 25% --xhtml --splash-only
 npx pwa-asset-generator src/images/pwa/RawLogo.png static --index src/images/pwa/index.html --background 'white' --padding 25% --xhtml --splash-only
