@@ -2,8 +2,13 @@
 
 ```bash
 
-npx pwa-asset-generator src/images/pwa/RawLogo.png static --dark-mode --index src/images/pwa/index.html --background '#111111' --padding 25% --xhtml
-npx pwa-asset-generator src/images/pwa/RawLogo.png static --index src/images/pwa/index.html --background 'white' --padding 25% --xhtml
+# splash screens
+npx pwa-asset-generator src/images/pwa/RawLogo.png static --dark-mode --index src/images/pwa/index.html --background '#111111' --padding 25% --xhtml --splash-only
+npx pwa-asset-generator src/images/pwa/RawLogo.png static --index src/images/pwa/index.html --background 'white' --padding 25% --xhtml --splash-only
+
+# icons
+npx pwa-asset-generator src/images/pwa/Maskable.png static --dark-mode --index src/images/pwa/index.html --background '#111111' --xhtml --icon-only --padding 0%
+npx pwa-asset-generator src/images/pwa/Maskable.png static --index src/images/pwa/index.html --background 'white' --xhtml --icon-only --padding 0%
 
 ```
 
