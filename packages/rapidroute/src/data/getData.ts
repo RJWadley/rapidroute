@@ -57,7 +57,6 @@ const hashesExist = new Promise(resolve => {
     .then(async worker => {
       if (worker) {
         const rawValue = await worker.getData("hashes")
-        console.log("rawValue", rawValue)
         if (isObject(rawValue)) {
           databaseHashes = { ...defaultHashes, ...rawValue }
           resolve(true)
