@@ -30,7 +30,6 @@ const batch = () => {
   return new Promise<void>(resolve => {
     allResolves.push(resolve)
     timeout = setTimeout(() => {
-      console.log("Finished batch of ", allResolves.length)
       allResolves.forEach(r => r())
       allResolves.length = 0
     }, 750)
@@ -38,7 +37,6 @@ const batch = () => {
 }
 
 const getData = async (path: string): Promise<unknown> => {
-  console.log("In worker, getting data for", path)
   const snapshot = await get(ref(database, path))
   const value: unknown = snapshot.val()
 
