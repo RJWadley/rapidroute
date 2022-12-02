@@ -3,12 +3,19 @@ import EasySpeech from "easy-speech"
 import tikSpeak, { cancelTikSpeak } from "./tik/speak"
 import tikVoices from "./tik/voices"
 
-if (typeof window !== "undefined") {
-  EasySpeech.init({ maxTimeout: 5000, interval: 250 })
-    // eslint-disable-next-line no-console
-    .then(() => console.log("load complete"))
-    .catch(e => console.error(e))
-}
+const easySpeechReady = new Promise<void>((resolve, reject) => {
+  if (typeof window !== "undefined") {
+    EasySpeech.init({ maxTimeout: 5000, interval: 250 })
+      // eslint-disable-next-line no-console
+      .then(() => {
+        resolve()
+      })
+      .catch(e => {
+        console.error(e)
+        reject(e)
+      })
+  }
+})
 
 export interface UniversalVoice {
   id: string
@@ -19,7 +26,8 @@ export interface UniversalVoice {
   default?: boolean
 }
 
-export const getVoices = (lang: string = "") => {
+export const getVoices = async (lang: string = "") => {
+  await easySpeechReady
   const voices: UniversalVoice[] = tikVoices
     .filter(voice => voice.lang.startsWith(lang))
     .map(v => ({
@@ -53,13 +61,13 @@ export const getVoices = (lang: string = "") => {
 let currentVoice: UniversalVoice | undefined
 let speechRate = 1
 
-export const setVoiceById = (voice: string) => {
-  const allVoices = getVoices()
+export const setVoiceById = async (voice: string) => {
+  const allVoices = await getVoices()
   const voiceObj = allVoices.find(v => v.id === voice)
   currentVoice = voiceObj
 }
 
-export const getDefaultVoice = () => {
+export const getDefaultVoice = async () => {
   // ranking of preferred voices, in order of preference
   const preferredVoice = "Google US English"
 
@@ -75,7 +83,7 @@ export const getDefaultVoice = () => {
     "David",
   ]
 
-  const allVoices = getVoices()
+  const allVoices = await getVoices()
 
   const bestOption = allVoices.find(v => v.name === preferredVoice)
   if (bestOption) return bestOption
@@ -98,7 +106,7 @@ export const setSpeechRate = (rate: number) => {
 }
 
 export const speak = async (text: string): Promise<void> => {
-  const voiceToUse = currentVoice || getDefaultVoice()
+  const voiceToUse = currentVoice || (await getDefaultVoice())
 
   cancelTikSpeak()
   EasySpeech.cancel()
@@ -114,7 +122,7 @@ export const speak = async (text: string): Promise<void> => {
   }
 }
 
-export const getVoiceById = (id: string) => {
-  const allVoices = getVoices()
+export const getVoiceById = async (id: string) => {
+  const allVoices = await getVoices()
   return allVoices.find(v => v.id === id)
 }

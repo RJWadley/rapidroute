@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 
 import gsap from "gsap"
 import { ScrollToPlugin } from "gsap/all"
+import usePromise from "react-use-promise"
 import styled, { css } from "styled-components"
 
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
@@ -18,8 +19,10 @@ import {
 gsap.registerPlugin(ScrollToPlugin)
 
 export default function VoiceSetting() {
-  const bestVoice = getDefaultVoice()
-  const allVoice = getVoices("en")
+  const voicesProm = useMemo(() => getVoices("en"), [])
+  const bestVoiceProm = useMemo(() => getDefaultVoice(), [])
+  const [bestVoice] =  usePromise(bestVoiceProm, [])
+  const [allVoice] = usePromise(voicesProm, [])
 
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
@@ -38,7 +41,7 @@ export default function VoiceSetting() {
     })
   }, [open])
 
-  const updateVoice = (voice: UniversalVoice | "default") => {
+  const updateVoice = async (voice: UniversalVoice | "default") => {
     if (!open) {
       setOpen(true)
       return
@@ -46,26 +49,27 @@ export default function VoiceSetting() {
     if (voice === "default") {
       clearLocal("voice")
       setCurrentVoice(undefined)
-      setVoiceById(bestVoice.id)
+      if (bestVoice) await setVoiceById(bestVoice.id)
       setSpeechRate(getLocal("speechRate") ?? 1)
     } else {
       setCurrentVoice(voice)
       setLocal("voice", voice.id)
-      setVoiceById(voice.id)
+      await setVoiceById(voice.id)
       setSpeechRate(getLocal("speechRate") ?? 1)
     }
     const voiceForName = voice === "default" ? bestVoice : voice
-    speak(`Hi, my name is ${voiceForName.name.replaceAll(/\([\s\S]+\)/g, "")}.
+    if (voiceForName)
+      speak(`Hi, my name is ${voiceForName.name.replaceAll(/\([\s\S]+\)/g, "")}.
     This is what I'll sound like when I'm helping you find your way around on the Mine cart Rapid Transit Server.`).catch(
-      console.error
-    )
+        console.error
+      )
   }
 
-  useEffect(() => {
+  useMemo(async () => {
     const localVoice = getLocal("voice")
-    const newVoice = localVoice && getVoiceById(localVoice)
+    const newVoice = localVoice && (await getVoiceById(localVoice))
     if (newVoice) setCurrentVoice(newVoice)
-  }, [bestVoice.id])
+  }, []).catch(console.error)
 
   /**
    * handle click outside
@@ -97,23 +101,23 @@ export default function VoiceSetting() {
         >
           {open ? "Close Dropdown" : "Select Voice"}
         </Voice>
-        <Voice
+        {bestVoice && <Voice
           active={false}
           onClick={() => {
-            updateVoice("default")
+            updateVoice("default").catch(console.error)
           }}
         >
           Default ({bestVoice.name})
-        </Voice>
+        </Voice>}
         <VoicesLabel>Local Voices</VoicesLabel>
         {allVoice
-          .filter(x => x.source === "easy-speech")
+          ?.filter(x => x.source === "easy-speech")
           .map(v => (
             <Voice
               active={v.id === currentVoice?.id}
               key={v.id}
               onClick={() => {
-                updateVoice(v)
+                updateVoice(v).catch(console.error)
               }}
             >
               {v.name}
@@ -121,13 +125,13 @@ export default function VoiceSetting() {
           ))}
         <VoicesLabel>Online Voices</VoicesLabel>
         {allVoice
-          .filter(x => x.source === "tik")
+          ?.filter(x => x.source === "tik")
           .map(v => (
             <Voice
               active={v.id === currentVoice?.id}
               key={v.id}
               onClick={() => {
-                updateVoice(v)
+                updateVoice(v).catch(console.error)
               }}
             >
               <span>{v.name.replace("(Characters)", "")}</span>
