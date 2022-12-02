@@ -31,6 +31,32 @@ const config: GatsbyConfig = {
         icon: "./src/images/global/RapidRouteLogo.svg",
         background_color: "#111111",
         theme_color: "#111111",
+        icons: [
+          {
+            src: "./src/images/pwa/Maskable.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "./src/images/pwa/Circle.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "./src/images/pwa/Maskable-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "./src/images/pwa/Circle-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+        ],
       },
     },
     {
