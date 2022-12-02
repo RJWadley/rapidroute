@@ -28,7 +28,6 @@ const config: GatsbyConfig = {
         short_name: "RapidRoute",
         start_url: "/",
         display: "standalone",
-        icon: "./src/images/global/RapidRouteLogo.svg",
         background_color: "#111111",
         theme_color: "#111111",
         icons: [

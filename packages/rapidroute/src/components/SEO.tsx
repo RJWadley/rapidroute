@@ -36,6 +36,9 @@ export default function SEO({
 
   return (
     <>
+      {/* favicon */}
+      <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
       {/* basic head elements */}
       <title>{seo.title}</title>
       <meta name="description" content={seo.description} />
