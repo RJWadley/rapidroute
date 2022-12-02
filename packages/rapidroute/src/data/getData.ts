@@ -7,10 +7,12 @@ import {
   DataDatabaseType,
 } from "@rapidroute/database-types"
 
+import { isBrowser, sleep } from "utils/functions"
 import isObject from "utils/isObject"
 import { getLocal, setLocal } from "utils/localUtils"
+import { wrap } from "utils/promise-worker"
 
-import { subscribe } from "./firebase"
+import { FirebaseWorkerFunctions } from "./firebase"
 import isCoordinate from "./isCoordinate"
 
 const defaultDatabaseCache: DataDatabaseType = {
@@ -31,6 +33,12 @@ const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
 const oneHashes = getLocal("oneHash") ?? defaultHashes
 const allHashes = getLocal("allHash") ?? defaultHashes
 
+const firebaseWorkerRaw = (async () => {
+  if (!isBrowser()) return undefined
+  const worker = new Worker(new URL("./firebase.ts", import.meta.url))
+  return wrap<FirebaseWorkerFunctions>(worker)
+})()
+
 let databaseHashes: Hashes = {
   locations: "",
   pathfinding: "",
@@ -39,12 +47,26 @@ let databaseHashes: Hashes = {
   searchIndex: "",
 }
 const hashesExist = new Promise(resolve => {
-  subscribe("hashes", rawValue => {
-    if (isObject(rawValue)) {
-      databaseHashes = { ...defaultHashes, ...rawValue }
-    }
-    resolve(true)
-  })
+  // getData("hashes", rawValue => {
+  //   if (isObject(rawValue)) {
+  //     databaseHashes = { ...defaultHashes, ...rawValue }
+  //   }
+  //   resolve(true)
+  // })
+  firebaseWorkerRaw
+    .then(async worker => {
+      if (worker) {
+        const rawValue = await worker.getData("hashes")
+        console.log("rawValue", rawValue)
+        if (isObject(rawValue)) {
+          databaseHashes = { ...defaultHashes, ...rawValue }
+          resolve(true)
+        }
+      }
+    })
+    .catch(() => {
+      resolve(true)
+    })
 })
 
 type GetAll<T extends DatabaseDataKeys> = NonNullable<DataDatabaseType[T]>
@@ -56,75 +78,67 @@ async function getPathFromDatabase<T extends DatabaseDataKeys>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
-  return new Promise(resolve => {
-    subscribe(`${type}/${itemName}`, dataIn => {
-      const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
-      if (!databaseTypeGuards[type](data)) {
-        console.log("guard failed", type, data)
-        return resolve(null)
-      }
-      databaseCache[type] = {
-        ...databaseCache[type],
-        [itemName]: data,
-      }
-      return resolve(data)
-    })
-  })
+  const firebaseWorker = await firebaseWorkerRaw
+  if (!firebaseWorker) return null
+  const dataIn = await firebaseWorker.getData(`${type}/${itemName}`)
+  const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
+  if (!databaseTypeGuards[type](data)) {
+    console.log("guard failed", type, data)
+    return null
+  }
+  databaseCache[type] = {
+    ...databaseCache[type],
+    [itemName]: data,
+  }
+  return data
 }
 
 async function getAllFromDatabase<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
-  // otherwise, get the value from the database
-  return new Promise(resolve => {
-    subscribe(type, rawData => {
-      const data: GetAll<T> = {}
+  console.log("getAllFromDatabase", type)
+  const firebaseWorker = await firebaseWorkerRaw
+  if (!firebaseWorker) return {}
+  const rawData = await firebaseWorker.getData(type)
+  const data: GetAll<T> = {}
 
-      if (isObject(rawData)) {
-        // for each item, add the uniqueId
-        Object.keys(rawData).forEach(key => {
-          const item = rawData[key]
-          if (isObject(item)) item.uniqueId = key
-        })
-
-        // filter out values that don't match the type guard
-        Object.entries(rawData).forEach(([key, item]) => {
-          // if key is a symbol, it's not a valid key
-          if (typeof key === "symbol") return
-
-          if (databaseTypeGuards[type](item)) {
-            data[key] = item
-          } else {
-            console.log("guard failed", type, item)
-          }
-        })
-      }
-
-      return resolve(data)
+  if (isObject(rawData)) {
+    // for each item, add the uniqueId
+    Object.keys(rawData).forEach(key => {
+      const item = rawData[key]
+      if (isObject(item)) item.uniqueId = key
     })
-  })
-}
 
-const queue: Array<() => Promise<unknown>> = []
+    // filter out values that don't match the type guard
+    Object.entries(rawData).forEach(([key, item]) => {
+      // if key is a symbol, it's not a valid key
+      if (typeof key === "symbol") return
 
-export async function runQueue() {
-  while (queue.length) {
-    const next = queue.shift()
-    // eslint-disable-next-line no-await-in-loop
-    if (next) await next()
+      if (databaseTypeGuards[type](item)) {
+        data[key] = item
+      } else {
+        console.log("guard failed", type, item)
+      }
+    })
   }
 
-  setTimeout(() => {
-    runQueue().catch(console.error)
-  }, 100)
+  return data
 }
 
-runQueue().catch(console.error)
+const fetchingPaths: string[] = []
 
 export async function getPath<T extends DatabaseDataKeys>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
+  while (fetchingPaths.includes(`${type}/${itemName}`)) {
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(250)
+  }
+  fetchingPaths.push(`${type}/${itemName}`)
+  const done = () =>
+    fetchingPaths.splice(fetchingPaths.indexOf(`${type}/${itemName}`), 1)
+
   // some things are not in the database, so we need to check for that
   if (type === "locations" && isCoordinate(itemName)) {
     const xCoord = parseInt(itemName.split(", ")[0].split(": ")[1], 10)
@@ -143,7 +157,10 @@ export async function getPath<T extends DatabaseDataKeys>(
         z: zCoord,
       },
     }
-    if (databaseTypeGuards[type](out)) return out
+    if (databaseTypeGuards[type](out)) {
+      done()
+      return out
+    }
   }
 
   // first get the hash from the database
@@ -154,7 +171,10 @@ export async function getPath<T extends DatabaseDataKeys>(
   if (hash === oneHashes[type] && databaseCache[type]?.[itemName]) {
     console.log("cache hit", type, itemName)
     const output = databaseCache[type]?.[itemName]
-    if (databaseTypeGuards[type](output)) return output
+    if (databaseTypeGuards[type](output)) {
+      done()
+      return output
+    }
     console.log("guard failed", type, output)
   }
   if (hash !== oneHashes[type]) {
@@ -166,20 +186,18 @@ export async function getPath<T extends DatabaseDataKeys>(
     console.log("cache miss", type, itemName)
   }
 
-  return new Promise(resolve => {
-    queue.push(async () => {
-      const path = await getPathFromDatabase(type, itemName)
-      oneHashes[type] = hash
-      setLocal("databaseCache", databaseCache)
-      setLocal("oneHash", oneHashes)
-      resolve(path)
-    })
-  })
+  const path = await getPathFromDatabase(type, itemName)
+  oneHashes[type] = hash
+  setLocal("databaseCache", databaseCache)
+  setLocal("oneHash", oneHashes)
+  done()
+  return path
 }
 
 export async function getAll<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
+  console.log("getAll", type)
   // first get the hash from the database
   await hashesExist
   const hash = databaseHashes[type]
@@ -207,16 +225,12 @@ export async function getAll<T extends DatabaseDataKeys>(
     console.log("cache miss", type)
   }
 
-  return new Promise(resolve => {
-    queue.push(async () => {
-      const data = await getAllFromDatabase(type)
-      databaseCache[type] = data
-      allHashes[type] = hash
-      oneHashes[type] = hash
-      setLocal("databaseCache", databaseCache)
-      setLocal("allHash", allHashes)
-      setLocal("oneHash", oneHashes)
-      resolve(data)
-    })
-  })
+  const data = await getAllFromDatabase(type)
+  databaseCache[type] = data
+  allHashes[type] = hash
+  oneHashes[type] = hash
+  setLocal("databaseCache", databaseCache)
+  setLocal("allHash", allHashes)
+  setLocal("oneHash", oneHashes)
+  return data
 }

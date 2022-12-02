@@ -1,8 +1,9 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
-import { getDatabase, onValue, ref } from "firebase/database"
+import { get, getDatabase, ref } from "firebase/database"
 
 import { isBrowser } from "utils/functions"
+import { expose } from "utils/promise-worker"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAk72DEr-1lB3XeRWIHKQ-yq_mTytWXxoo",
@@ -19,9 +20,36 @@ export const app = initializeApp(firebaseConfig)
 export const database = getDatabase(app)
 export const analytics = isBrowser() && getAnalytics(app)
 
-export const subscribe = (
-  path: string,
-  callback: (snapshot: unknown) => void
-) => {
-  onValue(ref(database, path), e => callback(e.val()))
+let timeout: NodeJS.Timeout | undefined
+const allResolves: (() => void)[] = []
+/**
+ * returns a promise that will resolve when the database is done fetching data
+ */
+const batch = () => {
+  if (timeout) clearTimeout(timeout)
+  return new Promise<void>(resolve => {
+    allResolves.push(resolve)
+    timeout = setTimeout(() => {
+      console.log("Finished batch of ", allResolves.length)
+      allResolves.forEach(r => r())
+      allResolves.length = 0
+    }, 750)
+  })
 }
+
+const getData = async (path: string): Promise<unknown> => {
+  console.log("In worker, getting data for", path)
+  const snapshot = await get(ref(database, path))
+  const value: unknown = snapshot.val()
+
+  await batch()
+  return value
+}
+
+const workerFunctions = { getData }
+
+// Export the type for type checking
+expose(workerFunctions)
+type FirebaseWorkerFunctions = typeof workerFunctions
+// eslint-disable-next-line import/prefer-default-export
+export type { FirebaseWorkerFunctions }
