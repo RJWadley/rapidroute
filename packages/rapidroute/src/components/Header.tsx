@@ -10,7 +10,7 @@ import Settings from "./Settings"
 
 export default function Header() {
   return (
-    <>
+    <Wrapper>
       <LogoWrapper
         onClick={() => {
           loadRoute("/")
@@ -30,28 +30,30 @@ export default function Header() {
         </Text>
       </LogoWrapper>
       <Settings />
-    </>
+    </Wrapper>
   )
 }
+
+const Wrapper = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+`
 
 const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  scale: 0.75; // TODO this lazy af
-  transform-origin: top left;
   cursor: pointer;
 `
 
 const StyledLogo = styled(Logo)`
-  height: var(--symbol);
+  height: 40px;
 `
 
 const Text = styled.div`
-  font-size: var(--large);
+  font-size: var(--medium);
   margin-bottom: 10px;
 `
 
@@ -60,8 +62,8 @@ const Strong = styled.strong`
 `
 
 const Colors = styled.div`
-  height: 5px;
-  width: 100px;
+  height: 3px;
+  width: 75px;
   display: flex;
   border-radius: 3px;
   overflow: hidden;

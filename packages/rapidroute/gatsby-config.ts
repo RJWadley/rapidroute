@@ -28,6 +28,7 @@ const config: GatsbyConfig = {
         short_name: "RapidRoute",
         start_url: "/",
         display: "standalone",
+        display_override: ["window-controls-overlay"],
         background_color: "#111111",
         theme_color: "#111111",
         icons: [

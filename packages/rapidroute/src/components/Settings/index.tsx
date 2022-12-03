@@ -42,11 +42,14 @@ export default function Settings() {
       ease: open ? "power4.in" : "power4.out",
       duration: 0.3,
     })
+    gsap.to(openButton, {
+      autoAlpha: open ? 0 : 1,
+    })
     gsap.set(menu.current, {
       autoAlpha: open ? 1 : 0,
       delay: open ? 0 : 0.3,
     })
-  }, [open])
+  }, [open, openButton])
 
   /**
    * handle click outside of menu
@@ -87,19 +90,10 @@ export default function Settings() {
 }
 
 const Open = styled.button`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  opacity: 0;
   cursor: pointer;
   width: 50px;
   height: 50px;
   border-radius: 10px;
-
-  @media ${media.mobile} {
-    top: 10px;
-    right: 10px;
-  }
 `
 
 const PlayerHead = styled.img`

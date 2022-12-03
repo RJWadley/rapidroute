@@ -2,6 +2,7 @@ import React from "react"
 
 import styled from "styled-components"
 
+import ControlsOverlay from "components/ControlsOverlay"
 import Header from "components/Header"
 import Layout from "components/Layout"
 import Results from "components/Results"
@@ -11,6 +12,7 @@ import SEO from "components/SEO"
 export default function Home() {
   return (
     <Layout>
+      <ControlsOverlay />
       <Header />
       <Content>
         <Title>
@@ -35,7 +37,7 @@ export function Head() {
 const Title = styled.div`
   text-align: center;
   font-size: var(--large);
-  margin-top: 200px;
+  margin-top: 110px;
   margin-bottom: 50px;
 `
 
