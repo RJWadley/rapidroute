@@ -37,6 +37,10 @@ interface LocalStorage {
    * speech rate
    */
   speechRate: number
+  /**
+   * navigation history
+   */
+  navigationHistory: [string, string][]
 }
 
 export const setLocal = <T extends keyof LocalStorage>(

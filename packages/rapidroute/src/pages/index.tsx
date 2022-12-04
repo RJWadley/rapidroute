@@ -2,7 +2,8 @@ import React from "react"
 
 import styled from "styled-components"
 
-import ControlsOverlay from "components/ControlsOverlay"
+import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
+import NavHistory from "components/ControlsOverlay/NavHistory"
 import Header from "components/Header"
 import Layout from "components/Layout"
 import Results from "components/Results"
@@ -12,7 +13,9 @@ import SEO from "components/SEO"
 export default function Home() {
   return (
     <Layout>
-      <ControlsOverlay />
+      <ControlsOverlay>
+        <NavHistory />
+      </ControlsOverlay>
       <Header />
       <Content>
         <Title>
