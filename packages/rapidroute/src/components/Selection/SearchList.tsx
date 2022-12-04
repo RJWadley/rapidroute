@@ -85,7 +85,24 @@ export default function SearchList({
 
   // animate showing and hiding the search list
   // also update the highlighted index when the search list is shown
+  const previousWasInput = useRef(false)
   useEffect(() => {
+    const onFocusChange = () => {
+      if (document.activeElement?.tagName === "TEXTAREA") {
+        previousWasInput.current = true
+      } else {
+        previousWasInput.current = false
+      }
+    }
+    window.addEventListener("focusin", onFocusChange)
+    return () => {
+      window.removeEventListener("focusin", onFocusChange)
+    }
+  }, [])
+  useEffect(() => {
+    const currentActiveIsInput = document.activeElement?.tagName === "TEXTAREA"
+    const duration =
+      currentActiveIsInput && previousWasInput.current ? 0.001 : 0.5
     if (show) setHighlightedIndex(0)
     if (!isMobile)
       gsap.to(wrapper.current, {
@@ -94,6 +111,7 @@ export default function SearchList({
         y: show ? 0 : -60,
         borderTopLeftRadius: show ? 0 : 30,
         borderTopRightRadius: show ? 0 : 30,
+        duration,
       })
     else
       gsap.to(wrapper.current, {
@@ -102,6 +120,7 @@ export default function SearchList({
         y: show ? 0 : -25,
         borderTopLeftRadius: show ? 0 : 30,
         borderTopRightRadius: show ? 0 : 30,
+        duration,
       })
   }, [isMobile, show])
 
@@ -118,8 +137,10 @@ export default function SearchList({
     const handleKeyPress = (event: KeyboardEvent) => {
       if (!show) return
       if (event.key === "ArrowDown") {
+        event.preventDefault()
         setHighlightedIndex(highlightedIndex + 1)
       } else if (event.key === "ArrowUp") {
+        event.preventDefault()
         setHighlightedIndex(highlightedIndex - 1)
       }
     }
@@ -142,20 +163,30 @@ export default function SearchList({
   }, [show, highlightedIndex, searchResults, setPlace])
 
   // when selected index changes, make sure it is in view
-  const lastHighlightedIndex = useRef(highlightedIndex)
   useEffect(() => {
-    restrictToBounds()
-    const diff = highlightedIndex - lastHighlightedIndex.current
-    const { scrollY } = window
-    if (diff !== 0) {
-      setTimeout(() => {
-        window.scrollTo(0, scrollY)
-        window.scrollBy({
-          top: diff * 29.5,
-        })
-        lastHighlightedIndex.current = highlightedIndex
-      }, 0)
+    const onScreenBy = 200
+    if (highlightedIndex === 0) {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+      return
     }
+    restrictToBounds()
+    const highlightedElement = wrapper.current?.children[highlightedIndex]
+    const position = highlightedElement?.getBoundingClientRect()
+    if (!position) return
+    if (position.y < onScreenBy)
+      gsap.to(window, {
+        scrollTo: {
+          y: highlightedElement,
+          offsetY: onScreenBy,
+        },
+      })
+    else if (position.y > window.innerHeight - onScreenBy)
+      gsap.to(window, {
+        scrollTo: {
+          y: highlightedElement,
+          offsetY: window.innerHeight - onScreenBy,
+        },
+      })
   }, [highlightedIndex, restrictToBounds])
 
   return (
@@ -171,6 +202,7 @@ export default function SearchList({
           {loc.d}
         </Option>
       ))}
+      {searchResults.length === 0 && "Start typing to search"}
     </Wrapper>
   )
 }
