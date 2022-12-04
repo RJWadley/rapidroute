@@ -91,7 +91,7 @@ export default function Navigate() {
   return (
     <Layout>
       <ControlsOverlay fillBackground={false}>
-        <NavigationOverview/>
+        <NavigationOverview />
       </ControlsOverlay>
       <MapBackground />
       <StyledMapTag />
