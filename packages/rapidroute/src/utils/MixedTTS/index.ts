@@ -26,7 +26,7 @@ export interface UniversalVoice {
   default?: boolean
 }
 
-export const getVoices = async (lang: string = "") => {
+export const getVoices = async (lang: string = "en") => {
   await easySpeechReady
   const voices: UniversalVoice[] = tikVoices
     .filter(voice => voice.lang.startsWith(lang))
