@@ -17,6 +17,8 @@ const Scoped = styled.div`
   }
 
   h2 {
+    border-top: 2px solid var(--mid-background);
+    padding-top: 30px;
     font-size: 1.5rem;
     font-weight: bold;
     margin: 30px 0;
@@ -43,9 +45,10 @@ const Scoped = styled.div`
 
   .title-container {
     width: 100%;
-    height: 250px;
+    height: 350px;
     padding-bottom: 50px;
-    background-color: var(--main);
+    background-color: var(--button-green);
+    color: var(--invert-button-green);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -54,7 +57,7 @@ const Scoped = styled.div`
   }
 
   .title {
-    font-size: 2em;
+    font-size: 3em;
     position: relative;
   }
 
@@ -66,6 +69,15 @@ const Scoped = styled.div`
 
   li {
     margin-bottom: 10px;
+    // add back bullet points
+    :before {
+      content: "🔥";
+      color: var(--text-color)
+      font-weight: bold;
+      display: inline-block;
+      width: 1.5rem;
+      margin-left: -1rem;
+    }
   }
 
   .button-container {
@@ -74,14 +86,17 @@ const Scoped = styled.div`
 
   a {
     display: block;
-    margin: 20px auto;
+    margin: 30px auto;
     text-align: center;
-    max-width: 300px;
+    width: max-content;
     text-decoration: none;
     color: black;
-    background-color: var(--light-mint);
-    padding: 10px;
-    border-radius: 5px;
+    background-color: var(--button-green);
+    color: var(--invert-button-green);
+    font-weight: bold;
+    padding: 20px 30px;
+    font-size: 20px;
+    border-radius: 20px;
   }
 `
 

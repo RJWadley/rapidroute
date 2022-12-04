@@ -1,4 +1,4 @@
-/*  max-lines */
+/* eslint-disable max-lines */
 import React from "react"
 
 import { Link } from "gatsby"
@@ -13,31 +13,47 @@ export default function Changelog() {
       </div>
       <div className="changelog">
         <div>
-          <h2>(Unreleased) 2022-XX-XX - Version 3.0</h2>
+          <h2>2022-12-08 - Version 3.0</h2>
 
           <h3>New Features</h3>
           <ul>
-            <li>visual redesign!</li>
-            <li>The entire site has been rewritten from scratch in React</li>
-            <li>Using a new, significantly faster searching algorithm</li>
             <li>
-              Routing to and from arbitrary coordinates, just type them into the
-              search bar
+              RapidRoute has been given a new look and feel, with a new logo,
+              new style, smoother animations, and more.
             </li>
-            <li>Navigate to or from your current location</li>
             <li>
-              Now pulling airport locations straight from dynmap where possible
+              RapidRoute is now written in React, and is built with Gatsby.
             </li>
-            <li>Better text to speech engine</li>
-            <li>Voice navigation rewrite</li>
-            <li>When navigating, auto recalculate route</li>
-          </ul>
-          <h3>Planned Features</h3>
-          <ul>
-            <li>More robust searching, showing information about places</li>
-            <li>Automatically import routes from mrt wiki in some cases</li>
-            <li>Data editable on-site</li>
-            <li>Selectable map</li>
+            <li>
+              The searching algorithm has been improved, and is now much faster.
+            </li>
+            <li>
+              You can now search coordinates by typing them into the search bar
+              (e.g. &quot;123, 456&quot;).
+            </li>
+            <li>
+              You can now also search your current location by typing
+              &quot;Current Location&quot;.
+            </li>
+            <li>
+              New Text to Speech engine, with more voices and better quality
+            </li>
+            <li>
+              MRT Navigator will now recalculate your route if you are no longer
+              on the optimal route
+            </li>
+            <li>
+              MRT Navigator now features a smoother map, that supports panning
+              and zooming, and will automatically center on your current
+              location
+            </li>
+            <li>
+              For installed desktop chrome users, a short history will show in
+              the title bar
+            </li>
+            <li>Added a speech rate slider</li>
+            <li>Added a new player selection screen</li>
+            <li>Airport Locations are now pulled from dynmap if available</li>
           </ul>
 
           <Link to="/">I love it, take me to RapidRoute</Link>
