@@ -132,16 +132,15 @@ const Text = styled.textarea<{ isTo: boolean }>`
 
   @media ${media.mobile} {
     text-align: left;
+    margin: 10px 0;
 
     ${props =>
       props.isTo
         ? css`
             align-self: start;
-            margin-top: 10px;
           `
         : css`
             align-self: end;
-            margin-bottom: 10px;
           `}
   }
 `
