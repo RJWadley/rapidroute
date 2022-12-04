@@ -149,6 +149,17 @@ export default function NavigationSidebar() {
         : // otherwise, position relative to the 60% mark
           window.innerHeight * 0.6
 
+    const getOverlayOffset = () => {
+      if ("windowControlsOverlay" in navigator) {
+        if (navigator.windowControlsOverlay?.visible) {
+          const { height } =
+            navigator.windowControlsOverlay.getTitlebarAreaRect()
+          return height
+        }
+      }
+      return 0
+    }
+
     // gsap scroll plugin
     const updateScroll = () => {
       if (elementToScrollTo)
@@ -156,7 +167,9 @@ export default function NavigationSidebar() {
           duration: 5,
           scrollTo: {
             y: elementToScrollTo,
-            offsetY: mobile ? getMobileScrollPoint() : 90 + headerHeight,
+            offsetY:
+              (mobile ? getMobileScrollPoint() : 90 + headerHeight) +
+              getOverlayOffset(),
             autoKill: true,
           },
           ease: "power3.inOut",

@@ -48,9 +48,9 @@ const Wrapper = styled.div`
   }
 
   // if using window controls overlay, move down
-  /* @media (display-mode: window-controls-overlay) { */
-  transform: translateY(env(titlebar-area-height, 40px));
-  /* } */
+  @media (display-mode: window-controls-overlay) {
+    transform: translateY(env(titlebar-area-height, 40px));
+  }
 `
 
 const ExitButton = styled(Link)`

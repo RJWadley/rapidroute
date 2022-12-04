@@ -19,7 +19,7 @@ export default function NavigationOverview() {
 
 const Wrapper = styled.div`
   background: #1118;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(3px);
   width: 100%;
   height: 100%;
   display: flex;
