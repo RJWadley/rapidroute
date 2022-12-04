@@ -71,7 +71,9 @@ export default function NavHistory() {
         opacity: 1,
         width: "auto",
         stagger: 0.1,
-        ease: "power3.out",
+        marginRight: 10,
+        ease: "power3.inOut",
+        duration: 2,
       })
   })
 
@@ -111,7 +113,9 @@ export default function NavHistory() {
               setTo(item[1])
             }}
           >
-            {fromName} -&gt; {toName}
+            <span>
+              {fromName} -&gt; {toName}
+            </span>
           </Box>
         )
       })}
@@ -134,8 +138,7 @@ const LogoWrapper = styled.div`
   grid-template-columns: calc(var(--height) * 0.5) 1fr;
   column-gap: 8px;
   height: calc(var(--height) * 0.5);
-  margin-left: 20px;
-  margin-right: 10px;
+  margin: 0 20px;
   width: 0;
   opacity: 0;
 `
@@ -176,8 +179,6 @@ const Colors = styled.div`
 `
 
 const Box = styled.div`
-  margin-left: 10px;
-  padding: 0 8px;
   height: calc(var(--height) * 0.6);
   background: #333;
   display: grid;
@@ -185,7 +186,6 @@ const Box = styled.div`
   border-radius: 5px;
   white-space: nowrap;
   width: 0;
-  opacity: 0;
   overflow: hidden;
   z-index: 1;
   position: relative;
@@ -195,6 +195,10 @@ const Box = styled.div`
 
   :hover {
     background: #444;
+  }
+
+  > * {
+    margin: 0 8px;
   }
 `
 
