@@ -38,7 +38,8 @@ export default function NavHistory() {
 
   useEffect(() => {
     if (!from || !to) return
-    if (history[0]?.[0] === from && history[0]?.[1] === to) return
+    // if this entry already exists in the history, don't add it again
+    if (history.slice(0, 6).some(([f, t]) => f === from && t === to)) return
     const newItem: [string, string] = [from, to]
     const newHistory = [newItem, ...history]
     setHistory(newHistory)
@@ -92,7 +93,6 @@ export default function NavHistory() {
         </Colors>
       </LogoWrapper>
       {history.map((item, index) => {
-        if (index === 0 && from === item[0] && to === item[1]) return null
         const fromLocation = locations[item[0]]
         const toLocation = locations[item[1]]
         const fromName =
