@@ -13,7 +13,12 @@ export default function Header() {
     <Wrapper>
       <LogoWrapper
         onClick={() => {
-          loadRoute("/")
+          if (window.location.pathname !== "/") loadRoute("/")
+          else
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth",
+            })
         }}
       >
         <StyledLogo />
