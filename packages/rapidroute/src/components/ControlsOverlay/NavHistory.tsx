@@ -145,7 +145,7 @@ const StyledLogo = styled(Logo)`
   grid-row: span 2;
 `
 
-const Bold = styled.span`
+export const Bold = styled.span`
   font-weight: 700;
 `
 

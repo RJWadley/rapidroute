@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from "react"
 
 import styled from "styled-components"
 
+import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
+import NavigationOverview from "components/ControlsOverlay/NavigationOverview"
 import Layout from "components/Layout"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import SEO from "components/SEO"
@@ -88,6 +90,9 @@ export default function Navigate() {
 
   return (
     <Layout>
+      <ControlsOverlay fillBackground={false}>
+        <NavigationOverview/>
+      </ControlsOverlay>
       <MapBackground />
       <StyledMapTag />
       <StyledCanvas />

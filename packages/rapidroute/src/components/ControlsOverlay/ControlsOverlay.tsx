@@ -4,13 +4,14 @@ import styled from "styled-components"
 
 interface ControlsOverlayProps {
   children: React.ReactNode
+  fillBackground?: boolean
 }
 
-export default function ControlsOverlay({ children }: ControlsOverlayProps) {
+export default function ControlsOverlay({ children, fillBackground = true }: ControlsOverlayProps) {
   return (
     <>
       <Spacer />
-      <Wrapper>{children}</Wrapper>
+      <Wrapper fillBackground={fillBackground}>{children}</Wrapper>
     </>
   )
 }
@@ -26,7 +27,7 @@ const Spacer = styled.div`
   /* } */
 `
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ fillBackground: boolean }>`
   // if not using window controls overlay, hide
   display: none;
 
@@ -42,6 +43,6 @@ const Wrapper = styled.div`
   height: env(titlebar-area-height, 40px);
   z-index: 9999999;
   -webkit-app-region: drag;
-  background-color: #111;
+  background-color: ${({ fillBackground }) => (fillBackground ? "#111" : "transparent")};
   /* } */
 `

@@ -46,6 +46,11 @@ const Wrapper = styled.div`
     width: calc(100vw - 40px);
     margin-bottom: 60vh;
   }
+
+  // if using window controls overlay, move down
+  /* @media (display-mode: window-controls-overlay) { */
+  transform: translateY(env(titlebar-area-height, 40px));
+  /* } */
 `
 
 const ExitButton = styled(Link)`
