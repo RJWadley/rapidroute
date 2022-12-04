@@ -156,7 +156,7 @@ export default async function getConvertedData() {
       alias: aliases
         .filter(x => x.actualProvider === provider.name)
         .map(x => ({
-          displayProvider: x.displayProvider,
+          displayProvider: makeKeySafe(x.displayProvider),
           numberRange: {
             start: x.start,
             end: x.end,
