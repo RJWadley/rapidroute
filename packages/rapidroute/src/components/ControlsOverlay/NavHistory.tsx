@@ -207,7 +207,7 @@ const ShadeOverlay = styled.div`
   background: linear-gradient(
     to right,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 1) 100%
+    #111 100%
   );
   z-index: 1;
 `

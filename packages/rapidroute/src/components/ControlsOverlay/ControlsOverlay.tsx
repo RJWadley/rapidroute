@@ -44,6 +44,8 @@ const Wrapper = styled.div<{ fillBackground: boolean }>`
     top: env(titlebar-area-y, 0);
     width: env(titlebar-area-width, 100vw);
     height: env(titlebar-area-height, 40px);
+    transition: width 0.2s ease-in-out;
+    overflow: hidden;
     z-index: 9999999;
     -webkit-app-region: drag;
     background-color: ${({ fillBackground }) =>
