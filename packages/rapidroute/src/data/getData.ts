@@ -212,6 +212,13 @@ export async function getPath<T extends DatabaseDataKeys>(
 export async function getAll<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
+  while (fetchingPaths.includes(type)) {
+    // eslint-disable-next-line no-await-in-loop
+    await sleep(250)
+  }
+  fetchingPaths.push(type)
+  const done = () => fetchingPaths.splice(fetchingPaths.indexOf(type), 1)
+
   console.log("getAll", type)
   // first get the hash from the database
   await hashesExist
@@ -229,6 +236,7 @@ export async function getAll<T extends DatabaseDataKeys>(
         delete output[key]
       }
     })
+    done()
     return output
   }
   if (hash !== allHashes[type]) {
@@ -247,5 +255,6 @@ export async function getAll<T extends DatabaseDataKeys>(
   setLocal("databaseCache", databaseCache)
   setLocal("allHash", allHashes)
   setLocal("oneHash", oneHashes)
+  done()
   return data
 }

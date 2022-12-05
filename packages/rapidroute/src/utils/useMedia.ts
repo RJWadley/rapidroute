@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 export default function useMedia(query: string): boolean {
-  const [state, setState] = useState(true)
+  const [state, setState] = useState(false)
 
   useEffect(() => {
     // set state based on match

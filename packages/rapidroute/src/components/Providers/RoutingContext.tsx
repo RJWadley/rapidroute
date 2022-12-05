@@ -1,6 +1,14 @@
-import React, { createContext, ReactNode, useMemo, useState } from "react"
+import React, {
+  createContext,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 
 import { RouteMode, shortHandMap } from "@rapidroute/database-types"
+
+import { getAll } from "data/getData"
 
 type LocationId = string
 
@@ -58,6 +66,33 @@ export function RoutingProvider({
       allowedModes,
       setAllowedModes,
     }
+  }, [from, to, allowedModes])
+
+  /**
+   * on load, read the state from the URL
+   */
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const initFrom = url.searchParams.get("from")
+    const initTo = url.searchParams.get("to")
+    getAll("searchIndex")
+      .then(() => {
+        if (initFrom) setFrom(decodeURIComponent(initFrom))
+        if (initTo) setTo(decodeURIComponent(initTo))
+      })
+      .catch(console.error)
+  }, [])
+
+  /**
+   * store the current state in the URL
+   */
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (from) url.searchParams.set("from", encodeURIComponent(from))
+    else url.searchParams.delete("from")
+    if (to) url.searchParams.set("to", encodeURIComponent(to))
+    else url.searchParams.delete("to")
+    window.history.replaceState({}, "", url.toString())
   }, [from, to, allowedModes])
 
   return (

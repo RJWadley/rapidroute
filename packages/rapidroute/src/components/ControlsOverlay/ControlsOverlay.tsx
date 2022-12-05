@@ -2,6 +2,8 @@ import React from "react"
 
 import styled from "styled-components"
 
+import useMedia from "utils/useMedia"
+
 interface ControlsOverlayProps {
   children: React.ReactNode
   fillBackground?: boolean
@@ -15,12 +17,16 @@ export default function ControlsOverlay({
   children,
   fillBackground = true,
 }: ControlsOverlayProps) {
-  return (
+  const usingControlsOverlay = useMedia(
+    "(display-mode: window-controls-overlay)"
+  )
+
+  return usingControlsOverlay ? (
     <>
       <Spacer />
       <Wrapper fillBackground={fillBackground}>{children}</Wrapper>
     </>
-  )
+  ) : null
 }
 
 const Spacer = styled.div`
