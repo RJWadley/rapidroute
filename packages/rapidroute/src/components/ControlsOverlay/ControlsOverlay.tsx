@@ -7,6 +7,10 @@ interface ControlsOverlayProps {
   fillBackground?: boolean
 }
 
+/**
+ * sort of a bonus feature on chrome PWAs that shows info in the title bar
+ * don't put anything important here since it's only visible on chrome PWAs
+ */
 export default function ControlsOverlay({
   children,
   fillBackground = true,

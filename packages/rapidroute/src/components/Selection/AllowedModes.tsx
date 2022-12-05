@@ -19,6 +19,9 @@ export default function AllowedModes() {
     }
   }
 
+  /**
+   * animate in and out the filters
+   */
   useEffect(() => {
     const t1 = gsap.to(filtersRef.current, {
       height: showFilters ? "auto" : 0,

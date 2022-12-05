@@ -12,6 +12,11 @@ import { getLocal, setLocal } from "utils/localUtils"
 export default function NavHistory() {
   const logo = useRef<HTMLDivElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const { from, to, setFrom, setTo } = useContext(RoutingContext)
+  const [history, setHistory] = useState<[string, string][]>(
+    getLocal("navigationHistory") || []
+  )
+  const [locations, setLocations] = useState<Record<string, Location>>({})
 
   /**
    * hide the logo until the page is scrolled down
@@ -30,12 +35,9 @@ export default function NavHistory() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const { from, to, setFrom, setTo } = useContext(RoutingContext)
-  const [history, setHistory] = useState<[string, string][]>(
-    getLocal("navigationHistory") || []
-  )
-  const [locations, setLocations] = useState<Record<string, Location>>({})
-
+  /**
+   * track the search history
+   */
   useEffect(() => {
     if (!from || !to) return
     // if this entry already exists in the history, don't add it again
@@ -63,7 +65,7 @@ export default function NavHistory() {
   }, [history, locations])
 
   /**
-   * animate in
+   * animate in when a new item is added to the history
    */
   useEffect(() => {
     const boxes = wrapperRef.current?.querySelectorAll(".box")
@@ -76,6 +78,34 @@ export default function NavHistory() {
         ease: "power3.inOut",
         duration: 2,
       })
+  })
+
+  const historyItems = history.map((item, index) => {
+    const fromLocation = locations[item[0]]
+    const toLocation = locations[item[1]]
+    const fromName =
+      fromLocation?.type === "City"
+        ? fromLocation.name
+        : fromLocation?.shortName ?? undefined
+    const toName =
+      toLocation?.type === "City"
+        ? toLocation.name
+        : toLocation?.shortName ?? undefined
+    if (!fromName || !toName) return null
+    return (
+      <Box
+        key={`${item[0] + item[1]}${history.length - index}`}
+        className="box"
+        onClick={() => {
+          setFrom(item[0])
+          setTo(item[1])
+        }}
+      >
+        <span>
+          {fromName} -&gt; {toName}
+        </span>
+      </Box>
+    )
   })
 
   return (
@@ -92,37 +122,39 @@ export default function NavHistory() {
           <div />
         </Colors>
       </LogoWrapper>
-      {history.map((item, index) => {
-        const fromLocation = locations[item[0]]
-        const toLocation = locations[item[1]]
-        const fromName =
-          fromLocation?.type === "City"
-            ? fromLocation.name
-            : fromLocation?.shortName ?? undefined
-        const toName =
-          toLocation?.type === "City"
-            ? toLocation.name
-            : toLocation?.shortName ?? undefined
-        if (!fromName || !toName) return null
-        return (
-          <Box
-            key={`${item[0] + item[1]}${history.length - index}`}
-            className="box"
-            onClick={() => {
-              setFrom(item[0])
-              setTo(item[1])
-            }}
-          >
-            <span>
-              {fromName} -&gt; {toName}
-            </span>
-          </Box>
-        )
-      })}
+      {historyItems}
       <ShadeOverlay />
     </Wrapper>
   )
 }
+
+export const Bold = styled.span`
+  font-weight: 700;
+`
+
+const Box = styled.div`
+  height: calc(var(--height) * 0.6);
+  background: #333;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  white-space: nowrap;
+  width: 0;
+  overflow: hidden;
+  z-index: 1;
+  position: relative;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+  user-select: none;
+
+  :hover {
+    background: #444;
+  }
+
+  > * {
+    margin: 0 8px;
+  }
+`
 
 const Wrapper = styled.div`
   --height: env(titlebar-area-height, 40px);
@@ -148,10 +180,6 @@ const StyledLogo = styled(Logo)`
   grid-row: span 2;
 `
 
-export const Bold = styled.span`
-  font-weight: 700;
-`
-
 const Colors = styled.div`
   height: 2px;
   width: 50px;
@@ -175,30 +203,6 @@ const Colors = styled.div`
   }
   div:nth-child(4) {
     background-color: var(--rapid-green);
-  }
-`
-
-const Box = styled.div`
-  height: calc(var(--height) * 0.6);
-  background: #333;
-  display: grid;
-  place-items: center;
-  border-radius: 5px;
-  white-space: nowrap;
-  width: 0;
-  overflow: hidden;
-  z-index: 1;
-  position: relative;
-  cursor: pointer;
-  -webkit-app-region: no-drag;
-  user-select: none;
-
-  :hover {
-    background: #444;
-  }
-
-  > * {
-    margin: 0 8px;
   }
 `
 

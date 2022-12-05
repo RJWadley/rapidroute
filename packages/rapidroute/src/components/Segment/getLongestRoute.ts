@@ -20,6 +20,9 @@ const getDistance = (
   return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 }
 
+/**
+ * this isn't used on the live site, but someone wanted to know how long the longest route was
+ */
 getAll("pathfinding")
   .then(data => {
     const allPlaces = Object.values(data)

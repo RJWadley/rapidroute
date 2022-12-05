@@ -2,6 +2,7 @@ import { isObject } from "./makeSafeForDatabase"
 
 /**
  * return true every entry in the object is a) undefined | null | [] | {} or b) an object that passes the same test recursively
+ * basically anything that would be removed by firebase
  */
 const objectIsDeepUndefined = (
   obj: Record<string | number | symbol, unknown>
@@ -18,7 +19,7 @@ const objectIsDeepUndefined = (
 
 /**
  * deep compare two objects
- * null and undefined are considered equal
+ * anything firebase treats as null is considered null (see objectIsDeepUndefined)
  */
 export default function deepCompare(a: unknown, b: unknown): boolean {
   // first just do an equality check

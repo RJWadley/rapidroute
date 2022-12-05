@@ -18,6 +18,9 @@ interface SegmentProps {
   glassy?: boolean
 }
 
+/**
+ * a single segment, displayed according to the segment type
+ */
 export default function Segment({
   segment,
   forceMobile = false,

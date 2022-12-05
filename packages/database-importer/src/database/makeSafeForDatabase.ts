@@ -1,13 +1,14 @@
-/* recursion requires type assertions */
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 export const isObject = (
   input: unknown
 ): input is Record<string | number | symbol, unknown> => {
   return typeof input === "object" && input !== null && !Array.isArray(input)
 }
 
+/* recursion in this case requires type assertions */
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 /**
  * recursively replace all undefined values with null
+ * this is because firebase does not allow undefined values
  */
 const makeSafeForDatabase = <T>(input: T): SafeForDatabase<T> => {
   if (isObject(input)) {
@@ -27,6 +28,10 @@ const makeSafeForDatabase = <T>(input: T): SafeForDatabase<T> => {
   return input as SafeForDatabase<T>
 }
 
+/**
+ * recursively remove all uniqueId values from an object type
+ * output type of makeSafeForDatabase
+ */
 type SafeForDatabase<T> = T extends Record<string | number | symbol, unknown>
   ? {
       [K in keyof T]: SafeForDatabase<T[K]>

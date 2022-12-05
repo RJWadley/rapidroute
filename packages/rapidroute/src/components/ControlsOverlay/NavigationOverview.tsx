@@ -6,6 +6,9 @@ import { ReactComponent as Logo } from "images/global/NavigatorLogo.svg"
 
 import { Bold } from "./NavHistory"
 
+/**
+ * simply display the navigator logo and a glassy background
+ */
 export default function NavigationOverview() {
   return (
     <Wrapper>

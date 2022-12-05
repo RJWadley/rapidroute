@@ -4,13 +4,30 @@ import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 
 type LocationId = string
 
-// create a provider
 export const RoutingContext = createContext<{
+  /**
+   * unique id of the origin location
+   */
   from: LocationId | null
+  /**
+   * unique id of the destination location
+   */
   to: LocationId | null
+  /**
+   * update the origin location
+   */
   setFrom: (from: LocationId | null) => void
+  /**
+   * update the destination location
+   */
   setTo: (to: LocationId | null) => void
+  /**
+   * list of modes to use for routing
+   */
   allowedModes: RouteMode[]
+  /**
+   * update the list of modes to use for routing
+   */
   setAllowedModes: (modes: RouteMode[]) => void
 }>({
   from: null,

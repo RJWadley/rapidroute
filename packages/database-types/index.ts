@@ -1,4 +1,4 @@
-import TSON, { validate } from "typescript-json"
+import TSON from "typescript-json"
 import { Locations, Location, PlaceType, isLocation } from "./src/locations"
 import {
   isPathingPlace,
@@ -43,10 +43,6 @@ export interface DatabaseType {
    */
   searchIndex?: SearchIndex
   /**
-   * auto-generated index of locations
-   */
-  // autoGenIndex: AutoGenIndex
-  /**
    * hashes used for validating client-side data
    */
   hashes?: Hashes
@@ -56,6 +52,10 @@ export interface DatabaseType {
   lastImport?: string
 }
 
+/**
+ * data keys are any keys that lead to a data object
+ * (e.g. "locations", "routes", "providers")
+ */
 export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
 export type DataDatabaseType = Omit<DatabaseType, "hashes" | "lastImport">
 

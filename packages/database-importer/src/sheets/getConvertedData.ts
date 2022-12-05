@@ -8,9 +8,16 @@ import {
 
 import getLegacyData from "./getSheetData"
 
-// can't contain ".", "#", "$", "[", "]", or "/" or "\"
-// replace those with "_1", "_2", "_3", "_4", etc.
-// also replace " " with "_" and "_" with "__"
+/**
+ * update string to be a valid firebase key
+ *
+ * can't contain ".", "#", "$", "[", "]", or "/" or "\"
+ * replace those with "_1", "_2", "_3", "_4", etc.
+ * also replace " " with "_" and "_" with "__"
+ *
+ * @param str
+ * @returns
+ */
 const makeKeySafe = (str: string) => {
   return str
     .replace(/_/g, "__")
@@ -25,7 +32,7 @@ const makeKeySafe = (str: string) => {
 }
 
 /**
- * take the old data format and convert it to the new format
+ * take the old data format (from RapidRoute 2) and convert it to the new format
  */
 export default async function getConvertedData() {
   const {

@@ -3,6 +3,10 @@ import { isObject } from "./makeSafeForDatabase"
 
 export type RemoveUniqueId<T> = Omit<T, "uniqueId">
 
+/**
+ * recursively remove all uniqueId values from an object type
+ * output type of removeUniqueId
+ */
 export type DeepRemoveUniqueId<T> = T extends Array<infer U>
   ? Array<DeepRemoveUniqueId<U>>
   : T extends Record<string, unknown>
@@ -13,6 +17,10 @@ export type DeepRemoveUniqueId<T> = T extends Array<infer U>
   ? null
   : RemoveUniqueId<T>
 
+/**
+ * recursively remove all uniqueId values from an object type
+ * these are used as object keys in firebase, so there's no need to store them twice
+ */
 export const removeUniqueId = <T>(input: T): DeepRemoveUniqueId<T> => {
   if (Array.isArray(input)) {
     return input.map(removeUniqueId) as DeepRemoveUniqueId<T>

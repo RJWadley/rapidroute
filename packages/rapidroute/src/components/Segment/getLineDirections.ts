@@ -1,9 +1,12 @@
 const westEastLines = ["X", "N", "S", "L"]
 const northSouthLines = ["Z", "E", "J", "W"]
 const inOutLines = ["A", "T", "I", "M", "D", "P", "V", "H", "F"]
-// Record of id to number of stops so that we can determine which direction around the circle is the shortest
+/**
+ * Record of id to number of stops so that we can determine which direction around the circle is the shortest
+ */
 const circleLines = {
-  C: 120, // 119 stations
+  C: 119, // 119 stations
+  U: 99999, // unfinished line, so we'll just assume it's a big circle
 }
 
 const isCircleLineKey = (key: string): key is keyof typeof circleLines => {
@@ -70,9 +73,9 @@ export const getLineDirection = (fromStop: string, toStop: string) => {
    */
   if (isCircleLineKey(lineCode)) {
     // if the line is a circle line, we need to determine which direction around the circle is the shortest
-    const numberOfStops = circleLines[lineCode]
+    const numberOfSegments = circleLines[lineCode] + 1 // add one because the line is circular
     const distanceBetweenStops = Math.abs(fromStopNumber - toStopNumber)
-    const distanceAroundCircle = numberOfStops - distanceBetweenStops
+    const distanceAroundCircle = numberOfSegments - distanceBetweenStops
     const isShortestDistanceAroundCircle =
       distanceBetweenStops > distanceAroundCircle
 

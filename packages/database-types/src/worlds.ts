@@ -1,3 +1,7 @@
+/**
+ * this file is currently unused
+ */
+
 import TSON from "typescript-json"
 
 export interface Worlds {

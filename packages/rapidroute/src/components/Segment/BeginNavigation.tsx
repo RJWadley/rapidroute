@@ -13,6 +13,10 @@ interface BeginNavigationProps {
   segments: SegmentType[] | null
 }
 
+/**
+ * green "begin navigation" button
+ * starts the navigation process when clicked
+ */
 export default function BeginNavigation({
   route,
   segments,

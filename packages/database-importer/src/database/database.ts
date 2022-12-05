@@ -23,6 +23,7 @@ admin.initializeApp({
 const rawDatabase = admin.database()
 export const database: DeepRemoveUniqueId<Partial<DatabaseType>> = {}
 
+// we do the database all in one go to reduce usage and increase speed
 export const setupDatabase = async () => {
   console.log("Setting up database...")
   const snapshot = await rawDatabase.ref("/").once("value")

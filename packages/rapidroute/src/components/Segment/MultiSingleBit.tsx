@@ -17,6 +17,9 @@ interface MultiSingleBitProps {
   variant: "mobile" | "desktop"
 }
 
+/**
+ * a single route in a multi-route segment
+ */
 export default function MultiSingleBit({
   segment,
   route,

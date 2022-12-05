@@ -1,14 +1,11 @@
 import styled from "styled-components"
 
+/**
+ * mostly based off styles from RapidRoute v1. one day we'll maybe update the design lol
+ */
 const Scoped = styled.div`
   margin: 0;
-  font-family: Rubik, sans-serif;
-
-  --light-mint: #a0eec0;
-  --mint: #8ae9c1;
-  --main: #86cd82;
-  --forest: #72a276;
-  --dim-gray: #666b6a;
+  font-family: Inter, sans-serif;
 
   h1 {
     font-size: 2rem;

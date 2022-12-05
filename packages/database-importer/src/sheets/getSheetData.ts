@@ -1,3 +1,6 @@
+// this file comes mostly from RapidRoute 2
+// eventually it should probably be replaced with something more efficient
+
 /* eslint-disable prefer-destructuring */
 /* eslint-disable max-lines */
 // 1 call
@@ -713,6 +716,11 @@ function combineData() {
   places = newPlaces
 }
 
+/**
+ * get legacy data from spreadsheets and such
+ * one day this will all be properly replaced but for now it's fine
+ * most of this code comes straight from the old site
+ */
 export default async function getLegacyData() {
   routes = []
   places = []
