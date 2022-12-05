@@ -2,6 +2,7 @@ import { SegmentType } from "components/createSegments"
 import { getLineDirection } from "components/Segment/getLineDirections"
 import getProvider from "components/Segment/getProvider"
 import { expandGate } from "components/Segment/SingleRoute"
+import { getDistance } from "pathfinding/findPath/pathUtil"
 
 /**
  * given a route segment, return directions for the player to follow to complete the segment
@@ -26,7 +27,14 @@ export default async function getNavigationInstruction(
    */
   if (!segment.routes.length)
     return `${
-      segment.from.type === "MRT Station" && segment.to.type === "MRT Station"
+      segment.from.type === "MRT Station" &&
+      segment.to.type === "MRT Station" &&
+      getDistance(
+        segment.from.location?.x ?? Infinity,
+        segment.from.location?.z ?? Infinity,
+        segment.to.location?.x ?? Infinity,
+        segment.to.location?.z ?? Infinity
+      ) < 200
         ? "transfer"
         : "walk"
     } to ${segment.to.shortName}, ${segment.to.name}`

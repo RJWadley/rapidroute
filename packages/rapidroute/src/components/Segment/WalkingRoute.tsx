@@ -3,6 +3,7 @@ import React from "react"
 import styled, { css } from "styled-components"
 
 import { SegmentType } from "components/createSegments"
+import { getDistance } from "pathfinding/findPath/pathUtil"
 
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 
@@ -31,7 +32,14 @@ export default function WalkingRoute({
     segment.to.type === "City" ? segment.to.shortName : segment.to.name
 
   const isTransfer =
-    segment.to.type === "MRT Station" && segment.from.type === "MRT Station"
+    segment.to.type === "MRT Station" &&
+    segment.from.type === "MRT Station" &&
+    getDistance(
+      segment.from.location?.x ?? Infinity,
+      segment.from.location?.z ?? Infinity,
+      segment.to.location?.x ?? Infinity,
+      segment.to.location?.z ?? Infinity
+    ) < 200
 
   const isMobile = variant === "mobile" || forceMobile
 

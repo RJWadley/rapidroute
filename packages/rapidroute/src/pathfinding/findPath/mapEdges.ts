@@ -84,14 +84,6 @@ export const generateRawEdges = (data: Pathfinding) => {
           x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
         return { to, distance }
       })
-      // only include locations which have at least one route available at them
-      .filter(({ to }) => {
-        const shortTypes = shortHandMapKeys
-        return shortTypes.some(routeTypeShort => {
-          const routes = data[to][routeTypeShort]
-          return !!routes && !routes[from]
-        })
-      })
       // filter out MRT stops on the same line unless the from is out of service
       .filter(({ to }) => {
         if (!data[from].M) return true
@@ -99,11 +91,30 @@ export const generateRawEdges = (data: Pathfinding) => {
         return true
       })
       .sort((a, b) => a.distance - b.distance)
+      // only include locations which have at least one route available at them
+      .filter(({ to }, i) => {
+        if (i === 0) return true // keep the closest location regardless
+        const shortTypes = shortHandMapKeys
+        return shortTypes.some(routeTypeShort => {
+          const routes = data[to][routeTypeShort]
+          return !!routes && !routes[from]
+        })
+      })
       .slice(0, 5)
       .flatMap(({ to, distance }) => {
         const weight = getRouteTime(distance, "walk")
 
-        const mode: RouteMode = isMRT(from) && isMRT(to) ? "MRT" : "walk"
+        const mode: RouteMode =
+          isMRT(from) &&
+          isMRT(to) &&
+          getDistance(
+            data[from].x ?? Infinity,
+            data[from].z ?? Infinity,
+            data[to].x ?? Infinity,
+            data[to].z ?? Infinity
+          ) < 200
+            ? "MRT"
+            : "walk"
 
         return [
           { from, to, weight, mode } as const,
