@@ -13,7 +13,7 @@ export default function Changelog() {
       </div>
       <div className="changelog">
         <div>
-          <h2>2022-12-08 - Version 3.0</h2>
+          <h2>2022-12-09 - Version 3.0</h2>
 
           <h3>New Features</h3>
           <ul>
