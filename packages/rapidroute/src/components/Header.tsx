@@ -51,10 +51,20 @@ const LogoWrapper = styled.div`
   align-items: center;
   gap: 20px;
   cursor: pointer;
+
+  @media ${media.mobile} {
+    gap: 5px;
+    margin-left: 10px;
+  }
 `
 
 const StyledLogo = styled(Logo)`
   height: 40px;
+
+  @media ${media.mobile} {
+    height: 30px;
+    transform: translate(0, -2px);
+  }
 `
 
 const Text = styled.div`
@@ -92,7 +102,7 @@ const Colors = styled.div`
   }
 
   @media ${media.mobile} {
-    width: 77px;
-    height: 4px;
+    width: 65px;
+    height: 2px;
   }
 `
