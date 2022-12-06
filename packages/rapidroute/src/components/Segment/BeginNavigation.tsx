@@ -6,7 +6,7 @@ import { SegmentType } from "components/createSegments"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import RoundButton from "components/RoundButton"
 import invertLightness from "utils/invertLightness"
-import loadRoute from "utils/loadRoute"
+import { loadPage } from "utils/Loader/TransitionUtils"
 
 interface BeginNavigationProps {
   route: string[]
@@ -39,7 +39,7 @@ export default function BeginNavigation({
           if (segments) setCurrentRoute(segments)
           setNavigationComplete(false)
           setSpokenRoute([])
-          loadRoute("/navigate")
+          loadPage("/navigate", "slide").catch(console.error)
         }}
       >
         directions_alt

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect } from "react"
 
-import { Link } from "gatsby"
 import styled from "styled-components"
 
 import Layout from "components/Layout"
@@ -9,6 +8,7 @@ import PlayerSelect from "components/PlayerSelect"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
 import { WorldInfo } from "map/worldInfoType"
+import { loadPage } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
 
 export default function SelectPlayer() {
@@ -66,10 +66,10 @@ export default function SelectPlayer() {
 
         <SearchContainer>
           <Cancel
-            to="/"
             onClick={() => {
               if (from === "Current Location") setFrom(null)
               if (to === "Current Location") setTo(null)
+              loadPage("/", "slide").catch(console.error)
             }}
           >
             Cancel
@@ -139,7 +139,7 @@ const SearchContainer = styled.div`
   }
 `
 
-const Cancel = styled(Link)`
+const Cancel = styled.button`
   background: var(--button-red);
   color: var(--invert-button-red);
   margin-bottom: 20px;
@@ -150,6 +150,7 @@ const Cancel = styled(Link)`
   display: grid;
   place-items: center;
   border-radius: 30px;
+  cursor: pointer;
 
   @media ${media.mobile} {
     min-height: 35px;

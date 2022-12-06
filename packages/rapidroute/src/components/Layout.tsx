@@ -3,7 +3,9 @@ import React, { ReactNode, useContext } from "react"
 import styled, { createGlobalStyle, css } from "styled-components"
 
 import invertLightness from "utils/invertLightness"
+import { useLoaders } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
+import { usePageReady } from "utils/pageReady"
 
 import { darkModeContext } from "./Providers/DarkMode"
 
@@ -13,6 +15,8 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const isDark = useContext(darkModeContext)
+  usePageReady()
+  useLoaders()
 
   return (
     <Wrapper>

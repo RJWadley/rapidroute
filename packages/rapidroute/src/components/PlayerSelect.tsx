@@ -5,7 +5,7 @@ import styled, { keyframes } from "styled-components"
 
 import { useImageHSL } from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
-import loadRoute from "utils/loadRoute"
+import { loadPage } from "utils/Loader/TransitionUtils"
 import { session, setLocal } from "utils/localUtils"
 import media from "utils/media"
 import usePlayerHead from "utils/usePlayerHead"
@@ -59,7 +59,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
         onClick={() => {
           setLocal("selectedPlayer", name)
           session.following = name
-          loadRoute(nextUrl)
+          loadPage(nextUrl, "slide").catch(console.error)
         }}
         backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}
         textColor={`hsl(${hue}, ${saturation}%, ${textLightness}%)`}

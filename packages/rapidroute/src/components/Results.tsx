@@ -10,7 +10,7 @@ import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
 import { isBrowser, sleep } from "utils/functions"
-import loadRoute from "utils/loadRoute"
+import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal } from "utils/localUtils"
 import { wrap } from "utils/promise-worker"
 
@@ -69,7 +69,7 @@ export default function Results() {
 
         if (!fromToUse || !toToUse) {
           if (!getLocal("selectedPlayer")) {
-            loadRoute("/select-player")
+            loadPage("/select-player", "slide").catch(console.error)
             return
           }
           setResults("none")

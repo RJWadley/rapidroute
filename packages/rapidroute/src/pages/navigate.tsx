@@ -12,7 +12,7 @@ import MapCanvas from "map/MapCanvas"
 import MapTag from "map/MapTag"
 import NavigationSidebar from "navigation/NavigationSidebar"
 import { isBrowser } from "utils/functions"
-import loadRoute from "utils/loadRoute"
+import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal, session } from "utils/localUtils"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
@@ -25,14 +25,14 @@ export default function Navigate() {
    */
   useEffect(() => {
     if (isBrowser() && !getLocal("selectedPlayer"))
-      loadRoute("/select-player?redirect=navigate")
+      loadPage("/select-player?redirect=navigate", "slide").catch(console.error)
   }, [])
 
   /**
    * exit the page if the user is not navigating
    */
   if (isBrowser() && preferredRoute.length === 0) {
-    loadRoute("/")
+    loadPage("/").catch(console.error)
   }
 
   /**

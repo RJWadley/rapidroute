@@ -7,6 +7,7 @@ import gsap from "gsap"
 import Flip from "gsap/Flip"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
+import PageTransition from "components/PageTransition"
 import Providers from "components/Providers"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
@@ -16,7 +17,12 @@ export const wrapRootElement = ({ element }: { element: ReactNode }) => {
 }
 
 export const wrapPageElement = ({ element }: { element: ReactNode }) => {
-  return element
+  return (
+    <>
+      <PageTransition />
+      {element}
+    </>
+  )
 }
 
 // disable gsap null warnings when not on localhost

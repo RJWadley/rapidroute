@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef } from "react"
 
-import { Link } from "gatsby"
 import styled from "styled-components"
 
 import { NavigationContext } from "components/Providers/NavigationContext"
+import UniversalLink from "utils/Loader/UniversalLink"
 import media from "utils/media"
 
 export default function ExitNavigation() {
@@ -17,7 +17,7 @@ export default function ExitNavigation() {
   const destination = currentRoute[currentRoute.length - 1]?.to
   return (
     <Wrapper ref={wrapper}>
-      <ExitButton to="/">&times;</ExitButton>
+      <ExitButton to="/" transition="slide">&times;</ExitButton>
       <Text>
         <Head>Navigation to {destination?.shortName}</Head>
         <Sub>{destination?.name}</Sub>
@@ -53,7 +53,7 @@ const Wrapper = styled.div`
   }
 `
 
-const ExitButton = styled(Link)`
+const ExitButton = styled(UniversalLink)`
   font-size: 40px;
   line-height: 46px;
   font-weight: bold;

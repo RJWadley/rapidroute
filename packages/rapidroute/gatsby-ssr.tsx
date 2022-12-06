@@ -1,6 +1,7 @@
 import "the-new-css-reset/css/reset.css"
 import React, { ReactNode } from "react"
 
+import PageTransition from "components/PageTransition"
 import Providers from "components/Providers"
 
 export const wrapRootElement = ({ element }: { element: ReactNode }) => {
@@ -8,5 +9,10 @@ export const wrapRootElement = ({ element }: { element: ReactNode }) => {
 }
 
 export const wrapPageElement = ({ element }: { element: ReactNode }) => {
-  return element
+  return (
+    <>
+      <PageTransition />
+      {element}
+    </>
+  )
 }

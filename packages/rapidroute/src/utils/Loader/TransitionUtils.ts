@@ -76,7 +76,7 @@ export const registerTransition = (
  * @param outAnimation if provided, only unregister this specific animation
  */
 export const unregisterTransition = (
-  name: string,
+  name: Exclude<Transitions, InternalTransitions | undefined>,
   callbacksToRemove?: VoidFunction[]
 ) => {
   if (callbacksToRemove) {

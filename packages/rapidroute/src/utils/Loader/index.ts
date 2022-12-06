@@ -1,4 +1,5 @@
-export type Transitions = "fade" | "blue" | "slide"
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
+export type Transitions = "slide"
 export type InternalTransitions = "initial" | "any" | "none"
 
 interface EventMaps {

@@ -3,7 +3,7 @@ import React from "react"
 import styled from "styled-components"
 
 import { ReactComponent as Logo } from "images/global/RapidRouteLogo.svg"
-import loadRoute from "utils/loadRoute"
+import UniversalLink from "utils/Loader/UniversalLink"
 import media from "utils/media"
 
 import Settings from "./Settings"
@@ -11,16 +11,7 @@ import Settings from "./Settings"
 export default function Header() {
   return (
     <Wrapper>
-      <LogoWrapper
-        onClick={() => {
-          if (window.location.pathname !== "/") loadRoute("/")
-          else
-            window.scrollTo({
-              top: 0,
-              behavior: "smooth",
-            })
-        }}
-      >
+      <LogoWrapper to="/" transition="slide">
         <StyledLogo />
         <Text>
           <div>
@@ -46,7 +37,7 @@ const Wrapper = styled.div`
   padding: 20px;
 `
 
-const LogoWrapper = styled.div`
+const LogoWrapper = styled(UniversalLink)`
   display: flex;
   align-items: center;
   gap: 20px;
