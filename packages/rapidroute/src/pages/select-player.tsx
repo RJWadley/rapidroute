@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react"
 
 import styled from "styled-components"
 
+import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
 import searchForPlayer from "components/players/searchPlayers"
 import PlayerSelect from "components/PlayerSelect"
@@ -56,6 +57,7 @@ export default function SelectPlayer() {
 
   return (
     <Layout>
+      <ControlsOverlay />
       <Content>
         <Title>Who are You?</Title>
         <Sub>

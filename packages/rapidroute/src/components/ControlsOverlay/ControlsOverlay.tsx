@@ -5,7 +5,7 @@ import styled from "styled-components"
 import useMedia from "utils/useMedia"
 
 interface ControlsOverlayProps {
-  children: React.ReactNode
+  children?: React.ReactNode
   fillBackground?: boolean
 }
 
@@ -14,7 +14,7 @@ interface ControlsOverlayProps {
  * don't put anything important here since it's only visible on chrome PWAs
  */
 export default function ControlsOverlay({
-  children,
+  children = null,
   fillBackground = true,
 }: ControlsOverlayProps) {
   const usingControlsOverlay = useMedia(
