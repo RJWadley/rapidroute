@@ -1,0 +1,14 @@
+# github action that runs every day at midnight mdt
+name: Importer
+on:
+  schedule:
+    - cron: '0 7 * * *'
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Importer
+        run: |
+          npm install
+          npm run import
