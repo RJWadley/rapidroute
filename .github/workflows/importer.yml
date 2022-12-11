@@ -10,7 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run Importer
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Modules
         run: |
           npm install
+      - name: Import to Database
+        run: |
           npm run import
