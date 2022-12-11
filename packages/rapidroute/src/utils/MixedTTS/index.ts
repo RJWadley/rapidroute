@@ -3,16 +3,16 @@ import EasySpeech from "easy-speech"
 import tikSpeak, { cancelTikSpeak } from "./tik/speak"
 import tikVoices from "./tik/voices"
 
-const easySpeechReady = new Promise<void>((resolve, reject) => {
+const easySpeechAvailable = new Promise<boolean>(resolve => {
   if (typeof window !== "undefined") {
     EasySpeech.init({ maxTimeout: 5000, interval: 250 })
-      // eslint-disable-next-line no-console
       .then(() => {
-        resolve()
+        resolve(true)
       })
       .catch(e => {
+        // easy speech will fail if there are no voices
         console.error(e)
-        reject(e)
+        resolve(false)
       })
   }
 })
@@ -27,7 +27,7 @@ export interface UniversalVoice {
 }
 
 export const getVoices = async (lang: string = "en") => {
-  await easySpeechReady
+  const useEasySpeech = await easySpeechAvailable
   const voices: UniversalVoice[] = tikVoices
     .filter(voice => voice.lang.startsWith(lang))
     .map(v => ({
@@ -37,23 +37,25 @@ export const getVoices = async (lang: string = "en") => {
       source: "tik",
     }))
 
-  const easySpeechVoices: UniversalVoice[] = EasySpeech.voices()
-    // sort by name
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .filter(voice => voice.lang.startsWith(lang))
-    // filter out duplicate voices
-    .filter(
-      (voice, index, self) =>
-        index === self.findIndex(v => v.name === voice.name)
-    )
-    .map(v => ({
-      id: `v${v.name}`,
-      lang: v.lang,
-      name: v.name,
-      source: "easy-speech",
-      speechSynthesisVoice: v,
-      default: v.default,
-    }))
+  const easySpeechVoices: UniversalVoice[] = useEasySpeech
+    ? EasySpeech.voices()
+        // sort by name
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .filter(voice => voice.lang.startsWith(lang))
+        // filter out duplicate voices
+        .filter(
+          (voice, index, self) =>
+            index === self.findIndex(v => v.name === voice.name)
+        )
+        .map(v => ({
+          id: `v${v.name}`,
+          lang: v.lang,
+          name: v.name,
+          source: "easy-speech",
+          speechSynthesisVoice: v,
+          default: v.default,
+        }))
+    : []
 
   return [...easySpeechVoices, ...voices]
 }
@@ -109,7 +111,7 @@ export const speak = async (text: string): Promise<void> => {
   const voiceToUse = currentVoice || (await getDefaultVoice())
 
   cancelTikSpeak()
-  EasySpeech.cancel()
+  if (await easySpeechAvailable) EasySpeech.cancel()
 
   if (voiceToUse.source === "tik") {
     await tikSpeak(text, voiceToUse.id.slice(1), speechRate)
