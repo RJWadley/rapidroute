@@ -8,6 +8,10 @@ on:
 jobs:
   import:
     runs-on: ubuntu-latest
+    env:
+      CLIENT_EMAIL: ${{ secrets.CLIENT_EMAIL }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

@@ -3,16 +3,19 @@ import {
   isWholeDatabase,
   validateDatabase,
 } from "@rapidroute/database-types"
+import { config } from "dotenv"
 import admin, { ServiceAccount } from "firebase-admin"
 
-import accountKeyRAW from "../serviceAccountKey.json"
+// import accountKeyRAW from "../serviceAccountKey.json"
 import makeSafeForDatabase from "./makeSafeForDatabase"
 import { DeepRemoveUniqueId, removeUniqueId } from "./removeUniqueId"
 
+config()
+
 const accountKey: ServiceAccount = {
-  clientEmail: accountKeyRAW.client_email,
-  privateKey: accountKeyRAW.private_key,
-  projectId: accountKeyRAW.project_id,
+  clientEmail: process.env.CLIENT_EMAIL ?? "",
+  privateKey: process.env.PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+  projectId: process.env.PROJECT_ID ?? "",
 }
 
 admin.initializeApp({
