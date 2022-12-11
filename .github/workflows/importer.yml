@@ -1,8 +1,10 @@
 # github action that runs every day at midnight mdt
+# and can also be triggered manually
 name: Importer
 on:
   schedule:
     - cron: '0 7 * * *'
+  workflow_dispatch:
 jobs:
   import:
     runs-on: ubuntu-latest
