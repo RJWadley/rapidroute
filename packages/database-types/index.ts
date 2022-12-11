@@ -59,7 +59,7 @@ export interface DatabaseType {
 export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
 export type DataDatabaseType = Omit<DatabaseType, "hashes" | "lastImport">
 
-export type Hashes = Record<DatabaseDataKeys, string | undefined>
+export type Hashes = Partial<Record<DatabaseDataKeys, string>>
 
 export const databaseTypeGuards: {
   [key in DatabaseDataKeys]: (

@@ -18,11 +18,16 @@ import {
 } from "./database/updateRoute"
 import getConvertedData from "./sheets/getConvertedData"
 
+function stupidDeepCopy<T>(obj: T): T {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return JSON.parse(JSON.stringify(obj))
+}
+
 async function runImport() {
   const { routes, providers, locations } = await getConvertedData()
   const promises: Promise<unknown>[] = []
 
-  await setupDatabase()
+  const initialDatabase = stupidDeepCopy(await setupDatabase())
 
   /* ----------------- PROVIDERS ----------------- */
 
@@ -76,7 +81,7 @@ async function runImport() {
 
   console.log("SAVED ALL ROUTES")
 
-  updateHashes()
+  updateHashes(initialDatabase)
 
   console.log("UPDATED HASHES")
 
