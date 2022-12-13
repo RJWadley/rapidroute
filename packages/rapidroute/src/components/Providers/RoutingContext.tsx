@@ -3,6 +3,7 @@ import React, {
   ReactNode,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react"
 
@@ -77,8 +78,8 @@ export function RoutingProvider({
     const initTo = url.searchParams.get("to")
     getAll("searchIndex")
       .then(() => {
-        if (initFrom) setFrom(decodeURIComponent(initFrom))
-        if (initTo) setTo(decodeURIComponent(initTo))
+        if (initFrom) setFrom(initFrom)
+        if (initTo) setTo(initTo)
       })
       .catch(console.error)
   }, [])
@@ -86,11 +87,17 @@ export function RoutingProvider({
   /**
    * store the current state in the URL
    */
+  const firstRender = useRef(true)
   useEffect(() => {
+    if (firstRender.current) {
+      // skip the first render to avoid clearing params from before
+      firstRender.current = false
+      return
+    }
     const url = new URL(window.location.href)
-    if (from) url.searchParams.set("from", encodeURIComponent(from))
+    if (from) url.searchParams.set("from", from)
     else url.searchParams.delete("from")
-    if (to) url.searchParams.set("to", encodeURIComponent(to))
+    if (to) url.searchParams.set("to", to)
     else url.searchParams.delete("to")
     window.history.replaceState({}, "", url.toString())
   }, [from, to, allowedModes])
