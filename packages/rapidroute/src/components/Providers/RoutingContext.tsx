@@ -10,6 +10,7 @@ import React, {
 import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 
 import { getAll } from "data/getData"
+import { search } from "data/search"
 
 type LocationId = string
 
@@ -77,9 +78,19 @@ export function RoutingProvider({
     const initFrom = url.searchParams.get("from")
     const initTo = url.searchParams.get("to")
     getAll("searchIndex")
-      .then(() => {
-        if (initFrom) setFrom(initFrom)
-        if (initTo) setTo(initTo)
+      .then(index => {
+        if (initFrom)
+          setFrom(
+            index[initFrom]?.uniqueId ??
+              search(initFrom).filter(x => x !== "Current Location")[0] ??
+              initFrom
+          )
+        if (initTo)
+          setTo(
+            index[initTo]?.uniqueId ??
+              search(initTo).filter(x => x !== "Current Location")[0] ??
+              initTo
+          )
       })
       .catch(console.error)
   }, [])

@@ -50,7 +50,7 @@ export function search(query: string) {
     return 0
   })
 
-  if (/\d+,? *\d+/g.test(query)) {
+  if (/\d+[, ]+\d+/g.test(query)) {
     const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]
     results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
   }
