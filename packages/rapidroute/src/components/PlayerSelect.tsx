@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 
 import gsap from "gsap"
 import styled, { keyframes } from "styled-components"
@@ -17,6 +17,8 @@ interface PlayerSelectProps {
   name: string
 }
 
+const FADE_DURATION = 0.1
+
 export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   const name = nameIn.replace(/[^A-Za-z0-9_]/g, "").substring(0, 16)
   const imageUrl = usePlayerHead(name)
@@ -24,11 +26,25 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
 
   const [hue, saturation] = useImageHSL(imageUrl ?? "")
 
-  const imageLoad = () => {
+  useEffect(() => {
     if (wrapperRef.current)
+      gsap.to(wrapperRef.current, {
+        autoAlpha: 0,
+        duration: FADE_DURATION,
+      })
+  }, [imageUrl])
+
+  const imageLoad = () => {
+    if (wrapperRef.current) {
+      gsap.to(wrapperRef.current, {
+        autoAlpha: 1,
+        delay: FADE_DURATION,
+      })
       gsap.to(wrapperRef.current.children, {
         autoAlpha: 1,
+        delay: FADE_DURATION,
       })
+    }
   }
 
   const isDark = useContext(darkModeContext)

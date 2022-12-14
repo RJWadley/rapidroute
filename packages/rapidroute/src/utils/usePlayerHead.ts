@@ -8,6 +8,7 @@ const fetchedNames: { [name: string]: Promise<string> } = {}
 
 export default function usePlayerHead(name: string) {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [retrySignal, setRetrySignal] = useState(0)
 
   useEffect(() => {
     if (!name) {
@@ -20,10 +21,18 @@ export default function usePlayerHead(name: string) {
       return
     }
 
-    setImageUrl(null)
     fetchedNames[name] = new Promise(resolve => {
       fetch(`https://api.gapple.pw/cors/username/${name}`)
-        .then(response => response.json())
+        .then(response => {
+          if (response.status === 429) {
+            setTimeout(() => {
+              delete fetchedNames[name]
+              setRetrySignal(retrySignal + 1)
+            }, 1000)
+          }
+
+          return response.json()
+        })
         .then((uuidData: MojangUUIDResponse) => {
           return `https://crafatar.com/avatars/${
             uuidData.id || fallbackUUID
@@ -39,7 +48,7 @@ export default function usePlayerHead(name: string) {
           resolve(`https://crafatar.com/avatars/${fallbackUUID}?overlay`)
         })
     })
-  }, [name])
+  }, [name, retrySignal])
 
   return imageUrl
 }
