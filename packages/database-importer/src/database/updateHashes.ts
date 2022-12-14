@@ -2,6 +2,7 @@ import { DatabaseDataKeys } from "@rapidroute/database-types"
 
 import { database } from "./database"
 import deepCompare from "./deepCompare"
+import { isObject } from "./makeSafeForDatabase"
 
 const keysToIgnore: Record<
   Exclude<keyof typeof database, DatabaseDataKeys>,
@@ -26,7 +27,12 @@ export default function updateHashes(
 
   Object.keys(databaseBeforeUpdate).forEach(key => {
     if (key in keysToIgnore) return
-    if (key in databaseBeforeUpdate && key in database) {
+    if (
+      key in databaseBeforeUpdate &&
+      key in upcastDatabase &&
+      isObject(database.hashes) &&
+      key in database.hashes
+    ) {
       if (!deepCompare(databaseBeforeUpdate[key], upcastDatabase[key])) {
         // need a new hash if the data has changed
         newHashes[key] = newHash
