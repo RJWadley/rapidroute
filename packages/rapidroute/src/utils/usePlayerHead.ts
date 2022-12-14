@@ -22,7 +22,9 @@ export default function usePlayerHead(name: string) {
     }
 
     fetchedNames[name] = new Promise(resolve => {
-      fetch(`https://api.gapple.pw/cors/username/${name}`)
+      fetch(
+        `https://cors.mrtrapidroute.com/?https://api.mojang.com/users/profiles/minecraft/${name}`
+      )
         .then(response => {
           if (response.status === 429) {
             setTimeout(() => {
