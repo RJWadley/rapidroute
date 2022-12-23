@@ -9,6 +9,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 import PageTransition from "components/PageTransition"
 import Providers from "components/Providers"
+import pathToArea from "utils/pathArea"
+
+console.log(
+  pathToArea(
+    "M1205 810H238H231V568.5H5V306.5H231V322H672.5L736 5H1282L1205 810Z"
+  )
+)
 
 gsap.registerPlugin(ScrollTrigger, Flip)
 
