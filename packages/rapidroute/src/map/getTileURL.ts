@@ -1,31 +1,21 @@
 export default function getTileUrl(coords: {
-  x: number
-  z: number
+  xIn: number
+  zIn: number
   zoom: number
 }) {
-  const Zcoord = 2 ** (8 - coords.zoom)
-  const Xcoord = coords.x * 1
-  const Ycoord = coords.z * -1
+  const zoomFactor = 2 ** (8 - coords.zoom)
+  const x = coords.xIn * 1
+  const y = coords.zIn * -1
 
   const group = {
-    x: Math.floor((Xcoord * Zcoord) / 32),
-    y: Math.floor((Ycoord * Zcoord) / 32),
+    x: Math.floor((x * zoomFactor) / 32),
+    y: Math.floor((y * zoomFactor) / 32),
   }
 
   const numberInGroup = {
-    x: Math.floor(Xcoord * Zcoord),
-    y: Math.floor(Ycoord * Zcoord),
+    x: Math.floor(x * zoomFactor),
+    y: Math.floor(y * zoomFactor),
   }
-
-  const realCoords = {
-    x: numberInGroup.x * 32,
-    y: numberInGroup.y * 32,
-  }
-
-  const boundary = 30500
-
-  if (Math.abs(realCoords.x) > boundary || Math.abs(realCoords.y) > boundary)
-    return undefined
 
   let zzz = ""
 

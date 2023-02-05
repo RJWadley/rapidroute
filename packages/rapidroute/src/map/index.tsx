@@ -16,7 +16,9 @@ export default function Map() {
 
   return (
     <Wrapper ref={ref}>
-      <Stage options={{ backgroundAlpha: 1, width, height, backgroundColor: "red" }}>
+      <Stage
+        options={{ backgroundAlpha: 1, width, height, backgroundColor: "red" }}
+      >
         <PixiViewport width={width} height={height}>
           <Satellite zoomLevel={0} />
           <Sprite texture={SpriteTexture} x={0} y={0} />

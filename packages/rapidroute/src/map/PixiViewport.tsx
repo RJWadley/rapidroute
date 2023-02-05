@@ -9,14 +9,34 @@ type ViewportProps = {
   height: number
 }
 
+export const worldSize = 61000
+
 const DisplayObjectViewport = CustomPIXIComponent(
   {
     customDisplayObject: ({ setViewport, width, height }: ViewportProps) => {
+      const halfSize = worldSize / 2
       const viewport = new Viewport({
         screenWidth: width,
         screenHeight: height,
+        worldHeight: halfSize,
+        worldWidth: halfSize,
       })
-      viewport.drag().pinch().wheel().decelerate()
+      viewport
+        .drag()
+        .pinch()
+        .wheel()
+        .decelerate()
+        .clampZoom({
+          maxHeight: worldSize * 2,
+          maxWidth: worldSize * 2,
+        })
+        .clamp({
+          top: -worldSize,
+          left: -worldSize,
+          bottom: worldSize,
+          right: worldSize,
+          underflow: "none",
+        })
       setViewport(viewport)
       return viewport
     },

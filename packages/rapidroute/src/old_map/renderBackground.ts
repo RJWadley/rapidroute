@@ -67,27 +67,33 @@ function renderTilesInRange(
       y < bounds.br.y - debugOffset + verticalOffset;
       y += tileWidth
     ) {
-      const tile = getTileUrl({ x: x / tileWidth, z: y / tileWidth, zoom })
-      const imageOrigin = fabric.util.transformPoint(
-        new fabric.Point(x, y - verticalOffset),
-        canvas.viewportTransform || []
-      )
-      const renderedImageWidth = tileWidth * canvas.getZoom()
-      if (!tilesMap[tile.id]) {
-        const img = new Image()
-        img.src = tile.url
-        tilesMap[tile.id] = img
-        img.onload = onImageLoad
-      }
-      // check if the image is loaded and not broken
-      if (tilesMap[tile.id].complete && tilesMap[tile.id].naturalHeight !== 0) {
-        ctx.drawImage(
-          tilesMap[tile.id],
-          imageOrigin.x,
-          imageOrigin.y,
-          renderedImageWidth,
-          renderedImageWidth
+      const tile = getTileUrl({ xIn: x / tileWidth, zIn: y / tileWidth, zoom })
+      // eslint-disable-next-line no-continue
+      if (tile) {
+        const imageOrigin = fabric.util.transformPoint(
+          new fabric.Point(x, y - verticalOffset),
+          canvas.viewportTransform || []
         )
+        const renderedImageWidth = tileWidth * canvas.getZoom()
+        if (!tilesMap[tile.id]) {
+          const img = new Image()
+          img.src = tile.url
+          tilesMap[tile.id] = img
+          img.onload = onImageLoad
+        }
+        // check if the image is loaded and not broken
+        if (
+          tilesMap[tile.id].complete &&
+          tilesMap[tile.id].naturalHeight !== 0
+        ) {
+          ctx.drawImage(
+            tilesMap[tile.id],
+            imageOrigin.x,
+            imageOrigin.y,
+            renderedImageWidth,
+            renderedImageWidth
+          )
+        }
       }
     }
   }

@@ -32,13 +32,14 @@ export default function Satellite({ zoomLevel }: SatelliteProps) {
    */
   useEffect(() => {
     const onChanged = () => {
-      if (viewport)
+      if (viewport) {
         setWorld({
           width: viewport.screenWidthInWorldPixels,
           height: viewport.screenHeightInWorldPixels,
-          x: viewport.worldTransform.tx,
-          y: viewport.worldTransform.ty,
+          x: viewport.left,
+          y: viewport.top,
         })
+      }
     }
     onChanged()
 
@@ -50,18 +51,21 @@ export default function Satellite({ zoomLevel }: SatelliteProps) {
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
 
-  const tilesVertical = Math.ceil(world.width / tileWidth)
-  const tilesHorizontal = Math.ceil(world.height / tileWidth)
+  const tilesVertical = Math.ceil(world.height / tileWidth) + 1
+  const tilesHorizontal = Math.ceil(world.width / tileWidth) + 1
+
+  const startingX = Math.floor(world.x / tileWidth)
+  const startingY = Math.floor(world.y / tileWidth)
 
   const tiles = useMemo(
     () =>
       create2DArray(tilesVertical, tilesHorizontal, (row, column) => {
-        const tileX = Math.floor((column * tileWidth) / tileWidth)
-        const tileY = Math.floor((row * tileWidth) / tileWidth)
+        const tileX = startingX + column
+        const tileY = startingY + row
 
         const tile = getTileUrl({
-          x: tileX,
-          z: tileY,
+          xIn: tileX,
+          zIn: tileY,
           zoom: zoomLevel,
         })
 
@@ -73,12 +77,12 @@ export default function Satellite({ zoomLevel }: SatelliteProps) {
             texture={Texture.from(tile.url)}
             width={tileWidth}
             height={tileWidth}
-            x={column * tileWidth}
-            y={row * tileWidth}
+            x={tileX * tileWidth}
+            y={tileY * tileWidth}
           />
         )
       }),
-    [tileWidth, tilesHorizontal, tilesVertical, zoomLevel]
+    [startingX, startingY, tileWidth, tilesHorizontal, tilesVertical, zoomLevel]
   )
 
   return <>{tiles}</>
