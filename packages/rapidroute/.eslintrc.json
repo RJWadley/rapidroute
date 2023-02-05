@@ -45,7 +45,10 @@
       {
         "functions": "defaultArguments"
       }
-    ]
+    ],
+
+    // react doesn't need to be in scope for jsx
+    "react/react-in-jsx-scope": "off"
   },
   "parserOptions": {
     "project": ["./tsconfig.json"]

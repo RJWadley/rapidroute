@@ -3,6 +3,7 @@ import path from "path"
 import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
+  jsxRuntime: "automatic",
   siteMetadata: {
     title: "RapidRoute",
     description: "A route finder for the Minecart Rapid Transit Server",
