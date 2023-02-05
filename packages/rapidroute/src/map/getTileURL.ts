@@ -17,6 +17,16 @@ export default function getTileUrl(coords: {
     y: Math.floor(Ycoord * Zcoord),
   }
 
+  const realCoords = {
+    x: numberInGroup.x * 32,
+    y: numberInGroup.y * 32,
+  }
+
+  const boundary = 30500
+
+  if (Math.abs(realCoords.x) > boundary || Math.abs(realCoords.y) > boundary)
+    return undefined
+
   let zzz = ""
 
   for (let i = 8; i > coords.zoom; i -= 1) {

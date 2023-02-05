@@ -1,13 +1,27 @@
-import { Stage } from "@pixi/react"
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Texture } from "pixi.js"
+import { Sprite, Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
+
+import PixiViewport from "./PixiViewport"
+import Satellite from "./Satellite"
 
 export default function Map() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
 
+  const SpriteTexture = Texture.from(
+    "https://pixijs.io/pixi-react/img/bunny.png"
+  )
+
   return (
     <Wrapper ref={ref}>
-      <Stage width={width} height={height} options={{ backgroundAlpha: 1 }} />
+      <Stage options={{ backgroundAlpha: 1, width, height, backgroundColor: "red" }}>
+        <PixiViewport width={width} height={height}>
+          <Satellite zoomLevel={0} />
+          <Sprite texture={SpriteTexture} x={0} y={0} />
+        </PixiViewport>
+      </Stage>
     </Wrapper>
   )
 }

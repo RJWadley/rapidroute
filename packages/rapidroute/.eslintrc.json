@@ -53,6 +53,9 @@
     // allow console.error
     "no-console": ["error", { "allow": ["error"] }],
 
+    // allow fragment expressions
+    "react/jsx-no-useless-fragment": ["error", { "allowExpressions": true }],
+
     // check fragments for keys
     "react/jsx-key": ["error", { "checkFragmentShorthand": true }],
 
