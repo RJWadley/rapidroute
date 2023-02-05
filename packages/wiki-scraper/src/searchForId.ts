@@ -4,7 +4,7 @@ import {
 } from "@rapidroute/database-types/dist/src/searchIndex"
 import { initializeApp } from "firebase/app"
 import { get, getDatabase, ref } from "firebase/database"
-import FlexSearch from "flexsearch"
+import FlexSearch from "flexsearch-ts"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAk72DEr-1lB3XeRWIHKQ-yq_mTytWXxoo",
