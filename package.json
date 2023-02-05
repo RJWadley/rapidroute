@@ -9,7 +9,8 @@
   ],
   "dependencies": {
     "@types/dom-screen-wake-lock": "^1.0.0",
-    "prettier": "^2.8.0"
+    "entities": "^4.4.0",
+    "prettier": "^2.8.3"
   },
   "scripts": {
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\" && npm run lint -workspaces",
