@@ -4,9 +4,9 @@ import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
-import MapBackground from "old_map/MapBackground"
-import MapCanvas from "old_map/MapCanvas"
-import MapTag from "old_map/MapTag"
+import MapCanvas from "map"
+import MapBackground from "map/MapBackground"
+import MapTag from "map/MapTag"
 
 export default function MapTest() {
   return (
@@ -24,7 +24,6 @@ export default function MapTest() {
 const Wrapper = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: black;
   overscroll-behavior: none;
   position: relative;
 `

@@ -42,6 +42,7 @@ const Wrapper = styled.div`
   height: 100%;
   overflow: hidden;
   background: #111;
+  z-index: -1;
 `
 
 const Overlay = styled.div`
