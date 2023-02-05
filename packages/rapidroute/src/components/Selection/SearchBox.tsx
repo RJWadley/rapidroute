@@ -5,8 +5,8 @@ import styled, { css } from "styled-components"
 import { getTextboxName } from "data/search"
 import media from "utils/media"
 
-import { RoutingContext } from "../Providers/RoutingContext"
 import SearchList from "./SearchList"
+import { RoutingContext } from "../Providers/RoutingContext"
 
 interface SearchBoxProps {
   searchRole: "from" | "to"

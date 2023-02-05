@@ -13,10 +13,10 @@ import useNavigation from "navigation/useNavigation"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
-import { NavigationContext } from "../components/Providers/NavigationContext"
 import Countdown from "./Countdown"
 import ExitNavigation from "./ExitNavigation"
 import NavigationSegment from "./NavigationSegment"
+import { NavigationContext } from "../components/Providers/NavigationContext"
 
 gsap.registerPlugin(ScrollToPlugin, Flip)
 

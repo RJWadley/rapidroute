@@ -48,7 +48,19 @@
     ],
 
     // react doesn't need to be in scope for jsx
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+
+    // allow console.error
+    "no-console": ["error", { "allow": ["error"] }],
+
+    // check fragments for keys
+    "react/jsx-key": ["error", { "checkFragmentShorthand": true }],
+
+    // allow prop spreading (since we're using typescript)
+    "react/jsx-props-no-spreading": "off",
+
+    // disable unknown prop warnings (since we're using typescript)
+    "react/no-unknown-property": "off"
   },
   "parserOptions": {
     "project": ["./tsconfig.json"]

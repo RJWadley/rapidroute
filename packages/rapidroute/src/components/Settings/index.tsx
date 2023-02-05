@@ -8,11 +8,11 @@ import { getLocal } from "utils/localUtils"
 import media from "utils/media"
 import usePlayerHead from "utils/usePlayerHead"
 
-import RoundButton from "../RoundButton"
 import DarkModeSetting from "./DarkModeSetting"
 import RateSetting from "./RateSetting"
 import SelectedPlayerSetting from "./SelectedPlayerSetting"
 import VoiceSetting from "./VoiceSetting"
+import RoundButton from "../RoundButton"
 
 const circlePosition = "at calc(100% - 35px) 35px"
 

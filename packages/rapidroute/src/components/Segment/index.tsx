@@ -6,11 +6,11 @@ import { RoutingContext } from "components/Providers/RoutingContext"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
-import { SegmentType } from "../createSegments"
 import MultiRoute from "./MultiRoute"
 import SingleRoute from "./SingleRoute"
 import WalkingRoute from "./WalkingRoute"
 import WarpRoute from "./WarpRoute"
+import { SegmentType } from "../createSegments"
 
 interface SegmentProps {
   segment: SegmentType
