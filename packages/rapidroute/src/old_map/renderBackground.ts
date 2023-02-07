@@ -68,7 +68,6 @@ function renderTilesInRange(
       y += tileWidth
     ) {
       const tile = getTileUrl({ xIn: x / tileWidth, zIn: y / tileWidth, zoom })
-      // eslint-disable-next-line no-continue
       if (tile) {
         const imageOrigin = fabric.util.transformPoint(
           new fabric.Point(x, y - verticalOffset),

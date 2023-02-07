@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { Texture } from "pixi.js"
-import { Sprite } from "react-pixi-fiber"
-
-import getTileUrl from "map/getTileURL"
-
+import ImageTile from "./ImageTile"
 import { useViewport } from "./PixiViewport"
 
 interface SatelliteProps {
@@ -50,7 +46,6 @@ export default function Satellite({ zoomLevel }: SatelliteProps) {
   }, [viewport])
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
-
   const tilesVertical = Math.ceil(world.height / tileWidth) + 1
   const tilesHorizontal = Math.ceil(world.width / tileWidth) + 1
 
@@ -63,22 +58,12 @@ export default function Satellite({ zoomLevel }: SatelliteProps) {
         const tileX = startingX + column
         const tileY = startingY + row
 
-        const tile = getTileUrl({
-          xIn: tileX,
-          zIn: tileY,
-          zoom: zoomLevel,
-        })
-
-        if (!tile) return null
-
         return (
-          <Sprite
+          <ImageTile
             key={`${tileX},${tileY},${zoomLevel}`}
-            texture={Texture.from(tile.url)}
-            width={tileWidth}
-            height={tileWidth}
             x={tileX * tileWidth}
             y={tileY * tileWidth}
+            zoomLevel={zoomLevel}
           />
         )
       }),
