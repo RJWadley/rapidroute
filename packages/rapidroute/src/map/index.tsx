@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Texture } from "pixi.js"
+import { BaseTexture, SCALE_MODES, Texture } from "pixi.js"
 import { Sprite, Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
@@ -14,13 +13,15 @@ export default function Map() {
     "https://pixijs.io/pixi-react/img/bunny.png"
   )
 
+  BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST
+
   return (
     <Wrapper ref={ref}>
       <Stage
         options={{ backgroundAlpha: 1, width, height, backgroundColor: "red" }}
       >
         <PixiViewport width={width} height={height}>
-          <Satellite zoomLevel={0} />
+          <Satellite />
           <Sprite texture={SpriteTexture} x={0} y={0} />
         </PixiViewport>
       </Stage>

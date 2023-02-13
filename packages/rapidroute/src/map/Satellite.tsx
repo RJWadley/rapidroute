@@ -1,89 +1,48 @@
-import { useEffect, useMemo, useState } from "react"
+import { useState, useEffect } from "react"
 
-import ImageTile from "./ImageTile"
+import { Viewport } from "pixi-viewport"
+
 import { useViewport } from "./PixiViewport"
+import SatelliteLayer from "./SatelliteLayer"
 
-interface SatelliteProps {
-  zoomLevel: number
-}
+const breakpoints = [Infinity, 30, 15, 10, 4.5, 2.3, 1.5, 0.6]
 
-interface WorldValues {
-  width: number
-  height: number
-  x: number
-  y: number
-}
+const getMaxZoom = (viewport: Viewport | null): number => {
+  const worldWidth = viewport?.screenWidth ?? 0
+  const screenWidth = viewport?.screenWidthInWorldPixels ?? 0
 
-export default function Satellite({ zoomLevel }: SatelliteProps) {
-  const viewport = useViewport()
-  const [world, setWorld] = useState<WorldValues>({
-    width: 100,
-    height: 100,
-    x: 0,
-    y: 0,
-  })
+  const density = screenWidth / worldWidth
 
-  /**
-   * track the world values so we can update the tiles when the world changes
-   */
-  useEffect(() => {
-    const onChanged = () => {
-      if (viewport) {
-        setWorld({
-          width: viewport.screenWidthInWorldPixels,
-          height: viewport.screenHeightInWorldPixels,
-          x: viewport.left,
-          y: viewport.top,
-        })
-      }
+  // return the largest zoom level where the density is smaller than the breakpoint
+  for (let i = breakpoints.length - 1; i >= 0; i -= 1) {
+    if (density < breakpoints[i]) {
+      return i
     }
-    onChanged()
+  }
+  return 99
+}
 
-    viewport?.addEventListener("moved", onChanged)
+export default function Satellite() {
+  const [maxZoom, setMaxZoom] = useState(0)
+  const viewport = useViewport()
+
+  useEffect(() => {
+    const onMoved = () => {
+      const newMax = getMaxZoom(viewport)
+      setMaxZoom(newMax)
+    }
+    viewport?.addEventListener("moved", onMoved)
     return () => {
-      viewport?.removeEventListener("moved", onChanged)
+      viewport?.removeEventListener("moved", onMoved)
     }
   }, [viewport])
 
-  const tileWidth = 2 ** (8 - zoomLevel) * 32
-  const tilesVertical = Math.ceil(world.height / tileWidth) + 1
-  const tilesHorizontal = Math.ceil(world.width / tileWidth) + 1
-
-  const startingX = Math.floor(world.x / tileWidth)
-  const startingY = Math.floor(world.y / tileWidth)
-
-  const tiles = useMemo(
-    () =>
-      create2DArray(tilesVertical, tilesHorizontal, (row, column) => {
-        const tileX = startingX + column
-        const tileY = startingY + row
-
-        return (
-          <ImageTile
-            key={`${tileX},${tileY},${zoomLevel}`}
-            x={tileX * tileWidth}
-            y={tileY * tileWidth}
-            zoomLevel={zoomLevel}
-          />
-        )
-      }),
-    [startingX, startingY, tileWidth, tilesHorizontal, tilesVertical, zoomLevel]
+  return (
+    <>
+      {breakpoints.map(
+        (breakpoint, i) =>
+          i <= maxZoom && <SatelliteLayer key={breakpoint} zoomLevel={i} />
+      )}
+    </>
   )
-
-  return <>{tiles}</>
-}
-
-const create2DArray = <T,>(
-  rows: number,
-  columns: number,
-  fill: (row: number, column: number) => T
-) => {
-  const array = new Array<T[]>(rows)
-  for (let row = 0; row < rows; row += 1) {
-    array[row] = new Array<T>(columns)
-    for (let column = 0; column < columns; column += 1) {
-      array[row][column] = fill(row, column)
-    }
-  }
-  return array
 }
