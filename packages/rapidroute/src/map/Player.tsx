@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useRef, useState } from "react"
 
 import { gsap } from "gsap"
 import { Point, SCALE_MODES, TextStyle, Texture } from "pixi.js"
@@ -23,7 +23,7 @@ export default function MapPlayer({ player }: { player: Player }) {
   const viewport = useViewport()
   const headRef = useRef<Sprite>(null)
   const textRef = useRef<Text>(null)
-  const manualVerticalAdjustment = useRef(0)
+  const [initialPosition] = useState({ x: player.x, z: player.z })
 
   /**
    * animate the player's head and name to the player's position
@@ -35,14 +35,16 @@ export default function MapPlayer({ player }: { player: Player }) {
       gsap.to(headRef.current, {
         x: player.x,
         y: player.z,
-        duration: 2,
+        duration: 1.5,
         ease: "linear",
+        alpha: 1,
       })
       gsap.to(textRef.current, {
         x: player.x,
-        y: player.z + manualVerticalAdjustment.current,
-        duration: 2,
+        y: player.z,
+        duration: 1.5,
         ease: "linear",
+        alpha: 1,
       })
     },
     [player.x, player.z, viewport],
@@ -52,7 +54,7 @@ export default function MapPlayer({ player }: { player: Player }) {
   )
 
   /**
-   * update the head size
+   * update the head size and name offset
    */
   const onMove = () => {
     if (!viewport) return
@@ -69,10 +71,8 @@ export default function MapPlayer({ player }: { player: Player }) {
         1 / viewport.scale.x,
         1 / viewport.scale.y
       )
-      const previousAdjustment = manualVerticalAdjustment.current
-      manualVerticalAdjustment.current = (8 - Math.min(8, preferredSize)) * -0.6
-      const diff = manualVerticalAdjustment.current - previousAdjustment
-      if (textRef.current.y) textRef.current.y += diff
+      const newAdjustment = (8 - Math.min(8, preferredSize)) * 0.2
+      textRef.current.anchor = new Point(0.5, 1.5 + newAdjustment **3)
     }
   }
   useViewportMoved(onMove)
@@ -86,12 +86,18 @@ export default function MapPlayer({ player }: { player: Player }) {
         })}
         ref={headRef}
         anchor={0.5}
+        x={initialPosition.x}
+        y={initialPosition.z}
+        alpha={0}
       />
       <Text
         anchor="0.5, 1.5"
         text={player.name}
         ref={textRef}
         style={playerText}
+        x={initialPosition.x}
+        y={initialPosition.z}
+        alpha={0}
       />
     </>
   )
