@@ -29,6 +29,8 @@ const DisplayObjectViewport = CustomPIXIComponent(
         .clampZoom({
           maxHeight: worldSize * 2,
           maxWidth: worldSize * 2,
+          minHeight: 100,
+          minWidth: 100,
         })
         .clamp({
           top: -worldSize,

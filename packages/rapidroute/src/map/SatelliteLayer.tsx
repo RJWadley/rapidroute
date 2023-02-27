@@ -71,12 +71,13 @@ const create2DArray = <T,>(
   columns: number,
   fill: (row: number, column: number) => T
 ) => {
-  const array = new Array<T[]>(rows)
+  if (Number.isNaN(rows) || Number.isNaN(columns)) return []
+  const array: T[][] = []
   for (let row = 0; row < rows; row += 1) {
-    array[row] = new Array<T>(columns)
+    array[row] = []
     for (let column = 0; column < columns; column += 1) {
       array[row][column] = fill(row, column)
     }
   }
-  return array
+  return array.flat()
 }
