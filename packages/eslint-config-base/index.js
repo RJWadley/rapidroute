@@ -70,5 +70,8 @@ module.exports = {
         allow: ["error"],
       },
     ],
+
+    // consistent return
+    "consistent-return": "off",
   },
 }

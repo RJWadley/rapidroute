@@ -1,11 +1,21 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 import { Viewport } from "pixi-viewport"
 
-import { useViewport } from "./PixiViewport"
+import { useViewport, useViewportMoved } from "./PixiViewport"
 import SatelliteLayer from "./SatelliteLayer"
 
-const breakpoints = [Infinity, 30, 15, 10, 4.5, 2.3, 1.5, 0.6]
+const breakpoints = [
+  Infinity,
+  30,
+  15,
+  7.5,
+  3.75,
+  1.875,
+  0.9375,
+  0.46875,
+  0.234375,
+]
 
 const getMaxZoom = (viewport: Viewport | null): number => {
   const worldWidth = viewport?.screenWidth ?? 0
@@ -26,16 +36,11 @@ export default function Satellite() {
   const [maxZoom, setMaxZoom] = useState(0)
   const viewport = useViewport()
 
-  useEffect(() => {
-    const onMoved = () => {
-      const newMax = getMaxZoom(viewport)
-      setMaxZoom(newMax)
-    }
-    viewport?.addEventListener("moved", onMoved)
-    return () => {
-      viewport?.removeEventListener("moved", onMoved)
-    }
-  }, [viewport])
+  const onMoved = () => {
+    const newMax = getMaxZoom(viewport)
+    setMaxZoom(newMax)
+  }
+  useViewportMoved(onMoved)
 
   return (
     <>

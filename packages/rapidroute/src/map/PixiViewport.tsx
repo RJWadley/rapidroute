@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useRef, useState } from "react"
 
 import { Viewport } from "pixi-viewport"
 import { CustomPIXIComponent } from "react-pixi-fiber"
@@ -56,6 +56,47 @@ export const useViewport = () => {
   return viewport
 }
 
+/**
+ * run a function when the viewport is moved
+ * @param callback the callback to be called when the viewport is moved
+ */
+export const useViewportMoved = (callback: () => void) => {
+  const viewport = useViewport()
+
+  const isMounted = useRef(false)
+  useEffect(() => {
+    isMounted.current = true
+    return () => {
+      isMounted.current = false
+    }
+  })
+
+  const onMoved = () => {
+    if (viewport && isMounted.current) {
+      callback()
+    }
+  }
+
+  // for the first five seconds, run the callback every 100ms
+  // this is to ensure that the viewport is fully initialized
+  useEffect(() => {
+    const startupInterval = setInterval(onMoved, 100)
+    setTimeout(() => {
+      clearInterval(startupInterval)
+    }, 2000)
+
+    return () => {
+      clearInterval(startupInterval)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewport])
+
+  useEffect(() => {
+    viewport?.addEventListener("moved", onMoved)
+    return () => viewport?.removeEventListener("moved", onMoved)
+  })
+}
+
 export default function PixiViewport({
   children,
   width,
@@ -66,6 +107,18 @@ export default function PixiViewport({
   height: number
 }) {
   const [viewport, setViewport] = useState<Viewport | null>(null)
+
+  /**
+   * on initial mount, move the center of the viewport to 0, 0
+   */
+  useEffect(() => {
+    if (viewport) {
+      setTimeout(() => {
+        viewport.moveCenter(0, 0)
+        viewport.setZoom(0.5)
+      }, 100)
+    }
+  }, [viewport])
 
   return (
     <DisplayObjectViewport

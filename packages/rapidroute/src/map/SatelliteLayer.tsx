@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 import ImageTile from "./ImageTile"
-import { useViewport } from "./PixiViewport"
+import { useViewport, useViewportMoved } from "./PixiViewport"
 
 interface SatelliteProps {
   zoomLevel: number
@@ -26,24 +26,17 @@ export default function SatelliteLayer({ zoomLevel }: SatelliteProps) {
   /**
    * track the world values so we can update the tiles when the world changes
    */
-  useEffect(() => {
-    const onChanged = () => {
-      if (viewport) {
-        setWorld({
-          width: viewport.screenWidthInWorldPixels,
-          height: viewport.screenHeightInWorldPixels,
-          x: viewport.left,
-          y: viewport.top,
-        })
-      }
+  const onChanged = () => {
+    if (viewport) {
+      setWorld({
+        width: viewport.screenWidthInWorldPixels,
+        height: viewport.screenHeightInWorldPixels,
+        x: viewport.left,
+        y: viewport.top,
+      })
     }
-    onChanged()
-
-    viewport?.addEventListener("moved", onChanged)
-    return () => {
-      viewport?.removeEventListener("moved", onChanged)
-    }
-  }, [viewport])
+  }
+  useViewportMoved(onChanged)
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
   const tilesVertical = Math.ceil(world.height / tileWidth) + 1
