@@ -3,6 +3,7 @@ import { Sprite, Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
 
+import MapBackground from "./MapBackground"
 import PixiViewport from "./PixiViewport"
 import Satellite from "./Satellite"
 
@@ -17,8 +18,9 @@ export default function Map() {
 
   return (
     <Wrapper ref={ref}>
+      <MapBackground/>
       <Stage
-        options={{ backgroundAlpha: 1, width, height, backgroundColor: "red" }}
+        options={{ backgroundAlpha: 0, width, height }}
       >
         <PixiViewport width={width} height={height}>
           <Satellite />
