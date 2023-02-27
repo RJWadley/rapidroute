@@ -4,6 +4,7 @@ import { useMeasure } from "react-use"
 import styled from "styled-components"
 
 import PixiViewport from "./PixiViewport"
+import MapPlayers from "./Players"
 import Satellite from "./Satellite"
 
 export default function Map() {
@@ -20,6 +21,7 @@ export default function Map() {
       <Stage options={{ backgroundAlpha: 0, width, height }}>
         <PixiViewport width={width} height={height}>
           <Satellite />
+          <MapPlayers />
           <Sprite texture={SpriteTexture} x={0} y={0} />
         </PixiViewport>
       </Stage>

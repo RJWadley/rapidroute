@@ -48,7 +48,7 @@ export default function useNavigation() {
   /**
    * set player for map
    */
-  session.following = getLocal("selectedPlayer")?.toString() ?? undefined
+  session.followingPlayer = getLocal("selectedPlayer")?.toString() ?? undefined
 
   /**
    * set initial spoken route to match current route

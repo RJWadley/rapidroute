@@ -12,6 +12,11 @@ interface ImageTileProps {
   zoomLevel: number
 }
 
+/**
+ * shift all the tiles by 32 blocks to align with dynmap
+ */
+const VERTICAL_OFFSET = -32
+
 export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
   const [textureExists, setTextureExists] = useState<boolean>(false)
 
@@ -55,7 +60,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     <Sprite
       texture={Texture.from(tile.url)}
       x={x}
-      y={y}
+      y={y + VERTICAL_OFFSET}
       width={tileWidth}
       height={tileWidth}
     />

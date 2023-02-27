@@ -3,7 +3,7 @@ import { fabric } from "fabric"
 import { MojangUUIDResponse } from "types/Mojang"
 import { getLocal, session } from "utils/localUtils"
 
-import { WorldInfo } from "./worldInfoType"
+import { WorldInfo } from "../map/worldInfoType"
 import { easeLinear, updateActiveCanvas, zoomToPlayer } from "./zoomTo"
 
 let previousPlayers: string[] = []
@@ -25,8 +25,8 @@ const updatePlayers = (canvas: fabric.Canvas) => {
 
       // if account matches, follow player
       const isPlayerToFollow = (name: string) =>
-        session.following &&
-        session.following.toLowerCase() === name.toLowerCase()
+        session.followingPlayer &&
+        session.followingPlayer.toLowerCase() === name.toLowerCase()
 
       const allProms = players.map(
         player =>
@@ -151,7 +151,7 @@ const updatePlayers = (canvas: fabric.Canvas) => {
             // on click, follow player
 
             img.on("mousedown", () => {
-              session.following = player.account
+              session.followingPlayer = player.account
               session.lastMapInteraction = undefined
               const top = img.top ?? 0
               const left = img.left ?? 0

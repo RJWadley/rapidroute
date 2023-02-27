@@ -82,6 +82,7 @@ if (isBrowser())
 export interface Session {
   /**
    * true if should show debugging information
+   * @deprecated only used on the old map
    */
   isDebug: boolean
   /**
@@ -89,9 +90,9 @@ export interface Session {
    */
   lastMapInteraction: Date
   /**
-   * player to follow on map
+   * player name to follow on map
    */
-  following: string
+  followingPlayer: string
   /**
    * point of interest to follow on map
    */

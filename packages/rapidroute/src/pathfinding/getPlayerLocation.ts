@@ -1,4 +1,4 @@
-import { WorldInfo } from "old_map/worldInfoType"
+import { WorldInfo } from "map/worldInfoType"
 
 export default function getPlayerLocation(player: string) {
   return fetch(

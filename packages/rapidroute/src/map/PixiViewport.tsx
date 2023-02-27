@@ -1,25 +1,33 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
 import { Viewport } from "pixi-viewport"
-import { CustomPIXIComponent } from "react-pixi-fiber"
+import { EventSystem } from "pixi.js"
+import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
   width: number
   height: number
+  events: EventSystem
 }
 
 export const worldSize = 61000
 
 const DisplayObjectViewport = CustomPIXIComponent(
   {
-    customDisplayObject: ({ setViewport, width, height }: ViewportProps) => {
+    customDisplayObject: ({
+      setViewport,
+      width,
+      height,
+      events,
+    }: ViewportProps) => {
       const halfSize = worldSize / 2
       const viewport = new Viewport({
         screenWidth: width,
         screenHeight: height,
         worldHeight: halfSize,
         worldWidth: halfSize,
+        events,
       })
       viewport.drag().pinch().wheel().decelerate()
       setViewport(viewport)
@@ -93,6 +101,8 @@ export default function PixiViewport({
 }) {
   const [viewport, setViewport] = useState<Viewport | null>(null)
 
+  const app = usePixiApp()
+
   /**
    * on initial mount, move the center of the viewport to 0, 0
    */
@@ -124,6 +134,7 @@ export default function PixiViewport({
       setViewport={setViewport}
       width={width}
       height={height}
+      events={app.renderer.events}
     >
       <ViewportContext.Provider value={viewport}>
         {children}
