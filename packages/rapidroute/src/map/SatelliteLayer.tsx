@@ -51,6 +51,8 @@ export default function SatelliteLayer({ zoomLevel }: SatelliteProps) {
         const tileX = startingX + column
         const tileY = startingY + row
 
+        if (Number.isNaN(tileX) || Number.isNaN(tileY)) return null
+
         return (
           <ImageTile
             key={`${tileX},${tileY},${zoomLevel}`}

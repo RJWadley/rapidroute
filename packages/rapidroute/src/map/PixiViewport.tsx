@@ -21,24 +21,7 @@ const DisplayObjectViewport = CustomPIXIComponent(
         worldHeight: halfSize,
         worldWidth: halfSize,
       })
-      viewport
-        .drag()
-        .pinch()
-        .wheel()
-        .decelerate()
-        .clampZoom({
-          maxHeight: worldSize * 2,
-          maxWidth: worldSize * 2,
-          minHeight: 100,
-          minWidth: 100,
-        })
-        .clamp({
-          top: -worldSize,
-          left: -worldSize,
-          bottom: worldSize,
-          right: worldSize,
-          underflow: "none",
-        })
+      viewport.drag().pinch().wheel().decelerate()
       setViewport(viewport)
       return viewport
     },
@@ -116,8 +99,22 @@ export default function PixiViewport({
   useEffect(() => {
     if (viewport) {
       setTimeout(() => {
-        viewport.moveCenter(0, 0)
-        viewport.setZoom(0.5)
+        viewport
+          .moveCenter(0, 0)
+          .setZoom(0.5)
+          .clampZoom({
+            maxHeight: worldSize * 2,
+            maxWidth: worldSize * 2,
+            minHeight: 100,
+            minWidth: 100,
+          })
+          .clamp({
+            top: -worldSize,
+            left: -worldSize,
+            bottom: worldSize,
+            right: worldSize,
+            underflow: "none",
+          })
       }, 100)
     }
   }, [viewport])
