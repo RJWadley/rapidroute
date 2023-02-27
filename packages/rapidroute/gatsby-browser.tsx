@@ -25,9 +25,6 @@ export const wrapPageElement = ({ element }: { element: ReactNode }) => {
   )
 }
 
-// disable gsap null warnings when not on localhost
-if (!window.location.hostname.includes("localhost")) {
-  gsap.config({
-    nullTargetWarn: false,
-  })
-}
+gsap.config({
+  nullTargetWarn: false,
+})
