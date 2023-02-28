@@ -11,7 +11,7 @@ import handlePinchToZoom, {
 } from "./pinchToZoom"
 import renderAllObjects from "./renderAllObjects"
 import renderBackground from "./renderBackground"
-import renderDynmapMarkers from "./renderDynmapMarkers"
+// import renderDynmapMarkers from "./renderDynmapMarkers"
 import renderPlayers from "./renderPlayers"
 import setupPanAndZoom from "./setupPanAndZoom"
 
@@ -50,7 +50,7 @@ export default function MapCanvas({ className = "" }: { className?: string }) {
       canvas.requestRenderAll()
       renderAllObjects(canvas)
       setupPanAndZoom(canvas)
-      const clearMarkers = renderDynmapMarkers(canvas)
+      // const clearMarkers = renderDynmapMarkers(canvas)
       const clearPlayers = renderPlayers(canvas)
 
       // before render
@@ -104,7 +104,7 @@ export default function MapCanvas({ className = "" }: { className?: string }) {
         window.removeEventListener("touchend", handleTouchEnd)
         window.removeEventListener("touchstart", handleTouchStart)
         clearPlayers()
-        clearMarkers()
+        // clearMarkers()
         clearTiles()
         previousTransform.current = canvas.viewportTransform
         canvas.dispose()

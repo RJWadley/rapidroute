@@ -1,7 +1,7 @@
 import { useRef, useState } from "react"
 
 import { gsap } from "gsap"
-import { Point, SCALE_MODES, TextStyle, Texture } from "pixi.js"
+import { Point, TextStyle, Texture } from "pixi.js"
 import { Sprite, Text } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
@@ -107,9 +107,7 @@ export default function MapPlayer({ player }: { player: Player }) {
   return (
     <>
       <Sprite
-        texture={Texture.from(playerHead, {
-          scaleMode: SCALE_MODES.LINEAR,
-        })}
+        texture={Texture.from(playerHead)}
         ref={headRef}
         anchor={0.5}
         x={initialPosition.x}
