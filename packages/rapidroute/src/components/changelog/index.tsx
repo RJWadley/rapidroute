@@ -56,7 +56,9 @@ export default function Changelog() {
             <li>Airport Locations are now pulled from dynmap if available</li>
           </ul>
 
-          <UniversalLink to="/" transition="slide">I love it, take me to RapidRoute</UniversalLink>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
         </div>
         <hr />
         <div>
@@ -100,7 +102,9 @@ export default function Changelog() {
               <p>It&apos;s pretty neat, give it a try!</p>
             </ul>
           </div>
-          <UniversalLink to="/" transition="slide">I love it, take me to RapidRoute</UniversalLink>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
           <h3>Coming soon:</h3>
           <ul>New modes of transportation</ul>
         </div>
@@ -114,7 +118,9 @@ export default function Changelog() {
             <li>Support for airline code-sharing</li>
             <li>A few minor style and layout changes</li>
           </ul>
-          <UniversalLink to="/" transition="slide">I love it, take me to RapidRoute</UniversalLink>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
           <h3>Coming soon:</h3>
           <ul>
             <li>Still in progress as previously mentioned:</li>
@@ -143,7 +149,9 @@ export default function Changelog() {
             <li>A few bug fixes</li>
             <li>Removed Herobrine</li>
           </ul>
-          <UniversalLink to="/" transition="slide">I love it, take me to RapidRoute</UniversalLink>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
           <h3>Coming soon:</h3>
           <ul>
             <li>Spawn warps</li>
@@ -176,7 +184,9 @@ export default function Changelog() {
               over (cwazy)
             </li>
           </ul>
-          <UniversalLink to="/" transition="slide">I love it, take me to RapidRoute</UniversalLink>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
           <h3>Coming soon:</h3>
           <ul>
             <li>Airline logos</li>
@@ -199,8 +209,8 @@ export default function Changelog() {
             </li>
             <li>
               Airlines can now update their own gate information via a
-              spreadsheet. If you or a loved one is an airline, send
-              Scarycrumb a dm and he&apos;ll hook you up.
+              spreadsheet. If you or a loved one is an airline, send Scarycrumb
+              a dm and he&apos;ll hook you up.
             </li>
             <li>Teleporting to spawn is now considered in search results.</li>
             <li>
@@ -208,7 +218,9 @@ export default function Changelog() {
               app (probably). Isn&apos;t that fancy?
             </li>
           </ul>
-          <UniversalLink to="/" transition="slide">I love it, take me to RapidRoute</UniversalLink>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
           <h3>Coming soon:</h3>
           <ul>
             <li>Helicopters? Helicopters.</li>

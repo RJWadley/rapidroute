@@ -17,7 +17,9 @@ export default function ExitNavigation() {
   const destination = currentRoute[currentRoute.length - 1]?.to
   return (
     <Wrapper ref={wrapper}>
-      <ExitButton to="/" transition="slide">&times;</ExitButton>
+      <ExitButton to="/" transition="slide">
+        &times;
+      </ExitButton>
       <Text>
         <Head>Navigation to {destination?.shortName}</Head>
         <Sub>{destination?.name}</Sub>

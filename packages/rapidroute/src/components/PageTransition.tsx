@@ -27,11 +27,13 @@ export default function PageTransition() {
         duration,
       })
 
-      gsap.fromTo(logoRef.current, {
+    gsap.fromTo(logoRef.current, {
         y: "110vh",
-      }, {
+      },
+      {
         y: "0vw",
-duration,        ease: "power1.out",
+        duration,
+        ease: "power1.out",
       })
   }
 
@@ -47,15 +49,15 @@ duration,        ease: "power1.out",
         ease: "power1.in",
       })
 
-      gsap.fromTo(logoRef.current, {
-          y: "0vw",
-        },
-        {
-          y: "-110vh",
+    gsap.fromTo(logoRef.current, {
+        y: "0vw",
+      },
+      {
+        y: "-110vh",
 
-          duration,
-          ease: "power1.in",
-        })
+        duration,
+        ease: "power1.in",
+      })
   }
 
   useEffect(() => {

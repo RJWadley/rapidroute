@@ -115,7 +115,9 @@ export default function VoiceSetting() {
           </Voice>
         )}
         <VoicesLabel>Local Voices</VoicesLabel>
-        {allVoice?.filter(x => x.source === "easy-speech").length === 0 && <div>No Voices Installed</div>}
+        {allVoice?.filter(x => x.source === "easy-speech").length === 0 && (
+          <div>No Voices Installed</div>
+        )}
         {allVoice
           ?.filter(x => x.source === "easy-speech")
           .map(v => (

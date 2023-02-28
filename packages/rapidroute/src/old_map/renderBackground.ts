@@ -1,8 +1,7 @@
 import { fabric } from "fabric"
 
+import getTileUrl from "map/getTileURL"
 import { session } from "utils/localUtils"
-
-import getTileUrl from "../map/getTileURL"
 
 const tilesMap: Record<string, HTMLImageElement> = {}
 const densityBreakpoints = [Infinity, 50, 15, 8, 4, 2, 1, 0.5, 0.25]

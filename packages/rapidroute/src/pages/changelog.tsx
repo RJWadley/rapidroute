@@ -9,7 +9,7 @@ import SEO from "components/SEO"
 export default function ChangelogPage() {
   return (
     <Layout>
-      <ControlsOverlay/>
+      <ControlsOverlay />
       <Header />
       <Changelog />
     </Layout>

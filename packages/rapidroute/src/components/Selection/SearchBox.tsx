@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 
 import styled, { css } from "styled-components"
 
+import { RoutingContext } from "components/Providers/RoutingContext"
 import { getTextboxName } from "data/search"
 import media from "utils/media"
 
 import SearchList from "./SearchList"
-import { RoutingContext } from "../Providers/RoutingContext"
 
 interface SearchBoxProps {
   searchRole: "from" | "to"

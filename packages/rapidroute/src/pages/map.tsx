@@ -26,6 +26,17 @@ const Wrapper = styled.div`
   height: 100vh;
   overscroll-behavior: none;
   position: relative;
+  /* 
+  ::after {
+    content: "";
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    width: calc(100% - 200px);
+    height: calc(100% - 200px);
+    border: 1px solid red;
+    pointer-events: none;
+  } */
 `
 
 const StyledMapTag = styled(MapTag)`

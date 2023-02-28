@@ -4,6 +4,8 @@ import { Viewport } from "pixi-viewport"
 import { EventSystem } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 
+import { session } from "utils/localUtils"
+
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
   width: number
@@ -49,6 +51,7 @@ export const useViewport = () => {
   return viewport
 }
 
+let moveCallbacks: (() => void)[] = []
 /**
  * run a function when the viewport is moved
  * @param callback the callback to be called when the viewport is moved
@@ -86,8 +89,28 @@ export const useViewportMoved = (callback: () => void) => {
 
   useEffect(() => {
     viewport?.addEventListener("moved", onMoved)
-    return () => viewport?.removeEventListener("moved", onMoved)
+    moveCallbacks.push(onMoved)
+    return () => {
+      viewport?.removeEventListener("moved", onMoved)
+      moveCallbacks = moveCallbacks.filter(cb => cb !== onMoved)
+    }
   })
+}
+
+/**
+ * trigger the movement callbacks manually
+ */
+export const triggerMovementManually = () => {
+  moveCallbacks.forEach(cb => cb())
+}
+
+export const canMoveViewport = () => {
+  if (session.lastMapInteraction) {
+    const now = new Date()
+    const diff = now.getTime() - session.lastMapInteraction.getTime()
+    if (diff < 10000) return false
+  }
+  return true
 }
 
 export default function PixiViewport({
@@ -126,6 +149,23 @@ export default function PixiViewport({
             underflow: "none",
           })
       }, 100)
+    }
+  }, [viewport])
+
+  /**
+   * track time since last viewport move
+   */
+  useEffect(() => {
+    const onMoved = () => {
+      session.lastMapInteraction = new Date()
+    }
+    viewport?.addEventListener("touchmove", onMoved)
+    viewport?.addEventListener("mousedown", onMoved)
+    viewport?.addEventListener("wheel", onMoved)
+    return () => {
+      viewport?.removeEventListener("touchmove", onMoved)
+      viewport?.removeEventListener("mousedown", onMoved)
+      viewport?.removeEventListener("wheel", onMoved)
     }
   }, [viewport])
 

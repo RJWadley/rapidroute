@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react"
 import gsap from "gsap"
 import styled from "styled-components"
 
+import RoundButton from "components/RoundButton"
 import { isBrowser } from "utils/functions"
 import { getLocal } from "utils/localUtils"
 import media from "utils/media"
@@ -12,7 +13,6 @@ import DarkModeSetting from "./DarkModeSetting"
 import RateSetting from "./RateSetting"
 import SelectedPlayerSetting from "./SelectedPlayerSetting"
 import VoiceSetting from "./VoiceSetting"
-import RoundButton from "../RoundButton"
 
 const circlePosition = "at calc(100% - 35px) 35px"
 

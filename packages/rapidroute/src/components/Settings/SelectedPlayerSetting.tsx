@@ -41,7 +41,11 @@ export default function SelectedPlayerSetting() {
     <Wrapper background="var(--mid-background)" $color="var(--text-color)">
       <Name>Player Name</Name>
       {playerHead && <Head src={playerHead} alt="steve player head" />}
-      <Swap to="/select-player" background="var(--dark-background)" transition="slide">
+      <Swap
+        to="/select-player"
+        background="var(--dark-background)"
+        transition="slide"
+      >
         Select Player
       </Swap>
     </Wrapper>

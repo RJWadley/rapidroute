@@ -1,9 +1,9 @@
 import { fabric } from "fabric"
 
+import { WorldInfo } from "map/worldInfoType"
 import { MojangUUIDResponse } from "types/Mojang"
 import { getLocal, session } from "utils/localUtils"
 
-import { WorldInfo } from "../map/worldInfoType"
 import { easeLinear, updateActiveCanvas, zoomToPlayer } from "./zoomTo"
 
 let previousPlayers: string[] = []
