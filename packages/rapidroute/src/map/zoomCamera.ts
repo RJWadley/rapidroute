@@ -6,7 +6,13 @@ import { session } from "utils/localUtils"
 
 import { triggerMovementManually } from "./PixiViewport"
 
-let runningTween: gsap.core.Tween | undefined
+const runningTweens: gsap.core.Tween[] = []
+const killAllTweens = () => {
+  runningTweens.forEach(tween => {
+    tween.kill()
+  })
+  runningTweens.length = 0
+}
 
 const defaultPadding = {
   top: 100,
@@ -36,13 +42,14 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
   } else {
     centerPoint(new Point(x, z), viewport)
   }
+  // zoomToTwoPoints(new Point(x, z), new Point(0, 0), viewport)
 }
 
 /**
  * pixi-viewport version with gsap
  */
 const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
-  runningTween?.kill()
+  killAllTweens()
   const cameraPadding = session.cameraPadding ?? defaultPadding
 
   const getPadding = (padding: keyof typeof cameraPadding) => {
@@ -73,48 +80,28 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
   }
 
   if (canMoveCamera())
-    runningTween = gsap.to(values, {
-      x: centerX,
-      y: centerZ,
-      zoom,
-      duration: 1,
-      ease: "linear",
-      onUpdate: () => {
-        if (!canMoveCamera()) return
-        viewport.moveCenter(values.x, values.y)
-        viewport.setZoom(values.zoom)
-        triggerMovementManually()
-      },
-    })
+    runningTweens.push(
+      gsap.to(values, {
+        x: centerX,
+        y: centerZ,
+        zoom,
+        duration: 1,
+        ease: "linear",
+        onUpdate: () => {
+          if (!canMoveCamera()) return
+          viewport.moveCenter(values.x, values.y)
+          viewport.setZoom(values.zoom, true)
+          triggerMovementManually()
+        },
+      })
+    )
 }
 
 const centerPoint = (point: Point, viewport: Viewport) => {
-  runningTween?.kill()
-  const cameraPadding = session.cameraPadding ?? defaultPadding
-
-  const getPadding = (padding: keyof typeof cameraPadding) => {
-    return cameraPadding[padding] / viewport.scale.x
-  }
-
-  // center the two points
-  const centerX = point.x - (getPadding("left") - getPadding("right")) / 2
-  const centerZ = point.y - (getPadding("top") - getPadding("bottom")) / 2
-
-  const values = {
-    x: viewport.center.x,
-    y: viewport.center.y,
-  }
-
-  if (canMoveCamera())
-    runningTween = gsap.to(values, {
-      x: centerX,
-      y: centerZ,
-      duration: 1,
-      ease: "linear",
-      onUpdate: () => {
-        if (!canMoveCamera()) return
-        viewport.moveCenter(values.x, values.y)
-        triggerMovementManually()
-      },
-    })
+  const boxSize = 500
+  zoomToTwoPoints(
+    new Point(point.x + boxSize, point.y + boxSize),
+    new Point(point.x - boxSize, point.y - boxSize),
+    viewport
+  )
 }
