@@ -181,7 +181,7 @@ const Wrapper = styled.div<{
     top: 100%;
     left: 0;
     width: 100%;
-    height: 100px;
+    height: min(100px, calc(100% - 20px));
     background: linear-gradient(
       to bottom,
       ${({ dark }) => (dark ? "#1119" : "#eeea")} 0%,
