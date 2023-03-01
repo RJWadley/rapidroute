@@ -5,7 +5,7 @@ import { Text } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
-import useHideOverlapping from "./hideOverlapping"
+import useHideOverlapping, { PriorityType } from "./hideOverlapping"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular, regularHover } from "./textStyles"
 import { zoomToPoint } from "./zoomCamera"
@@ -14,15 +14,10 @@ interface CityMarkerProps {
   name: string
   x: number
   z: number
-  priority?: number
+  priority: PriorityType
 }
 
-export default function CityMarker({
-  name,
-  x,
-  z,
-  priority = 0,
-}: CityMarkerProps) {
+export default function CityMarker({ name, x, z, priority }: CityMarkerProps) {
   const viewport = useViewport()
   const textRef = useRef<Text>(null)
   const [hover, setHover] = useState(false)
@@ -44,11 +39,13 @@ export default function CityMarker({
     setHover(false)
   }
   const click = () => {
+    session.followingPlayer = undefined
     session.lastMapInteraction = undefined
+    setHover(false)
     if (viewport) zoomToPoint(new Point(x, z), viewport)
   }
 
-  useHideOverlapping(textRef, priority)
+  useHideOverlapping({ item: textRef, name, priority })
 
   return (
     <Text
@@ -63,6 +60,7 @@ export default function CityMarker({
       onmouseenter={mouseIn}
       onmouseout={mouseOut}
       onclick={click}
+      ontouchstart={click}
     />
   )
 }

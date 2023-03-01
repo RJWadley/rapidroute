@@ -65,7 +65,7 @@ export default function MapPlayer({ player }: { player: Player }) {
     ) {
       session.lastKnownLocation = { x: player.x, z: player.z }
     }
-  })
+  }, [player, viewport])
 
   /**
    * update the head size and name offset
@@ -91,7 +91,18 @@ export default function MapPlayer({ player }: { player: Player }) {
   }
   useViewportMoved(updatePlayerHeadSize)
 
-  useHideOverlapping(textRef, 1)
+  useHideOverlapping({
+    item: textRef,
+    name: player.name,
+    priority: "players",
+    allowHide: false,
+  })
+  useHideOverlapping({
+    item: headRef,
+    name: player.name,
+    priority: "players",
+    allowHide: false,
+  })
 
   const mouseIn = () => {
     setHover(true)
@@ -100,6 +111,7 @@ export default function MapPlayer({ player }: { player: Player }) {
     setHover(false)
   }
   const click = () => {
+    setHover(false)
     session.followingPlayer = player.name
     session.lastMapInteraction = undefined
     if (viewport) zoomToPlayer(player.x, player.z, viewport)
@@ -134,6 +146,7 @@ export default function MapPlayer({ player }: { player: Player }) {
         onmouseenter={mouseIn}
         onmouseout={mouseOut}
         onclick={click}
+        ontouchstart={click}
       />
     </>
   )

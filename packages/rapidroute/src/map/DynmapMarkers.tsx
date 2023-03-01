@@ -55,10 +55,11 @@ export default function DynmapMarkers() {
             name={marker.label}
             x={marker.x}
             z={marker.z}
+            priority="premier"
           />
         )
       })}
-      <CityMarker name="Central City" x={0} z={0} priority={2} />
+      <CityMarker name="Central City" x={0} z={0} priority="spawn" />
     </>
   )
 }
