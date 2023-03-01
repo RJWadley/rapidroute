@@ -7,10 +7,10 @@ import NavigationOverview from "components/ControlsOverlay/NavigationOverview"
 import Layout from "components/Layout"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import SEO from "components/SEO"
+import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
 import NavigationSidebar from "navigation/NavigationSidebar"
-import MapCanvas from "old_map/MapCanvas"
 import { isBrowser } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal, session } from "utils/localUtils"
@@ -41,19 +41,20 @@ export default function Navigate() {
   const mobile = useMedia(media.mobile)
   useEffect(() => {
     const updatePadding = () => {
+      const padding = 100
       if (mobile) {
         session.cameraPadding = {
-          top: 120,
-          left: 0,
-          right: 0,
-          bottom: window.innerHeight * 0.4 + 20,
+          top: 120 + padding,
+          left: 0 + padding,
+          right: 0 + padding,
+          bottom: window.innerHeight * 0.4 + 20 + padding,
         }
       } else {
         session.cameraPadding = {
-          top: 0,
-          left: 370,
-          right: 0,
-          bottom: 0,
+          top: 0 + padding,
+          left: 370 + padding,
+          right: 0 + padding,
+          bottom: 0 + padding,
         }
       }
     }
@@ -124,7 +125,7 @@ const StyledMapTag = styled(MapTag)`
   }
 `
 
-const StyledCanvas = styled(MapCanvas)`
+const StyledCanvas = styled(Map)`
   position: fixed;
   top: 0;
   left: 0;

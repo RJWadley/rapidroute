@@ -1,10 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { gsap } from "gsap"
 import { Point, TextStyle, Texture } from "pixi.js"
 import { Sprite, Text } from "react-pixi-fiber"
 
-import { session } from "utils/localUtils"
+import { getLocal, session } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"
@@ -57,16 +57,28 @@ export default function MapPlayer({ player }: { player: Player }) {
       }),
     ]
 
-    if (player.name === session.followingPlayer) {
-      zoomToPlayer(player.x, player.z, viewport)
-    }
-
     return () => {
       tweens.forEach(tween => {
         tween.kill()
       })
     }
   }, [player.name, player.x, player.z, viewport])
+
+  /**
+   * follow the player if they are being followed
+   * and update their position for the navigator
+   */
+  useEffect(() => {
+    if (player.name === session.followingPlayer && viewport) {
+      zoomToPlayer(player.x, player.z, viewport)
+    }
+    if (
+      player.account.toLowerCase() ===
+      getLocal("selectedPlayer")?.toString().toLowerCase()
+    ) {
+      session.lastKnownLocation = { x: player.x, z: player.z }
+    }
+  })
 
   /**
    * update the head size and name offset
