@@ -1,11 +1,10 @@
-import { useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 
 import { gsap } from "gsap"
 import { Point, TextStyle, Texture } from "pixi.js"
 import { Sprite, Text } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
-import useAnimation from "utils/useAnimation"
 import usePlayerHead from "utils/usePlayerHead"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"
@@ -38,39 +37,41 @@ export default function MapPlayer({ player }: { player: Player }) {
   /**
    * animate the player's head and name to the player's position
    */
-  useAnimation(
-    () => {
-      if (!viewport) return
+  useLayoutEffect(() => {
+    if (!viewport) return
 
+    const tweens = [
       gsap.to(headRef.current, {
         x: player.x,
         y: player.z,
         duration: 1.5,
         ease: "linear",
         alpha: 1,
-      })
+      }),
       gsap.to(textRef.current, {
         x: player.x,
         y: player.z,
         duration: 1.5,
         ease: "linear",
         alpha: 1,
-      })
+      }),
+    ]
 
-      if (player.name === session.followingPlayer) {
-        zoomToPlayer(player.x, player.z, viewport)
-      }
-    },
-    [player.name, player.x, player.z, viewport],
-    {
-      kill: true,
+    if (player.name === session.followingPlayer) {
+      zoomToPlayer(player.x, player.z, viewport)
     }
-  )
+
+    return () => {
+      tweens.forEach(tween => {
+        tween.kill()
+      })
+    }
+  }, [player.name, player.x, player.z, viewport])
 
   /**
    * update the head size and name offset
    */
-  const onMove = () => {
+  const updatePlayerHeadSize = () => {
     if (!viewport) return
     const blocksPerPixel =
       viewport.screenWidthInWorldPixels / viewport.screenWidth
@@ -89,7 +90,7 @@ export default function MapPlayer({ player }: { player: Player }) {
       textRef.current.anchor = new Point(0.5, 1.5 + newAdjustment ** 3)
     }
   }
-  useViewportMoved(onMove)
+  useViewportMoved(updatePlayerHeadSize)
 
   const mouseIn = () => {
     setHover(true)

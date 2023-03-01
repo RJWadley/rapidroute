@@ -79,7 +79,7 @@ export const useViewportMoved = (callback: () => void) => {
   useEffect(() => {
     let isMounted = true
     const onViewportMoved = () => {
-      if (isMounted && viewport) {
+      if (isMounted && viewport && !viewport.destroyed) {
         callback()
       }
     }

@@ -18,10 +18,10 @@ export default function MRTStops({ stops, color }: MRTStopsProps) {
   const [visible, setVisible] = useState(false)
   const viewport = useViewport()
 
-  const onMove = () => {
+  const updateMRTVisibility = () => {
     setVisible(!!(viewport && viewport.scale.x > 0.1))
   }
-  useViewportMoved(onMove)
+  useViewportMoved(updateMRTVisibility)
 
   return (
     <>

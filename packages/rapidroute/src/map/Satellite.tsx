@@ -36,11 +36,11 @@ export default function Satellite() {
   const [maxZoom, setMaxZoom] = useState(0)
   const viewport = useViewport()
 
-  const onMoved = () => {
+  const updateSatelliteBounds = () => {
     const newMax = getMaxZoom(viewport)
     setMaxZoom(newMax)
   }
-  useViewportMoved(onMoved)
+  useViewportMoved(updateSatelliteBounds)
 
   return (
     <>

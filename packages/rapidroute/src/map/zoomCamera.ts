@@ -89,6 +89,7 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
         ease: "linear",
         onUpdate: () => {
           if (!canMoveCamera()) return
+          if (viewport.destroyed) return
           viewport.moveCenter(values.x, values.y)
           viewport.setZoom(values.zoom, true)
           triggerMovementManually()
