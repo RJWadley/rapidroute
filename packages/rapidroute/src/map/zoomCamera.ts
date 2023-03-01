@@ -40,7 +40,14 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
       viewport
     )
   } else {
-    zoomToPoint(new Point(x, z), viewport)
+    // if the player moved a long ways, zoom out first
+    const currentCenter = viewport.center
+    const distance = Math.sqrt(
+      (currentCenter.x - x) ** 2 + (currentCenter.y - z) ** 2
+    )
+    if (distance > 3000)
+      zoomToTwoPoints(new Point(x, z), currentCenter, viewport)
+    else zoomToPoint(new Point(x, z), viewport)
   }
   // zoomToTwoPoints(new Point(x, z), new Point(0, 0), viewport)
 }
