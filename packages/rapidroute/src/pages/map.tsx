@@ -1,21 +1,29 @@
 import React from "react"
 
+import { navigate } from "@reach/router"
 import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
-import MapCanvas from "map"
+import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
 
-export default function MapTest() {
+export default function MapPage() {
   return (
     <Layout>
       <ControlsOverlay />
       <Wrapper>
         <MapBackground />
-        <MapCanvas />
-        <StyledMapTag />
+        <Map />
+        <button
+          onClick={() => {
+            navigate("/").catch(console.error)
+          }}
+          type="button"
+        >
+          <StyledMapTag />
+        </button>
       </Wrapper>
     </Layout>
   )

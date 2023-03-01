@@ -72,43 +72,33 @@ let moveCallbacks: (() => void)[] = []
  */
 export const useViewportMoved = (callback: () => void) => {
   const viewport = useViewport()
-
-  const isMounted = useRef(false)
-  useEffect(() => {
-    isMounted.current = true
-    return () => {
-      isMounted.current = false
-    }
-  })
-
-  const onMoved = () => {
-    if (viewport && isMounted.current) {
-      callback()
-    }
-  }
+  const firstRender = useRef(true)
 
   // for the first five seconds, run the callback every 100ms
   // this is to ensure that the viewport is fully initialized
   useEffect(() => {
-    const startupInterval = setInterval(onMoved, 100)
+    let isMounted = true
+    const onViewportMoved = () => {
+      if (isMounted && viewport) {
+        callback()
+      }
+    }
+
+    const startupInterval =
+      firstRender.current && setInterval(onViewportMoved, 100)
     setTimeout(() => {
-      clearInterval(startupInterval)
+      if (startupInterval) clearInterval(startupInterval)
     }, 2000)
 
+    viewport?.addEventListener("moved", onViewportMoved)
+    moveCallbacks.push(onViewportMoved)
     return () => {
-      clearInterval(startupInterval)
+      isMounted = false
+      viewport?.removeEventListener("moved", onViewportMoved)
+      moveCallbacks = moveCallbacks.filter(cb => cb !== onViewportMoved)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewport])
-
-  useEffect(() => {
-    viewport?.addEventListener("moved", onMoved)
-    moveCallbacks.push(onMoved)
-    return () => {
-      viewport?.removeEventListener("moved", onMoved)
-      moveCallbacks = moveCallbacks.filter(cb => cb !== onMoved)
-    }
-  })
 }
 
 /**
