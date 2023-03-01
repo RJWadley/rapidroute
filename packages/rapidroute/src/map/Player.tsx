@@ -1,30 +1,17 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { gsap } from "gsap"
-import { Point, TextStyle, Texture } from "pixi.js"
+import { Point, Texture } from "pixi.js"
 import { Sprite, Text } from "react-pixi-fiber"
 
 import { getLocal, session } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
 
+import useHideOverlapping from "./hideOverlapping"
 import { useViewport, useViewportMoved } from "./PixiViewport"
+import { regular, regularHover } from "./textStyles"
 import { Player } from "./worldInfoType"
 import { zoomToPlayer } from "./zoomCamera"
-
-const playerText = new TextStyle({
-  fill: "white",
-  stroke: "black",
-  strokeThickness: 3,
-  fontFamily: "Inter",
-  fontSize: 16,
-})
-const playerTextHover = new TextStyle({
-  fill: "#ffcb47",
-  stroke: "black",
-  strokeThickness: 3,
-  fontFamily: "Inter",
-  fontSize: 16,
-})
 
 export default function MapPlayer({ player }: { player: Player }) {
   const playerHead = usePlayerHead(player.name)
@@ -104,6 +91,8 @@ export default function MapPlayer({ player }: { player: Player }) {
   }
   useViewportMoved(updatePlayerHeadSize)
 
+  useHideOverlapping(textRef, 1)
+
   const mouseIn = () => {
     setHover(true)
   }
@@ -136,7 +125,7 @@ export default function MapPlayer({ player }: { player: Player }) {
         anchor="0.5, 1.5"
         text={player.name}
         ref={textRef}
-        style={hover ? playerTextHover : playerText}
+        style={hover ? regularHover : regular}
         x={initialPosition.x}
         y={initialPosition.z}
         alpha={0}

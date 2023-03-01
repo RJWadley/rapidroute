@@ -5,6 +5,8 @@ import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
+import SEO from "components/SEO"
+import Settings from "components/Settings"
 import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
@@ -14,6 +16,9 @@ export default function MapPage() {
     <Layout>
       <ControlsOverlay />
       <Wrapper>
+        <SettingsWrapper>
+          <Settings />
+        </SettingsWrapper>
         <MapBackground />
         <Map />
         <button
@@ -47,9 +52,20 @@ const Wrapper = styled.div`
   } */
 `
 
+const SettingsWrapper = styled.div`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1;
+`
+
 const StyledMapTag = styled(MapTag)`
   position: fixed;
   bottom: 7px;
   right: 7px;
   z-index: 1;
 `
+
+export function Head() {
+  return <SEO />
+}

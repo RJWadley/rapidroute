@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 
 import { MarkersResponse, Sets, isMRTLine } from "map/markersType"
 
+import CityMarker from "./CityMarker"
 import MarkerLines from "./MarkerLines"
 import MRTStops from "./MRTStops"
 
@@ -47,6 +48,17 @@ export default function DynmapMarkers() {
         }
         return null
       })}
+      {Object.values(markerSets.cities.markers).map(marker => {
+        return (
+          <CityMarker
+            key={marker.label}
+            name={marker.label}
+            x={marker.x}
+            z={marker.z}
+          />
+        )
+      })}
+      <CityMarker name="Central City" x={0} z={0} priority={2} />
     </>
   )
 }

@@ -40,7 +40,7 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
       viewport
     )
   } else {
-    centerPoint(new Point(x, z), viewport)
+    zoomToPoint(new Point(x, z), viewport)
   }
   // zoomToTwoPoints(new Point(x, z), new Point(0, 0), viewport)
 }
@@ -98,7 +98,7 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
     )
 }
 
-const centerPoint = (point: Point, viewport: Viewport) => {
+export const zoomToPoint = (point: Point, viewport: Viewport) => {
   const boxSize = 500
   zoomToTwoPoints(
     new Point(point.x + boxSize, point.y + boxSize),

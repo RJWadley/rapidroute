@@ -7,6 +7,8 @@ import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
+import { updateOverlappingVisibility } from "./hideOverlapping"
+
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
   width: number
@@ -43,6 +45,7 @@ const DisplayObjectViewport = CustomPIXIComponent(
         if (viewport.dirty) {
           cull.cull(viewport.getVisibleBounds())
           viewport.dirty = false
+          updateOverlappingVisibility()
         }
       })
 
