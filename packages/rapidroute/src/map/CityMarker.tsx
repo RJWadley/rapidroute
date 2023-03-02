@@ -45,8 +45,6 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const [hover, setHover] = useState(false)
 
   const onMove = () => {
-    // eslint-disable-next-line no-console
-    if (type === "spawn") console.log(viewport?.scale.x)
     if (textRef.current && viewport) {
       textRef.current.scale = new Point(
         1 / viewport.scale.x,

@@ -105,8 +105,8 @@ export const updateOverlappingVisibility = (viewport: Viewport) => {
       item.visible
 
     if (shouldShow && rectangle) {
+      item.hitArea = undefined // enables pointer events
       item.renderable = true
-      item.interactive = true
       gsap.to(item, {
         alpha: 1,
         duration: 0.5,
@@ -118,7 +118,8 @@ export const updateOverlappingVisibility = (viewport: Viewport) => {
         duration: 0.5,
         onComplete: () => {
           item.renderable = false
-          item.interactive = false
+          // disable pointer events so we can click through invisible items
+          item.hitArea = new Rectangle(0, 0, 0, 0)
         },
       })
     }
