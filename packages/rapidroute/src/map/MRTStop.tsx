@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { gsap } from "gsap"
 import { Point } from "pixi.js"
 import { Container, Text } from "react-pixi-fiber"
 
@@ -42,6 +43,7 @@ export default function MRTStop({
 
   const mouseIn = () => {
     setHover(true)
+    gsap.to(textRef.current, { alpha: 1, duration: 0.2 })
   }
   const mouseOut = () => {
     setHover(false)
@@ -52,16 +54,14 @@ export default function MRTStop({
   }
 
   return (
-    <>
-      <Container
-        interactive
-        onmouseenter={mouseIn}
-        onmouseout={mouseOut}
-        onclick={onClick}
-        cursor="pointer"
-      >
-        <MulticolorDot point={{ x, z }} colors={colors} renderable={visible} />
-      </Container>
+    <Container
+      interactive
+      onmouseenter={mouseIn}
+      onmouseout={mouseOut}
+      onclick={onClick}
+      cursor="pointer"
+    >
+      <MulticolorDot point={{ x, z }} colors={colors} renderable={visible} />
       {hover && (
         <Text
           text={name}
@@ -70,8 +70,9 @@ export default function MRTStop({
           style={regular}
           ref={textRef}
           anchor="0.5, 1.5"
+          alpha={0}
         />
       )}
-    </>
+    </Container>
   )
 }

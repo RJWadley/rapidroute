@@ -9,6 +9,7 @@ import DynmapMarkers from "./DynmapMarkers"
 import PixiViewport from "./PixiViewport"
 import MapPlayers from "./Players"
 import Satellite from "./Satellite"
+import SaveURLParams from "./SaveURLParams"
 
 export default function Map() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
@@ -30,6 +31,7 @@ export default function Map() {
     <Wrapper ref={ref}>
       <Stage options={{ backgroundAlpha: 0, width, height }}>
         <PixiViewport width={width} height={height}>
+          <SaveURLParams />
           <Satellite />
           <DynmapMarkers />
           <AllCities />

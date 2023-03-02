@@ -159,6 +159,7 @@ export default function PixiViewport({
             right: worldSize,
             underflow: "none",
           })
+        pullFromURL(viewport)
       }, 100)
     }
   }, [viewport])
@@ -192,4 +193,21 @@ export default function PixiViewport({
       </ViewportContext.Provider>
     </DisplayObjectViewport>
   )
+}
+
+const pullFromURL = (viewport: Viewport) => {
+  const params = new URLSearchParams(window.location.search)
+  const x = params.get("x")
+  const z = params.get("z")
+  const zoom = params.get("zoom")
+  const following = params.get("following")
+
+  if (x && z && zoom) {
+    viewport.moveCenter({
+      x: parseFloat(x),
+      y: parseFloat(z),
+    })
+    viewport.setZoom(parseFloat(zoom), true)
+    if (following) session.followingPlayer = following
+  }
 }
