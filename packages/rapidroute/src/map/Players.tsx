@@ -29,7 +29,7 @@ export default function MapPlayers() {
       clearInterval(interval)
       isMounted = false
     }
-  })
+  }, [])
 
   return (
     <>
