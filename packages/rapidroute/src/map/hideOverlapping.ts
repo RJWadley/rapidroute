@@ -56,6 +56,10 @@ export default function useHideOverlapping({
     const priorityNumber = priorities.indexOf(priority)
     if (!itemToTrack) {
       // check again in 100ms
+      if (refreshSignal > 10) {
+        console.error("item not found:", name)
+        return
+      }
       const timeout = setTimeout(() => setRefreshSignal(refreshSignal + 1), 100)
       return () => clearTimeout(timeout)
     }

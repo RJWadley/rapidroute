@@ -4,8 +4,8 @@ import hslToHex from "utils/hslToHex"
 import invertLightness from "utils/invertLightness"
 
 import { Marker } from "./markersType"
+import MRTStop from "./MRTStop"
 import { useViewport, useViewportMoved } from "./PixiViewport"
-import Point from "./Point"
 
 interface MRTStopsProps {
   stops: Marker[]
@@ -25,16 +25,18 @@ export default function MRTStops({ stops, color }: MRTStopsProps) {
 
   return (
     <>
-      {visible &&
-        stops.map(stop => {
-          return (
-            <Point
-              key={`${stop.x}${stop.z}`}
-              point={stop}
-              colors={[color, inverted]}
-            />
-          )
-        })}
+      {stops.map(stop => {
+        return (
+          <MRTStop
+            key={`${stop.x}${stop.z}`}
+            colors={[color, inverted]}
+            x={stop.x}
+            z={stop.z}
+            name={stop.label}
+            visible={visible}
+          />
+        )
+      })}
     </>
   )
 }
