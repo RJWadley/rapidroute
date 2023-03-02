@@ -6,13 +6,7 @@ import { session } from "utils/localUtils"
 
 import { triggerMovementManually } from "./PixiViewport"
 
-const runningTweens: gsap.core.Tween[] = []
-const killAllTweens = () => {
-  runningTweens.forEach(tween => {
-    tween.kill()
-  })
-  runningTweens.length = 0
-}
+let runningTween: gsap.core.Tween | undefined
 
 const defaultPadding = {
   top: 100,
@@ -56,7 +50,6 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
  * pixi-viewport version with gsap
  */
 const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
-  killAllTweens()
   const cameraPadding = session.cameraPadding ?? defaultPadding
 
   const getPadding = (padding: keyof typeof cameraPadding) => {
@@ -86,23 +79,24 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
     zoom: viewport.scale.x,
   }
 
-  if (canMoveCamera())
-    runningTweens.push(
-      gsap.to(values, {
-        x: centerX,
-        y: centerZ,
-        zoom,
-        duration: 1,
-        ease: "linear",
-        onUpdate: () => {
-          if (!canMoveCamera()) return
-          if (viewport.destroyed) return
-          viewport.moveCenter(values.x, values.y)
-          viewport.setZoom(values.zoom, true)
-          triggerMovementManually()
-        },
-      })
-    )
+  // didn't like the built-in animation so doing this instead
+  if (canMoveCamera()) {
+    runningTween?.kill()
+    runningTween = gsap.to(values, {
+      x: centerX,
+      y: centerZ,
+      zoom,
+      duration: 1,
+      ease: "linear",
+      onUpdate: () => {
+        if (!canMoveCamera()) return
+        if (viewport.destroyed) return
+        viewport.moveCenter(values.x, values.y)
+        viewport.setZoom(values.zoom, true)
+        triggerMovementManually()
+      },
+    })
+  }
 }
 
 export const zoomToPoint = (point: Point, viewport: Viewport) => {
