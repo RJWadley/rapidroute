@@ -4,6 +4,7 @@ import { Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
 
+import AllCities from "./AllCities"
 import DynmapMarkers from "./DynmapMarkers"
 import PixiViewport from "./PixiViewport"
 import MapPlayers from "./Players"
@@ -31,6 +32,7 @@ export default function Map() {
         <PixiViewport width={width} height={height}>
           <Satellite />
           <DynmapMarkers />
+          <AllCities />
           <MapPlayers />
         </PixiViewport>
       </Stage>

@@ -40,12 +40,16 @@ const DisplayObjectViewport = CustomPIXIComponent(
       cull.addList(viewport.children)
       cull.cull(viewport.getVisibleBounds())
 
+      setTimeout(() => {
+        cull.cull(viewport.getVisibleBounds())
+      }, 100)
+
       // cull whenever the viewport moves
       Ticker.shared.add(() => {
         if (viewport.dirty) {
           cull.cull(viewport.getVisibleBounds())
           viewport.dirty = false
-          updateOverlappingVisibility()
+          updateOverlappingVisibility(viewport)
         }
       })
 

@@ -96,12 +96,14 @@ export default function MapPlayer({ player }: { player: Player }) {
     name: player.name,
     priority: "players",
     allowHide: false,
+    minZoom: 0.015,
   })
   useHideOverlapping({
     item: headRef,
     name: player.name,
     priority: "players",
     allowHide: false,
+    minZoom: 0.015,
   })
 
   const mouseIn = () => {

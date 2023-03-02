@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react"
 
 import { gsap } from "gsap"
+import { Viewport } from "pixi-viewport"
 import { Rectangle } from "pixi.js"
 import { Sprite, Text } from "react-pixi-fiber"
 
 type ObjectType = Text | Sprite
 
 const objects: {
+  name: string
   item: ObjectType
   priority: number
-  name: string
   allowHide: boolean
+  minZoom?: number
 }[] = []
 
 const occupiedRectangles: Rectangle[] = []
@@ -18,7 +20,17 @@ const occupiedRectangles: Rectangle[] = []
 /**
  * Items with a higher priority (index) will be preferred.
  */
-const priorities = ["premier", "spawn", "players"] as const
+const priorities = [
+  "Unranked",
+  "Community",
+  "Councillor",
+  "Mayor",
+  "Senator",
+  "Governor",
+  "Premier",
+  "spawn",
+  "players",
+] as const
 export type PriorityType = (typeof priorities)[number]
 
 export default function useHideOverlapping({
@@ -26,6 +38,7 @@ export default function useHideOverlapping({
   name,
   priority,
   allowHide = true,
+  minZoom,
 }: {
   item: React.RefObject<ObjectType>
   name: string
@@ -34,6 +47,7 @@ export default function useHideOverlapping({
    * if false, the item will be tracked but never hidden
    */
   allowHide?: boolean
+  minZoom?: number
 }) {
   const [refreshSignal, setRefreshSignal] = useState(0)
 
@@ -55,6 +69,7 @@ export default function useHideOverlapping({
       priority: priorityNumber,
       name,
       allowHide,
+      minZoom,
     }
     if (indexToInsert === -1) {
       objects.push(objectToInsert)
@@ -62,28 +77,50 @@ export default function useHideOverlapping({
       objects.splice(indexToInsert, 0, objectToInsert)
     }
 
-    updateOverlappingVisibility()
-
     return () => {
       const indexToRemove = objects.indexOf(objectToInsert)
       objects.splice(indexToRemove, 1)
     }
-  }, [allowHide, item, name, priority, refreshSignal])
+  }, [allowHide, item, minZoom, name, priority, refreshSignal])
 }
 
-export const updateOverlappingVisibility = () => {
+export const updateOverlappingVisibility = (viewport: Viewport) => {
   occupiedRectangles.length = 0
+  const currentZoom = viewport.scale.x
   objects.forEach(object => {
     const { item } = object
     const rectangle = item.getBounds?.()
     const isOverlapping = occupiedRectangles.some(otherRect =>
       rectangle?.intersects(otherRect)
     )
-    if ((!isOverlapping || !object.allowHide) && rectangle) {
-      gsap.to(item, { alpha: 1, duration: 0.5, visible: true })
+    gsap.killTweensOf(item)
+
+    const cullByZoom = object.minZoom && currentZoom < object.minZoom
+    const shouldShow =
+      // either not overlapping or not allowed to hide
+      (!isOverlapping || !object.allowHide) &&
+      // and not culled by zoom level
+      !cullByZoom &&
+      // and is on screen
+      item.visible
+
+    if (shouldShow && rectangle) {
+      item.renderable = true
+      item.interactive = true
+      gsap.to(item, {
+        alpha: 1,
+        duration: 0.5,
+      })
       occupiedRectangles.push(rectangle)
-    } else {
-      gsap.to(item, { alpha: 0, duration: 0.5, visible: false })
+    } else if (item.renderable) {
+      gsap.to(item, {
+        alpha: 0,
+        duration: 0.5,
+        onComplete: () => {
+          item.renderable = false
+          item.interactive = false
+        },
+      })
     }
   })
 }
