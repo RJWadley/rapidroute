@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
-import { Simple } from "pixi-cull"
+import { SpatialHash } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
@@ -36,8 +36,8 @@ const DisplayObjectViewport = CustomPIXIComponent(
       })
       viewport.drag().pinch().wheel().decelerate()
 
-      const cull = new Simple()
-      cull.addList(viewport.children)
+      const cull = new SpatialHash()
+      cull.addContainer(viewport)
       cull.cull(viewport.getVisibleBounds())
 
       setTimeout(() => {
