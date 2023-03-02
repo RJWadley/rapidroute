@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 
 import { gsap } from "gsap"
 import { Point } from "pixi.js"
-import { Container, Text } from "react-pixi-fiber"
+import { Container, Text, usePixiApp } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
@@ -53,6 +53,8 @@ export default function MRTStop({
     if (viewport) zoomToPoint(new Point(x, z), viewport)
   }
 
+  const app = usePixiApp()
+
   return (
     <Container
       interactive
@@ -61,7 +63,12 @@ export default function MRTStop({
       onclick={onClick}
       cursor="pointer"
     >
-      <MulticolorDot point={{ x, z }} colors={colors} renderable={visible} />
+      <MulticolorDot
+        point={{ x, z }}
+        colors={colors}
+        renderable={visible}
+        renderer={app.renderer}
+      />
       {hover && (
         <Text
           text={name}

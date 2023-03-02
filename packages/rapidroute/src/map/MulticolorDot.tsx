@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Graphics } from "pixi.js"
+import { Graphics, IRenderer, Sprite, Texture } from "pixi.js"
 import { CustomPIXIComponent } from "react-pixi-fiber"
 
 interface LineProps {
@@ -9,16 +9,19 @@ interface LineProps {
   colors: string[]
   point: { x: number; z: number }
   renderable?: boolean
+  renderer: IRenderer
 }
+
+const textures: { [key: string]: Texture } = {}
 
 const TYPE = "MulticolorDot"
 export default CustomPIXIComponent(
   {
-    customDisplayObject: () => new Graphics(),
+    customDisplayObject: () => new Sprite(),
     customApplyProps(
-      instance: Graphics,
+      instance: Sprite,
       previousProps,
-      { point, colors, renderable }: LineProps
+      { point, colors, renderable, renderer }: LineProps
     ) {
       const pointChanged =
         previousProps?.point.x !== point.x || previousProps.point.z !== point.z
@@ -31,16 +34,33 @@ export default CustomPIXIComponent(
         instance.renderable = renderable ?? true
       }
       if (pointChanged || colorsChanged) {
-        instance.clear()
-        colors.forEach((color, index) => {
-          const invertedIndex = colors.length - index - 1
-          const colorAsNumber = parseInt(color.replace("#", ""), 16)
-          instance.beginFill(colorAsNumber)
-          instance.drawCircle(point.x, point.z, 10 + invertedIndex * 8)
-          instance.endFill()
-        })
+        // create a renderTexture, draw the graphics object to it, and then use that for the sprite texture
+        const key = colors.join(",")
+        if (!textures[key]) generateTexture(colors, renderer)
+        instance.texture = textures[key]
+        instance.x = point.x
+        instance.y = point.z
+        instance.anchor.set(0.5, 0.5)
+        const width = 20 + (colors.length - 1) * 16
+        instance.width = width
+        instance.height = width
       }
     },
   },
   TYPE
 )
+
+function generateTexture(colors: string[], renderer: IRenderer) {
+  const graphics = new Graphics()
+
+  colors.forEach((color, index) => {
+    const invertedIndex = colors.length - index - 1
+    const colorAsNumber = parseInt(color.replace("#", ""), 16)
+    graphics.beginFill(colorAsNumber)
+    graphics.drawCircle(0, 0, 20 + invertedIndex * 16)
+    graphics.endFill()
+  })
+
+  const texture = renderer.generateTexture(graphics)
+  textures[colors.join(",")] = texture
+}

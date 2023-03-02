@@ -31,11 +31,11 @@ export default function Map() {
     <Wrapper ref={ref}>
       <Stage options={{ backgroundAlpha: 0, width, height }}>
         <PixiViewport width={width} height={height}>
-          <SaveURLParams />
-          <Satellite />
-          <DynmapMarkers />
-          <AllCities />
-          <MapPlayers />
+        <SaveURLParams />
+        <Satellite />
+        <DynmapMarkers />
+        <AllCities />
+        <MapPlayers />
         </PixiViewport>
       </Stage>
     </Wrapper>
