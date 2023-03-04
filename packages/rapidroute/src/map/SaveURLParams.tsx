@@ -31,6 +31,9 @@ export default function SaveURLParams() {
     const zoom = viewport.scale.x
     const following = session.followingPlayer
 
+    if (Number.isNaN(center.x) || Number.isNaN(center.y) || Number.isNaN(zoom))
+      return
+
     const params = new URLSearchParams(window.location.search)
     params.set("x", Math.round(center.x).toString())
     params.set("z", Math.round(center.y).toString())

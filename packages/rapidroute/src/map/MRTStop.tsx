@@ -16,16 +16,9 @@ interface MRTStopProps {
   colors: string[]
   x: number
   z: number
-  visible?: boolean
 }
 
-export default function MRTStop({
-  name,
-  colors,
-  x,
-  z,
-  visible = true,
-}: MRTStopProps) {
+export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   const viewport = useViewport()
   const textRef = useRef<Text>(null)
   const [hover, setHover] = useState(false)
@@ -63,12 +56,7 @@ export default function MRTStop({
       onclick={onClick}
       cursor="pointer"
     >
-      <MulticolorDot
-        point={{ x, z }}
-        colors={colors}
-        renderable={visible}
-        renderer={app.renderer}
-      />
+      <MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
       {hover && (
         <Text
           text={name}

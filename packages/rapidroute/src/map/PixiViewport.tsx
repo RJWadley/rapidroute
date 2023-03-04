@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
-import { Simple } from "pixi-cull"
+import { SpatialHash } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
@@ -36,8 +36,10 @@ const DisplayObjectViewport = CustomPIXIComponent(
       })
       viewport.drag().pinch().wheel().decelerate()
 
-      const cull = new Simple()
-      cull.addList(viewport.children)
+      // const cull = new Simple()
+      // cull.addList(viewport.children)
+      const cull = new SpatialHash()
+      cull.addContainer(viewport)
       cull.cull(viewport.getVisibleBounds())
 
       setTimeout(() => {
@@ -197,17 +199,17 @@ export default function PixiViewport({
 
 const pullFromURL = (viewport: Viewport) => {
   const params = new URLSearchParams(window.location.search)
-  const x = params.get("x")
-  const z = params.get("z")
-  const zoom = params.get("zoom")
+  const x = parseFloat(params.get("x") ?? "")
+  const z = parseFloat(params.get("z") ?? "")
+  const zoom = parseFloat(params.get("zoom") ?? "")
   const following = params.get("following")
 
-  if (x && z && zoom) {
+  if (Number.isFinite(x) && Number.isFinite(z) && Number.isFinite(zoom)) {
     viewport.moveCenter({
-      x: parseFloat(x),
-      y: parseFloat(z),
+      x,
+      y: z,
     })
-    viewport.setZoom(parseFloat(zoom), true)
+    viewport.setZoom(zoom, true)
     if (following) session.followingPlayer = following
   }
 }

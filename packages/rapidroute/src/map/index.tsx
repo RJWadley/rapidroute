@@ -1,8 +1,11 @@
 import { useEffect } from "react"
 
+import { settings } from "pixi.js"
 import { Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
+
+import { isBrowser } from "utils/functions"
 
 import AllCities from "./AllCities"
 import DynmapMarkers from "./DynmapMarkers"
@@ -27,19 +30,38 @@ export default function Map() {
     }
   }, [])
 
+  initialSettings()
+
   return (
     <Wrapper ref={ref}>
-      <Stage options={{ backgroundAlpha: 0, width, height }}>
+      <Stage
+        options={{ backgroundAlpha: 0, width, height }}
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      >
         <PixiViewport width={width} height={height}>
-        <SaveURLParams />
-        <Satellite />
-        <DynmapMarkers />
-        <AllCities />
-        <MapPlayers />
+          <SaveURLParams />
+          <Satellite />
+          <DynmapMarkers />
+          <AllCities />
+          <MapPlayers />
         </PixiViewport>
       </Stage>
     </Wrapper>
   )
+}
+
+const initialSettings = () => {
+  const maxResolution = 2
+  const minResolution = 1
+
+  if (isBrowser())
+    settings.RESOLUTION = Math.min(
+      maxResolution,
+      Math.max(minResolution, window.devicePixelRatio)
+    )
 }
 
 const Wrapper = styled.div`
