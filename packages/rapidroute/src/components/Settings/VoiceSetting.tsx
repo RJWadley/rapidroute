@@ -59,7 +59,9 @@ export default function VoiceSetting() {
     }
     const voiceForName = voice === "default" ? bestVoice : voice
     if (voiceForName)
-      speak(`Hi, my name is ${voiceForName.name.replaceAll(/\([\s\S]+\)/g, "")}.
+      speak(`Hi, my name is ${voiceForName.name
+        .replaceAll(/\([\s\S]+\)/g, "")
+        .replace("C3PO", "C3P-O")}.
     This is what I'll sound like when I'm helping you find your way around on the Mine cart Rapid Transit Server.`).catch(
         console.error
       )
