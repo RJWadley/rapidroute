@@ -20,6 +20,7 @@ const easySpeechAvailable = new Promise<boolean>(resolve => {
 export interface UniversalVoice {
   id: string
   lang: string
+  langLabel: string
   name: string
   source: "tik" | "easy-speech"
   speechSynthesisVoice?: SpeechSynthesisVoice
@@ -33,9 +34,12 @@ export const getVoices = async (lang: string = "en") => {
     .map(v => ({
       id: `t${v.id}`,
       lang: v.lang,
-      name: `${v.name} (${v.langLabel})`,
+      name: v.name,
+      langLabel: v.langLabel,
       source: "tik",
     }))
+
+  const languageRegex = /\([\w\s]+\(?\w+\)?\)/g
 
   const easySpeechVoices: UniversalVoice[] = useEasySpeech
     ? EasySpeech.voices()
@@ -50,7 +54,14 @@ export const getVoices = async (lang: string = "en") => {
         .map(v => ({
           id: `v${v.name}`,
           lang: v.lang,
-          name: v.name,
+          name: v.name
+            .replace(languageRegex, "")
+            .replace(" English", "")
+            .replace(/U[KS]/, ""),
+          langLabel: v.name
+            // filter language labels out
+            .replace(v.name.replace(languageRegex, ""), "")
+            .replace(/\(English \((\w+)\)\)/g, "$1"),
           source: "easy-speech",
           speechSynthesisVoice: v,
           default: v.default,

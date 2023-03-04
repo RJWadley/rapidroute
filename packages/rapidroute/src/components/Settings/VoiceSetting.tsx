@@ -97,6 +97,7 @@ export default function VoiceSetting() {
     <PositionWrapper>
       <Dropdown ref={dropdownRef}>
         <Voice
+          showBorder={open}
           active={false}
           onClick={() => {
             setOpen(!open)
@@ -106,12 +107,14 @@ export default function VoiceSetting() {
         </Voice>
         {bestVoice && (
           <Voice
+            showBorder={open}
             active={false}
             onClick={() => {
               updateVoice("default").catch(console.error)
             }}
           >
-            Default ({bestVoice.name})
+            <span>Default</span>
+            <LangLabel>{bestVoice.name}</LangLabel>
           </Voice>
         )}
         <VoicesLabel>Local Voices</VoicesLabel>
@@ -122,13 +125,15 @@ export default function VoiceSetting() {
           ?.filter(x => x.source === "easy-speech")
           .map(v => (
             <Voice
+              showBorder={open}
               active={v.id === currentVoice?.id}
               key={v.id}
               onClick={() => {
                 updateVoice(v).catch(console.error)
               }}
             >
-              {v.name}
+              <span>{v.name}</span>
+              <span>{v.langLabel}</span>
             </Voice>
           ))}
         <VoicesLabel>Online Voices</VoicesLabel>
@@ -136,6 +141,7 @@ export default function VoiceSetting() {
           ?.filter(x => x.source === "tik")
           .map(v => (
             <Voice
+              showBorder={open}
               active={v.id === currentVoice?.id}
               key={v.id}
               onClick={() => {
@@ -143,6 +149,7 @@ export default function VoiceSetting() {
               }}
             >
               <span>{v.name.replace("(Characters)", "")}</span>
+              <LangLabel>{v.langLabel.replace("(Characters)", "")}</LangLabel>
             </Voice>
           ))}
       </Dropdown>
@@ -165,18 +172,26 @@ const Dropdown = styled.div`
   position: relative;
 `
 
-const Voice = styled.button<{ active: boolean }>`
+const Voice = styled.button<{ active: boolean; showBorder: boolean }>`
   ${p =>
     p.active &&
     css`
       position: sticky;
       bottom: 0;
     `};
-  display: block;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
   height: 30px;
   background: var(--mid-background);
   width: 100%;
   cursor: pointer;
+  ${({ showBorder }) =>
+    css`
+      border-bottom: 1px solid var(--${showBorder ? "dark" : "mid"}-background);
+    `}
+  transition: border-bottom 0.5s ease;
 
   :last-child {
     margin-bottom: 10px;
@@ -190,6 +205,10 @@ const Voice = styled.button<{ active: boolean }>`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+`
+
+const LangLabel = styled.div`
+  color: var(--low-contrast-text);
 `
 
 const VoicesLabel = styled.div`
