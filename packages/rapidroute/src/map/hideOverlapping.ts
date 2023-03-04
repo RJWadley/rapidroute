@@ -4,6 +4,7 @@ import { gsap } from "gsap"
 import { Viewport } from "pixi-viewport"
 import { Rectangle } from "pixi.js"
 import { Sprite, Text } from "react-pixi-fiber"
+import { sleep } from "utils/functions"
 
 type ObjectType = Text | Sprite
 
@@ -88,10 +89,14 @@ export default function useHideOverlapping({
   }, [allowHide, item, minZoom, name, priority, refreshSignal])
 }
 
-export const updateOverlappingVisibility = (viewport: Viewport) => {
+const updatesPerFrame = 100
+
+export const updateOverlappingVisibility = async (viewport: Viewport) => {
   occupiedRectangles.length = 0
   const currentZoom = viewport.scale.x
-  objects.forEach(object => {
+  const promises = objects.map(async (object, index) => {
+    const offset = Math.floor(index / updatesPerFrame)
+    await sleep(offset * 16)
     const { item } = object
     const rectangle = item.getBounds?.()
     const isOverlapping = occupiedRectangles.some(otherRect =>
@@ -127,5 +132,13 @@ export const updateOverlappingVisibility = (viewport: Viewport) => {
         },
       })
     }
+    // if not on screen. hide it immediately
+    if (!item.visible) {
+      item.alpha = 0
+      item.renderable = false
+      item.hitArea = new Rectangle(0, 0, 0, 0)
+    }
   })
+
+  await Promise.all(promises)
 }
