@@ -133,7 +133,7 @@ export default function VoiceSetting() {
               }}
             >
               <span>{v.name}</span>
-              <span>{v.langLabel}</span>
+              <LangLabel>{v.langLabel}</LangLabel>
             </Voice>
           ))}
         <VoicesLabel>Online Voices</VoicesLabel>

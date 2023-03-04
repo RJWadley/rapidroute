@@ -200,6 +200,12 @@ const voices = [
     langLabel: "Characters",
   },
   {
+    id: "en_female_madam_leota",
+    lang: "en",
+    name: "Madame Leota",
+    langLabel: "Characters",
+  },
+  {
     id: "en_female_f08_salut_damour",
     lang: "en",
     name: "Alto",
@@ -263,12 +269,6 @@ const voices = [
     id: "en_male_wizard",
     lang: "en",
     name: "Wizard",
-    langLabel: "Extra",
-  },
-  {
-    id: "en_female_madam_leota",
-    lang: "en",
-    name: "Madame Leota",
     langLabel: "Extra",
   },
   {
