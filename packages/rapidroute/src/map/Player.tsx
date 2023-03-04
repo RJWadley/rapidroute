@@ -95,13 +95,13 @@ export default function MapPlayer({ player }: { player: Player }) {
     item: textRef,
     name: player.name,
     priority: "players",
-    allowHide: false,
+    allowChange: false,
   })
   useHideOverlapping({
     item: headRef,
     name: player.name,
     priority: "players",
-    allowHide: false,
+    allowChange: false,
   })
 
   const mouseIn = () => {

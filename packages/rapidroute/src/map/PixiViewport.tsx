@@ -8,6 +8,7 @@ import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 import { session } from "utils/localUtils"
 
 import { updateOverlappingVisibility } from "./hideOverlapping"
+import updateVisibilities from "./updateVisibilities"
 
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
@@ -46,14 +47,18 @@ const DisplayObjectViewport = CustomPIXIComponent(
         cull.cull(viewport.getVisibleBounds())
       }, 100)
 
-      // cull whenever the viewport moves
       let isUpdating = false
+      let pendingUpdate = false
       Ticker.shared.add(() => {
-        if (viewport.dirty) {
+        if (viewport.dirty || pendingUpdate) {
+          // cull whenever the viewport moves
           cull.cull(viewport.getVisibleBounds())
           viewport.dirty = false
+
+          // update overlapping visibility
           if (!isUpdating) {
             isUpdating = true
+            pendingUpdate = false
             updateOverlappingVisibility(viewport)
               .then(() => {
                 isUpdating = false
@@ -61,8 +66,13 @@ const DisplayObjectViewport = CustomPIXIComponent(
               .catch(() => {
                 isUpdating = false
               })
+          } else {
+            pendingUpdate = true
           }
         }
+
+        // update hit areas and visibility as opacity changes
+        updateVisibilities(viewport)
       })
 
       setViewport(viewport)

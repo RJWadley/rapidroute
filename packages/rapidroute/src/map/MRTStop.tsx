@@ -6,6 +6,7 @@ import { Container, Text, usePixiApp } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
+import useHideOverlapping from "./hideOverlapping"
 import MulticolorDot from "./MulticolorDot"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular } from "./textStyles"
@@ -35,11 +36,16 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   useEffect(updateSize, [viewport, hover])
 
   const mouseIn = () => {
+    if (!textRef.current) return
     setHover(true)
     gsap.to(textRef.current, { alpha: 1, duration: 0.2 })
   }
   const mouseOut = () => {
     setHover(false)
+    gsap.to(textRef.current, {
+      alpha: 0,
+      duration: 0.2,
+    })
   }
   const onClick = () => {
     session.lastMapInteraction = undefined
@@ -47,6 +53,13 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   }
 
   const app = usePixiApp()
+
+  useHideOverlapping({
+    item: textRef,
+    name,
+    priority: "hover",
+    allowChange: false,
+  })
 
   return (
     <Container
@@ -57,17 +70,16 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
       cursor="pointer"
     >
       <MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
-      {hover && (
-        <Text
-          text={name}
-          x={x}
-          y={z}
-          style={regular}
-          ref={textRef}
-          anchor="0.5, 1.5"
-          alpha={0}
-        />
-      )}
+      <Text
+        text={name}
+        x={x}
+        y={z}
+        style={regular}
+        ref={textRef}
+        anchor="0.5, 1.5"
+        alpha={0}
+        renderable={false}
+      />
     </Container>
   )
 }
