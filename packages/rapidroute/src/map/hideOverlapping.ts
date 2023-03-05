@@ -3,11 +3,11 @@ import { useEffect, useState } from "react"
 import { gsap } from "gsap"
 import { Viewport } from "pixi-viewport"
 import { Rectangle } from "pixi.js"
-import { Sprite, Text } from "react-pixi-fiber"
+import { Container, Sprite, Text } from "react-pixi-fiber"
 
 import { sleep } from "utils/functions"
 
-type ObjectType = Text | Sprite
+type ObjectType = Text | Sprite | Container
 
 type OverlappingProperties = {
   name: string
@@ -99,14 +99,11 @@ export default function useHideOverlapping({
   }, [allowChange, item, minZoom, name, priority, refreshSignal])
 }
 
-const updatesPerFrame = 100
+const throttleTime = 150
 
-export const updateOverlappingVisibility = async (viewport: Viewport) => {
+export const updateOverlappingVisibility = (viewport: Viewport) => {
   occupiedRectangles.length = 0
-  const currentZoom = viewport.scale.x
-  const promises = objects.map(async (object, index) => {
-    const offset = Math.floor(index / updatesPerFrame)
-    await sleep(offset * 16)
+  objects.forEach(object => {
     const { item, allowChange, minZoom } = object
     const rectangle = item.getBounds?.()
     const isOverlapping = occupiedRectangles.some(otherRect =>
@@ -114,12 +111,12 @@ export const updateOverlappingVisibility = async (viewport: Viewport) => {
     )
     if (allowChange) gsap.killTweensOf(item)
 
-    const cullByZoom = minZoom && currentZoom < minZoom
+    const cullByZoom = () => minZoom && viewport.scale.x < minZoom
     const shouldShow =
       // either not overlapping or not allowed to hide
       (!isOverlapping || !allowChange) &&
       // and not culled by zoom level
-      !cullByZoom &&
+      !cullByZoom() &&
       // and is visible on screen
       item.visible
 
@@ -128,6 +125,14 @@ export const updateOverlappingVisibility = async (viewport: Viewport) => {
         gsap.to(item, {
           alpha: 1,
           duration: 0.5,
+          onUpdate: () => {
+            if (cullByZoom()) {
+              gsap.to(item, {
+                alpha: 0,
+                duration: 0.5,
+              })
+            }
+          },
         })
       if (item.renderable) occupiedRectangles.push(rectangle)
     } else if (allowChange) {
@@ -142,5 +147,5 @@ export const updateOverlappingVisibility = async (viewport: Viewport) => {
     }
   })
 
-  await Promise.all(promises)
+  return sleep(throttleTime)
 }
