@@ -99,11 +99,13 @@ export default function useHideOverlapping({
   }, [allowChange, item, minZoom, name, priority, refreshSignal])
 }
 
-const throttleTime = 150
+const updatesPerFrame = 100
 
 export const updateOverlappingVisibility = (viewport: Viewport) => {
   occupiedRectangles.length = 0
-  objects.forEach(object => {
+  const promises = objects.map(async (object, index) => {
+    const offset = Math.floor(index / updatesPerFrame)
+    await sleep(offset * 16)
     const { item, allowChange, minZoom } = object
     const rectangle = item.getBounds?.()
     const isOverlapping = occupiedRectangles.some(otherRect =>
@@ -147,5 +149,5 @@ export const updateOverlappingVisibility = (viewport: Viewport) => {
     }
   })
 
-  return sleep(throttleTime)
+  return Promise.all(promises)
 }
