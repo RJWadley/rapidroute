@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
-import { SpatialHash } from "pixi-cull"
+import { Simple, SpatialHash } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
@@ -192,6 +192,7 @@ export default function PixiViewport({
   useEffect(() => {
     const onMoved = () => {
       session.lastMapInteraction = new Date()
+      session.followingPlayer = undefined
     }
     viewport?.addEventListener("touchmove", onMoved)
     viewport?.addEventListener("mousedown", onMoved)
