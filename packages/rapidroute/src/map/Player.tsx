@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
 import { gsap } from "gsap"
 import { Point, Texture } from "pixi.js"
-import { Sprite, Text } from "react-pixi-fiber"
+import { Container, Sprite, Text } from "react-pixi-fiber"
 
 import { getLocal, session } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
@@ -18,6 +18,7 @@ export default function MapPlayer({ player }: { player: Player }) {
   const viewport = useViewport()
   const headRef = useRef<Sprite>(null)
   const textRef = useRef<Text>(null)
+  const containerRef = useRef<Container>(null)
   const [initialPosition] = useState({ x: player.x, z: player.z })
   const [hover, setHover] = useState(false)
 
@@ -27,29 +28,18 @@ export default function MapPlayer({ player }: { player: Player }) {
   useLayoutEffect(() => {
     if (!viewport) return
 
-    const tweens = [
-      gsap.to(headRef.current, {
-        x: player.x,
-        y: player.z,
-        duration: 1.5,
-        ease: "linear",
-        alpha: 1,
-      }),
-      gsap.to(textRef.current, {
-        x: player.x,
-        y: player.z,
-        duration: 1.5,
-        ease: "linear",
-        alpha: 1,
-      }),
-    ]
+    const tween = gsap.to(containerRef.current, {
+      x: player.x,
+      y: player.z,
+      duration: 1.5,
+      ease: "linear",
+      alpha: 1,
+    })
 
     return () => {
-      tweens.forEach(tween => {
-        tween.kill()
-      })
+      tween.kill()
     }
-  }, [player.name, player.x, player.z, viewport])
+  }, [player.x, player.z, viewport])
 
   /**
    * follow the player if they are being followed
@@ -65,7 +55,7 @@ export default function MapPlayer({ player }: { player: Player }) {
     ) {
       session.lastKnownLocation = { x: player.x, z: player.z }
     }
-  }, [player, viewport])
+  }, [player.account, player.name, player.x, player.z, viewport])
 
   /**
    * update the head size and name offset
@@ -92,13 +82,7 @@ export default function MapPlayer({ player }: { player: Player }) {
   useViewportMoved(updatePlayerHeadSize)
 
   useHideOverlapping({
-    item: textRef,
-    name: player.name,
-    priority: "players",
-    allowChange: false,
-  })
-  useHideOverlapping({
-    item: headRef,
+    item: containerRef,
     name: player.name,
     priority: "players",
     allowChange: false,
@@ -119,35 +103,25 @@ export default function MapPlayer({ player }: { player: Player }) {
 
   if (!playerHead) return null
   return (
-    <>
-      <Sprite
-        texture={Texture.from(playerHead)}
-        ref={headRef}
-        anchor={0.5}
-        x={initialPosition.x}
-        y={initialPosition.z}
-        alpha={0}
-        interactive
-        cursor="pointer"
-        onmouseenter={mouseIn}
-        onmouseout={mouseOut}
-        onclick={click}
-      />
+    <Container
+      interactive
+      cursor="pointer"
+      onmouseenter={mouseIn}
+      onmouseout={mouseOut}
+      onclick={click}
+      ontouchstart={click}
+      x={initialPosition.x}
+      y={initialPosition.z}
+      alpha={0}
+      ref={containerRef}
+    >
+      <Sprite texture={Texture.from(playerHead)} anchor={0.5} ref={headRef} />
       <Text
         anchor="0.5, 1.5"
         text={player.name}
-        ref={textRef}
         style={hover ? regularHover : regular}
-        x={initialPosition.x}
-        y={initialPosition.z}
-        alpha={0}
-        interactive
-        cursor="pointer"
-        onmouseenter={mouseIn}
-        onmouseout={mouseOut}
-        onclick={click}
-        ontouchstart={click}
+        ref={textRef}
       />
-    </>
+    </Container>
   )
 }
