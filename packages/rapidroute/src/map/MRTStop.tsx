@@ -36,20 +36,19 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   useEffect(updateSize, [viewport, hover])
 
   const mouseIn = () => {
+    if (viewport) viewport.dirty = true
     if (!textRef.current) return
     setHover(true)
     gsap.to(textRef.current, { alpha: 1, duration: 0.2 })
   }
   const mouseOut = () => {
+    if (viewport) viewport.dirty = true
     setHover(false)
-    gsap.to(textRef.current, {
-      alpha: 0,
-      duration: 0.2,
-    })
+    gsap.to(textRef.current, { alpha: 0, duration: 0.2 })
   }
   const onClick = () => {
     session.lastMapInteraction = undefined
-    if (viewport) zoomToPoint(new Point(x, z), viewport)
+    if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 
   const app = usePixiApp()
@@ -79,6 +78,7 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
         anchor="0.5, 1.5"
         alpha={0}
         renderable={false}
+        cacheAsBitmap
       />
     </Container>
   )
