@@ -50,19 +50,19 @@ export default function useHideOverlapping({
   priority,
   allowChange = true,
   minZoom,
+  skipCheck = false,
 }: {
   item: React.RefObject<ObjectType>
   name: string
   priority: PriorityType
-  /**
-   * if false, the item will be tracked but never hidden
-   */
   allowChange?: boolean
   minZoom?: number
+  skipCheck?: boolean
 }) {
   const [refreshSignal, setRefreshSignal] = useState(0)
 
   useEffect(() => {
+    if (skipCheck) return
     const itemToTrack = item.current
     const priorityNumber = priorities.indexOf(priority)
     if (!itemToTrack) {
@@ -96,7 +96,8 @@ export default function useHideOverlapping({
       const indexToRemove = objects.indexOf(objectToInsert)
       objects.splice(indexToRemove, 1)
     }
-  }, [allowChange, item, minZoom, name, priority, refreshSignal])
+  }, [allowChange, item, minZoom, name, priority, refreshSignal, skipCheck])
+
 }
 
 const updatesPerFrame = 100

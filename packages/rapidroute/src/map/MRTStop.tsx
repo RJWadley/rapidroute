@@ -22,27 +22,29 @@ interface MRTStopProps {
 export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   const viewport = useViewport()
   const textRef = useRef<Text>(null)
+  const containerRef = useRef<Container>(null)
   const [hover, setHover] = useState(false)
 
   const updateSize = () => {
-    if (textRef.current && viewport) {
-      textRef.current.scale = new Point(
-        1 / viewport.scale.x,
-        1 / viewport.scale.y
-      )
-    }
+    if (!textRef.current || !viewport) return
+    const show = viewport.scale.x > 0.1
+    gsap.to(containerRef.current, { alpha: show ? 1 : 0, duration: 0.2 })
+
+    textRef.current.scale = new Point(
+      1 / viewport.scale.x,
+      1 / viewport.scale.y
+    )
   }
+
   useViewportMoved(updateSize)
   useEffect(updateSize, [viewport, hover])
 
   const mouseIn = () => {
-    if (viewport) viewport.dirty = true
     if (!textRef.current) return
     setHover(true)
     gsap.to(textRef.current, { alpha: 1, duration: 0.2 })
   }
   const mouseOut = () => {
-    if (viewport) viewport.dirty = true
     setHover(false)
     gsap.to(textRef.current, { alpha: 0, duration: 0.2 })
   }
@@ -58,6 +60,7 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
     name,
     priority: "hover",
     allowChange: false,
+    skipCheck: !hover,
   })
 
   return (
@@ -67,6 +70,7 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
       onmouseout={mouseOut}
       onclick={onClick}
       cursor="pointer"
+      ref={containerRef}
     >
       <MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
       <Text

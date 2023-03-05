@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
-import { Simple, SpatialHash } from "pixi-cull"
+import { SpatialHash } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
@@ -37,14 +37,12 @@ const DisplayObjectViewport = CustomPIXIComponent(
       })
       viewport.drag().pinch().wheel().decelerate()
 
-      // const cull = new Simple()
-      // cull.addList(viewport.children)
       const cull = new SpatialHash()
       cull.addContainer(viewport)
-      cull.cull(viewport.getVisibleBounds())
+      cull.cull(viewport.getVisibleBounds(), false)
 
       setTimeout(() => {
-        cull.cull(viewport.getVisibleBounds())
+        cull.cull(viewport.getVisibleBounds(), false)
       }, 100)
 
       let isUpdating = false
@@ -52,7 +50,7 @@ const DisplayObjectViewport = CustomPIXIComponent(
       Ticker.shared.add(() => {
         if (viewport.dirty || pendingUpdate) {
           // cull whenever the viewport moves
-          cull.cull(viewport.getVisibleBounds())
+          cull.cull(viewport.getVisibleBounds(), false)
           viewport.dirty = false
 
           // update overlapping visibility
@@ -72,7 +70,7 @@ const DisplayObjectViewport = CustomPIXIComponent(
         }
 
         // update hit areas and visibility as opacity changes
-        updateVisibilities(viewport)
+        updateVisibilities(viewport, viewport)
       })
 
       setViewport(viewport)
