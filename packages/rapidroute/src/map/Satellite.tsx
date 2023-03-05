@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { startTransition, useState } from "react"
 
 import { Viewport } from "pixi-viewport"
 
@@ -38,7 +38,9 @@ export default function Satellite() {
 
   const updateSatelliteBounds = () => {
     const newMax = getMaxZoom(viewport)
-    setMaxZoom(newMax)
+    startTransition(() => {
+      setMaxZoom(newMax)
+    })
   }
   useViewportMoved(updateSatelliteBounds)
 

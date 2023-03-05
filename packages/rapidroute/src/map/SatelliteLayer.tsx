@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { startTransition, useMemo, useState } from "react"
 
 import ImageTile from "./ImageTile"
 import { useViewport, useViewportMoved } from "./PixiViewport"
@@ -28,11 +28,13 @@ export default function SatelliteLayer({ zoomLevel }: SatelliteProps) {
    */
   const onChanged = () => {
     if (viewport) {
-      setWorld({
-        width: viewport.screenWidthInWorldPixels,
-        height: viewport.screenHeightInWorldPixels,
-        x: viewport.left,
-        y: viewport.top,
+      startTransition(() => {
+        setWorld({
+          width: viewport.screenWidthInWorldPixels,
+          height: viewport.screenHeightInWorldPixels,
+          x: viewport.left,
+          y: viewport.top,
+        })
       })
     }
   }

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
-import { Texture } from "pixi.js"
+import { gsap } from "gsap"
+import { Assets, Texture } from "pixi.js"
 import { Sprite } from "react-pixi-fiber"
 
 import getTileUrl from "./getTileURL"
@@ -17,8 +18,12 @@ interface ImageTileProps {
  */
 const VERTICAL_OFFSET = -32
 
+const textureCache: Record<string, Texture> = {}
+
 export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
-  const [textureExists, setTextureExists] = useState<boolean>(false)
+  const [texture, setTexture] = useState<Texture>()
+  const [needsAnimation, setNeedsAnimation] = useState(true)
+  const spriteRef = useRef<Sprite>(null)
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
   const tile = getTileUrl({
@@ -39,11 +44,20 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
    * check if the image exists by attempting to load it into a texture
    */
   useEffect(() => {
+    if (textureCache[tile.url]) {
+      setTexture(textureCache[tile.url])
+      setNeedsAnimation(false)
+      return
+    }
+
     if (skipThisTile) return
     let isMounted = true
-    Texture.fromURL(tile.url)
+    Assets.load(tile.url)
       .then(() => {
-        if (isMounted) setTextureExists(true)
+        if (!isMounted) return
+        const newTexture = Texture.from(tile.url)
+        textureCache[tile.url] = newTexture
+        setTexture(newTexture)
       })
       .catch(() => {
         // generally, this just means the tile isn't available
@@ -54,15 +68,26 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     }
   }, [skipThisTile, tile.url])
 
-  if (!textureExists) return null
+  /**
+   * animate in
+   */
+  useEffect(() => {
+    if (!texture || skipThisTile) return
+    if (needsAnimation) gsap.to(spriteRef.current, { alpha: 1 })
+    else gsap.set(spriteRef.current, { alpha: 1 })
+  }, [texture, skipThisTile, needsAnimation])
+
+  if (!texture) return null
   if (skipThisTile) return null
   return (
     <Sprite
-      texture={Texture.from(tile.url)}
+      texture={texture}
       x={x}
       y={y + VERTICAL_OFFSET}
       width={tileWidth}
       height={tileWidth}
+      ref={spriteRef}
+      alpha={0}
     />
   )
 }
