@@ -48,7 +48,9 @@ export default function Satellite() {
     <>
       {breakpoints.map(
         (breakpoint, i) =>
-          i <= maxZoom && <SatelliteLayer key={breakpoint} zoomLevel={i} />
+          i <= maxZoom && (
+            <SatelliteLayer key={breakpoint} zoomLevel={i} dynamic={i !== 0} />
+          )
       )}
     </>
   )

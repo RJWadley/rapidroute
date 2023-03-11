@@ -9,6 +9,7 @@ import DynmapMarkers from "./DynmapMarkers"
 import PixiHooks from "./PixiHooks"
 import PixiViewport from "./PixiViewport"
 import MapPlayers from "./Players"
+import Satellite from "./Satellite"
 
 export default function Map() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
@@ -38,7 +39,10 @@ export default function Map() {
         <PixiViewport width={width} height={height}>
           <PixiHooks />
           {/* any elements in a container won't be culled */}
-          <Container>{/* <Satellite /> */}</Container>
+          <Container>
+            <Satellite />
+          </Container>
+          
           <DynmapMarkers />
           <AllCities />
           <MapPlayers />

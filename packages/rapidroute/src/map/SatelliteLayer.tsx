@@ -1,10 +1,13 @@
-import { startTransition, useMemo, useState } from "react"
+import { startTransition, useEffect, useMemo, useRef, useState } from "react"
+
+import useIsMounted from "utils/useIsMounted"
 
 import ImageTile from "./ImageTile"
-import { useViewport, useViewportMoved } from "./PixiViewport"
+import { useViewport, useViewportMoved, worldSize } from "./PixiViewport"
 
 interface SatelliteProps {
   zoomLevel: number
+  dynamic?: boolean
 }
 
 interface WorldValues {
@@ -14,28 +17,39 @@ interface WorldValues {
   y: number
 }
 
-export default function SatelliteLayer({ zoomLevel }: SatelliteProps) {
+export default function SatelliteLayer({
+  zoomLevel,
+  dynamic = false,
+}: SatelliteProps) {
   const viewport = useViewport()
+  const halfSize = worldSize / 2
   const [world, setWorld] = useState<WorldValues>({
-    width: 100,
-    height: 100,
-    x: 0,
-    y: 0,
+    width: dynamic ? 100 : worldSize,
+    height: dynamic ? 100 : worldSize,
+    x: dynamic ? 0 : -halfSize,
+    y: dynamic ? 0 : -halfSize,
   })
 
   /**
    * track the world values so we can update the tiles when the world changes
    */
+  const cooldown = useRef(false)
+  const isMounted = useIsMounted()
   const onChanged = () => {
-    if (viewport) {
+    if (viewport && dynamic && !cooldown.current) {
+      cooldown.current = true
       startTransition(() => {
-        setWorld({
-          width: viewport.screenWidthInWorldPixels,
-          height: viewport.screenHeightInWorldPixels,
-          x: viewport.left,
-          y: viewport.top,
-        })
+        if (isMounted.current)
+          setWorld({
+            width: viewport.screenWidthInWorldPixels,
+            height: viewport.screenHeightInWorldPixels,
+            x: viewport.left,
+            y: viewport.top,
+          })
       })
+      setTimeout(() => {
+        cooldown.current = false
+      }, 1000 + 1000 * Math.random())
     }
   }
   useViewportMoved(onChanged)
