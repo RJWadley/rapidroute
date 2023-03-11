@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import React from "react"
 
 import UniversalLink from "utils/Loader/UniversalLink"
 
@@ -12,6 +11,20 @@ export default function Changelog() {
         <h1 className="title">Changelog</h1>
       </div>
       <div className="changelog">
+        <div>
+          <h2>2023-03-11 - Map Improvements</h2>
+          <h3>New Features</h3>
+          <ul>
+            <li>
+              The map has been rewritten in PIXI.js, and is now much faster
+            </li>
+            <li>Cities are now displayed on the map</li>
+          </ul>
+          <UniversalLink to="/" transition="slide">
+            I love it, take me to RapidRoute
+          </UniversalLink>
+        </div>
+        <hr />
         <div>
           <h2>2022-12-09 - Version 3.0</h2>
 
