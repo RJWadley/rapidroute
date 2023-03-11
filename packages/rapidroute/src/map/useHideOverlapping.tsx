@@ -137,6 +137,14 @@ export function useUpdateOverlapping() {
   const [localObjects, setLocalObjects] = useState<ObjectType[]>([])
   const isUpdating = useRef(false)
   const isPending = useRef(false)
+  const inFirstTenSeconds = useRef(true)
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      inFirstTenSeconds.current = false
+    }, 10000)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const updateObjects = () => {
     if (isUpdating.current) return
@@ -151,13 +159,16 @@ export function useUpdateOverlapping() {
     )
     result
       .then(newResult => {
-        setTimeout(() => {
-          isUpdating.current = false
-          if (isPending.current) {
-            isPending.current = false
-            updateObjects()
-          }
-        }, 1000)
+        setTimeout(
+          () => {
+            isUpdating.current = false
+            if (isPending.current) {
+              isPending.current = false
+              updateObjects()
+            }
+          },
+          inFirstTenSeconds.current ? 1000 : 10_000
+        )
         setDistances(newResult)
         setLocalObjects(objects.map(obj => obj.item))
       })
@@ -167,9 +178,9 @@ export function useUpdateOverlapping() {
   useViewportMoved(updateObjects)
   useInterval(updateObjects, 5000)
   useEffect(() => {
-    window.addEventListener("mousemove", updateObjects)
+    window.addEventListener("pointermove", updateObjects)
     return () => {
-      window.removeEventListener("mousemove", updateObjects)
+      window.removeEventListener("pointermove", updateObjects)
     }
   })
 

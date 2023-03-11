@@ -170,11 +170,11 @@ export default function PixiViewport({
       session.followingPlayer = undefined
     }
     viewport?.addEventListener("touchmove", onMoved)
-    viewport?.addEventListener("mousedown", onMoved)
+    viewport?.addEventListener("pointerdown", onMoved)
     viewport?.addEventListener("wheel", onMoved)
     return () => {
       viewport?.removeEventListener("touchmove", onMoved)
-      viewport?.removeEventListener("mousedown", onMoved)
+      viewport?.removeEventListener("pointerdown", onMoved)
       viewport?.removeEventListener("wheel", onMoved)
     }
   }, [viewport])

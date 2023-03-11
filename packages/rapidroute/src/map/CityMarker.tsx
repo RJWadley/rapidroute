@@ -1,10 +1,11 @@
-import { useRef, useState } from "react"
+import { useRef } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
+import { hideItem, showItem } from "./PixiUtils"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular, regularHover } from "./textStyles"
 import useHideOverlapping from "./useHideOverlapping"
@@ -42,7 +43,7 @@ interface CityMarkerProps {
 export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const viewport = useViewport()
   const containerRef = useRef<Container>(null)
-  const [hover, setHover] = useState(false)
+  const hoverTextRef = useRef<Text>(null)
 
   const onMove = () => {
     if (containerRef.current && viewport) {
@@ -54,16 +55,15 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   }
   useViewportMoved(onMove)
 
-  const mouseIn = () => {
-    setHover(true)
+  const pointerIn = () => {
+    if (hoverTextRef.current) showItem(hoverTextRef.current, false)
   }
-  const mouseOut = () => {
-    setHover(false)
+  const pointerOut = () => {
+    if (hoverTextRef.current) hideItem(hoverTextRef.current)
   }
   const click = () => {
     session.followingPlayer = undefined
     session.lastMapInteraction = undefined
-    setHover(false)
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 
@@ -80,21 +80,21 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
       y={z}
       ref={containerRef}
       cursor="pointer"
-      onmouseenter={mouseIn}
-      onmouseout={mouseOut}
+      onpointerenter={pointerIn}
+      onpointerout={pointerOut}
       onclick={click}
       ontouchstart={click}
       renderable={false}
     >
       <Text text={name} style={regular} anchor="0.5, 0.5" cacheAsBitmap />
-      {hover && (
-        <Text
-          text={name}
-          style={regularHover}
-          anchor="0.5, 0.5"
-          cacheAsBitmap
-        />
-      )}
+      <Text
+        text={name}
+        style={regularHover}
+        anchor="0.5, 0.5"
+        cacheAsBitmap
+        ref={hoverTextRef}
+        renderable={false}
+      />
     </Container>
   )
 }

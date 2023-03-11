@@ -80,10 +80,10 @@ export default function MapPlayer({ player }: { player: Player }) {
   }
   useViewportMoved(updatePlayerHeadSize)
 
-  const mouseIn = () => {
+  const pointerIn = () => {
     setHover(true)
   }
-  const mouseOut = () => {
+  const pointerOut = () => {
     setHover(false)
   }
   const click = () => {
@@ -97,8 +97,8 @@ export default function MapPlayer({ player }: { player: Player }) {
     <Container
       interactive
       cursor="pointer"
-      onmouseenter={mouseIn}
-      onmouseout={mouseOut}
+      onpointerenter={pointerIn}
+      onpointerout={pointerOut}
       onclick={click}
       ontouchstart={click}
       x={initialPosition.x}

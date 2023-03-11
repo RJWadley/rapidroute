@@ -44,10 +44,7 @@ export default function Map() {
         <PixiViewport width={width} height={height}>
           <PixiHooks />
           {/* any elements in a container won't be culled */}
-          <Container>
-            <Satellite />
-          </Container>
-
+          <Container>{/* <Satellite /> */}</Container>
           <DynmapMarkers />
           <AllCities />
           <MapPlayers />
