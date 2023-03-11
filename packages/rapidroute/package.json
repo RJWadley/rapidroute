@@ -6,9 +6,7 @@
   "dependencies": {
     "@koale/useworker": "^4.0.2",
     "@rapidroute/database-types": "^1.0.0",
-    "@types/fabric": "^4.5.15",
     "easy-speech": "^1.2.1",
-    "fabric": "^5.3.0",
     "firebase": "^9.17.1",
     "flexsearch-ts": "^0.7.31",
     "gatsby": "^5.5.0",

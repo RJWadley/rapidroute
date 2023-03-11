@@ -13,7 +13,7 @@ export const onCreateWebpackConfig: GatsbyNode["onCreateWebpackConfig"] = ({
       module: {
         rules: [
           {
-            test: /canvas|jsdom|fabric/,
+            test: /pixi-viewport/,
             use: loaders.null(),
           },
         ],
