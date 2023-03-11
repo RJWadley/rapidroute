@@ -2,12 +2,11 @@ import { useRef } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
-
 import { session } from "utils/localUtils"
 
 import MulticolorDot from "./MulticolorDot"
 import { hideItem, showItem } from "./PixiUtils"
-import { useViewport } from "./PixiViewport"
+import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular } from "./textStyles"
 import { zoomToPoint } from "./zoomCamera"
 
@@ -22,6 +21,7 @@ interface MRTStopProps {
 export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const viewport = useViewport()
   const textRef = useRef<Text>(null)
+  const containerRef = useRef<Container>(null)
 
   const updateSize = () => {
     if (textRef.current && viewport)
@@ -48,6 +48,18 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
   const app = usePixiApp()
 
+  const updateOpacityWhenClose = () => {
+    if (viewport && containerRef.current) {
+      const zoom = viewport.scale.x
+
+      const opacity = Math.max(0, Math.min(1, 1 - (zoom - 2.75)))
+      containerRef.current.alpha = opacity
+      if (opacity === 0) hideItem(containerRef.current)
+      else showItem(containerRef.current)
+    }
+  }
+  useViewportMoved(updateOpacityWhenClose)
+
   return (
     <Container
       eventMode="static"
@@ -56,6 +68,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
       onclick={onClick}
       cursor="pointer"
       renderable={visible}
+      ref={containerRef}
     >
       <MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
       <Text
