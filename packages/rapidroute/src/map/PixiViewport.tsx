@@ -1,14 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
-import { SpatialHash } from "pixi-cull"
+import { Simple } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
-
-import { updateOverlappingVisibility } from "./hideOverlapping"
-import updateVisibilities from "./updateVisibilities"
 
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
@@ -37,40 +34,20 @@ const DisplayObjectViewport = CustomPIXIComponent(
       })
       viewport.drag().pinch().wheel().decelerate()
 
-      const cull = new SpatialHash()
-      cull.addContainer(viewport)
-      cull.cull(viewport.getVisibleBounds(), false)
+      const cull = new Simple()
+      cull.addList(viewport.children)
+      cull.cull(viewport.getVisibleBounds(), true)
 
       setTimeout(() => {
-        cull.cull(viewport.getVisibleBounds(), false)
+        cull.cull(viewport.getVisibleBounds(), true)
       }, 100)
 
-      let isUpdating = false
-      let pendingUpdate = false
       Ticker.shared.add(() => {
-        if (viewport.dirty || pendingUpdate) {
+        if (viewport.dirty) {
           // cull whenever the viewport moves
-          cull.cull(viewport.getVisibleBounds(), false)
+          cull.cull(viewport.getVisibleBounds(), true)
           viewport.dirty = false
-
-          // update overlapping visibility
-          if (!isUpdating) {
-            isUpdating = true
-            pendingUpdate = false
-            updateOverlappingVisibility(viewport)
-              .then(() => {
-                isUpdating = false
-              })
-              .catch(() => {
-                isUpdating = false
-              })
-          } else {
-            pendingUpdate = true
-          }
         }
-
-        // update hit areas and visibility as opacity changes
-        updateVisibilities(viewport, viewport)
       })
 
       setViewport(viewport)
@@ -124,6 +101,7 @@ export const useViewportMoved = (callback: () => void) => {
       viewport?.removeEventListener("moved", onViewportMoved)
       moveCallbacks = moveCallbacks.filter(cb => cb !== onViewportMoved)
     }
+    // we only want to run this on the first render
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewport])
 }
@@ -179,7 +157,6 @@ export default function PixiViewport({
             right: worldSize,
             underflow: "none",
           })
-        pullFromURL(viewport)
       }, 100)
     }
   }, [viewport])
@@ -203,32 +180,15 @@ export default function PixiViewport({
   }, [viewport])
 
   return (
-    <DisplayObjectViewport
-      setViewport={setViewport}
-      width={width}
-      height={height}
-      events={app.renderer.events}
-    >
-      <ViewportContext.Provider value={viewport}>
+    <ViewportContext.Provider value={viewport}>
+      <DisplayObjectViewport
+        setViewport={setViewport}
+        width={width}
+        height={height}
+        events={app.renderer.events}
+      >
         {children}
-      </ViewportContext.Provider>
-    </DisplayObjectViewport>
+      </DisplayObjectViewport>
+    </ViewportContext.Provider>
   )
-}
-
-const pullFromURL = (viewport: Viewport) => {
-  const params = new URLSearchParams(window.location.search)
-  const x = parseFloat(params.get("x") ?? "")
-  const z = parseFloat(params.get("z") ?? "")
-  const zoom = parseFloat(params.get("zoom") ?? "")
-  const following = params.get("following")
-
-  if (Number.isFinite(x) && Number.isFinite(z) && Number.isFinite(zoom)) {
-    viewport.moveCenter({
-      x,
-      y: z,
-    })
-    viewport.setZoom(zoom, true)
-    if (following) session.followingPlayer = following
-  }
 }

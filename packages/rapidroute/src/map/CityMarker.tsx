@@ -5,9 +5,9 @@ import { Container, Text } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
-import useHideOverlapping from "./hideOverlapping"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular, regularHover } from "./textStyles"
+import useHideOverlapping from "./useHideOverlapping"
 import { zoomToPoint } from "./zoomCamera"
 
 type CityType =
@@ -41,12 +41,12 @@ interface CityMarkerProps {
 
 export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const viewport = useViewport()
-  const textRef = useRef<Container>(null)
+  const containerRef = useRef<Container>(null)
   const [hover, setHover] = useState(false)
 
   const onMove = () => {
-    if (textRef.current && viewport) {
-      textRef.current.scale = new Point(
+    if (containerRef.current && viewport) {
+      containerRef.current.scale = new Point(
         1 / viewport.scale.x,
         1 / viewport.scale.y
       )
@@ -68,7 +68,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   }
 
   useHideOverlapping({
-    item: textRef,
+    item: containerRef,
     name,
     priority: type,
     minZoom: ZoomThresholds[type] ?? max,
@@ -78,14 +78,13 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
     <Container
       x={x}
       y={z}
-      ref={textRef}
-      interactive
+      ref={containerRef}
       cursor="pointer"
       onmouseenter={mouseIn}
       onmouseout={mouseOut}
       onclick={click}
       ontouchstart={click}
-      alpha={0}
+      renderable={false}
     >
       <Text text={name} style={regular} anchor="0.5, 0.5" cacheAsBitmap />
       {hover && (

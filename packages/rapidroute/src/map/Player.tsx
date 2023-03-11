@@ -7,7 +7,6 @@ import { Container, Sprite, Text } from "react-pixi-fiber"
 import { getLocal, session } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
 
-import useHideOverlapping from "./hideOverlapping"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular, regularHover } from "./textStyles"
 import { Player } from "./worldInfoType"
@@ -81,13 +80,6 @@ export default function MapPlayer({ player }: { player: Player }) {
   }
   useViewportMoved(updatePlayerHeadSize)
 
-  useHideOverlapping({
-    item: containerRef,
-    name: player.name,
-    priority: "players",
-    allowChange: false,
-  })
-
   const mouseIn = () => {
     setHover(true)
   }
@@ -101,7 +93,6 @@ export default function MapPlayer({ player }: { player: Player }) {
     if (viewport) zoomToPlayer(player.x, player.z, viewport)
   }
 
-  if (!playerHead) return null
   return (
     <Container
       interactive
@@ -115,7 +106,9 @@ export default function MapPlayer({ player }: { player: Player }) {
       alpha={0}
       ref={containerRef}
     >
-      <Sprite texture={Texture.from(playerHead)} anchor={0.5} ref={headRef} />
+      {playerHead && (
+        <Sprite texture={Texture.from(playerHead)} anchor={0.5} ref={headRef} />
+      )}
       <Text
         anchor="0.5, 1.5"
         text={player.name}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 
 import { Player, WorldInfo } from "map/worldInfoType"
 
@@ -17,7 +17,9 @@ export default function MapPlayers() {
         .then(response => response.json())
         .then(async (data: WorldInfo) => {
           const newPlayers = data.players.filter(x => x.world === "new")
-          if (isMounted) setPlayers(newPlayers)
+          startTransition(() => {
+            if (isMounted) setPlayers(newPlayers)
+          })
         })
         .catch(console.error)
     }

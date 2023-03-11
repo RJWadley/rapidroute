@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 
 import { settings } from "pixi.js"
-import { Stage } from "react-pixi-fiber"
+import { Container, Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
 
@@ -9,10 +9,10 @@ import { isBrowser } from "utils/functions"
 
 import AllCities from "./AllCities"
 import DynmapMarkers from "./DynmapMarkers"
+import PixiHooks from "./PixiHooks"
 import PixiViewport from "./PixiViewport"
 import MapPlayers from "./Players"
 import Satellite from "./Satellite"
-import SaveURLParams from "./SaveURLParams"
 
 export default function Map() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
@@ -42,8 +42,12 @@ export default function Map() {
         }}
       >
         <PixiViewport width={width} height={height}>
-          <SaveURLParams />
-          <Satellite />
+          <PixiHooks />
+          {/* any elements in a container won't be culled */}
+          <Container>
+            <Satellite />
+          </Container>
+
           <DynmapMarkers />
           <AllCities />
           <MapPlayers />

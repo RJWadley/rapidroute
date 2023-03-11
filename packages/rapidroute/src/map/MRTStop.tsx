@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react"
 
-import { gsap } from "gsap"
 import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
 
 import { session } from "utils/localUtils"
 
-import useHideOverlapping from "./hideOverlapping"
 import MulticolorDot from "./MulticolorDot"
+import { hideItem, showItem } from "./PixiUtils"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular } from "./textStyles"
 import { zoomToPoint } from "./zoomCamera"
@@ -28,7 +27,8 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   const updateSize = () => {
     if (!textRef.current || !viewport) return
     const show = viewport.scale.x > 0.1
-    gsap.to(containerRef.current, { alpha: show ? 1 : 0, duration: 0.2 })
+    if (show) showItem(textRef.current, false)
+    else hideItem(textRef.current)
 
     textRef.current.scale = new Point(
       1 / viewport.scale.x,
@@ -40,13 +40,12 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   useEffect(updateSize, [viewport, hover])
 
   const mouseIn = () => {
-    if (!textRef.current) return
     setHover(true)
-    gsap.to(textRef.current, { alpha: 1, duration: 0.2 })
+    if (textRef.current) showItem(textRef.current, false)
   }
   const mouseOut = () => {
     setHover(false)
-    gsap.to(textRef.current, { alpha: 0, duration: 0.2 })
+    if (textRef.current) hideItem(textRef.current)
   }
   const onClick = () => {
     session.lastMapInteraction = undefined
@@ -54,14 +53,6 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
   }
 
   const app = usePixiApp()
-
-  useHideOverlapping({
-    item: textRef,
-    name,
-    priority: "hover",
-    allowChange: false,
-    skipCheck: !hover,
-  })
 
   return (
     <Container
@@ -81,7 +72,6 @@ export default function MRTStop({ name, colors, x, z }: MRTStopProps) {
         ref={textRef}
         anchor="0.5, 1.5"
         alpha={0}
-        renderable={false}
         cacheAsBitmap
       />
     </Container>
