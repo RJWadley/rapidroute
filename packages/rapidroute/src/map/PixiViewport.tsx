@@ -36,16 +36,16 @@ const DisplayObjectViewport = CustomPIXIComponent(
 
       const cull = new Simple()
       cull.addList(viewport.children)
-      cull.cull(viewport.getVisibleBounds(), true)
+      cull.cull(viewport.getVisibleBounds())
 
       setTimeout(() => {
-        cull.cull(viewport.getVisibleBounds(), true)
+        cull.cull(viewport.getVisibleBounds())
       }, 100)
 
       Ticker.shared.add(() => {
         if (viewport.dirty) {
           // cull whenever the viewport moves
-          cull.cull(viewport.getVisibleBounds(), true)
+          cull.cull(viewport.getVisibleBounds())
           viewport.dirty = false
         }
       })
