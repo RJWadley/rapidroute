@@ -1,19 +1,32 @@
 import { useState } from "react"
 
-import hslToHex from "utils/hslToHex"
-import invertLightness from "utils/invertLightness"
+import { useDeepCompareMemo } from "use-deep-compare"
+
+import { getDistance } from "pathfinding/findPath/pathUtil"
 
 import { Marker } from "./markersType"
 import MRTStop from "./MRTStop"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 
-interface MRTStopsProps {
-  stops: Marker[]
+export interface ColoredMarker {
+  marker: Marker
   color: string
+  invertedColor: string
 }
 
-export default function MRTStops({ stops, color }: MRTStopsProps) {
-  const inverted = hslToHex(invertLightness(color))
+interface Stop {
+  x: number
+  z: number
+  markers: Marker[]
+  singleColors: string[]
+  combinedColors?: string[]
+}
+
+interface MRTStopsProps {
+  stops: ColoredMarker[]
+}
+
+export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
   const [visible, setVisible] = useState(false)
   const viewport = useViewport()
   const updateMRTVisibility = () => {
@@ -21,16 +34,52 @@ export default function MRTStops({ stops, color }: MRTStopsProps) {
   }
   useViewportMoved(updateMRTVisibility)
 
+  const stops = useDeepCompareMemo(() => {
+    const newStops: Stop[] = []
+
+    coloredMarkers.forEach(newStop => {
+      // if the stop is within a distance of an existing stop, add it to that stop
+      const maxDistance = 20
+      const existingStop = newStops.find(stop => {
+        return (
+          getDistance(stop.x, stop.z, newStop.marker.x, newStop.marker.z) <
+          maxDistance
+        )
+      })
+      if (existingStop) {
+        existingStop.markers.push(newStop.marker)
+        existingStop.x =
+          existingStop.markers.reduce((sum, marker) => sum + marker.x, 0) /
+          existingStop.markers.length
+        existingStop.z =
+          existingStop.markers.reduce((sum, marker) => sum + marker.z, 0) /
+          existingStop.markers.length
+        existingStop.combinedColors ||= [existingStop.singleColors[0]]
+        existingStop.combinedColors.push(newStop.color)
+      } else {
+        newStops.push({
+          x: newStop.marker.x,
+          z: newStop.marker.z,
+          markers: [newStop.marker],
+          singleColors: [newStop.color, newStop.invertedColor],
+        })
+      }
+    })
+
+    return newStops
+  }, [coloredMarkers])
+
   return (
     <>
       {stops.map(stop => {
+        const { combinedColors, singleColors, markers, x, z } = stop
         return (
           <MRTStop
             key={`${stop.x}${stop.z}`}
-            colors={[color, inverted]}
-            x={stop.x}
-            z={stop.z}
-            name={stop.label}
+            colors={combinedColors ?? singleColors}
+            x={x}
+            z={z}
+            name={markers.map(marker => marker.label).join("\n")}
             visible={visible}
           />
         )

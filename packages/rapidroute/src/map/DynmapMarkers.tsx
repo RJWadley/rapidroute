@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
 
 import { MarkersResponse, Sets, isMRTLine } from "map/markersType"
+import hslToHex from "utils/hslToHex"
+import invertLightness from "utils/invertLightness"
 import useIsMounted from "utils/useIsMounted"
 
 import MarkerLines from "./MarkerLines"
-import MRTStops from "./MRTStops"
+import MRTStops, { ColoredMarker } from "./MRTStops"
 
 export default function DynmapMarkers() {
   const [markerSets, setMarkerSets] = useState<Sets>()
@@ -25,6 +27,22 @@ export default function DynmapMarkers() {
   }, [isMounted])
 
   if (!markerSets) return null
+
+  const allStops: ColoredMarker[] = Object.keys(markerSets).flatMap(name => {
+    if (isMRTLine(name)) {
+      return Object.values(markerSets[name].markers).map(marker => {
+        const color = Object.values(markerSets[name].lines)[0]?.color
+        const invertedColor = hslToHex(invertLightness(color))
+        return {
+          marker,
+          color,
+          invertedColor,
+        }
+      })
+    }
+    return []
+  })
+
   return (
     <>
       {Object.keys(markerSets).map(name => {
@@ -37,19 +55,7 @@ export default function DynmapMarkers() {
           )
         return null
       })}
-      {Object.keys(markerSets).map(name => {
-        if (isMRTLine(name)) {
-          const lineColor = Object.values(markerSets[name].lines)[0]?.color
-          return (
-            <MRTStops
-              color={lineColor ?? "#000000"}
-              key={name}
-              stops={Object.values(markerSets[name].markers)}
-            />
-          )
-        }
-        return null
-      })}
+      <MRTStops stops={allStops} />
     </>
   )
 }

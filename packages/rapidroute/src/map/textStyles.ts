@@ -6,6 +6,7 @@ export const regular = new TextStyle({
   strokeThickness: 3,
   fontFamily: "Inter, Arial",
   fontSize: 16,
+  align: "center",
 })
 
 export const regularHover = new TextStyle({
@@ -14,4 +15,5 @@ export const regularHover = new TextStyle({
   strokeThickness: 3,
   fontFamily: "Inter, Arial",
   fontSize: 16,
+  align: "center",
 })
