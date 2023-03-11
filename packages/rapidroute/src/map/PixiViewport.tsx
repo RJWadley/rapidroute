@@ -43,7 +43,7 @@ const DisplayObjectViewport = CustomPIXIComponent(
       }, 100)
 
       Ticker.shared.add(() => {
-        if (viewport.dirty) {
+        if (viewport.dirty && !viewport.destroyed) {
           // cull whenever the viewport moves
           cull.cull(viewport.getVisibleBounds())
           viewport.dirty = false

@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react"
 
 import { MarkersResponse, Sets, isMRTLine } from "map/markersType"
+import useIsMounted from "utils/useIsMounted"
 
 import MarkerLines from "./MarkerLines"
 import MRTStops from "./MRTStops"
 
 export default function DynmapMarkers() {
   const [markerSets, setMarkerSets] = useState<Sets>()
+
+  const isMounted = useIsMounted()
 
   useEffect(() => {
     fetch(
@@ -16,10 +19,10 @@ export default function DynmapMarkers() {
         return response.json()
       })
       .then((data: MarkersResponse) => {
-        setMarkerSets(data.sets)
+        if (isMounted.current) setMarkerSets(data.sets)
       })
       .catch(console.error)
-  }, [])
+  }, [isMounted])
 
   if (!markerSets) return null
   return (

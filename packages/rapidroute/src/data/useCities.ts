@@ -9,15 +9,17 @@ export default function useCities() {
   const [cities, setCities] = useState<City[]>([])
 
   useEffect(() => {
+    let mounted = true
+
     fetch(citiesURL)
-    .then(response => response.json())
-    .then((data: City[]) => {
+      .then(response => response.json())
+      .then((data: City[]) => {
         // add the cities to the state 10 at a time
-        setCities(data.slice(0, 10))
+        if (mounted) setCities(data.slice(0, 10))
         let i = 10
         const interval = setInterval(() => {
           startTransition(() => {
-            setCities(prev => [...prev, ...data.slice(i, i + 10)])
+            if (mounted) setCities(prev => [...prev, ...data.slice(i, i + 10)])
           })
           i += 10
           if (i >= data.length) {
@@ -26,6 +28,10 @@ export default function useCities() {
         }, 100)
       })
       .catch(console.error)
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   return cities
