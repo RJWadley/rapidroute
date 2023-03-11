@@ -91,9 +91,7 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 const getStopName = (markers: Marker[]) => {
   const namedRegex = /^([\S\s ]+)\((\w\w?\d*)\)$/
   const unnamedRegex = /^(\w\w?\d+) Station$/
-  if (
-    markers.every(marker => namedRegex.test(marker.label))
-  ) {
+  if (markers.every(marker => namedRegex.test(marker.label))) {
     const stationName = markers[0].label.match(namedRegex)?.[1]?.trim()
     const stationCodes = markers.map(
       marker => marker.label.match(namedRegex)?.[2]
