@@ -4,6 +4,7 @@
   "version": "3.0.0",
   "author": "rjwadley",
   "dependencies": {
+    "@koale/useworker": "^4.0.2",
     "@rapidroute/database-types": "^1.0.0",
     "@types/fabric": "^4.5.15",
     "easy-speech": "^1.2.1",
