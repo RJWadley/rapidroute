@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
@@ -33,7 +33,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
   const pointerIn = () => {
     updateSize()
-    if (textRef.current) showItem(textRef.current, false)
+    if (textRef.current) showItem(textRef.current, "auto")
   }
   const pointerOut = () => {
     updateSize()
@@ -48,7 +48,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
   return (
     <Container
-      interactive
+      eventMode="static"
       onpointerenter={pointerIn}
       onpointerout={pointerOut}
       onclick={onClick}

@@ -95,7 +95,7 @@ export default function MapPlayer({ player }: { player: Player }) {
 
   return (
     <Container
-      interactive
+      eventMode="static"
       cursor="pointer"
       onpointerenter={pointerIn}
       onpointerout={pointerOut}

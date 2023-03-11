@@ -1,18 +1,14 @@
 import { useEffect } from "react"
 
-import { settings } from "pixi.js"
 import { Container, Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
-
-import { isBrowser } from "utils/functions"
 
 import AllCities from "./AllCities"
 import DynmapMarkers from "./DynmapMarkers"
 import PixiHooks from "./PixiHooks"
 import PixiViewport from "./PixiViewport"
 import MapPlayers from "./Players"
-import Satellite from "./Satellite"
 
 export default function Map() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()

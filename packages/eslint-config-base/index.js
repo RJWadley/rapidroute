@@ -38,7 +38,7 @@ module.exports = {
     "max-lines": [
       "warn",
       {
-        max: 200,
+        max: 250,
         skipBlankLines: true,
         skipComments: true,
       },

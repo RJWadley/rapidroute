@@ -15,14 +15,14 @@ export default function PixiHooks() {
   const app = usePixiApp()
 
   useEffect(() => {
-  const maxResolution = 2
-  const minResolution = 1
+    const maxResolution = 2
+    const minResolution = 1
 
     app.renderer.resolution = Math.min(
       maxResolution,
       Math.max(minResolution, window.devicePixelRatio)
     )
-  })
+  }, [app.renderer])
 
   return null
 }

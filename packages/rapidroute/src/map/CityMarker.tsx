@@ -56,7 +56,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   useViewportMoved(onMove)
 
   const pointerIn = () => {
-    if (hoverTextRef.current) showItem(hoverTextRef.current, false)
+    if (hoverTextRef.current) showItem(hoverTextRef.current, "auto")
   }
   const pointerOut = () => {
     if (hoverTextRef.current) hideItem(hoverTextRef.current)
