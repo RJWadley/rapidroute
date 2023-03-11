@@ -34,10 +34,12 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const pointerIn = () => {
     updateSize()
     if (textRef.current) showItem(textRef.current, "auto")
+    window.addEventListener("wheel", updateSize)
   }
   const pointerOut = () => {
     updateSize()
     if (textRef.current) hideItem(textRef.current)
+    window.removeEventListener("wheel", updateSize)
   }
   const onClick = () => {
     session.lastMapInteraction = undefined
