@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import { gsap } from "gsap"
-import { Assets, Texture } from "pixi.js"
+import { Assets, SCALE_MODES, Texture } from "pixi.js"
 import { Sprite } from "react-pixi-fiber"
 
 import getTileUrl from "./getTileURL"
@@ -57,6 +57,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
         if (!isMounted) return
         const newTexture = Texture.from(tile.url)
         textureCache[tile.url] = newTexture
+        newTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         setTexture(newTexture)
       })
       .catch(() => {
