@@ -42,7 +42,7 @@ export default function Map() {
           <Container>
             <Satellite />
           </Container>
-          
+
           <DynmapMarkers />
           <AllCities />
           <MapPlayers />

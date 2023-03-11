@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useRef, useState } from "react"
+import { startTransition, useMemo, useRef, useState } from "react"
 
 import useIsMounted from "utils/useIsMounted"
 
