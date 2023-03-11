@@ -79,11 +79,40 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
             colors={combinedColors ?? singleColors}
             x={x}
             z={z}
-            name={markers.map(marker => marker.label).join("\n")}
+            name={getStopName(markers)}
             visible={visible}
           />
         )
       })}
     </>
   )
+}
+
+const getStopName = (markers: Marker[]) => {
+  const namedRegex = /^([\S\s ]+)\((\w\w?\d*)\)$/
+  const unnamedRegex = /^(\w\w?\d+) Station$/
+  if (
+    markers.every(marker => namedRegex.test(marker.label))
+  ) {
+    const stationName = markers[0].label.match(namedRegex)?.[1]?.trim()
+    const stationCodes = markers.map(
+      marker => marker.label.match(namedRegex)?.[2]
+    )
+
+    if (stationName && stationCodes.every(code => code))
+      return `${stationName}\n${stationCodes.join(" - ")}`
+  }
+
+  if (
+    markers.length > 1 &&
+    markers.every(marker => unnamedRegex.test(marker.label))
+  ) {
+    const stationCodes = markers.map(
+      marker => marker.label.match(unnamedRegex)?.[1]
+    )
+
+    if (stationCodes.every(code => code)) return `${stationCodes.join(" - ")}`
+  }
+
+  return markers.map(marker => marker.label).join("\n")
 }
