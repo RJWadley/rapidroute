@@ -34,6 +34,7 @@ export default function SatelliteLayer({
    * track the world values so we can update the tiles when the world changes
    */
   const cooldown = useRef(false)
+  const pending = useRef(false)
   const isMounted = useIsMounted()
   const onChanged = () => {
     if (viewport && dynamic && !cooldown.current) {
@@ -49,7 +50,11 @@ export default function SatelliteLayer({
       })
       setTimeout(() => {
         cooldown.current = false
+        if (pending.current) onChanged()
+        pending.current = false
       }, 1000 + 1000 * Math.random())
+    } else if (dynamic) {
+      pending.current = true
     }
   }
   useViewportMoved(onChanged)
