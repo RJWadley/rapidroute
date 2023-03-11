@@ -1,7 +1,5 @@
 import React, { useContext, useEffect } from "react"
 
-import styled from "styled-components"
-
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
 import searchForPlayer from "components/players/searchPlayers"
@@ -9,6 +7,7 @@ import PlayerSelect from "components/PlayerSelect"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
 import { WorldInfo } from "map/worldInfoType"
+import styled from "styled-components"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
 
@@ -19,7 +18,7 @@ export default function SelectPlayer() {
 
   const updatePlayers = () => {
     fetch(
-      "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
+      "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
     )
       .then(response => response.json())
       .then((data: WorldInfo) => {

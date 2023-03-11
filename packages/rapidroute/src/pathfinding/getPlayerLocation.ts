@@ -2,7 +2,7 @@ import { WorldInfo } from "map/worldInfoType"
 
 export default function getPlayerLocation(player: string) {
   return fetch(
-    "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
+    "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
   )
     .then(response => response.json())
     .then((data: WorldInfo) => {

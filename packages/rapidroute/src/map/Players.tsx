@@ -12,7 +12,7 @@ export default function MapPlayers() {
 
     const updatePlayers = () => {
       fetch(
-        "https://cors.mrtrapidroute.com/?https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
+        "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
       )
         .then(response => response.json())
         .then(async (data: WorldInfo) => {
