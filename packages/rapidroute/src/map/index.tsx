@@ -30,8 +30,6 @@ export default function Map() {
     }
   }, [])
 
-  initialSettings()
-
   return (
     <Wrapper ref={ref}>
       <Stage
@@ -52,17 +50,6 @@ export default function Map() {
       </Stage>
     </Wrapper>
   )
-}
-
-const initialSettings = () => {
-  const maxResolution = 2
-  const minResolution = 1
-
-  if (isBrowser())
-    settings.RESOLUTION = Math.min(
-      maxResolution,
-      Math.max(minResolution, window.devicePixelRatio)
-    )
 }
 
 const Wrapper = styled.div`
