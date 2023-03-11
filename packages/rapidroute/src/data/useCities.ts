@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 
 import { City } from "types/cityList"
 
@@ -10,9 +10,20 @@ export default function useCities() {
 
   useEffect(() => {
     fetch(citiesURL)
-      .then(response => response.json())
-      .then((data: City[]) => {
-        setCities(data)
+    .then(response => response.json())
+    .then((data: City[]) => {
+        // add the cities to the state 10 at a time
+        setCities(data.slice(0, 10))
+        let i = 10
+        const interval = setInterval(() => {
+          startTransition(() => {
+            setCities(prev => [...prev, ...data.slice(i, i + 10)])
+          })
+          i += 10
+          if (i >= data.length) {
+            clearInterval(interval)
+          }
+        }, 100)
       })
       .catch(console.error)
   }, [])
