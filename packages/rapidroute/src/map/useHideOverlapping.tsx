@@ -187,6 +187,7 @@ export function useUpdateOverlapping() {
   useEffect(() => {
     const update = () => {
       if (!viewport) return
+      if (viewport.destroyed) return
       const zoom = viewport.scale.x
       distances.forEach(distance => {
         const {

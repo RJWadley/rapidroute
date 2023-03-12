@@ -13,6 +13,7 @@ export default function useUrlParams() {
 
   const updateParams = () => {
     if (!viewport) return
+    if (viewport.destroyed) return
 
     // don't update the URL too much
     const now = Date.now()
@@ -60,7 +61,12 @@ export default function useUrlParams() {
         const zoom = parseFloat(params.get("zoom") ?? "")
         const following = params.get("following")
 
-        if (Number.isFinite(x) && Number.isFinite(z) && Number.isFinite(zoom)) {
+        if (
+          Number.isFinite(x) &&
+          Number.isFinite(z) &&
+          Number.isFinite(zoom) &&
+          !viewport.destroyed
+        ) {
           viewport.moveCenter({
             x,
             y: z,
