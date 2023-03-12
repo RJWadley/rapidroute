@@ -6,7 +6,6 @@ import { Container, Text, usePixiApp } from "react-pixi-fiber"
 import { session } from "utils/localUtils"
 
 import MulticolorDot from "./MulticolorDot"
-import { hideItem, showItem } from "./PixiUtils"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { regular } from "./textStyles"
 import { zoomToPoint } from "./zoomCamera"
