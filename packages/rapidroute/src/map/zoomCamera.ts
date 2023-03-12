@@ -8,7 +8,7 @@ import { triggerMovementManually } from "./PixiViewport"
 
 let runningTween: gsap.core.Tween | undefined
 
-const defaultPadding = {
+export const defaultPadding = {
   top: 100,
   bottom: 100,
   left: 100,

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 
 import { navigate } from "@reach/router"
 import styled from "styled-components"
@@ -10,8 +10,14 @@ import Settings from "components/Settings"
 import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
+import { defaultPadding } from "map/zoomCamera"
+import { session } from "utils/localUtils"
 
 export default function MapPage() {
+  useEffect(() => {
+    session.cameraPadding = defaultPadding
+  }, [])
+
   return (
     <Layout>
       <ControlsOverlay />
