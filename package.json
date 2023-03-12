@@ -7,9 +7,7 @@
     "apps/*",
     "services/*"
   ],
-  "dependencies": {
-    "@types/dom-screen-wake-lock": "^1.0.0",
-    "entities": "^4.4.0",
+  "devDependencies": {
     "prettier": "^2.8.3"
   },
   "scripts": {
