@@ -2,6 +2,7 @@ import { useEffect } from "react"
 
 import { usePixiApp } from "react-pixi-fiber"
 
+import useDoubleTapZoom from "./useDoubleTapZoom"
 import { useUpdateOverlapping } from "./useHideOverlapping"
 import useUrlParams from "./useUrlParams"
 
@@ -11,6 +12,7 @@ import useUrlParams from "./useUrlParams"
 export default function PixiHooks() {
   useUrlParams()
   useUpdateOverlapping()
+  useDoubleTapZoom()
 
   const app = usePixiApp()
 
