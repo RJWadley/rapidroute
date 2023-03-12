@@ -112,15 +112,17 @@ export default function SearchList({
         borderTopLeftRadius: show ? 0 : 30,
         borderTopRightRadius: show ? 0 : 30,
         duration,
+        ease: show ? "power3.out" : "power3.inOut",
       })
     else
       gsap.to(wrapper.current, {
         height: show ? "auto" : 0,
         pointerEvents: show ? "auto" : "none",
-        y: show ? 0 : -25,
+        y: show ? 0 : -26,
         borderTopLeftRadius: show ? 0 : 30,
         borderTopRightRadius: show ? 0 : 30,
         duration,
+        ease: show ? "power3.out" : "power3.inOut",
       })
   }, [isMobile, show])
 
