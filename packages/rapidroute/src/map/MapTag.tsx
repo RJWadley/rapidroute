@@ -1,3 +1,5 @@
+import { useRef } from "react"
+
 import styled from "styled-components"
 
 import RapidRouteLogo from "images/global/RapidRouteLogo.svg"
@@ -7,7 +9,7 @@ interface MapTagProps {
 }
 
 export default function MapTag({ className = "" }: MapTagProps) {
-  const wrapper = React.useRef<HTMLDivElement>(null)
+  const wrapper = useRef<HTMLDivElement>(null)
 
   return (
     <Wrapper ref={wrapper} className={className}>

@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import styled from "styled-components"
 
@@ -6,7 +6,7 @@ import { getLocal, setLocal } from "utils/localUtils"
 import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
 
 export default function RateSetting() {
-  const [rate, setRate] = React.useState(1)
+  const [rate, setRate] = useState(1)
 
   useEffect(() => {
     const newRate = getLocal("speechRate")

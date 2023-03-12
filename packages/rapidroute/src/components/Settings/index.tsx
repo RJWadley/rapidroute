@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import gsap from "gsap"
 import { useLocation } from "react-use"
@@ -21,10 +21,10 @@ const circlePosition = "at calc(100% - 35px) 35px"
 export default function Settings() {
   const player = getLocal("selectedPlayer")?.toString()
   const playerHead = usePlayerHead(player ?? "")
-  const [openButton, setOpenButton] = React.useState<HTMLButtonElement | null>(
+  const [openButton, setOpenButton] = useState<HTMLButtonElement | null>(
     null
   )
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
   const location = useLocation()
 

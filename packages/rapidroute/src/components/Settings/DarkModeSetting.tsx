@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import gsap from "gsap"
 import styled from "styled-components"
@@ -11,7 +11,7 @@ type Mode = "dark" | "light" | "system"
 const PAD = 10
 
 export default function DarkModeSetting() {
-  const [mode, setMode] = React.useState<Mode>("system")
+  const [mode, setMode] = useState<Mode>("system")
   const overlay = useRef<HTMLDivElement>(null)
 
   const updateMode = (newMode: Mode) => {

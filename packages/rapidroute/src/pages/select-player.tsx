@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 
 import styled from "styled-components"
 
@@ -13,8 +13,8 @@ import { loadPage } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
 
 export default function SelectPlayer() {
-  const [players, setPlayers] = React.useState<string[]>([])
-  const [search, setSearch] = React.useState<string>()
+  const [players, setPlayers] = useState<string[]>([])
+  const [search, setSearch] = useState<string>()
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
 
   const updatePlayers = () => {
@@ -38,7 +38,7 @@ export default function SelectPlayer() {
     return () => clearInterval(interval)
   }, [])
 
-  const [debouncedSearch, setDebouncedSearch] = React.useState<string>()
+  const [debouncedSearch, setDebouncedSearch] = useState<string>()
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search)

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import gsap from "gsap"
 import { ScrollToPlugin } from "gsap/all"
@@ -24,8 +24,8 @@ export default function VoiceSetting() {
   const [bestVoice] = usePromise(bestVoiceProm, [])
   const [allVoice] = usePromise(voicesProm, [])
 
-  const [open, setOpen] = React.useState(false)
-  const dropdownRef = React.useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const [currentVoice, setCurrentVoice] = useState<UniversalVoice>()
 
   useEffect(() => {

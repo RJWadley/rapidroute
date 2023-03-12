@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useRef } from "react"
 
 import styled from "styled-components"
 
@@ -6,7 +6,7 @@ import { darkModeContext } from "components/Providers/DarkMode"
 import useWindowSize from "utils/useWindowSize"
 
 export default function MapBackground() {
-  const svgEl = React.useRef<SVGSVGElement>(null)
+  const svgEl = useRef<SVGSVGElement>(null)
   const windowSize = useWindowSize()
 
   const isDark = useContext(darkModeContext)

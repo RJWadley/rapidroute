@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 
 import gsap from "gsap"
 import styled, { keyframes } from "styled-components"
@@ -22,7 +22,7 @@ const FADE_DURATION = 0.1
 export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   const name = nameIn.replace(/[^A-Za-z0-9_]/g, "").substring(0, 16)
   const imageUrl = usePlayerHead(name)
-  const wrapperRef = React.useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   const [hue, saturation] = useImageHSL(imageUrl ?? "")
 
