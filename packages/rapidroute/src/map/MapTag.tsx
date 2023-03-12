@@ -2,7 +2,7 @@ import React from "react"
 
 import styled from "styled-components"
 
-import NavigatorLogo from "images/global/NavigatorLogo.svg"
+import RapidRouteLogo from "images/global/RapidRouteLogo.svg"
 
 interface MapTagProps {
   className?: string
@@ -13,15 +13,14 @@ export default function MapTag({ className = "" }: MapTagProps) {
 
   return (
     <Wrapper ref={wrapper} className={className}>
-      <Logo src={NavigatorLogo} alt="MRT Navigator Logo" />
-      <Text>MRT Navigator</Text>
+      <Logo src={RapidRouteLogo} alt="MRT RapidRoute Logo" />
+      <Text>MRT RapidRoute</Text>
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div`
   display: flex;
-  gap: 10px;
   align-items: center;
   filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.5));
 `

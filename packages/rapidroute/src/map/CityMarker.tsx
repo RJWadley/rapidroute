@@ -90,12 +90,11 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
       }}
       renderable={false}
     >
-      <Text text={name} style={regular} anchor="0.5, 0.5" cacheAsBitmap />
+      <Text text={name} style={regular} anchor="0.5, 0.5" />
       <Text
         text={name}
         style={regularHover}
         anchor="0.5, 0.5"
-        cacheAsBitmap
         ref={hoverTextRef}
         renderable={false}
       />
