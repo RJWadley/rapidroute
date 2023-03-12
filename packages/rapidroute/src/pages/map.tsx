@@ -54,8 +54,9 @@ const Wrapper = styled.div`
 
 const SettingsWrapper = styled.div`
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 0;
+  right: 0;
+  padding: 20px;
   z-index: 1;
 `
 

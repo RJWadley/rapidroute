@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from "react"
 
 import gsap from "gsap"
+import { useLocation } from "react-use"
 import styled from "styled-components"
 
 import RoundButton from "components/RoundButton"
 import { isBrowser } from "utils/functions"
+import UniversalLink from "utils/Loader/UniversalLink"
 import { getLocal } from "utils/localUtils"
 import media from "utils/media"
 import usePlayerHead from "utils/usePlayerHead"
@@ -24,6 +26,7 @@ export default function Settings() {
   )
   const [open, setOpen] = React.useState(false)
   const menu = useRef<HTMLDivElement>(null)
+  const location = useLocation()
 
   useEffect(() => {
     if (isBrowser())
@@ -70,6 +73,9 @@ export default function Settings() {
     return () => window.removeEventListener("click", handleClick)
   }, [open, openButton])
 
+  const linkDestination = location.pathname === "/" ? "/map" : "/"
+  const viewName = location.pathname === "/" ? "Map" : "List"
+
   return playerHead ? (
     <>
       <Open ref={el => setOpenButton(el)} onClick={() => setOpen(!open)}>
@@ -84,6 +90,9 @@ export default function Settings() {
         <DarkModeSetting />
         <VoiceSetting />
         <RateSetting />
+        <SwitchView to={linkDestination} transition="slide">
+          Switch to {viewName} View{viewName === "Map" ? " (Beta)" : ""}
+        </SwitchView>
       </Menu>
     </>
   ) : null
@@ -111,15 +120,16 @@ const Menu = styled.div`
   min-width: 450px;
   background: var(--default-card-background);
   z-index: 100;
-  border-radius: 30px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   padding: 30px;
+  border-radius: 35px 35px 50px 50px;
   clip-path: circle(0% ${circlePosition});
   display: grid;
   gap: 20px;
 
   @media ${media.mobile} {
     padding: 20px;
+    border-radius: 30px 30px 40px 40px;
     min-width: 0;
     width: 450px;
   }
@@ -138,4 +148,13 @@ const CloseButton = styled(RoundButton)`
   height: 50px;
   border-radius: 15px;
   font-size: var(--large);
+`
+
+const SwitchView = styled(UniversalLink)`
+  font-size: var(--small);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  font-weight: bold;
+  background-color: var(--dark-background);
 `
