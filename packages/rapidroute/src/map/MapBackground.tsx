@@ -1,23 +1,13 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext } from "react"
 
 import styled from "styled-components"
 
 import { darkModeContext } from "components/Providers/DarkMode"
 import useWindowSize from "utils/useWindowSize"
 
-let seedUpdater: React.Dispatch<React.SetStateAction<number>> = () => {}
-
 export default function MapBackground() {
   const svgEl = React.useRef<SVGSVGElement>(null)
   const windowSize = useWindowSize()
-  const [seed, setSeed] = useState(1)
-
-  useEffect(() => {
-    seedUpdater = setSeed
-    return () => {
-      seedUpdater = () => {}
-    }
-  }, [])
 
   const isDark = useContext(darkModeContext)
 
@@ -34,7 +24,6 @@ export default function MapBackground() {
             baseFrequency="0.6"
             numOctaves="3"
             stitchTiles="stitch"
-            seed={seed}
           />
         </filter>
 
@@ -43,10 +32,6 @@ export default function MapBackground() {
       <Overlay />
     </Wrapper>
   ) : null
-}
-
-export const updateSeed = () => {
-  seedUpdater(seed => seed + 1)
 }
 
 const Wrapper = styled.div`
