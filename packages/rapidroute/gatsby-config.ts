@@ -73,13 +73,6 @@ const config: GatsbyConfig = {
       },
     },
     {
-      resolve: "gatsby-source-filesystem",
-      options: {
-        name: "images",
-        path: path.join(__dirname, "src", "images"),
-      },
-    },
-    {
       resolve: "gatsby-plugin-svgr",
       options: {
         prettier: true,

@@ -1,4 +1,4 @@
-import { SegmentType } from "components/createSegments"
+import { SegmentType } from "components/Segment/createSegments"
 import { getLineDirection } from "components/Segment/getLineDirections"
 import getProvider from "components/Segment/getProvider"
 import { expandGate } from "components/Segment/SingleRoute"

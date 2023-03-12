@@ -7,10 +7,10 @@ import { getPath } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
 
-import createSegments, { SegmentType } from "./createSegments"
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
 import BeginNavigation from "./Segment/BeginNavigation"
+import createSegments, { SegmentType } from "./Segment/createSegments"
 import WillArrive from "./Segment/WillArrive"
 import Spinner from "./Spinner"
 

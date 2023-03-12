@@ -1,4 +1,4 @@
-import { SegmentType } from "components/createSegments"
+import { SegmentType } from "components/Segment/createSegments"
 import { inObject, SPEEDS } from "pathfinding/findPath/getRouteTime"
 import { session } from "utils/localUtils"
 

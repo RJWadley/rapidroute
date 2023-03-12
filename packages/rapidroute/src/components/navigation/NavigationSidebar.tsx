@@ -8,9 +8,9 @@ import ScrollTrigger from "gsap/ScrollTrigger"
 import styled from "styled-components"
 import { useDeepCompareEffect } from "use-deep-compare"
 
+import useFollowedRoute from "components/navigation/useFollowedRoute"
+import useNavigation from "components/navigation/useNavigation"
 import { NavigationContext } from "components/Providers/NavigationContext"
-import useFollowedRoute from "navigation/useFollowedRoute"
-import useNavigation from "navigation/useNavigation"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 

@@ -30,7 +30,7 @@ let currentAudio: HTMLAudioElement | undefined
 
 async function playAudio(data: string, rate: number) {
   if (!currentAudio) currentAudio = new Audio()
-  currentAudio.src = `data:audio/mpeg;base64,${data}`
+  currentAudio.src = `data:assets/audiompeg;base64,${data}`
   currentAudio.playbackRate = rate
 
   await currentAudio.play().catch(() => {

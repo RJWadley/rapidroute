@@ -1,4 +1,4 @@
-import Changelog from "components/changelog"
+import Changelog from "components/ChangelogCasing"
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Header from "components/Header"
 import Layout from "components/Layout"

@@ -2,7 +2,7 @@ import { useState } from "react"
 
 import { useDeepCompareEffect } from "use-deep-compare"
 
-import { SegmentType } from "components/createSegments"
+import { SegmentType } from "components/Segment/createSegments"
 
 /**
  * given the most up-to-date route from the player to the destination,

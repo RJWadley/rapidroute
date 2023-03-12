@@ -2,9 +2,9 @@ import { useContext } from "react"
 
 import styled from "styled-components"
 
-import { SegmentType } from "components/createSegments"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import RoundButton from "components/RoundButton"
+import { SegmentType } from "components/Segment/createSegments"
 import invertLightness from "utils/invertLightness"
 import { loadPage } from "utils/Loader/TransitionUtils"
 

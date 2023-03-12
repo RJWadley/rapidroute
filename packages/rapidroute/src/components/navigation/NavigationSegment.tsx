@@ -4,9 +4,9 @@ import gsap from "gsap"
 import ScrollTrigger from "gsap/ScrollTrigger"
 import styled from "styled-components"
 
-import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
 import Segment from "components/Segment"
+import { SegmentType } from "components/Segment/createSegments"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 

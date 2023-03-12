@@ -3,8 +3,8 @@ import { useContext, useMemo, useState } from "react"
 import { Provider, Route } from "@rapidroute/database-types"
 import styled, { css } from "styled-components"
 
-import { SegmentType } from "components/createSegments"
 import { darkModeContext } from "components/Providers/DarkMode"
+import { SegmentType } from "components/Segment/createSegments"
 import invertLightness from "utils/invertLightness"
 
 import getProvider from "./getProvider"

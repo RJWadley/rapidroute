@@ -1,8 +1,7 @@
 import { useRef } from "react"
 
+import RapidRouteLogo from "assets/images/global/RapidRouteLogo.svg"
 import styled from "styled-components"
-
-import RapidRouteLogo from "images/global/RapidRouteLogo.svg"
 
 interface MapTagProps {
   className?: string
