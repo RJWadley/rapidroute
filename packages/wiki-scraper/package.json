@@ -12,7 +12,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
-    "firebase": "^9.17.1",
+    "firebase": "^9.17.2",
     "flexsearch": "^0.7.31",
     "flexsearch-ts": "^0.7.31",
     "web-scraper-headless": "^1.0.7"
