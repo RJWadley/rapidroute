@@ -85,12 +85,13 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
     const zoomY =
       viewport.screenHeight /
       (distanceY + getPadding("top") + getPadding("bottom"))
-    const zoom = Math.min(zoomX, zoomY)
+    const endZoom = Math.min(zoomX, zoomY)
+    const startZoom = viewport.scale.x
 
     const values = {
       x: viewport.center.x,
       y: viewport.center.y,
-      zoom: viewport.scale.x,
+      zoomProgress: 0,
     }
 
     // didn't like the built-in animation so doing this instead
@@ -99,14 +100,17 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
       runningTween = gsap.to(values, {
         x: centerX,
         y: centerZ,
-        zoom,
+        zoomProgress: 1,
         duration: 1,
         ease: "linear",
         onUpdate: () => {
           if (!canMoveCamera()) return reject()
           if (viewport.destroyed) return reject()
           viewport.moveCenter(values.x, values.y)
-          viewport.setZoom(values.zoom, true)
+          viewport.setZoom(
+            startZoom + (endZoom - startZoom) * values.zoomProgress ** 1.3,
+            true
+          )
           triggerMovementManually()
         },
         onComplete: () => {
