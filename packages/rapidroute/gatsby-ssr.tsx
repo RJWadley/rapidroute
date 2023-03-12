@@ -1,5 +1,5 @@
 import "the-new-css-reset/css/reset.css"
-import React, { ReactNode } from "react"
+import { ReactNode } from "react"
 
 import PageTransition from "components/PageTransition"
 import Providers from "components/Providers"

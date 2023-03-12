@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { ReactNode, useContext, useEffect, useState } from "react"
+import { ReactNode, useContext, useEffect, useState } from "react"
 
 import gsap from "gsap"
 import Flip from "gsap/Flip"

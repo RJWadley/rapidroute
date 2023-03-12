@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 
 import { SearchIndex } from "@rapidroute/database-types"
 import gsap from "gsap"

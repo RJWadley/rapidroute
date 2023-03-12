@@ -60,7 +60,11 @@ function generateTexture(colors: string[], renderer: IRenderer) {
     const invertedIndex = colors.length - index - 1
     const colorAsNumber = parseInt(color.replace("#", ""), 16)
     graphics.beginFill(colorAsNumber)
-    graphics.drawCircle(0, 0, (BASE_WIDTH + invertedIndex * LAYER_WIDTH) * renderer.resolution)
+    graphics.drawCircle(
+      0,
+      0,
+      (BASE_WIDTH + invertedIndex * LAYER_WIDTH) * renderer.resolution
+    )
     graphics.endFill()
   })
 

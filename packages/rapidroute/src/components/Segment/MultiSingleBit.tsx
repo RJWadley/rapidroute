@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 
 import { Provider, Route } from "@rapidroute/database-types"
 import styled, { css } from "styled-components"

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react"
+import { ReactNode } from "react"
 
 import { DarkModeProvider } from "./DarkMode"
 import { NavigationProvider } from "./NavigationContext"

@@ -1,5 +1,3 @@
-import React from "react"
-
 import { Location } from "@rapidroute/database-types"
 import styled from "styled-components"
 

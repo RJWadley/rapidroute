@@ -1,6 +1,6 @@
 /* eslint-disable ssr-friendly/no-dom-globals-in-module-scope */
 import "the-new-css-reset/css/reset.css"
-import React, { ReactNode } from "react"
+import { ReactNode } from "react"
 import "hacktimer/HackTimer"
 
 import gsap from "gsap"

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import gsap from "gsap"
 import { ScrollToPlugin } from "gsap/all"

@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useEffect, useState } from "react"
+import { createContext, ReactNode, useEffect, useState } from "react"
 
 import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"

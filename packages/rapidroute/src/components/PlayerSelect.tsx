@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import { useContext, useEffect } from "react"
 
 import gsap from "gsap"
 import styled, { keyframes } from "styled-components"

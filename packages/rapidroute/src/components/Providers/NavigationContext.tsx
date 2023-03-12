@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useMemo, useState } from "react"
+import { createContext, ReactNode, useMemo, useState } from "react"
 
 import { SegmentType } from "components/createSegments"
 

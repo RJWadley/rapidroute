@@ -1,5 +1,3 @@
-import React from "react"
-
 import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"

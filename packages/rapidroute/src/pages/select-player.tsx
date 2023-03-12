@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import { useContext, useEffect } from "react"
 
 import styled from "styled-components"
 
@@ -18,9 +18,7 @@ export default function SelectPlayer() {
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
 
   const updatePlayers = () => {
-    fetch(
-      "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
-    )
+    fetch("https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json")
       .then(response => response.json())
       .then((data: WorldInfo) => {
         setPlayers(prev =>

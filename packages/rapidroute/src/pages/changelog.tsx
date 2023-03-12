@@ -1,5 +1,3 @@
-import React from "react"
-
 import Changelog from "components/changelog"
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Header from "components/Header"

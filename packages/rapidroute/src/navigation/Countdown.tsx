@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 
 import { RouteMode } from "@rapidroute/database-types"
 import gsap from "gsap"
