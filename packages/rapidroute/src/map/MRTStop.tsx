@@ -55,8 +55,6 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
       const opacity = Math.max(0, Math.min(1, 1 - (zoom - 2.75)))
       containerRef.current.alpha = opacity
-      if (opacity === 0) hideItem(containerRef.current)
-      else showItem(containerRef.current)
     }
   }
   useViewportMoved(updateOpacityWhenClose)

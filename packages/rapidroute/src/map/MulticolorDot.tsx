@@ -14,6 +14,9 @@ interface LineProps {
 
 const textures: { [key: string]: Texture } = {}
 
+const BASE_WIDTH = 20
+const LAYER_WIDTH = 16
+
 const TYPE = "MulticolorDot"
 export default CustomPIXIComponent(
   {
@@ -41,7 +44,7 @@ export default CustomPIXIComponent(
         instance.x = point.x
         instance.y = point.z
         instance.anchor.set(0.5, 0.5)
-        const width = 20 + (colors.length - 1) * 16
+        const width = BASE_WIDTH + (colors.length - 1) * LAYER_WIDTH
         instance.width = width
         instance.height = width
       }
@@ -57,7 +60,7 @@ function generateTexture(colors: string[], renderer: IRenderer) {
     const invertedIndex = colors.length - index - 1
     const colorAsNumber = parseInt(color.replace("#", ""), 16)
     graphics.beginFill(colorAsNumber)
-    graphics.drawCircle(0, 0, 20 + invertedIndex * 16)
+    graphics.drawCircle(0, 0, (BASE_WIDTH + invertedIndex * LAYER_WIDTH) * renderer.resolution)
     graphics.endFill()
   })
 
