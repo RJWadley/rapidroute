@@ -53,6 +53,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       setShowSearchList(false)
       if (searchRole === "from") {
         document.getElementById("to")?.focus()
+      } else {
+        document.getElementById("to")?.blur()
       }
       // update text to match the context
       if (searchRole === "from" && from)
