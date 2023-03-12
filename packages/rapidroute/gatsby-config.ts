@@ -128,6 +128,9 @@ const config: GatsbyConfig = {
       },
     },
   ],
+  flags: {
+    DEV_SSR: true,
+  },
 }
 
 export default config
