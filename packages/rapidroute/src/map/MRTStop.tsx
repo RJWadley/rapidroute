@@ -2,6 +2,7 @@ import { useRef } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
+
 import { session } from "utils/localUtils"
 
 import MulticolorDot from "./MulticolorDot"

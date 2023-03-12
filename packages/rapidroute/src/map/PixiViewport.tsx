@@ -4,7 +4,10 @@ import { Simple } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
+
 import { session } from "utils/localUtils"
+
+import { updateSeed } from "./MapBackground"
 
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
@@ -45,6 +48,7 @@ const DisplayObjectViewport = CustomPIXIComponent(
         if (viewport.dirty && !viewport.destroyed) {
           // cull whenever the viewport moves
           cull.cull(viewport.getVisibleBounds())
+          updateSeed()
           viewport.dirty = false
         }
       })
