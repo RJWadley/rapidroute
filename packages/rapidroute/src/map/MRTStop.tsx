@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
@@ -23,6 +23,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const viewport = useViewport()
   const textRef = useRef<Text>(null)
   const containerRef = useRef<Container>(null)
+  const [hover, setHover] = useState(false)
 
   const updateSize = () => {
     if (textRef.current && viewport)
@@ -33,13 +34,12 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   }
 
   const pointerIn = () => {
+    setHover(true)
     updateSize()
-    if (textRef.current) showItem(textRef.current, "auto")
     window.addEventListener("wheel", updateSize)
   }
   const pointerOut = () => {
-    updateSize()
-    if (textRef.current) hideItem(textRef.current)
+    setHover(false)
     window.removeEventListener("wheel", updateSize)
   }
   const onClick = () => {
@@ -75,15 +75,16 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
       ref={containerRef}
     >
       <MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
-      <Text
-        text={name}
-        x={x}
-        y={z}
-        style={regular}
-        ref={textRef}
-        anchor="0.5, 1.5"
-        renderable={false}
-      />
+      {hover && (
+        <Text
+          text={name}
+          x={x}
+          y={z}
+          style={regular}
+          ref={textRef}
+          anchor="0.5, 1.5"
+        />
+      )}
     </Container>
   )
 }
