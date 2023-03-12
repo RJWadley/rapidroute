@@ -65,6 +65,11 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
       onpointerenter={pointerIn}
       onpointerout={pointerOut}
       onclick={onClick}
+      ontouchstart={pointerIn}
+      ontouchend={() => {
+        pointerOut()
+        onClick()
+      }}
       cursor="pointer"
       renderable={visible}
       ref={containerRef}

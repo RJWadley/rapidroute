@@ -83,7 +83,11 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
       onpointerenter={pointerIn}
       onpointerout={pointerOut}
       onclick={click}
-      ontouchstart={click}
+      ontouchstart={pointerIn}
+      ontouchend={() => {
+        pointerOut()
+        click()
+      }}
       renderable={false}
     >
       <Text text={name} style={regular} anchor="0.5, 0.5" cacheAsBitmap />

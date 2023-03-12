@@ -100,7 +100,11 @@ export default function MapPlayer({ player }: { player: Player }) {
       onpointerenter={pointerIn}
       onpointerout={pointerOut}
       onclick={click}
-      ontouchstart={click}
+      ontouchstart={pointerIn}
+      ontouchend={() => {
+        pointerOut()
+        click()
+      }}
       x={initialPosition.x}
       y={initialPosition.z}
       alpha={0}
