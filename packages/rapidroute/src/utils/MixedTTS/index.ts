@@ -39,7 +39,30 @@ export const getVoices = async (lang: string = "en") => {
       source: "tik",
     }))
 
-  const languageRegex = /\([\w\s]+\(?\w+\)?\)/g
+  // (English (US)) or (English US)
+  const parenthesisLanguage = /\([\w\s]+\(?(\w+)\)?\)/
+  const dashLanguage = /[eE][Nn]-(\w\w)-?/
+  const simpleLanguage = /U[SK]/
+  const countryNames = {
+    US: /\(?United States\)?/,
+    UK: /\(?United Kingdom\)?/,
+    AU: /\(?Australia\)?/,
+    CA: /\(?Canada\)?/,
+    IN: /\(?India\)?/,
+  } as const
+
+  const getLangLabel = (name: string) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [language, regex] of Object.entries(countryNames)) {
+      if (regex.test(name)) return language
+    }
+
+    const parenthesisMatch = name.match(parenthesisLanguage)?.[1]
+    const dashMatch = name.match(dashLanguage)?.[1]
+    const simpleMatch = name.match(simpleLanguage)?.[0]
+
+    return parenthesisMatch ?? dashMatch?.toUpperCase() ?? simpleMatch ?? ""
+  }
 
   const easySpeechVoices: UniversalVoice[] = useEasySpeech
     ? EasySpeech.voices()
@@ -55,13 +78,17 @@ export const getVoices = async (lang: string = "en") => {
           id: `v${v.name}`,
           lang: v.lang,
           name: v.name
-            .replace(languageRegex, "")
+            .replace(parenthesisLanguage, "")
             .replace(" English", "")
-            .replace(/U[KS]/, ""),
-          langLabel: v.name
-            // filter language labels out
-            .replace(v.name.replace(languageRegex, ""), "")
-            .replace(/\(English \((\w+)\)\)/g, "$1"),
+            .replace(dashLanguage, "")
+            .replace(simpleLanguage, "")
+            .replace(/\(?United States\)?/, "")
+            .replace(/\(?United Kingdom\)?/, "")
+            .replace(/\(?Australia\)?/, "")
+            .replace(/\(?Canada\)?/, "")
+            .replace("- ", "")
+            .replace("Android Speech Services by Google", "Android"),
+          langLabel: getLangLabel(v.name),
           source: "easy-speech",
           speechSynthesisVoice: v,
           default: v.default,
