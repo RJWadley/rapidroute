@@ -1,17 +1,14 @@
-import { useContext, useRef } from "react"
+import { useRef } from "react"
 
 import styled from "styled-components"
 
-import { darkModeContext } from "components/Providers/DarkMode"
 import useWindowSize from "utils/useWindowSize"
 
 export default function MapBackground() {
   const svgEl = useRef<SVGSVGElement>(null)
   const windowSize = useWindowSize()
 
-  const isDark = useContext(darkModeContext)
-
-  return isDark ? (
+  return (
     <Wrapper>
       <svg
         ref={svgEl}
@@ -31,7 +28,7 @@ export default function MapBackground() {
       </svg>
       <Overlay />
     </Wrapper>
-  ) : null
+  )
 }
 
 const Wrapper = styled.div`
