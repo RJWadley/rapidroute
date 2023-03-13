@@ -1,5 +1,7 @@
 import { useEffect } from "react"
 
+import { getDistance } from "pathfinding/findPath/pathUtil"
+
 import { triggerMovementManually, useViewport } from "./PixiViewport"
 
 /**
@@ -13,19 +15,33 @@ export default function useDoubleTapZoom() {
     let firstTap = 0
     let isZooming = false
     let previousY = 0
+    let previousX = 0
     const distances: number[] = []
     let dy = 0
-    const TOUCH_TAP_TIME = 300
+    const TOUCH_TAP_TIME = 500
+    const MAX_TAP_DISTANCE = 30
 
     const onTouchStart = (e: TouchEvent) => {
       const now = Date.now()
       if (now - firstTap < TOUCH_TAP_TIME) {
+        if (e.touches.length > 1) return
+        const distanceBetweenTaps = getDistance(
+          previousX,
+          previousY,
+          e.touches[0].clientX,
+          e.touches[0].clientY
+        )
+        if (distanceBetweenTaps > MAX_TAP_DISTANCE) return
         isZooming = true
         firstTap = 0
         previousY = e.touches[0].clientY
+        previousX = e.touches[0].clientX
         dy = 0
         if (viewport) viewport.pause = true
       } else {
+        if (e.touches.length > 1) return
+        previousY = e.touches[0].clientY
+        previousX = e.touches[0].clientX
         firstTap = now
       }
     }
