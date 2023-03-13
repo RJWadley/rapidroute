@@ -5,7 +5,6 @@ import { useLocation } from "react-use"
 import styled from "styled-components"
 
 import RoundButton from "components/RoundButton"
-import { isBrowser } from "utils/functions"
 import UniversalLink from "utils/Loader/UniversalLink"
 import { getLocal } from "utils/localUtils"
 import media from "utils/media"
@@ -25,15 +24,6 @@ export default function Settings() {
   const [open, setOpen] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
   const location = useLocation()
-
-  useEffect(() => {
-    if (isBrowser())
-      gsap.to(openButton, {
-        delay: 0.5,
-        opacity: 1,
-        duration: 0.5,
-      })
-  }, [openButton])
 
   useEffect(() => {
     gsap.to(menu.current, {
@@ -77,7 +67,16 @@ export default function Settings() {
   return playerHead ? (
     <>
       <Open ref={el => setOpenButton(el)} onClick={() => setOpen(!open)}>
-        <PlayerHead src={playerHead} alt="your player head" />
+        <PlayerHead
+          src={playerHead}
+          alt="your player head"
+          onLoad={e => {
+            gsap.to(e.target, {
+              autoAlpha: 1,
+              delay: 0.5,
+            })
+          }}
+        />
       </Open>
       <Menu ref={menu}>
         <Heading>
@@ -107,6 +106,7 @@ const PlayerHead = styled.img`
   width: 100%;
   height: 100%;
   border-radius: 10px;
+  opacity: 0;
 `
 
 const Menu = styled.div`
