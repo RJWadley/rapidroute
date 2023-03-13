@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 import { useEffect } from "react"
 
-import { navigate as gatsbyNavigate } from "gatsby-link"
+import { navigate as gatsbyNavigate } from "gatsby"
 import gsap from "gsap"
 
 import { pathnameMatches, sleep } from "utils/functions"
