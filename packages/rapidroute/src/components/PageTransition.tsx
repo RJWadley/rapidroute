@@ -11,7 +11,7 @@ import {
 
 export default function PageTransition() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const logoRef = useRef<SVGSVGElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
 
   const duration = 0.5
 
@@ -75,7 +75,9 @@ export default function PageTransition() {
 
   return (
     <Wrapper ref={wrapperRef}>
-      <StyledLogo ref={logoRef} />
+      <div ref={logoRef}>
+        <StyledLogo />
+      </div>
     </Wrapper>
   )
 }
