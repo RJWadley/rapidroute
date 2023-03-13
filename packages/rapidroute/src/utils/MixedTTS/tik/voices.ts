@@ -48,6 +48,7 @@ const voices = [
     lang: "en-AU",
     name: "Female",
     langLabel: "AU",
+    default: true,
   },
   {
     id: "en_au_002",

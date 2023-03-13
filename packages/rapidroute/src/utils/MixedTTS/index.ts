@@ -37,6 +37,7 @@ export const getVoices = async (lang: string = "en") => {
       name: v.name,
       langLabel: v.langLabel,
       source: "tik",
+      default: "default" in v && v.default,
     }))
 
   // (English (US)) or (English US)
@@ -112,6 +113,7 @@ export const getDefaultVoice = async () => {
   const preferredVoice = "Google US English"
 
   const fallbackDefaults = [
+    preferredVoice,
     // Apple Voices
     "Samantha",
     "Karen",
