@@ -1,5 +1,3 @@
-import path from "path"
-
 import type { GatsbyConfig } from "gatsby"
 
 const config: GatsbyConfig = {
@@ -15,12 +13,8 @@ const config: GatsbyConfig = {
     typesOutputPath: "src/types/gatsby-types.d.ts",
   },
   plugins: [
-    "gatsby-plugin-styled-components",
     "gatsby-plugin-sitemap",
     "gatsby-plugin-netlify",
-    "gatsby-plugin-image",
-    "gatsby-plugin-sharp",
-    "gatsby-transformer-sharp",
     "gatsby-plugin-offline",
     {
       resolve: "gatsby-plugin-manifest",
@@ -61,42 +55,17 @@ const config: GatsbyConfig = {
       },
     },
     {
-      resolve: "gatsby-plugin-root-import",
-      options: {
-        src: path.resolve("src"),
-      },
-    },
-    {
-      resolve: "gatsby-plugin-layout",
-      options: {
-        component: path.resolve("./src/components/Providers/index.tsx"),
-      },
-    },
-    {
       resolve: "gatsby-plugin-svgr",
       options: {
         prettier: true,
         svgo: true,
-        memo: true,
-        ref: true,
         svgoConfig: {
           plugins: [
-            {
-              name: "removeViewBox",
-              active: false,
-            },
-            {
-              name: "removeDimensions",
-              active: true,
-            },
-            {
-              name: "removeRasterImages",
-              active: true,
-            },
-            {
-              name: "reusePaths",
-              active: true,
-            },
+            "removeViewBox",
+            "removeDimensions",
+            "removeRasterImages",
+            "reusePaths",
+            "removeUselessDefs",
             {
               name: "cleanupIDs",
               active: false,
@@ -106,8 +75,8 @@ const config: GatsbyConfig = {
               active: false,
             },
             {
-              name: "removeUselessDefs",
-              active: true,
+              name: "collapseGroups",
+              active: false,
             },
           ],
         },
@@ -120,6 +89,7 @@ const config: GatsbyConfig = {
         silent: true,
       },
     },
+    "gatsby-plugin-styled-components",
   ],
   flags: {
     DEV_SSR: true,
