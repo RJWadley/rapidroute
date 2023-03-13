@@ -1,5 +1,6 @@
-import { ReactComponent as Logo } from "assets/images/global/NavigatorLogo.svg"
 import styled from "styled-components"
+
+import { ReactComponent as Logo } from "assets/images/global/NavigatorLogo.svg"
 
 import { Bold } from "./NavHistory"
 

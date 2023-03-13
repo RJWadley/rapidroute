@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react"
 
 import gsap from "gsap"
-import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import styled from "styled-components"
 
+import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import {
   registerTransition,
   unregisterTransition,

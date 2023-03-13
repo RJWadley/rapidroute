@@ -204,6 +204,7 @@ export default function SearchList({
 }
 
 const Wrapper = styled.div`
+  height: 0;
   max-width: 1000px;
   margin: 0 auto;
   background-color: var(--mid-background);

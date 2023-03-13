@@ -2,9 +2,9 @@ import { useContext, useEffect, useRef, useState } from "react"
 
 import { Location } from "@rapidroute/database-types"
 import gsap from "gsap"
-import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import styled from "styled-components"
 
+import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getPath } from "data/getData"
 import { getLocal, setLocal } from "utils/localUtils"

@@ -21,9 +21,7 @@ const circlePosition = "at calc(100% - 35px) 35px"
 export default function Settings() {
   const player = getLocal("selectedPlayer")?.toString()
   const playerHead = usePlayerHead(player ?? "")
-  const [openButton, setOpenButton] = useState<HTMLButtonElement | null>(
-    null
-  )
+  const [openButton, setOpenButton] = useState<HTMLButtonElement | null>(null)
   const [open, setOpen] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
   const location = useLocation()
