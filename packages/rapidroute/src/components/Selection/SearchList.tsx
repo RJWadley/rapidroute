@@ -121,9 +121,9 @@ export default function SearchList({
   }, [isMobile, show])
 
   const setPlace = useCallback(
-    (place: string) => {
-      if (searchRole === "from") setFrom(place)
-      else setTo(place)
+    (place: string | null | undefined) => {
+      if (searchRole === "from") setFrom(place ?? null)
+      else setTo(place ?? null)
     },
     [searchRole, setFrom, setTo]
   )
@@ -155,7 +155,7 @@ export default function SearchList({
   // when closing the search list, select the highlighted location
   useEffect(() => {
     const id = searchResults[highlightedIndex]?.uniqueId
-    if (!show && id) setPlace(id)
+    if (!show) setPlace(id)
   }, [show, highlightedIndex, searchResults, setPlace])
 
   // when selected index changes, make sure it is in view

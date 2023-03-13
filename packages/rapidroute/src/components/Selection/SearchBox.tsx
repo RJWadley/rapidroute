@@ -20,11 +20,11 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
 
   // update the search box when the context changes
   useEffect(() => {
-    if (searchRole === "from" && inputRef.current && from)
+    if (searchRole === "from" && inputRef.current)
       inputRef.current.value = getTextboxName(from)
   }, [from, searchRole])
   useEffect(() => {
-    if (searchRole === "to" && inputRef.current && to)
+    if (searchRole === "to" && inputRef.current)
       inputRef.current.value = getTextboxName(to)
   }, [searchRole, to])
 
@@ -57,10 +57,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
         document.getElementById("to")?.blur()
       }
       // update text to match the context
-      if (searchRole === "from" && from)
-        inputRef.current.value = getTextboxName(from)
-      else if (searchRole === "to" && to)
-        inputRef.current.value = getTextboxName(to)
+      if (searchRole === "from") inputRef.current.value = getTextboxName(from)
+      else if (searchRole === "to") inputRef.current.value = getTextboxName(to)
     }
 
     updateSize()

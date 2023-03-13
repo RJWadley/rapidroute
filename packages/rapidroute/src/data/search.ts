@@ -66,6 +66,7 @@ export function search(query: string) {
   return results.map(x => (typeof x === "number" ? x.toString() : x))
 }
 
-export function getTextboxName(locationId: string) {
+export function getTextboxName(locationId: string | null) {
+  if (!locationId) return ""
   return displayLookup[locationId] ?? locationId
 }
