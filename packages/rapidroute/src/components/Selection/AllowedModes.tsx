@@ -25,8 +25,8 @@ export default function AllowedModes() {
   useEffect(() => {
     const t1 = gsap.to(filtersRef.current, {
       height: showFilters ? "auto" : 0,
-      duration: 1,
-      ease: showFilters ? "power3.out" : "power3.in",
+      duration: showFilters ? 1 : 2,
+      ease: showFilters ? "power3.out" : "power3.inOut",
     })
 
     if (filtersRef.current?.children) {
