@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
 
 export default function useMedia(query: string): boolean {
   const [state, setState] = useState(false)
@@ -15,7 +15,9 @@ export default function useMedia(query: string): boolean {
       if (!mounted) {
         return
       }
-      setState(!!mql.matches)
+      startTransition(() => {
+        setState(!!mql.matches)
+      })
     }
     mql.addEventListener("change", onChange)
 

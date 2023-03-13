@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useEffect, useState } from "react"
+import {
+  createContext,
+  ReactNode,
+  startTransition,
+  useEffect,
+  useState,
+} from "react"
 
 import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"
@@ -28,8 +34,10 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (preference) {
       setLocal("darkMode", preference)
-      if (preference === "system") setIsDark(systemIsDark)
-      else setIsDark(preference === "dark")
+      startTransition(() => {
+        if (preference === "system") setIsDark(systemIsDark)
+        else setIsDark(preference === "dark")
+      })
     }
   }, [preference, systemIsDark])
 
