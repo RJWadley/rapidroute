@@ -1,4 +1,4 @@
-<img src="../rapidroute/src/images/global/importer_graphic.svg">
+<img src="../rapidroute/src/assets/images/global/importer_graphic.svg">
 
 # Database Importer
 
