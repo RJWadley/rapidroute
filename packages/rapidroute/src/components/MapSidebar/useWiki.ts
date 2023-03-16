@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
-import { useAsync } from "react-use"
+import { useAsync, useTimeout } from "react-use"
 
 import { getTextboxName } from "data/search"
 import { AllWikiImages } from "types/wiki/AllImages"
@@ -15,9 +15,9 @@ const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
  * @param searchTerm the search term to use
  */
 export default function useWiki(idToSearch: string) {
+  const searchTerm =
+    getTextboxName(idToSearch).split("-").slice(1).join("-") ?? idToSearch
   const search = useAsync(async () => {
-    const searchTerm =
-      getTextboxName(idToSearch).split("-").slice(1).join("-") ?? idToSearch
     if (!searchTerm) return
 
     const specificParams = {
@@ -67,7 +67,9 @@ export default function useWiki(idToSearch: string) {
     }
 
     return undefined
-  }, [idToSearch])
+  }, [searchTerm])
+
+  useTimeout(3000)
 
   return search
 }
