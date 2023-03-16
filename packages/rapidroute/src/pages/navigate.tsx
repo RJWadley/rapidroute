@@ -96,7 +96,7 @@ export default function Navigate() {
       </ControlsOverlay>
       <MapBackground />
       <StyledMapTag />
-      <StyledCanvas />
+      <Map />
       <NavigationSidebar />
     </Layout>
   )
@@ -123,12 +123,4 @@ const StyledMapTag = styled(MapTag)`
       height: 15px;
     }
   }
-`
-
-const StyledCanvas = styled(Map)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
 `
