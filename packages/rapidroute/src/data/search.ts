@@ -37,7 +37,7 @@ export function search(query: string) {
 
   results = [...new Set([...strictMatches, ...results])]
 
-  if ("central city".startsWith(query.toLowerCase())) {
+  if (results.length && "central city".startsWith(query.toLowerCase())) {
     results = results.filter(x => x !== "Spawn")
     results = ["Spawn", ...results]
   }
