@@ -28,8 +28,8 @@ export default function Pin() {
   useViewportMoved(onMove)
 
   useEffect(() => {
+    setLocation(undefined)
     if (!activeItem) {
-      setLocation(undefined)
       return
     }
     session.lastMapInteraction = undefined

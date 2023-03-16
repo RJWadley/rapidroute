@@ -37,7 +37,7 @@ const Wrapper = styled.div`
   position: relative;
   z-index: -1;
   border-radius: 0 0 20px 20px;
-  margin-bottom: 100px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: start;

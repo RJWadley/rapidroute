@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { getTextboxName, useSearch } from "data/search"
@@ -15,7 +15,23 @@ export default function useListArrowKeys(
   const [focusedItem, setFocusedItem] = useState<string>()
   const [userTyped, setUserTyped] = useState<string>()
   const currentSearch = useSearch(userTyped)
-  const { setActiveItem } = useContext(MapSearchContext)
+  const { activeItem, setActiveItem } = useContext(MapSearchContext)
+  const activeUpdateInternal = useRef(false)
+
+  const updateActive = useCallback(
+    (item: string) => {
+      activeUpdateInternal.current = true
+      setActiveItem(item)
+    },
+    [setActiveItem]
+  )
+  useEffect(() => {
+    if (activeUpdateInternal.current) {
+      activeUpdateInternal.current = false
+    } else if (input) {
+      input.value = getTextboxName(activeItem)
+    }
+  }, [activeItem, input])
 
   const selectAndClose = useCallback(
     (newItem: string | undefined) => {
@@ -24,9 +40,9 @@ export default function useListArrowKeys(
         input.value = newItem ? getTextboxName(newItem) : ""
         input.blur()
       }
-      setActiveItem(newItem ?? "")
+      updateActive(newItem ?? "")
     },
-    [input, setActiveItem]
+    [input, updateActive]
   )
 
   /**
@@ -66,7 +82,7 @@ export default function useListArrowKeys(
       if (nextIndex >= currentSearch.length) nextIndex = -1
       const nextItem = currentSearch[nextIndex]
       setFocusedItem(nextItem)
-      setActiveItem(nextItem)
+      updateActive(nextItem)
 
       if (input) {
         input.value =

@@ -11,19 +11,13 @@ const searchWorker =
     charset: "latin:simple",
   })
 
-const strictSearchWorker =
-  Index &&
-  new Index({
-    tokenize: "strict",
-  })
-
 const displayLookup: Record<string, string> = {}
 
 getAll("searchIndex")
   .then(data => {
     Object.keys(data).forEach(key => {
       searchWorker.add(key, data[key].i)
-      strictSearchWorker.add(key, data[key].i)
+      // strictSearchWorker.add(key, data[key].i)
       displayLookup[key] = data[key].d
     })
   })
@@ -31,26 +25,19 @@ getAll("searchIndex")
   .catch(console.error)
 
 export function search(query: string) {
-  const strictResults = strictSearchWorker.search(query, {
+  let results = searchWorker.search(query, {
     suggest: true,
     limit: 200,
   })
 
-  const softResults = searchWorker.search(query, {
-    suggest: true,
-    limit: 200,
-  })
+  const strictMatches = results.filter(x =>
+    x.toString().toLowerCase().replace("_", " ").startsWith(query.toLowerCase())
+  )
+  strictMatches.sort(
+    (a, b) => a.toString().length - b.toString().length
+  )
 
-  let results = [...new Set([...strictResults, ...softResults])]
-
-  results = results.sort((a, b) => {
-    if (typeof a === "string" && typeof b === "string") {
-      // prefer exact matches, ignoring case
-      if (a.toLowerCase() === query.toLowerCase()) return -1
-      if (b.toLowerCase() === query.toLowerCase()) return 1
-    }
-    return 0
-  })
+  results = [...new Set([...strictMatches, ...results])]
 
   if (/\d+[, ]+\d+/g.test(query)) {
     const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]

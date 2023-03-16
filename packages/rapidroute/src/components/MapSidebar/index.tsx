@@ -2,12 +2,14 @@ import styled from "styled-components"
 
 import media from "utils/media"
 
+import ItemInformation from "./ItemInformation"
 import MapSearchBox from "./SearchBox"
 
 export default function MapSidebar() {
   return (
     <Wrapper>
       <MapSearchBox />
+      <ItemInformation />
     </Wrapper>
   )
 }
