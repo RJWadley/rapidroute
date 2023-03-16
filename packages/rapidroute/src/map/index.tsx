@@ -1,11 +1,14 @@
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
 
 import { Container, Stage } from "react-pixi-fiber"
 import { useMeasure } from "react-use"
 import styled from "styled-components"
 
+import { MapSearchContext } from "components/Providers/MapSearchContext"
+
 import AllCities from "./AllCities"
 import DynmapMarkers from "./DynmapMarkers"
+import Pin from "./Pin"
 import PixiHooks from "./PixiHooks"
 import PixiViewport from "./PixiViewport"
 import MapPlayers from "./Players"
@@ -13,6 +16,7 @@ import Satellite from "./Satellite"
 
 export default function Map() {
   const [ref, { width, height }] = useMeasure<HTMLDivElement>()
+  const searchContext = useContext(MapSearchContext)
 
   /**
    * prevent scroll events from bubbling up to the document
@@ -36,17 +40,20 @@ export default function Map() {
           height: "100%",
         }}
       >
-        <PixiViewport width={width} height={height}>
-          <PixiHooks />
-          {/* any elements in a container won't be culled */}
-          <Container>
-            <Satellite />
-          </Container>
+        <MapSearchContext.Provider value={searchContext}>
+          <PixiViewport width={width} height={height}>
+            <PixiHooks />
+            {/* any elements in a container won't be culled */}
+            <Container>
+              <Satellite />
+            </Container>
 
-          <DynmapMarkers />
-          <AllCities />
-          <MapPlayers />
-        </PixiViewport>
+            <DynmapMarkers />
+            <Pin />
+            <AllCities />
+            <MapPlayers />
+          </PixiViewport>
+        </MapSearchContext.Provider>
       </Stage>
     </Wrapper>
   )

@@ -28,21 +28,6 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       inputRef.current.value = getTextboxName(to)
   }, [searchRole, to])
 
-  // automatically update the size of the input box to fit the text
-  const updateSize = () => {
-    if (inputRef.current) {
-      // calculate the height of the input box
-      inputRef.current.style.height = ""
-      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`
-    }
-  }
-
-  useEffect(() => {
-    updateSize()
-    window.addEventListener("resize", updateSize)
-    return () => window.removeEventListener("resize", updateSize)
-  }, [from, to])
-
   const handleInput = () => {
     setSearchFor(inputRef.current?.value.replace(/\n/g, "") ?? "")
     setShowSearchList(true)

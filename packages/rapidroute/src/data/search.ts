@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react"
+
 import { Index } from "flexsearch-ts"
 
 import { getAll } from "./getData"
@@ -69,4 +71,14 @@ export function search(query: string) {
 export function getTextboxName(locationId: string | null) {
   if (!locationId) return ""
   return displayLookup[locationId] ?? locationId
+}
+
+export function useSearch(searchTerm: string | undefined) {
+  const [results, setResults] = useState<string[]>([])
+  const numberOfItems = Object.keys(displayLookup).length
+
+  useEffect(() => {
+    if (searchTerm) setResults(search(searchTerm))
+  }, [searchTerm, numberOfItems])
+  return results
 }

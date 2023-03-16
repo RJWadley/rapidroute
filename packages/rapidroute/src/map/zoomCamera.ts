@@ -124,8 +124,11 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
   })
 }
 
-export const zoomToPoint = (point: Point, viewport: Viewport) => {
-  const boxSize = 500
+export const zoomToPoint = (
+  point: Point,
+  viewport: Viewport,
+  boxSize = 500
+) => {
   return zoomToTwoPoints(
     new Point(point.x + boxSize, point.y + boxSize),
     new Point(point.x - boxSize, point.y - boxSize),
