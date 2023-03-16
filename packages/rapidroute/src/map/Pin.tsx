@@ -1,19 +1,14 @@
 import { useContext, useEffect, useRef, useState } from "react"
 
 import { Point, Texture } from "pixi.js"
-import { Container, Sprite, Text } from "react-pixi-fiber"
+import { Container, Sprite } from "react-pixi-fiber"
 
 import PinPNG from "assets/images/pin.png"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { getPath } from "data/getData"
 import { session } from "utils/localUtils"
 
-import MRTStop from "./MRTStop"
-import MulticolorDot from "./MulticolorDot"
-import { hideItem, showItem } from "./PixiUtils"
 import { useViewport, useViewportMoved } from "./PixiViewport"
-import { regular, regularHover } from "./textStyles"
-import useHideOverlapping from "./useHideOverlapping"
 import { zoomToPoint } from "./zoomCamera"
 
 export default function Pin() {
