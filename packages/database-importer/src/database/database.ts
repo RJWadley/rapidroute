@@ -8,7 +8,7 @@ import admin, { ServiceAccount } from "firebase-admin"
 
 // import accountKeyRAW from "../serviceAccountKey.json"
 import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
-import { removeUniqueId } from "./removeUniqueId"
+import { DeepRemoveUniqueId, removeUniqueId } from "./removeUniqueId"
 
 config()
 
@@ -24,7 +24,7 @@ admin.initializeApp({
 })
 
 const rawDatabase = admin.database()
-export const database: Partial<DatabaseType> = {}
+export const database: DeepRemoveUniqueId<Partial<DatabaseType>> = {}
 
 // we do the database all in one go to reduce usage and increase speed
 export const setupDatabase = async () => {
