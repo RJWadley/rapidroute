@@ -122,8 +122,8 @@ export default function SearchList({
 
   const setPlace = useCallback(
     (place: string | null | undefined) => {
-      if (searchRole === "from") setFrom(place ?? null)
-      else setTo(place ?? null)
+      if (searchRole === "from" && place !== undefined) setFrom(place)
+      else if (place !== undefined) setTo(place)
     },
     [searchRole, setFrom, setTo]
   )
