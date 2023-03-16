@@ -16,6 +16,7 @@ export default function useCities() {
       .then((data: City[]) => {
         // add the cities to the state 10 at a time
         if (mounted) setCities(data.slice(0, 10))
+        else return
         let i = 10
         const interval = setInterval(() => {
           startTransition(() => {

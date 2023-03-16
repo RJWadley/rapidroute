@@ -1,8 +1,10 @@
-import { useRef } from "react"
+import { useContext, useRef } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text } from "react-pixi-fiber"
 
+import { MapSearchContext } from "components/Providers/MapSearchContext"
+import { search } from "data/search"
 import { session } from "utils/localUtils"
 
 import { hideItem, showItem } from "./PixiUtils"
@@ -44,6 +46,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const viewport = useViewport()
   const containerRef = useRef<Container>(null)
   const hoverTextRef = useRef<Text>(null)
+  const { setActiveItem } = useContext(MapSearchContext)
 
   const onMove = () => {
     if (containerRef.current && viewport) {
@@ -64,6 +67,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const click = () => {
     session.followingPlayer = undefined
     session.lastMapInteraction = undefined
+    setActiveItem(search(name)[0])
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 

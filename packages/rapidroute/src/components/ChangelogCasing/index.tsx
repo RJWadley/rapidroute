@@ -12,9 +12,13 @@ export default function Changelog() {
       </div>
       <div className="changelog">
         <div>
-          <h2>2023-03-11 - Map Improvements</h2>
+          <h2>2023-03-16 - Map Improvements</h2>
           <h3>New Features</h3>
           <ul>
+            <li>
+              The map is now searchable, and displays information about the
+              place you searched for in the sidebar
+            </li>
             <li>
               The map has been rewritten in PIXI.js, and is now much faster
             </li>

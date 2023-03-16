@@ -1,8 +1,9 @@
-import { useRef, useState } from "react"
+import { useContext, useRef, useState } from "react"
 
 import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
 
+import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { session } from "utils/localUtils"
 
 import MulticolorDot from "./MulticolorDot"
@@ -23,6 +24,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const textRef = useRef<Text>(null)
   const containerRef = useRef<Container>(null)
   const [hover, setHover] = useState(false)
+  const { activeItem, setActiveItem } = useContext(MapSearchContext)
 
   const updateSize = () => {
     if (textRef.current && viewport)
@@ -43,6 +45,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   }
   const onClick = () => {
     session.lastMapInteraction = undefined
+    setActiveItem(name.match(/(\w\w?\d+)/)?.[1] ?? "")
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 
@@ -57,6 +60,16 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
     }
   }
   useViewportMoved(updateOpacityWhenClose)
+
+  const isActiveItem =
+    activeItem &&
+    // we need to avoid matching subsets like WN4 and WN46
+    // active id comes at the very end of the string
+    (name.endsWith(activeItem) ||
+      // or it comes earlier in the string
+      name.includes(`${activeItem} `))
+
+  const verticalSpacing = name.includes("\n") ? 2 : 3
 
   return (
     <Container
@@ -81,7 +94,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
           y={z}
           style={regular}
           ref={textRef}
-          anchor="0.5, 1.5"
+          anchor={isActiveItem ? `0.5, ${verticalSpacing}` : "0.5, 1.5"}
         />
       )}
     </Container>

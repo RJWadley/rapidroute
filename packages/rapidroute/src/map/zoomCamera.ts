@@ -1,12 +1,9 @@
-import { gsap } from "gsap"
 import { Viewport } from "pixi-viewport"
 import { Point } from "pixi.js"
 
 import { session } from "utils/localUtils"
 
 import { triggerMovementManually } from "./PixiViewport"
-
-let runningTween: gsap.core.Tween | undefined
 
 export const defaultPadding = {
   top: 100,
@@ -63,7 +60,7 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
  * pixi-viewport version with gsap
  */
 const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
-  return new Promise<void>((resolve, reject) => {
+  return new Promise<void>(resolve => {
     const cameraPadding = session.cameraPadding ?? defaultPadding
 
     const getPadding = (padding: keyof typeof cameraPadding) => {
@@ -86,49 +83,38 @@ const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
       viewport.screenHeight /
       (distanceY + getPadding("top") + getPadding("bottom"))
     const endZoom = Math.min(zoomX, zoomY)
-    const startZoom = viewport.scale.x
 
-    const values = {
-      x: viewport.center.x,
-      y: viewport.center.y,
-      zoomProgress: 0,
+    const removeOnWheel = () => {
+      viewport.plugins.remove("animate")
     }
-
-    // didn't like the built-in animation so doing this instead
-    if (canMoveCamera()) {
-      runningTween?.kill()
-      runningTween = gsap.to(values, {
-        x: centerX,
-        y: centerZ,
-        zoomProgress: 1,
-        duration: 1,
-        ease: "linear",
-        onUpdate: () => {
-          if (!canMoveCamera()) return reject()
-          if (viewport.destroyed) return reject()
-          viewport.moveCenter(values.x, values.y)
-          viewport.setZoom(
-            startZoom + (endZoom - startZoom) * values.zoomProgress ** 1.3,
-            true
-          )
-          triggerMovementManually()
-        },
-        onComplete: () => {
-          resolve()
-        },
-        onInterrupt: () => {
-          reject()
-        },
-      })
-    }
+    window.addEventListener("wheel", removeOnWheel)
+    viewport.animate({
+      time: 1000,
+      position: new Point(centerX, centerZ),
+      scale: endZoom,
+      removeOnInterrupt: true,
+      callbackOnComplete: () => {
+        triggerMovementManually()
+        resolve()
+        window.removeEventListener("wheel", removeOnWheel)
+      },
+    })
+    setTimeout(() => {
+      window.removeEventListener("wheel", removeOnWheel)
+    }, 1000)
   })
 }
 
-export const zoomToPoint = (point: Point, viewport: Viewport) => {
-  const boxSize = 500
+export const zoomToPoint = (
+  point: Point,
+  viewport: Viewport,
+  boxSize = 500
+) => {
   return zoomToTwoPoints(
     new Point(point.x + boxSize, point.y + boxSize),
     new Point(point.x - boxSize, point.y - boxSize),
     viewport
-  )
+  ).then(() => {
+    zoomToPoint(point, viewport, boxSize).catch(() => {})
+  })
 }

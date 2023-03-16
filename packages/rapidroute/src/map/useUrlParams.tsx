@@ -29,7 +29,7 @@ export default function useUrlParams() {
     if (now - loadedAt < 5 * 1000) return
 
     const { center } = viewport
-    const zoom = viewport.scale.x
+    const zoom = Math.round(viewport.scale.x * 10000) / 10000
     const following = session.followingPlayer
 
     if (Number.isNaN(center.x) || Number.isNaN(center.y) || Number.isNaN(zoom))
