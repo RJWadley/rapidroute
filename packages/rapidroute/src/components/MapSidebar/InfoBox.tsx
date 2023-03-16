@@ -39,6 +39,7 @@ const Wrapper = styled.div`
     margin-bottom: 10px;
     font-size: var(--small);
     font-weight: bold;
+    color: #111;
   }
 
   .infobox-above {
@@ -72,7 +73,7 @@ const Wrapper = styled.div`
     width: 100% !important;
     object-fit: contain;
     border-radius: 5px;
-    background: #eee
+    background: #eee;
   }
 
   .thumbimage img {
@@ -92,6 +93,10 @@ const Wrapper = styled.div`
   /* fix default color for MRT stops */
   .infobox-data span {
     color: black;
+  }
+
+  a:hover {
+    text-decoration: underline;
   }
 `
 
