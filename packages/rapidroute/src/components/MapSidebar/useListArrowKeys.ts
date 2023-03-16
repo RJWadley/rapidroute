@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { getTextboxName, useSearch } from "data/search"
@@ -17,6 +17,18 @@ export default function useListArrowKeys(
   const currentSearch = useSearch(userTyped)
   const { setActiveItem } = useContext(MapSearchContext)
 
+  const selectAndClose = useCallback(
+    (newItem: string | undefined) => {
+      setUserTyped(undefined)
+      if (input) {
+        input.value = newItem ? getTextboxName(newItem) : ""
+        input.blur()
+      }
+      setActiveItem(newItem ?? "")
+    },
+    [input, setActiveItem]
+  )
+
   /**
    * update userTyped when the input is typed in
    * handle selection when the user presses enter
@@ -28,12 +40,11 @@ export default function useListArrowKeys(
       setUserTyped(input.value)
       setFocusedItem(undefined)
 
-      if (input?.value.includes("\n")) {
-        setUserTyped(undefined)
+      if (input?.value.match(/^\s+$/)) {
+        selectAndClose(undefined)
+      } else if (input?.value.includes("\n")) {
         const newActiveItem = focusedItem ?? currentSearch[0]
-        input.value = getTextboxName(newActiveItem)
-        input.blur()
-        setActiveItem(newActiveItem)
+        selectAndClose(newActiveItem)
       }
     }
 
@@ -41,7 +52,7 @@ export default function useListArrowKeys(
     return () => {
       input.removeEventListener("input", handleInput)
     }
-  }, [currentSearch, focusedItem, input, setActiveItem])
+  }, [currentSearch, focusedItem, input, selectAndClose])
 
   /**
    * handle the up and down arrow keys to navigate the list
@@ -71,6 +82,11 @@ export default function useListArrowKeys(
       if (e.key === "ArrowDown") {
         e.preventDefault()
         move("down")
+      }
+      if (e.key === "Escape") {
+        e.preventDefault()
+        input?.blur()
+        setUserTyped(undefined)
       }
     }
 

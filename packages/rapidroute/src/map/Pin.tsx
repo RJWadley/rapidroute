@@ -28,7 +28,10 @@ export default function Pin() {
   useViewportMoved(onMove)
 
   useEffect(() => {
-    if (!activeItem) return
+    if (!activeItem) {
+      setLocation(undefined)
+      return
+    }
     session.lastMapInteraction = undefined
     const timeout = setTimeout(() => {
       getPath("locations", activeItem)
@@ -43,7 +46,7 @@ export default function Pin() {
           }
         })
         .catch(() => {})
-    }, 1000)
+    }, 250)
     return () => clearTimeout(timeout)
   }, [activeItem, viewport])
 

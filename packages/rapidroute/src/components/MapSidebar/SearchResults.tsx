@@ -23,7 +23,7 @@ export default function SearchResults({
               selected={focusedItem === id}
             />
           ))}
-          {items.length === 0 && <div>No results...</div>}
+          {items.length === 0 && <div>No Results</div>}
         </Wrapper>
       )}
     </>
