@@ -91,12 +91,16 @@ const Wrapper = styled.div`
   }
 
   /* fix default color for MRT stops */
-  .infobox-data span {
+  .infobox-data span[style*="background"] {
     color: black;
   }
 
   a:hover {
     text-decoration: underline;
+  }
+
+  a.selflink:hover {
+    text-decoration: none;
   }
 `
 
@@ -127,6 +131,7 @@ const useInfoBox = (title: string) => {
       newBox?.outerHTML
         .replaceAll('src="/', `src="${WIKI_URL}`)
         .replaceAll('href="/', `href="${WIKI_URL}`)
+        .replaceAll("{{{subtextcolor}}}", "var(--default-text)")
         // split apart any srcset attributes, upgrade the src, and rejoin them
         .replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
           const srcset = p1
