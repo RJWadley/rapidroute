@@ -64,6 +64,8 @@ const Wrapper = styled.div`
 
   .trow {
     display: flex;
+    margin-top: 5px;
+    gap: 5px;
   }
 
   img {
