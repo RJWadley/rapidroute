@@ -7,6 +7,7 @@ import {
   DataDatabaseType,
 } from "@rapidroute/database-types"
 
+import { setShowOfflineBanner } from "components/OfflineBanner"
 import { isBrowser, sleep } from "utils/functions"
 import isObject from "utils/isObject"
 import { getLocal, setLocal } from "utils/localUtils"
@@ -134,9 +135,14 @@ export async function getPath<T extends DatabaseDataKeys>(
     // eslint-disable-next-line no-await-in-loop
     await sleep(250)
   }
+  const timeout = setTimeout(() => {
+    setShowOfflineBanner(true)
+  }, 10000)
   fetchingPaths.push(`${type}/${itemName}`)
-  const done = () =>
+  const done = () => {
     fetchingPaths.splice(fetchingPaths.indexOf(`${type}/${itemName}`), 1)
+    clearTimeout(timeout)
+  }
 
   // some things are not in the database, so we need to check for that
   if (type === "locations" && isCoordinate(itemName)) {
@@ -217,7 +223,13 @@ export async function getAll<T extends DatabaseDataKeys>(
     await sleep(250)
   }
   fetchingPaths.push(type)
-  const done = () => fetchingPaths.splice(fetchingPaths.indexOf(type), 1)
+  const timeout = setTimeout(() => {
+    setShowOfflineBanner(true)
+  }, 10000)
+  const done = () => {
+    fetchingPaths.splice(fetchingPaths.indexOf(type), 1)
+    clearTimeout(timeout)
+  }
 
   console.log("getAll", type)
   // first get the hash from the database
