@@ -31,13 +31,13 @@ export function MapSearchProvider({
   // sync to and from URL params
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
-    const id = urlParams.get("id")
+    const id = urlParams.get("name")
     if (id) setActiveItem(id)
   }, [])
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
-    if (activeItem) urlParams.set("id", activeItem)
-    else urlParams.delete("id")
+    if (activeItem) urlParams.set("name", activeItem)
+    else urlParams.delete("name")
     window.history.replaceState(
       {},
       document.title,
