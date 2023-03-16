@@ -7,8 +7,8 @@ import { config } from "dotenv"
 import admin, { ServiceAccount } from "firebase-admin"
 
 // import accountKeyRAW from "../serviceAccountKey.json"
-import makeSafeForDatabase from "./makeSafeForDatabase"
-import { DeepRemoveUniqueId, removeUniqueId } from "./removeUniqueId"
+import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
+import { removeUniqueId } from "./removeUniqueId"
 
 config()
 
@@ -24,13 +24,27 @@ admin.initializeApp({
 })
 
 const rawDatabase = admin.database()
-export const database: DeepRemoveUniqueId<Partial<DatabaseType>> = {}
+export const database: Partial<DatabaseType> = {}
 
 // we do the database all in one go to reduce usage and increase speed
 export const setupDatabase = async () => {
   console.log("Setting up database...")
   const snapshot = await rawDatabase.ref("/").once("value")
   const data: unknown = snapshot.val() ?? {}
+
+  // re-add unique ids that don't exist in the database
+  if (isObject(data)) {
+    Object.values(data).forEach(type => {
+      if (isObject(type)) {
+        Object.entries(type).forEach(entry => {
+          const [key, value] = entry
+          if (isObject(value)) {
+            value.uniqueId = key
+          }
+        })
+      }
+    })
+  }
 
   console.log(validateDatabase(data))
   if (!isWholeDatabase(data)) throw new Error("Database is not valid")
