@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useMemo, useState } from "react"
+import { createContext, ReactNode, useEffect, useMemo, useState } from "react"
 
 export const MapSearchContext = createContext<{
   /**
@@ -26,6 +26,23 @@ export function MapSearchProvider({
       activeItem,
       setActiveItem,
     }
+  }, [activeItem])
+
+  // sync to and from URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const id = urlParams.get("id")
+    if (id) setActiveItem(id)
+  }, [])
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    if (activeItem) urlParams.set("id", activeItem)
+    else urlParams.delete("id")
+    window.history.replaceState(
+      {},
+      document.title,
+      `${window.location.pathname}?${urlParams.toString()}`
+    )
   }, [activeItem])
 
   return (

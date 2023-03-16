@@ -121,7 +121,7 @@ const getImages = async (pageTitle: string) => {
       im =>
         !im.title
           .toLowerCase()
-          .match(/(flag|highway|[ab]\d+|map|service|icon|blurail)/)
+          .match(/(flag|highway|[ab]\d+|map|service|icon|blurail|intrarail|logo)/)
     )
     // only get the first 10 images
     .slice(0, 10)

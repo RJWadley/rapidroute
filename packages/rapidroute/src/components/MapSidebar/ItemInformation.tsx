@@ -1,9 +1,11 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 
 import ImageGallery from "react-image-gallery"
 import styled, { keyframes } from "styled-components"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
+import { defaultPadding } from "map/zoomCamera"
+import { session } from "utils/localUtils"
 
 import useWiki from "./useWiki"
 
@@ -12,6 +14,15 @@ import "react-image-gallery/styles/css/image-gallery.css"
 export default function ItemInformation() {
   const { activeItem } = useContext(MapSearchContext)
   const { value, loading } = useWiki(activeItem)
+
+  useEffect(() => {
+    if (value || loading)
+      session.cameraPadding = {
+        ...defaultPadding,
+        left: 450,
+      }
+    else session.cameraPadding = defaultPadding
+  }, [loading, value])
 
   return (
     <>
