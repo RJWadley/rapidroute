@@ -6,6 +6,7 @@
   "dependencies": {
     "@koale/useworker": "^4.0.2",
     "@rapidroute/database-types": "^1.0.0",
+    "@types/react-image-gallery": "^1.2.0",
     "easy-speech": "^1.2.1",
     "firebase": "^9.17.1",
     "flexsearch-ts": "^0.7.31",
@@ -24,6 +25,7 @@
     "pixi.js": "^7.2.0-rc.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-image-gallery": "^1.2.11",
     "react-pixi-fiber": "^1.0.6",
     "react-scripts": "^5.0.1",
     "react-use": "^17.4.0",
@@ -35,6 +37,7 @@
   "devDependencies": {
     "@rapidroute/eslint-config-base": "^1.0.0",
     "@rjwadley/eslint-plugin-format-gsap": "^0.1.1",
+    "@types/dom-screen-wake-lock": "^1.0.0",
     "@types/easy-speech": "^1.2.0",
     "@types/flexsearch": "^0.7.3",
     "@types/node": "^18.11.19",
@@ -52,8 +55,7 @@
     "eslint-plugin-sort-styled-components": "^0.2.2",
     "eslint-plugin-ssr-friendly": "^1.2.0",
     "prettier": "^2.8.3",
-    "typescript": "^4.9.5",
-    "@types/dom-screen-wake-lock": "^1.0.0"
+    "typescript": "^4.9.5"
   },
   "license": "0BSD",
   "scripts": {

@@ -2,7 +2,6 @@ import { useEffect } from "react"
 
 import { usePixiApp } from "react-pixi-fiber"
 
-import useCameraSearch from "./useCameraSearch"
 import useDoubleTapZoom from "./useDoubleTapZoom"
 import { useUpdateOverlapping } from "./useHideOverlapping"
 import useUrlParams from "./useUrlParams"

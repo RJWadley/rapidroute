@@ -45,8 +45,6 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       if (searchRole === "from") inputRef.current.value = getTextboxName(from)
       else if (searchRole === "to") inputRef.current.value = getTextboxName(to)
     }
-
-    updateSize()
   }
 
   const handleBlur = () => {

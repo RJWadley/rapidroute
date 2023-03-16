@@ -118,9 +118,13 @@ const getImages = async (pageTitle: string) => {
     .filter(im => im.title.match(/\.(jpg|jpeg|png|gif|webp)$/))
     .filter(
       // filter out flags, highway signs, maps, and service indicators
-      im => !im.title.toLowerCase().match(/(flag|highway|map|service|icon)/)
+      im =>
+        !im.title
+          .toLowerCase()
+          .match(/(flag|highway|[ab]\d+|map|service|icon|blurail)/)
     )
-    // only get the first 5 images
+    // only get the first 10 images
+    .slice(0, 10)
     .map(async image => {
       const getOneImageParams = {
         format: "json",
@@ -140,11 +144,14 @@ const getImages = async (pageTitle: string) => {
       const imagePage = data.query.pages[Object.keys(data.query.pages)[0]]
 
       return "imageinfo" in imagePage
-        ? imagePage.imageinfo[0].thumburl
+        ? {
+            img: imagePage.imageinfo[0].thumburl,
+            alt: imagePage.title.replace("File:", "").replace(/\.\w+$/, ""),
+          }
         : undefined
     })
 
   // unwrap the promises into an array of image urls
   const imageUrls = await Promise.all(promises)
-  return imageUrls.filter(url => url !== undefined)
+  return imageUrls.flatMap(img => (img ? [img] : []))
 }

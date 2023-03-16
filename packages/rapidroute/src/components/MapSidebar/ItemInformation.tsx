@@ -1,10 +1,13 @@
 import { useContext } from "react"
 
-import styled from "styled-components"
+import ImageGallery from "react-image-gallery"
+import styled, { keyframes } from "styled-components"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 
 import useWiki from "./useWiki"
+
+import "react-image-gallery/styles/css/image-gallery.css"
 
 export default function ItemInformation() {
   const { activeItem } = useContext(MapSearchContext)
@@ -14,7 +17,18 @@ export default function ItemInformation() {
     <>
       {value && !loading && (
         <Wrapper>
-          {value.images?.[0] && <img src={value.images[0]} alt={value.title} />}
+          {value.images && (
+            <ImageGallery
+              items={value.images.map(image => ({
+                original: image.img,
+                originalAlt: image.alt,
+              }))}
+              showPlayButton={false}
+              showFullscreenButton={false}
+              autoPlay
+              showBullets={value.images.length > 1}
+            />
+          )}
           <TextContent>
             <Title>{value.title}</Title>
             <Desc>{value.blurb}</Desc>
@@ -24,6 +38,7 @@ export default function ItemInformation() {
           </TextContent>
         </Wrapper>
       )}
+      {loading && <Loading />}
     </>
   )
 }
@@ -38,10 +53,14 @@ const Wrapper = styled.div`
 
   img {
     width: 100%;
-    max-height: 200px;
-    object-fit: cover;
+    height: 200px !important;
+    object-fit: cover !important;
     background: var(--mid-background);
     image-rendering: pixelated;
+  }
+
+  svg {
+    max-width: 30px;
   }
 `
 
@@ -76,4 +95,29 @@ const Link = styled.a`
   border-radius: 5px;
   font-weight: 600;
   transition: background 0.2s ease-in-out;
+`
+
+const pulse = keyframes`
+  0% {
+    background-position: 40% 0;
+  }
+  100% {
+    background-position: -160% 0;
+  }
+`
+
+const Loading = styled.div`
+  background: linear-gradient(
+    to right,
+    var(--default-card-background) 0%,
+    var(--dark-background) 10%,
+    var(--default-card-background) 20%
+  );
+  background-size: 200% 100%;
+  animation: ${pulse} 2s ease infinite;
+  border-radius: 20px;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  margin-top: 20px;
+  height: 200px;
 `

@@ -33,11 +33,14 @@ export function search(query: string) {
   const strictMatches = results.filter(x =>
     x.toString().toLowerCase().replace("_", " ").startsWith(query.toLowerCase())
   )
-  strictMatches.sort(
-    (a, b) => a.toString().length - b.toString().length
-  )
+  strictMatches.sort((a, b) => a.toString().length - b.toString().length)
 
   results = [...new Set([...strictMatches, ...results])]
+
+  if ("central city".startsWith(query.toLowerCase())) {
+    results = results.filter(x => x !== "Spawn")
+    results = ["Spawn", ...results]
+  }
 
   if (/\d+[, ]+\d+/g.test(query)) {
     const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]
