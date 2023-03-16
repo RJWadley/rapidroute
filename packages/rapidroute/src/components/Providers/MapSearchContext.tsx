@@ -1,4 +1,7 @@
-import { createContext, ReactNode, useEffect, useMemo, useState } from "react"
+import { createContext, ReactNode, useEffect, useMemo, useRef, useState } from "react"
+
+import { getAll } from "data/getData"
+import { search } from "data/search"
 
 export const MapSearchContext = createContext<{
   /**
@@ -32,9 +35,24 @@ export function MapSearchProvider({
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const id = urlParams.get("name")
-    if (id) setActiveItem(id)
+    if (id)
+      getAll("searchIndex")
+        .then(index => {
+          setActiveItem(
+            index[id]?.uniqueId ??
+              search(id).filter(x => x !== "Current Location")[0] ??
+              id
+          )
+        })
+        .catch(console.error)
   }, [])
+  
+  const firstRender = useRef(true)
   useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
     const urlParams = new URLSearchParams(window.location.search)
     if (activeItem) urlParams.set("name", activeItem)
     else urlParams.delete("name")
