@@ -24,6 +24,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const textRef = useRef<Text>(null)
   const containerRef = useRef<Container>(null)
   const [hover, setHover] = useState(false)
+  const { activeItem, setActiveItem } = useContext(MapSearchContext)
 
   const updateSize = () => {
     if (textRef.current && viewport)
@@ -44,6 +45,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   }
   const onClick = () => {
     session.lastMapInteraction = undefined
+    setActiveItem(name.match(/(\w\w?\d+)/)?.[1] ?? "")
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 
@@ -58,8 +60,6 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
     }
   }
   useViewportMoved(updateOpacityWhenClose)
-
-  const { activeItem } = useContext(MapSearchContext)
 
   const isActiveItem =
     activeItem &&
