@@ -32,11 +32,11 @@ export default function SearchResults({
 
 const Wrapper = styled.div`
   background: var(--mid-background);
-  padding: 40px 20px 20px;
-  margin-top: -20px;
+  padding: 60px 20px 20px;
+  margin-top: -40px;
   position: relative;
   z-index: -1;
-  border-radius: 0 0 20px 20px;
+  border-radius: 20px;
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;

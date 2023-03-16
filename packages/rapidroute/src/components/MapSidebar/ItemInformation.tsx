@@ -75,10 +75,30 @@ const Wrapper = styled.div`
 const CarouselWrap = styled.div`
   img {
     width: 100%;
+    min-width: 100%;
     height: 200px !important;
+    min-height: 200px;
     object-fit: cover !important;
     background: var(--mid-background);
     image-rendering: pixelated;
+    position: relative;
+
+    /* styles for when the image fails to load */
+    ::after {
+      content: "Couldn't load image\n"attr(alt);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--mid-background);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 50px;
+      white-space: pre-wrap;
+      line-height: 1.5em;
+    }
   }
 `
 

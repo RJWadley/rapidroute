@@ -94,16 +94,17 @@ export default function useListArrowKeys(
       if (e.key === "ArrowUp") {
         e.preventDefault()
         move("up")
-      }
-      if (e.key === "ArrowDown") {
+      } else if (e.key === "ArrowDown") {
         e.preventDefault()
         move("down")
-      }
-      if (e.key === "Escape") {
+      } else if (e.key === "Escape") {
         e.preventDefault()
         input?.blur()
         setUserTyped(undefined)
-      }
+      } else if (!focusedItem && e.key.match(/^[a-zA-Z0-9]$/))
+        window.scrollTo({
+          top: 0,
+        })
     }
 
     input?.addEventListener("keydown", handleKeyDown)
