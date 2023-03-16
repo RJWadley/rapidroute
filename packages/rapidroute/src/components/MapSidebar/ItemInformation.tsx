@@ -7,6 +7,7 @@ import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { defaultPadding } from "map/zoomCamera"
 import { session } from "utils/localUtils"
 
+import InfoBox from "./InfoBox"
 import useWiki from "./useWiki"
 
 import "react-image-gallery/styles/css/image-gallery.css"
@@ -29,16 +30,18 @@ export default function ItemInformation() {
       {value && !loading && (
         <Wrapper>
           {value.images && (
-            <ImageGallery
-              items={value.images.map(image => ({
-                original: image.img,
-                originalAlt: image.alt,
-              }))}
-              showPlayButton={false}
-              showFullscreenButton={false}
-              autoPlay
-              showBullets={value.images.length > 1}
-            />
+            <CarouselWrap>
+              <ImageGallery
+                items={value.images.map(image => ({
+                  original: image.img,
+                  originalAlt: image.alt,
+                }))}
+                showPlayButton={false}
+                showFullscreenButton={false}
+                autoPlay
+                showBullets={value.images.length > 1}
+              />
+            </CarouselWrap>
           )}
           <TextContent>
             <Title>{value.title}</Title>
@@ -47,6 +50,7 @@ export default function ItemInformation() {
               Read more
             </Link>
           </TextContent>
+          <InfoBox title={value.title} />
         </Wrapper>
       )}
       {loading && <Loading />}
@@ -61,17 +65,20 @@ const Wrapper = styled.div`
   isolation: isolate;
   overflow: hidden;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
 
+  svg {
+    max-width: 30px;
+  }
+`
+
+const CarouselWrap = styled.div`
   img {
     width: 100%;
     height: 200px !important;
     object-fit: cover !important;
     background: var(--mid-background);
     image-rendering: pixelated;
-  }
-
-  svg {
-    max-width: 30px;
   }
 `
 

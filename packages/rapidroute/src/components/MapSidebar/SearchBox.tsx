@@ -48,6 +48,8 @@ const Wrapper = styled.div`
   border-radius: 20px;
   position: sticky;
   top: 20px;
+  z-index: 1;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
 
   @media ${media.mobile} {
     border-radius: 15px;

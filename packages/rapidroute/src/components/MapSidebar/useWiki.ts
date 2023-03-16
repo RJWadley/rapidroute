@@ -7,7 +7,7 @@ import { ExtractResponse } from "types/wiki/ExtractQuery"
 import { WikiImage } from "types/wiki/ImageSearch"
 import { WikiResponse } from "types/wiki/PageSearch"
 
-const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
+export const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
 
 /**
  * use the MediaWiki API to search for a page on the wiki and return the first paragraph.
