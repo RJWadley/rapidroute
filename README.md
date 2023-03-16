@@ -1,4 +1,4 @@
-<img src="./packages/rapidroute/src/images/global/base_graphic.svg">
+<img src="./packages/rapidroute/src/assets/images/global/base_graphic.svg">
 
 # RapidRoute
 

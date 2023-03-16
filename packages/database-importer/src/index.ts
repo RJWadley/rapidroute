@@ -87,6 +87,11 @@ async function runImport() {
 
   await saveDatabase()
 
+  const HEARTBEAT_ENDPOINT =
+    "https://betteruptime.com/api/v1/heartbeat/WZxUmQ6m6wYxkwCSWPPz1tAD"
+  await fetch(HEARTBEAT_ENDPOINT)
+  console.log("Sent heartbeat")
+
   console.log("ALL DONE!")
 }
 

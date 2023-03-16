@@ -3,7 +3,7 @@
 name: Importer
 on:
   schedule:
-    - cron: '0 7 * * *'
+    - cron: "0 7 * * *"
   workflow_dispatch:
 jobs:
   import:
@@ -23,3 +23,6 @@ jobs:
       - name: Import to Database
         run: |
           npm run import
+      - name: Send Heartbeat
+        run: |
+          curl -X GET https://betteruptime.com/api/v1/heartbeat/WZxUmQ6m6wYxkwCSWPPz1tAD

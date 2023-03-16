@@ -1,4 +1,4 @@
-<img src="./src/images/global/website_graphic.svg">
+<img src="./src/assets/images/global/website_graphic.svg">
 
 # RapidRoute Website
 
