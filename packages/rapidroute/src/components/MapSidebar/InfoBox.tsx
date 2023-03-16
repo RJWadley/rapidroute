@@ -19,6 +19,7 @@ const useInfoBox = (title: string) => {
       action: "parse",
       page: title,
       format: "json",
+      redirects: "",
     }
     const url = `${WIKI_URL}api.php?${new URLSearchParams(
       pageParams
@@ -34,6 +35,17 @@ const useInfoBox = (title: string) => {
 
     // get the infobox element
     const newBox = html.querySelector(".infobox")
+
+    // find any trs with exactly two ths, where the first th says ft and the second m
+    const twoThs = Array.from(newBox?.querySelectorAll("tr") ?? []).filter(
+      tr =>
+        tr.querySelectorAll("th").length === 2 &&
+        tr.querySelector("th")?.textContent?.trim() === "ft" &&
+        tr.querySelectorAll("th")[1]?.textContent?.trim() === "m"
+    )
+
+    // add the feetAndMeters class to that tr
+    twoThs.forEach(tr => tr.classList.add("feetAndMeters"))
 
     return (
       newBox?.outerHTML
@@ -146,6 +158,7 @@ const Wrapper = styled.div`
   th {
     flex: 1;
     padding: 5px 10px;
+    border: none !important;
     border-radius: 10px;
   }
 
@@ -205,9 +218,14 @@ const Wrapper = styled.div`
     height: unset;
   }
 
-  /* fix default color for MRT stops */
-  .infobox-data span[style*="background"] {
+  /* fix default color for stuff with backgrounds */
+  & *[style*="background"] {
     color: black;
+  }
+
+  tr[style*="background"] {
+    margin: 5px;
+    border-radius: 5px;
   }
 
   a:hover {
@@ -216,5 +234,22 @@ const Wrapper = styled.div`
 
   a.selflink:hover {
     text-decoration: none;
+  }
+
+  .feetAndMeters {
+    width: 50%;
+    margin-left: 25% !important;
+    background: var(--mid-background) !important;
+    color: var(--low-contrast-text) !important;
+  }
+
+  sup {
+    display: inline-block;
+    font-size: 0.5em;
+    transform: translateY(-0.5em);
+  }
+
+  sub {
+    font-size: 0.5em;
   }
 `
