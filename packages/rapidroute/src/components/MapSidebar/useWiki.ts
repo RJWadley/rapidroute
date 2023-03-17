@@ -8,7 +8,7 @@ import { WikiImage } from "types/wiki/ImageSearch"
 import { WikiResponse } from "types/wiki/PageSearch"
 
 export const WIKI_URL =
-  "http://cors.mrtrapidroute.com/?https://wiki.minecartrapidtransit.net/"
+  "https://cors.mrtrapidroute.com/?https://wiki.minecartrapidtransit.net/"
 
 /**
  * use the MediaWiki API to search for a page on the wiki and return the first paragraph.
