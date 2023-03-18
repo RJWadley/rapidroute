@@ -4,7 +4,7 @@ import styled, { keyframes } from "styled-components"
 
 import { isBrowser } from "utils/functions"
 
-import { WIKI_URL } from "./useWiki"
+import { WIKI_NO_CORS, WIKI_URL } from "./useWiki"
 
 export default function InfoBox({ title }: { title: string }) {
   const { value, loading } = useInfoBox(title)
@@ -49,8 +49,8 @@ const useInfoBox = (title: string) => {
 
     return (
       newBox?.outerHTML
-        .replaceAll('src="/', `src="${WIKI_URL}`)
-        .replaceAll('href="/', `href="${WIKI_URL}`)
+        .replaceAll('src="/', `src="${WIKI_NO_CORS}`)
+        .replaceAll('href="/', `href="${WIKI_NO_CORS}`)
         .replaceAll("{{{subtextcolor}}}", "var(--default-text)")
         // split apart any srcset attributes, upgrade the src, and rejoin them
         .replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
@@ -59,7 +59,7 @@ const useInfoBox = (title: string) => {
             .map(src => src.trim())
             .map(src => {
               const [imageURL, size] = src.split(" ")
-              return `${WIKI_URL}${imageURL} ${size}
+              return `${WIKI_NO_CORS}${imageURL} ${size}
           `
             })
             .join(",")

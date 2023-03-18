@@ -7,8 +7,8 @@ import { ExtractResponse } from "types/wiki/ExtractQuery"
 import { WikiImage } from "types/wiki/ImageSearch"
 import { WikiResponse } from "types/wiki/PageSearch"
 
-export const WIKI_URL =
-  "https://cors.mrtrapidroute.com/?https://wiki.minecartrapidtransit.net/"
+export const WIKI_NO_CORS = "https://wiki.minecartrapidtransit.net/"
+export const WIKI_URL = `https://cors.mrtrapidroute.com/?${WIKI_NO_CORS}`
 
 /**
  * use the MediaWiki API to search for a page on the wiki and return the first paragraph.
@@ -124,7 +124,9 @@ const getImages = async (pageTitle: string) => {
       im =>
         !im.title
           .toLowerCase()
-          .match(/(flag|highway|[ab]\d+|map|service|icon|blurail|intrarail|logo)/)
+          .match(
+            /(flag|highway|[ab]\d+|map|service|icon|blurail|intrarail|logo)/
+          )
     )
     // only get the first 10 images
     .slice(0, 10)
