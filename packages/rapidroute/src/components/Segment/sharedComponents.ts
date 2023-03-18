@@ -47,9 +47,9 @@ export const Logo = styled.div<{
   height: 60px;
   min-width: 60px;
   min-height: 60px;
-  object-fit: contain;
 
   img {
+    object-fit: contain;
     ${props =>
       props.bigLogo
         ? css`
