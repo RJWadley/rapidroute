@@ -42,7 +42,7 @@ export default function useWiki(idToSearch: string) {
       return {
         title: result.title,
         images,
-        pageUrl: `${WIKI_URL}/index.php/${result.title}`,
+        pageUrl: `${WIKI_NO_CORS}/index.php/${result.title}`,
         blurb,
       }
     }
@@ -62,7 +62,7 @@ export default function useWiki(idToSearch: string) {
       const blurb = await getFirstParagraph(result.title)
       return {
         title: result.title,
-        pageUrl: `${WIKI_URL}index.php/${result.title}`,
+        pageUrl: `${WIKI_NO_CORS}index.php/${result.title}`,
         blurb,
       }
     }
