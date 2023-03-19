@@ -4,7 +4,6 @@ import { navigate } from "@reach/router"
 import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
-import Layout from "components/Layout"
 import MapSidebar from "components/MapSidebar"
 import SEO from "components/SEO"
 import Settings from "components/Settings"
@@ -21,7 +20,7 @@ export default function MapPage() {
   }, [])
 
   return (
-    <Layout>
+    <>
       <ControlsOverlay />
       <SettingsWrapper>
         <Settings />
@@ -37,7 +36,7 @@ export default function MapPage() {
       </button>
       <Map />
       <MapSidebar />
-    </Layout>
+    </>
   )
 }
 

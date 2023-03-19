@@ -4,7 +4,6 @@ import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import NavigationOverview from "components/ControlsOverlay/NavigationOverview"
-import Layout from "components/Layout"
 import NavigationSidebar from "components/navigation/NavigationSidebar"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import SEO from "components/SEO"
@@ -90,7 +89,7 @@ export default function Navigate() {
   }, [])
 
   return (
-    <Layout>
+    <>
       <ControlsOverlay fillBackground={false}>
         <NavigationOverview />
       </ControlsOverlay>
@@ -98,7 +97,7 @@ export default function Navigate() {
       <StyledMapTag />
       <Map />
       <NavigationSidebar />
-    </Layout>
+    </>
   )
 }
 

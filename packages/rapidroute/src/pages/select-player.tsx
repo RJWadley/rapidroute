@@ -5,7 +5,6 @@ import { useDebounce } from "react-use"
 import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
-import Layout from "components/Layout"
 import PlayerSelect from "components/PlayerSelect"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
@@ -42,7 +41,7 @@ export default function SelectPlayer() {
       .includes(search.toLowerCase())
 
   return (
-    <Layout>
+    <>
       <ControlsOverlay />
       <Content>
         <Title>Who are You?</Title>
@@ -90,7 +89,7 @@ export default function SelectPlayer() {
             ))}
         </Players>
       </Content>
-    </Layout>
+    </>
   )
 }
 
