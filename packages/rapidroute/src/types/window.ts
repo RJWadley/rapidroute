@@ -1,7 +1,5 @@
 /// <reference types="react-scripts" />
 
-import { Session } from "utils/localUtils"
-
 declare global {
   interface Window {
     /**
@@ -16,10 +14,6 @@ declare global {
      * special object that can be used to detect if running in firefox
      */
     netscape: unknown
-    /**
-     * access to session for debugging
-     */
-    session?: Partial<Session>
   }
 }
 
