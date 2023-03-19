@@ -1,7 +1,15 @@
-import { createContext, ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import {
+  createContext,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 
 import { getAll } from "data/getData"
 import { search } from "data/search"
+import { getLocal, setLocal } from "utils/localUtils"
 
 export const MapSearchContext = createContext<{
   /**
@@ -33,8 +41,7 @@ export function MapSearchProvider({
 
   // sync to and from URL params
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const id = urlParams.get("name")
+    const id = getLocal("name")
     if (id)
       getAll("searchIndex")
         .then(index => {
@@ -46,21 +53,14 @@ export function MapSearchProvider({
         })
         .catch(console.error)
   }, [])
-  
+
   const firstRender = useRef(true)
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false
       return
     }
-    const urlParams = new URLSearchParams(window.location.search)
-    if (activeItem) urlParams.set("name", activeItem)
-    else urlParams.delete("name")
-    window.history.replaceState(
-      {},
-      document.title,
-      `${window.location.pathname}?${urlParams.toString()}`
-    )
+    setLocal("name", activeItem)
   }, [activeItem])
 
   return (

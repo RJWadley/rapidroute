@@ -30,22 +30,13 @@ export default function useUrlParams() {
 
     const { center } = viewport
     const zoom = Math.round(viewport.scale.x * 10000) / 10000
-    const following = getLocal("followingPlayer")
 
     if (Number.isNaN(center.x) || Number.isNaN(center.y) || Number.isNaN(zoom))
       return
 
-    const params = new URLSearchParams(window.location.search)
-    params.set("x", Math.round(center.x).toString())
-    params.set("z", Math.round(center.y).toString())
-    params.set("zoom", zoom.toString())
-    // if (following) params.set("following", following)
-    // else params.delete("following")
-    // window.history.replaceState(
-    //   {},
-    //   "",
-    //   `${window.location.pathname}?${params.toString()}`
-    // )
+    setLocal("x", center.x)
+    setLocal("z", center.y)
+    setLocal("zoom", zoom)
   }
   useViewportMoved(updateParams)
 
@@ -55,11 +46,9 @@ export default function useUrlParams() {
   useEffect(() => {
     setTimeout(() => {
       if (viewport) {
-        const params = new URLSearchParams(window.location.search)
-        const x = parseFloat(params.get("x") ?? "")
-        const z = parseFloat(params.get("z") ?? "")
-        const zoom = parseFloat(params.get("zoom") ?? "")
-        const following = params.get("following")
+        const x = getLocal("x")
+        const z = getLocal("z")
+        const zoom = getLocal("zoom")
 
         if (
           Number.isFinite(x) &&
@@ -67,12 +56,12 @@ export default function useUrlParams() {
           Number.isFinite(zoom) &&
           !viewport.destroyed
         ) {
-          viewport.moveCenter({
-            x,
-            y: z,
-          })
-          viewport.setZoom(zoom, true)
-          if (following) setLocal("followingPlayer", following)
+          if (x && z)
+            viewport.moveCenter({
+              x,
+              y: z,
+            })
+          if (zoom) viewport.setZoom(zoom, true)
         }
       }
     }, 200)

@@ -1,10 +1,10 @@
 import { useContext, useEffect, useRef } from "react"
 
 import gsap from "gsap"
+import { useSearchParam } from "react-use"
 import styled, { keyframes } from "styled-components"
 
 import { useImageHSL } from "utils/averageImageColor"
-import { isBrowser } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { setLocal } from "utils/localUtils"
 import media from "utils/media"
@@ -53,9 +53,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
   const midLightness = isDark ? 30 : 70
 
   // get the next url from the current url
-  const nextUrl = isBrowser()
-    ? `/${new URLSearchParams(window.location.search).get("redirect") || ""}`
-    : "/"
+  const nextUrl = useSearchParam("redirect") ?? "/"
 
   return hue !== undefined && saturation !== undefined && imageUrl ? (
     <Wrapper
