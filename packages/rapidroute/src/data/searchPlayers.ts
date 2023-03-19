@@ -11,7 +11,7 @@ const searchWorker =
     charset: "latin:simple",
   })
 
-fetch(memberListURL)
+/* not-tanstack */ fetch(memberListURL)
   .then(response => response.json())
   .then((data: Member[]) => {
     data.forEach(member => {

@@ -11,7 +11,7 @@ export default function useCities() {
   useEffect(() => {
     let mounted = true
 
-    fetch(citiesURL)
+    /* not-tanstack */ fetch(citiesURL)
       .then(response => response.json())
       .then((data: City[]) => {
         // add the cities to the state 10 at a time

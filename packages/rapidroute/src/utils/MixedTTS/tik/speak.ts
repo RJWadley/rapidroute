@@ -94,7 +94,7 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
   preloadedAudio[voice] = {
     ...preloadedAudio[voice],
     [text]: new Promise(resolve => {
-      fetch(`${ENDPOINT}/api/generation`, {
+      /* not-tanstack */ fetch(`${ENDPOINT}/api/generation`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

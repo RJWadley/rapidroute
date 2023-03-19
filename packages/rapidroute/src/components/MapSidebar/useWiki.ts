@@ -32,7 +32,7 @@ export default function useWiki(idToSearch: string) {
     const specificUrl = `${WIKI_URL}api.php?${new URLSearchParams(
       specificParams
     ).toString()}`
-    const response: Response = await fetch(specificUrl)
+    const response: Response = await /* not-tanstack */ fetch(specificUrl)
     const specificResults = (await response.json()) as WikiResponse
 
     if (specificResults.query.search.length > 0) {
@@ -54,7 +54,7 @@ export default function useWiki(idToSearch: string) {
     const url = `${WIKI_URL}api.php?${new URLSearchParams(
       genericParams
     ).toString()}`
-    const genericResponse = await fetch(url)
+    const genericResponse = await /* not-tanstack */ fetch(url)
     const genericResults = (await genericResponse.json()) as WikiResponse
 
     if (genericResults.query.search.length > 0) {
@@ -91,7 +91,7 @@ const getFirstParagraph = async (text: string) => {
     getParagraphParams
   ).toString()}`
 
-  const response = await fetch(getParagraphUrl)
+  const response = await /* not-tanstack */ fetch(getParagraphUrl)
   const result = (await response.json()) as ExtractResponse
 
   const page = result.query.pages[Object.keys(result.query.pages)[0]]
@@ -111,7 +111,7 @@ const getImages = async (pageTitle: string) => {
   const getAllImagesUrl = `${WIKI_URL}api.php?${new URLSearchParams(
     getAllImagesParams
   ).toString()}`
-  const response = await fetch(getAllImagesUrl)
+  const response = await /* not-tanstack */ fetch(getAllImagesUrl)
   const result = (await response.json()) as AllWikiImages
 
   const page = result.query.pages[Object.keys(result.query.pages)[0]]
@@ -143,7 +143,7 @@ const getImages = async (pageTitle: string) => {
       const getOneImageUrl = `${WIKI_URL}api.php?${new URLSearchParams(
         getOneImageParams
       ).toString()}`
-      const imageResp = await fetch(getOneImageUrl)
+      const imageResp = await /* not-tanstack */ fetch(getOneImageUrl)
       const data = (await imageResp.json()) as WikiImage
 
       const imagePage = data.query.pages[Object.keys(data.query.pages)[0]]

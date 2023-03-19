@@ -18,7 +18,7 @@ export default function SelectPlayer() {
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
 
   const updatePlayers = () => {
-    fetch("https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json")
+    /* not-tanstack */ fetch("https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json")
       .then(response => response.json())
       .then((data: WorldInfo) => {
         setPlayers(prev =>

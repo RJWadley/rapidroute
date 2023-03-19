@@ -11,7 +11,7 @@ export default function MapPlayers() {
     let isMounted = true
 
     const updatePlayers = () => {
-      fetch(
+      /* not-tanstack */ fetch(
         "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
       )
         .then(response => response.json())

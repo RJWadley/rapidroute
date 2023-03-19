@@ -14,7 +14,7 @@ export default function DynmapMarkers() {
   const isMounted = useIsMounted()
 
   useEffect(() => {
-    fetch(
+    /* not-tanstack */ fetch(
       "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
     )
       .then(response => {

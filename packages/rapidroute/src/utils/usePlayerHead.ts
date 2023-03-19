@@ -22,7 +22,7 @@ export default function usePlayerHead(name: string) {
     }
 
     fetchedNames[name] = new Promise(resolve => {
-      fetch(
+      /* not-tanstack */ fetch(
         `https://cors.mrtrapidroute.com/?https://api.mojang.com/users/profiles/minecraft/${name}`
       )
         .then(response => {
