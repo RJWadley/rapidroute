@@ -146,7 +146,7 @@ const clearEphemeral = <T extends LocalKeys>(key: T) => {
 }
 
 const setUrlParameter = <T extends LocalKeys>(key: T, value: Locals[T]) => {
-  if (value === undefined) {
+  if (!value) {
     clearUrlParameter(key)
     return
   }
@@ -179,13 +179,6 @@ const clearUrlParameter = <T extends LocalKeys>(key: T) => {
   window.history.replaceState({}, "", url.toString())
 }
 
-const version = getPersistent("version")
-if (isBrowser())
-  if (!version || version < latestVersion) {
-    localStorage.clear()
-    setPersistent("version", latestVersion)
-  }
-
 const typeSafeIncludes = <T extends string>(
   array: readonly T[],
   key: string
@@ -198,6 +191,7 @@ export const getLocal = <
 >(
   key: T
 ): Locals[T] | null => {
+  if (!isBrowser()) return null
   if (typeSafeIncludes(persistentKeys, key)) {
     return getPersistent(key)
   }
@@ -211,6 +205,7 @@ export const getLocal = <
 }
 
 export const setLocal = <T extends keyof Locals>(key: T, value: Locals[T]) => {
+  if (!isBrowser()) return
   if (typeSafeIncludes(persistentKeys, key)) {
     return setPersistent(key, value)
   }
@@ -224,6 +219,7 @@ export const setLocal = <T extends keyof Locals>(key: T, value: Locals[T]) => {
 }
 
 export const clearLocal = <T extends keyof Locals>(key: T) => {
+  if (!isBrowser()) return
   if (typeSafeIncludes(persistentKeys, key)) {
     return clearPersistent(key)
   }
@@ -234,4 +230,12 @@ export const clearLocal = <T extends keyof Locals>(key: T) => {
     return clearUrlParameter(key)
   }
   return null
+}
+
+const version = getLocal("version")
+if (isBrowser()) {
+  if (!version || version < latestVersion) {
+    localStorage.clear()
+    setPersistent("version", latestVersion)
+  }
 }
