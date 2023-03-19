@@ -13,7 +13,7 @@ import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
 import { isBrowser } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
-import { getLocal, session } from "utils/localUtils"
+import { getLocal, setLocal } from "utils/localUtils"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -43,19 +43,19 @@ export default function Navigate() {
     const updatePadding = () => {
       const padding = 100
       if (mobile) {
-        session.cameraPadding = {
+        setLocal("cameraPadding", {
           top: 120 + padding,
           left: 0 + padding,
           right: 0 + padding,
           bottom: window.innerHeight * 0.4 + 20 + padding,
-        }
+        })
       } else {
-        session.cameraPadding = {
+        setLocal("cameraPadding", {
           top: 0 + padding,
           left: 370 + padding,
           right: 0 + padding,
           bottom: 0 + padding,
-        }
+        })
       }
     }
     updatePadding()

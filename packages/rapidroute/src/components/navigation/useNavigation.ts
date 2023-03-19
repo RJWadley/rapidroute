@@ -8,7 +8,7 @@ import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import { isBrowser } from "utils/functions"
-import { getLocal, session } from "utils/localUtils"
+import { getLocal, setLocal } from "utils/localUtils"
 import { wrap } from "utils/promise-worker"
 
 import useVoiceNavigation, { CompletionThresholds } from "./useVoiceNavigation"
@@ -48,7 +48,7 @@ export default function useNavigation() {
   /**
    * set player for map
    */
-  session.followingPlayer = getLocal("selectedPlayer")?.toString() ?? undefined
+  setLocal("followingPlayer", getLocal("selectedPlayer")?.toString())
 
   /**
    * set initial spoken route to match current route
@@ -73,7 +73,7 @@ export default function useNavigation() {
       const wrapper = await rawWrapper
       if (!wrapper) return
 
-      const playersLocation = session.lastKnownLocation
+      const playersLocation = getLocal("lastKnownLocation")
       if (playersLocation) {
         const { x, z } = playersLocation
         const coordId = `Coordinate: ${x}, ${z}`
@@ -109,7 +109,8 @@ export default function useNavigation() {
                  */
                 if (segments.length === 1) {
                   // check if we've reached the destination
-                  const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
+                  const { x: fromX, z: fromZ } =
+                    getLocal("lastKnownLocation") ?? {}
                   const { x: toX, z: toZ } = segments[0].to.location || {}
                   const distance = Math.sqrt(
                     ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
@@ -210,21 +211,21 @@ export default function useNavigation() {
 
     // if this is a walk, we want to use the to location always
     if (firstSpoken.routes.length === 0) {
-      session.pointOfInterest = firstSpoken.to.location
+      setLocal("pointOfInterest", firstSpoken.to.location)
 
       return
     }
 
-    const { x: playerX, z: playerZ } = session.lastKnownLocation || {}
+    const { x: playerX, z: playerZ } = getLocal("lastKnownLocation") || {}
     const { x: locationX, z: locationZ } = firstSpoken?.from.location || {}
     const distance = Math.sqrt(
       ((playerX ?? Infinity) - (locationX ?? Infinity)) ** 2 +
         ((playerZ ?? Infinity) - (locationZ ?? Infinity)) ** 2
     )
     if (distance < CompletionThresholds[firstSpoken?.from.type]) {
-      session.pointOfInterest = firstSpoken?.from.location
+      setLocal("pointOfInterest", firstSpoken?.from.location)
     } else {
-      session.pointOfInterest = firstSpoken?.to.location
+      setLocal("pointOfInterest", firstSpoken?.to.location)
     }
   }, [spokenRoute])
 

@@ -5,7 +5,7 @@ import { Container, Text } from "react-pixi-fiber"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { search } from "data/search"
-import { session } from "utils/localUtils"
+import { clearLocal } from "utils/localUtils"
 
 import { hideItem, showItem } from "./PixiUtils"
 import { useViewport, useViewportMoved } from "./PixiViewport"
@@ -65,8 +65,8 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
     if (hoverTextRef.current) hideItem(hoverTextRef.current)
   }
   const click = () => {
-    session.followingPlayer = undefined
-    session.lastMapInteraction = undefined
+    clearLocal("followingPlayer")
+    clearLocal("lastMapInteraction")
     setActiveItem(search(name)[0])
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }

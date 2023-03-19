@@ -4,7 +4,7 @@ import { Point } from "pixi.js"
 import { Container, Text, usePixiApp } from "react-pixi-fiber"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
-import { session } from "utils/localUtils"
+import { clearLocal } from "utils/localUtils"
 
 import MulticolorDot from "./MulticolorDot"
 import { useViewport, useViewportMoved } from "./PixiViewport"
@@ -44,7 +44,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
     window.removeEventListener("wheel", updateSize)
   }
   const onClick = () => {
-    session.lastMapInteraction = undefined
+    clearLocal("lastMapInteraction")
     setActiveItem(name.match(/(\w\w?\d+)/)?.[1] ?? "")
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }

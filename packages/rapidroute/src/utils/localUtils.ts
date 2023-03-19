@@ -43,22 +43,17 @@ interface Locals {
    */
   navigationHistory: [string, string][]
   /**
-   * true if should show debugging information
-   * @deprecated only used on the old map
-   */
-  isDebug: boolean
-  /**
    * date of last pan or zoom on map
    */
   lastMapInteraction: Date
   /**
    * player name to follow on map
    */
-  followingPlayer: string | number
+  followingPlayer?: string | number
   /**
    * point of interest to follow on map
    */
-  pointOfInterest: {
+  pointOfInterest?: {
     x: number
     z: number
   }
@@ -104,7 +99,6 @@ const urlParameters = ["from", "to", "name", "zoom", "x", "z"] as const
 type UrlParameters = (typeof urlParameters)[number]
 
 const ephemeralKeys = [
-  "isDebug",
   "lastMapInteraction",
   "followingPlayer",
   "pointOfInterest",
@@ -152,6 +146,10 @@ const clearEphemeral = <T extends LocalKeys>(key: T) => {
 }
 
 const setUrlParameter = <T extends LocalKeys>(key: T, value: Locals[T]) => {
+  if (value === undefined) {
+    clearUrlParameter(key)
+    return
+  }
   const url = new URL(window.location.href)
   url.searchParams.set(key, value.toString())
   window.history.replaceState({}, "", url.toString())

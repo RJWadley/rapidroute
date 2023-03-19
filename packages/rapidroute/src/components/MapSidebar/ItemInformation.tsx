@@ -5,7 +5,7 @@ import styled, { keyframes } from "styled-components"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { defaultPadding } from "map/zoomCamera"
-import { session } from "utils/localUtils"
+import { setLocal } from "utils/localUtils"
 
 import InfoBox from "./InfoBox"
 import useWiki from "./useWiki"
@@ -18,11 +18,11 @@ export default function ItemInformation() {
 
   useEffect(() => {
     if (value || loading)
-      session.cameraPadding = {
+      setLocal("cameraPadding", {
         ...defaultPadding,
         left: 450,
-      }
-    else session.cameraPadding = defaultPadding
+      })
+    else setLocal("cameraPadding", defaultPadding)
   }, [loading, value])
 
   return (

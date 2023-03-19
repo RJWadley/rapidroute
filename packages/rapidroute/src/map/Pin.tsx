@@ -6,7 +6,7 @@ import { Container, Sprite } from "react-pixi-fiber"
 import PinPNG from "assets/images/pin.png"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { getPath } from "data/getData"
-import { session } from "utils/localUtils"
+import { clearLocal } from "utils/localUtils"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import { zoomToPoint } from "./zoomCamera"
@@ -32,7 +32,7 @@ export default function Pin() {
     if (!activeItem) {
       return
     }
-    session.lastMapInteraction = undefined
+    clearLocal("lastMapInteraction")
     const timeout = setTimeout(() => {
       getPath("locations", activeItem)
         .then(newLocation => {

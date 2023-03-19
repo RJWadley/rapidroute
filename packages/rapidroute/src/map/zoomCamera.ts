@@ -1,7 +1,7 @@
 import { Viewport } from "pixi-viewport"
 import { Point } from "pixi.js"
 
-import { session } from "utils/localUtils"
+import { getLocal } from "utils/localUtils"
 
 import { triggerMovementManually } from "./PixiViewport"
 
@@ -13,9 +13,10 @@ export const defaultPadding = {
 }
 
 export const canMoveCamera = () => {
-  if (session.lastMapInteraction) {
+  const lastMapInteraction = getLocal("lastMapInteraction")
+  if (lastMapInteraction) {
     const now = new Date()
-    const diff = now.getTime() - session.lastMapInteraction.getTime()
+    const diff = now.getTime() - lastMapInteraction.getTime()
     if (diff < 10000) {
       return false
     }
@@ -24,10 +25,11 @@ export const canMoveCamera = () => {
 }
 
 export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
-  if (session.pointOfInterest) {
+  const pointOfInterest = getLocal("pointOfInterest")
+  if (pointOfInterest) {
     zoomToTwoPoints(
       new Point(x, z),
-      new Point(session.pointOfInterest.x, session.pointOfInterest.z),
+      new Point(pointOfInterest.x, pointOfInterest.z),
       viewport
     )
       .then(() => {
@@ -61,7 +63,7 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
  */
 const zoomToTwoPoints = (a: Point, b: Point, viewport: Viewport) => {
   return new Promise<void>(resolve => {
-    const cameraPadding = session.cameraPadding ?? defaultPadding
+    const cameraPadding = getLocal("cameraPadding") ?? defaultPadding
 
     const getPadding = (padding: keyof typeof cameraPadding) => {
       return cameraPadding[padding] / viewport.scale.x

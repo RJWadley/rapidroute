@@ -11,7 +11,7 @@ import { NavigationContext } from "components/Providers/NavigationContext"
 import { SegmentType } from "components/Segment/createSegments"
 import { stopToNumber } from "components/Segment/getLineDirections"
 import { isBrowser, sleep } from "utils/functions"
-import { getLocal, session } from "utils/localUtils"
+import { getLocal } from "utils/localUtils"
 import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
 
 import getNavigationInstruction from "./getNavigationInstruction"
@@ -199,7 +199,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
           ))
     ) {
       // and we are too far away from that location
-      const { x: fromX, z: fromZ } = session.lastKnownLocation || {}
+      const { x: fromX, z: fromZ } = getLocal("lastKnownLocation") || {}
       const { x: toX, z: toZ } = firstSpoken.to.location || {}
       const distance = Math.sqrt(
         ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +

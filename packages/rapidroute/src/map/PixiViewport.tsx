@@ -5,7 +5,7 @@ import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
 import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 
-import { session } from "utils/localUtils"
+import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
 type ViewportProps = {
   setViewport: (viewport: Viewport) => void
@@ -114,9 +114,10 @@ export const triggerMovementManually = () => {
 }
 
 export const canMoveViewport = () => {
-  if (session.lastMapInteraction) {
+  const lastInteraction = getLocal("lastMapInteraction")
+  if (lastInteraction) {
     const now = new Date()
-    const diff = now.getTime() - session.lastMapInteraction.getTime()
+    const diff = now.getTime() - lastInteraction.getTime()
     if (diff < 10000) return false
   }
   return true
@@ -166,8 +167,8 @@ export default function PixiViewport({
    */
   useEffect(() => {
     const onMoved = () => {
-      session.lastMapInteraction = new Date()
-      session.followingPlayer = undefined
+      setLocal("lastMapInteraction", new Date())
+      clearLocal("followingPlayer")
     }
     viewport?.addEventListener("touchmove", onMoved)
     viewport?.addEventListener("pointerdown", onMoved)

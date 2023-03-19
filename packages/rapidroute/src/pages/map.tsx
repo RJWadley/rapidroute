@@ -12,12 +12,12 @@ import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
 import { defaultPadding } from "map/zoomCamera"
-import { session } from "utils/localUtils"
+import { setLocal } from "utils/localUtils"
 import media from "utils/media"
 
 export default function MapPage() {
   useEffect(() => {
-    session.cameraPadding = defaultPadding
+    setLocal("cameraPadding", defaultPadding)
   }, [])
 
   return (

@@ -1,6 +1,6 @@
 import { SegmentType } from "components/Segment/createSegments"
 import { inObject, SPEEDS } from "pathfinding/findPath/getRouteTime"
-import { session } from "utils/localUtils"
+import { getLocal } from "utils/localUtils"
 
 /**
  * calculates the time it takes to travel from the player's current position to the next instruction
@@ -13,7 +13,10 @@ export default function getTimeToInstruction(
   const numberOfStops = numberOfStopsIn === 1 ? 0 : numberOfStopsIn
 
   const mode = segment.routes[0]?.type ?? "walk"
-  const fromCoords = session.lastKnownLocation ?? { x: Infinity, z: Infinity }
+  const fromCoords = getLocal("lastKnownLocation") ?? {
+    x: Infinity,
+    z: Infinity,
+  }
   const toCoords = segment.to.location ?? { x: Infinity, z: Infinity }
   const diffX = Math.abs(fromCoords.x - toCoords.x)
   const diffZ = Math.abs(fromCoords.z - toCoords.z)

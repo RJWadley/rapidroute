@@ -6,7 +6,7 @@ import styled, { keyframes } from "styled-components"
 import { useImageHSL } from "utils/averageImageColor"
 import { isBrowser } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
-import { session, setLocal } from "utils/localUtils"
+import { setLocal } from "utils/localUtils"
 import media from "utils/media"
 import usePlayerHead from "utils/usePlayerHead"
 
@@ -74,7 +74,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       <CustomRound
         onClick={() => {
           setLocal("selectedPlayer", name)
-          session.followingPlayer = name
+          setLocal("followingPlayer", name)
           loadPage(nextUrl, "slide").catch(console.error)
         }}
         backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}

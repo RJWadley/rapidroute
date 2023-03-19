@@ -4,7 +4,7 @@ import { gsap } from "gsap"
 import { Point, Texture } from "pixi.js"
 import { Container, Sprite, Text } from "react-pixi-fiber"
 
-import { getLocal, session } from "utils/localUtils"
+import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"
@@ -45,14 +45,14 @@ export default function MapPlayer({ player }: { player: Player }) {
    * and update their position for the navigator
    */
   useEffect(() => {
-    if (player.name === session.followingPlayer && viewport) {
+    if (player.name === getLocal("followingPlayer") && viewport) {
       zoomToPlayer(player.x, player.z, viewport)
     }
     if (
       player.account.toLowerCase() ===
       getLocal("selectedPlayer")?.toString().toLowerCase()
     ) {
-      session.lastKnownLocation = { x: player.x, z: player.z }
+      setLocal("lastKnownLocation", { x: player.x, z: player.z })
     }
   }, [player.account, player.name, player.x, player.z, viewport])
 
@@ -88,8 +88,8 @@ export default function MapPlayer({ player }: { player: Player }) {
   }
   const click = () => {
     setHover(false)
-    session.followingPlayer = player.name
-    session.lastMapInteraction = undefined
+    setLocal("followingPlayer", player.name)
+    clearLocal("lastMapInteraction")
     if (viewport) zoomToPlayer(player.x, player.z, viewport)
   }
 

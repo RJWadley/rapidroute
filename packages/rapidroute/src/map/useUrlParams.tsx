@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { session } from "utils/localUtils"
+import { getLocal, setLocal } from "utils/localUtils"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"
 
@@ -30,7 +30,7 @@ export default function useUrlParams() {
 
     const { center } = viewport
     const zoom = Math.round(viewport.scale.x * 10000) / 10000
-    const following = session.followingPlayer
+    const following = getLocal("followingPlayer")
 
     if (Number.isNaN(center.x) || Number.isNaN(center.y) || Number.isNaN(zoom))
       return
@@ -39,13 +39,13 @@ export default function useUrlParams() {
     params.set("x", Math.round(center.x).toString())
     params.set("z", Math.round(center.y).toString())
     params.set("zoom", zoom.toString())
-    if (following) params.set("following", following)
-    else params.delete("following")
-    window.history.replaceState(
-      {},
-      "",
-      `${window.location.pathname}?${params.toString()}`
-    )
+    // if (following) params.set("following", following)
+    // else params.delete("following")
+    // window.history.replaceState(
+    //   {},
+    //   "",
+    //   `${window.location.pathname}?${params.toString()}`
+    // )
   }
   useViewportMoved(updateParams)
 
@@ -72,7 +72,7 @@ export default function useUrlParams() {
             y: z,
           })
           viewport.setZoom(zoom, true)
-          if (following) session.followingPlayer = following
+          if (following) setLocal("followingPlayer", following)
         }
       }
     }, 200)
