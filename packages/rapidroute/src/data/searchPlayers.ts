@@ -3,7 +3,7 @@ import { Index } from "flexsearch-ts"
 import { Member } from "types/memberList"
 
 const memberListURL =
-  "https://script.google.com/macros/s/AKfycbwde4vwt0l4_-qOFK_gL2KbVAdy7iag3BID8NWu2DQ1566kJlqyAS1Y/exec?spreadsheetId=1Hhj_Cghfhfs8Xh5v5gt65kGc4mDW0sC5GWULKidOBW8&sheetName=Members"
+  "https://script.googleusercontent.com/macros/s/AKfycbwde4vwt0l4_-qOFK_gL2KbVAdy7iag3BID8NWu2DQ1566kJlqyAS1Y/exec?spreadsheetId=1Hhj_Cghfhfs8Xh5v5gt65kGc4mDW0sC5GWULKidOBW8&sheetName=Members"
 const searchWorker =
   Index &&
   new Index({
@@ -11,7 +11,7 @@ const searchWorker =
     charset: "latin:simple",
   })
 
-/* not-tanstack */ fetch(memberListURL)
+fetch(memberListURL)
   .then(response => response.json())
   .then((data: Member[]) => {
     data.forEach(member => {

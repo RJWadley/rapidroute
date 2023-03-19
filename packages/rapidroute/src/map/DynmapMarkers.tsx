@@ -1,31 +1,20 @@
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
-import { MarkersResponse, Sets, isMRTLine } from "map/markersType"
+import { MarkersResponse, isMRTLine } from "map/markersType"
 import hslToHex from "utils/hslToHex"
 import invertLightness from "utils/invertLightness"
-import useIsMounted from "utils/useIsMounted"
 
 import MarkerLines from "./MarkerLines"
 import MRTStops, { ColoredMarker } from "./MRTStops"
 
 export default function DynmapMarkers() {
-  const [markerSets, setMarkerSets] = useState<Sets>()
+  const { data } = useQuery<MarkersResponse>({
+    queryKey: [
+      "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
+    ],
+  })
 
-  const isMounted = useIsMounted()
-
-  useEffect(() => {
-    /* not-tanstack */ fetch(
-      "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
-    )
-      .then(response => {
-        return response.json()
-      })
-      .then((data: MarkersResponse) => {
-        if (isMounted.current) setMarkerSets(data.sets)
-      })
-      .catch(console.error)
-  }, [isMounted])
-
+  const markerSets = data?.sets
   if (!markerSets) return null
 
   const allStops: ColoredMarker[] = Object.keys(markerSets).flatMap(name => {

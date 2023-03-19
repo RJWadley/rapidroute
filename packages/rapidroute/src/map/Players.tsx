@@ -1,37 +1,17 @@
-import { startTransition, useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
-import { Player, WorldInfo } from "map/worldInfoType"
+import { WorldInfo } from "map/worldInfoType"
 
 import MapPlayer from "./Player"
 
 export default function MapPlayers() {
-  const [players, setPlayers] = useState<Player[]>([])
-
-  useEffect(() => {
-    let isMounted = true
-
-    const updatePlayers = () => {
-      /* not-tanstack */ fetch(
-        "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
-      )
-        .then(response => response.json())
-        .then(async (data: WorldInfo) => {
-          const newPlayers = data.players.filter(x => x.world === "new")
-          startTransition(() => {
-            if (isMounted) setPlayers(newPlayers)
-          })
-        })
-        .catch(console.error)
-    }
-
-    updatePlayers()
-    const interval = setInterval(updatePlayers, 5000)
-
-    return () => {
-      clearInterval(interval)
-      isMounted = false
-    }
-  }, [])
+  const { data } = useQuery<WorldInfo>({
+    queryKey: [
+      "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json",
+    ],
+    refetchInterval: 5000,
+  })
+  const players = data?.players.filter(x => x.world === "new") ?? []
 
   return (
     <>

@@ -1,56 +1,22 @@
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 
 import { MojangUUIDResponse } from "types/Mojang"
 
 const fallbackUUID = "ec561538-f3fd-461d-aff5-086b22154bce"
 
-const fetchedNames: { [name: string]: Promise<string> } = {}
+export default function usePlayerHead(name: string | undefined) {
+  const { data: mojangResponse, isLoading } = useQuery<MojangUUIDResponse>({
+    queryKey: [`https://api.mojang.com/users/profiles/minecraft/${name ?? ""}`],
+    enabled: !!name,
+  })
+  const uuid = mojangResponse?.id ?? fallbackUUID
 
-export default function usePlayerHead(name: string) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [retrySignal, setRetrySignal] = useState(0)
+  const { data: image } = useQuery({
+    queryKey: [`https://crafatar.com/avatars/${uuid}?overlay`],
+    enabled: !isLoading,
+    queryFn: ({ signal }) =>
+      fetch(`https://crafatar.com/avatars/${uuid}?overlay`, { signal }),
+  })
 
-  useEffect(() => {
-    if (!name) {
-      setImageUrl(`https://crafatar.com/avatars/${fallbackUUID}?overlay`)
-      return
-    }
-
-    if (name in fetchedNames) {
-      fetchedNames[name].then(setImageUrl).catch(console.error)
-      return
-    }
-
-    fetchedNames[name] = new Promise(resolve => {
-      /* not-tanstack */ fetch(
-        `https://cors.mrtrapidroute.com/?https://api.mojang.com/users/profiles/minecraft/${name}`
-      )
-        .then(response => {
-          if (response.status === 429) {
-            setTimeout(() => {
-              delete fetchedNames[name]
-              setRetrySignal(retrySignal + 1)
-            }, 1000)
-          }
-
-          return response.json()
-        })
-        .then((uuidData: MojangUUIDResponse) => {
-          return `https://crafatar.com/avatars/${
-            uuidData.id || fallbackUUID
-          }?overlay`
-        })
-        .then(url => {
-          setImageUrl(url)
-          resolve(url)
-        })
-        .catch(() => {
-          delete fetchedNames[name]
-          setImageUrl(`https://crafatar.com/avatars/${fallbackUUID}?overlay`)
-          resolve(`https://crafatar.com/avatars/${fallbackUUID}?overlay`)
-        })
-    })
-  }, [name, retrySignal])
-
-  return imageUrl
+  return image?.url
 }

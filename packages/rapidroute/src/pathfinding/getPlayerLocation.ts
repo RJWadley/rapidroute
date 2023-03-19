@@ -1,7 +1,7 @@
 import { WorldInfo } from "map/worldInfoType"
 
 export default function getPlayerLocation(player: string) {
-  return /* not-tanstack */ fetch(
+  return fetch(
     "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json"
   )
     .then(response => response.json())

@@ -1,5 +1,7 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 
+import { useQuery } from "@tanstack/react-query"
+import { useDebounce } from "react-use"
 import styled from "styled-components"
 
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
@@ -13,41 +15,27 @@ import { loadPage } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
 
 export default function SelectPlayer() {
-  const [players, setPlayers] = useState<string[]>([])
   const [search, setSearch] = useState<string>()
+  const [staticPlayers] = useState<string[]>([])
+  const [debouncedSearch, setDebouncedSearch] = useState<string>()
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
 
-  const updatePlayers = () => {
-    /* not-tanstack */ fetch("https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json")
-      .then(response => response.json())
-      .then((data: WorldInfo) => {
-        setPlayers(prev =>
-          [...prev, ...data.players.map(player => player.name)].filter(
-            (value, index, self) => self.indexOf(value) === index
-          )
-        )
-      })
-      .catch(e => {
-        console.error("Could not get information from dynmap", e)
-      })
-  }
+  const { data } = useQuery<WorldInfo>({
+    queryKey: [
+      "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json",
+    ],
+    refetchInterval: 5000,
+  })
+  const newPlayers = data?.players.map(player => player.name) ?? []
+  newPlayers.sort((a, b) => a.localeCompare(b))
+  newPlayers.forEach(player => {
+    if (!staticPlayers.includes(player)) staticPlayers.push(player)
+  })
 
-  useEffect(() => {
-    updatePlayers()
-    const interval = setInterval(updatePlayers, 10000)
-    return () => clearInterval(interval)
-  }, [])
-
-  const [debouncedSearch, setDebouncedSearch] = useState<string>()
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedSearch(search)
-    }, 500)
-    return () => clearTimeout(timeout)
-  }, [search])
+  useDebounce(() => setDebouncedSearch(search), 500, [search])
 
   const playerResults = search && searchForPlayer(search)
-  const searchInResults =
+  const searchIsInResults =
     playerResults &&
     playerResults
       .map(x => x.toString().toLowerCase())
@@ -83,7 +71,7 @@ export default function SelectPlayer() {
           <Icon>search</Icon>
         </SearchContainer>
         <Players>
-          {players
+          {staticPlayers
             .filter(
               player =>
                 !search || player.toLowerCase().includes(search.toLowerCase())
@@ -92,8 +80,8 @@ export default function SelectPlayer() {
               <PlayerSelect key={player} name={player} />
             ))}
           {debouncedSearch &&
-            !searchInResults &&
-            players.every(
+            !searchIsInResults &&
+            staticPlayers.every(
               player => player.toLowerCase() !== search?.toLowerCase()
             ) && <PlayerSelect key="SearchName" name={debouncedSearch} />}
           {playerResults &&

@@ -94,7 +94,7 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
   preloadedAudio[voice] = {
     ...preloadedAudio[voice],
     [text]: new Promise(resolve => {
-      /* not-tanstack */ fetch(`${ENDPOINT}/api/generation`, {
+      fetch(`${ENDPOINT}/api/generation`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,10 +109,18 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
             return res.json()
           }
           if (res.status === 429) {
+            // get the retry after header
+            const retryAfter = res.headers.get("Retry-After")
+
+            // if the header is present, wait for that amount of time
+            const timeToWaitInMs = retryAfter
+              ? parseInt(retryAfter, 10) * 1000
+              : 10000 + Math.random() * 10000
+
             setTimeout(() => {
               preloadedAudio[voice][text] = undefined
               preloadAudio(text, voice).catch(console.error)
-            }, 10000 + Math.random() * 10000)
+            }, timeToWaitInMs)
           }
           return undefined
         })

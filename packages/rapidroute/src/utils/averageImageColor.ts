@@ -75,7 +75,7 @@ const rgbToHsl = (
   return [h, s, l]
 }
 
-export const useImageHSL = (imageURL: string | null) => {
+export const useImageHSL = (imageURL: string | null | undefined) => {
   const [hue, setHue] = useState<number>()
   const [saturation, setSaturation] = useState<number>()
   const [lightness, setLightness] = useState<number>()

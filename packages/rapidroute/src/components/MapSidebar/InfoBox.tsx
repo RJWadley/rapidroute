@@ -16,8 +16,7 @@ export default function InfoBox({ title }: { title: string }) {
   const url = `${WIKI_URL}api.php?${new URLSearchParams(pageParams).toString()}`
 
   const { data, isLoading } = useQuery<InfoBoxType>({
-    queryKey: ["infoBox", url],
-    queryFn: ({ signal }) => fetch(url, { signal }).then(res => res.json()),
+    queryKey: [url],
   })
 
   if (isLoading) return <Loading />

@@ -10,11 +10,10 @@ import usePlayerHead from "utils/usePlayerHead"
 
 export default function SelectedPlayerSetting() {
   const player = getLocal("selectedPlayer")?.toString()
-
-  const playerHead = usePlayerHead(player ?? "")
+  const playerHead = usePlayerHead(player)
+  const [hue, saturation] = useImageHSL(playerHead)
 
   const isDark = useContext(darkModeContext)
-  const [hue, saturation] = useImageHSL(playerHead)
   const backgroundLightness = isDark ? 15 : 85
   const textLightness = isDark ? 85 : 15
   const midLightness = isDark ? 30 : 70
