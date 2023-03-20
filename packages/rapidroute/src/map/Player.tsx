@@ -1,8 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 
+import { Container, Sprite, Text } from "@pixi/react"
 import { gsap } from "gsap"
-import { Point, Texture } from "pixi.js"
-import { Container, Sprite, Text } from "react-pixi-fiber"
+import {
+  Point,
+  Texture,
+  Container as PixiContainer,
+  Sprite as PixiSprite,
+  Text as PixiText,
+} from "pixi.js"
 
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
@@ -15,9 +21,9 @@ import { zoomToPlayer } from "./zoomCamera"
 export default function MapPlayer({ player }: { player: Player }) {
   const playerHead = usePlayerHead(player.name)
   const viewport = useViewport()
-  const headRef = useRef<Sprite>(null)
-  const textRef = useRef<Text>(null)
-  const containerRef = useRef<Container>(null)
+  const headRef = useRef<PixiSprite>(null)
+  const textRef = useRef<PixiText>(null)
+  const containerRef = useRef<PixiContainer>(null)
   const [initialPosition] = useState({ x: player.x, z: player.z })
   const [hover, setHover] = useState(false)
 
@@ -75,7 +81,7 @@ export default function MapPlayer({ player }: { player: Player }) {
         1 / viewport.scale.y
       )
       const newAdjustment = (8 - Math.min(8, preferredSize)) * 0.2
-      textRef.current.anchor = new Point(0.5, 1.5 + newAdjustment ** 3)
+      textRef.current.anchor.y = 1.5 + newAdjustment ** 3
     }
   }
   useViewportMoved(updatePlayerHeadSize)
@@ -114,7 +120,7 @@ export default function MapPlayer({ player }: { player: Player }) {
         <Sprite texture={Texture.from(playerHead)} anchor={0.5} ref={headRef} />
       )}
       <Text
-        anchor="0.5, 1.5"
+        anchor={[0.5, 1.5]}
         text={player.name}
         style={hover ? regularHover : regular}
         ref={textRef}

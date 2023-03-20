@@ -1,5 +1,5 @@
+import { PixiComponent } from "@pixi/react"
 import { Graphics, LINE_CAP, LINE_JOIN } from "pixi.js"
-import { CustomPIXIComponent } from "react-pixi-fiber"
 
 interface LineProps {
   /**
@@ -42,24 +42,21 @@ const renderPoints = ({
 }
 
 const TYPE = "Line"
-export default CustomPIXIComponent(
-  {
-    customDisplayObject: () => new Graphics(),
-    customApplyProps(
-      instance: Graphics,
-      _,
-      { points, color, background = false }: LineProps
-    ) {
-      instance.clear()
-      renderPoints({
-        instance,
-        points,
-        color: background ? "#000000" : color,
-        native: false,
-        width: background ? 15 : 10,
-      })
-      if (!background) renderPoints({ instance, points, color, native: true })
-    },
+export default PixiComponent(TYPE, {
+  create: () => new Graphics(),
+  applyProps(
+    instance: Graphics,
+    _,
+    { points, color, background = false }: LineProps
+  ) {
+    instance.clear()
+    renderPoints({
+      instance,
+      points,
+      color: background ? "#000000" : color,
+      native: false,
+      width: background ? 15 : 10,
+    })
+    if (!background) renderPoints({ instance, points, color, native: true })
   },
-  TYPE
-)
+})

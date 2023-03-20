@@ -1,10 +1,14 @@
-import { useEffect } from "react"
+import { useApp } from "@pixi/react"
 
-import { usePixiApp } from "react-pixi-fiber"
+import { isBrowser } from "utils/functions"
 
 import useDoubleTapZoom from "./useDoubleTapZoom"
 import { useUpdateOverlapping } from "./useHideOverlapping"
 import useUrlParams from "./useUrlParams"
+
+const getDPR = () => {
+  return isBrowser() ? window.devicePixelRatio : 1
+}
 
 /**
  * A place to put global hooks that need to be in the pixi context
@@ -14,17 +18,15 @@ export default function PixiHooks() {
   useUpdateOverlapping()
   useDoubleTapZoom()
 
-  const app = usePixiApp()
+  const app = useApp()
 
-  useEffect(() => {
-    const maxResolution = 2
-    const minResolution = 1
+  const maxResolution = 2
+  const minResolution = 1
 
-    app.renderer.resolution = Math.min(
-      maxResolution,
-      Math.max(minResolution, window.devicePixelRatio)
-    )
-  }, [app.renderer])
+  app.renderer.resolution = Math.min(
+    maxResolution,
+    Math.max(minResolution, getDPR())
+  )
 
   return null
 }

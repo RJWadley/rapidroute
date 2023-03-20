@@ -7,7 +7,7 @@ import { MapSearchProvider } from "./MapSearchContext"
 import { NavigationProvider } from "./NavigationContext"
 import { RoutingProvider } from "./RoutingContext"
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: ({ queryKey, signal }) => {

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 
+import { Sprite } from "@pixi/react"
 import { gsap } from "gsap"
-import { Assets, SCALE_MODES, Texture } from "pixi.js"
-import { Sprite } from "react-pixi-fiber"
+import { Assets, SCALE_MODES, Texture, Sprite as PixiSprite } from "pixi.js"
 
 import getTileUrl from "./getTileURL"
 import { worldSize } from "./PixiViewport"
@@ -23,7 +23,7 @@ const textureCache: Record<string, Texture> = {}
 export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
   const [texture, setTexture] = useState<Texture>()
   const [needsAnimation, setNeedsAnimation] = useState(true)
-  const spriteRef = useRef<Sprite>(null)
+  const spriteRef = useRef<PixiSprite>(null)
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
   const tile = getTileUrl({

@@ -1,7 +1,7 @@
 import { useContext, useRef } from "react"
 
-import { Point } from "pixi.js"
-import { Container, Text } from "react-pixi-fiber"
+import { Container, Text } from "@pixi/react"
+import { Container as PixiContainer, Point, Text as PixiText } from "pixi.js"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { search } from "data/search"
@@ -44,8 +44,8 @@ interface CityMarkerProps {
 
 export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const viewport = useViewport()
-  const containerRef = useRef<Container>(null)
-  const hoverTextRef = useRef<Text>(null)
+  const containerRef = useRef<PixiContainer>(null)
+  const hoverTextRef = useRef<PixiText>(null)
   const { setActiveItem } = useContext(MapSearchContext)
 
   const onMove = () => {
@@ -94,11 +94,11 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
       }}
       renderable={false}
     >
-      <Text text={name} style={regular} anchor="0.5, 0.5" />
+      <Text text={name} style={regular} anchor={0.5} />
       <Text
         text={name}
         style={regularHover}
-        anchor="0.5, 0.5"
+        anchor={0.5}
         ref={hoverTextRef}
         renderable={false}
       />

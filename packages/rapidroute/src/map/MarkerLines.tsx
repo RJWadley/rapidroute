@@ -1,6 +1,7 @@
 import { useRef } from "react"
 
-import { Container } from "react-pixi-fiber"
+import { Container } from "@pixi/react"
+import { Container as PixiContainer } from "pixi.js"
 
 import Line from "./Line"
 import { LineType } from "./markersType"
@@ -27,7 +28,7 @@ function MarkerLine({
 }
 
 export default function MarkerLines({ lines }: MarkerLinesProps) {
-  const containerRef = useRef<Container>(null)
+  const containerRef = useRef<PixiContainer>(null)
   const viewport = useViewport()
 
   const updateOpacityWhenClose = () => {

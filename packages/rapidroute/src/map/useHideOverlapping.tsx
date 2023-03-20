@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 
 import { useWorker } from "@koale/useworker"
-import { Rectangle, Ticker } from "pixi.js"
-import { Container, Sprite, Text } from "react-pixi-fiber"
+import {
+  Rectangle,
+  Ticker,
+  Container as PixiContainer,
+  Sprite as PixiSprite,
+  Text as PixiText,
+} from "pixi.js"
 
 import useInterval from "utils/useInterval"
 
@@ -10,7 +15,7 @@ import getAllCullDistances, { CullInfo } from "./getAllCullDistances"
 import { hideItem, showItem } from "./PixiUtils"
 import { useViewport, useViewportMoved } from "./PixiViewport"
 
-type ObjectType = Text | Sprite | Container
+type ObjectType = PixiText | PixiSprite | PixiContainer
 
 type OverlappingProperties = {
   name: string

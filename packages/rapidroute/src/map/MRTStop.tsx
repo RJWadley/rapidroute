@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from "react"
 
-import { Point } from "pixi.js"
-import { Container, Text, usePixiApp } from "react-pixi-fiber"
+import { Container, Text, useApp } from "@pixi/react"
+import { Point, Container as PixiContainer, Text as PixiText } from "pixi.js"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { clearLocal } from "utils/localUtils"
@@ -21,8 +21,8 @@ interface MRTStopProps {
 
 export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const viewport = useViewport()
-  const textRef = useRef<Text>(null)
-  const containerRef = useRef<Container>(null)
+  const textRef = useRef<PixiText>(null)
+  const containerRef = useRef<PixiContainer>(null)
   const [hover, setHover] = useState(false)
   const { activeItem, setActiveItem } = useContext(MapSearchContext)
 
@@ -49,7 +49,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 
-  const app = usePixiApp()
+  const app = useApp()
 
   const updateOpacityWhenClose = () => {
     if (viewport && containerRef.current) {
@@ -94,7 +94,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
           y={z}
           style={regular}
           ref={textRef}
-          anchor={isActiveItem ? `0.5, ${verticalSpacing}` : "0.5, 1.5"}
+          anchor={isActiveItem ? [0.5, verticalSpacing] : [0.5, 1.5]}
         />
       )}
     </Container>

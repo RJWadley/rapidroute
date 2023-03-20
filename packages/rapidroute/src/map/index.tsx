@@ -1,9 +1,11 @@
 import { useContext, useEffect } from "react"
 
-import { Container, Stage } from "react-pixi-fiber"
-import { useMeasure } from "react-use"
-import styled from "styled-components"
+import { Container, Stage } from "@pixi/react"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { createGlobalState, useMeasure } from "react-use"
+import styled, { createGlobalStyle, css } from "styled-components"
 
+import { queryClient } from "components/Providers"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 
 import AllCities from "./AllCities"
@@ -23,7 +25,9 @@ export default function Map() {
    */
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (e.target instanceof HTMLCanvasElement) e.preventDefault()
+      if (e.target instanceof HTMLCanvasElement) {
+        e.preventDefault()
+      }
     }
     document.addEventListener("wheel", handleWheel, { passive: false })
     return () => {
@@ -33,27 +37,23 @@ export default function Map() {
 
   return (
     <Wrapper ref={ref}>
-      <Stage
-        options={{ backgroundAlpha: 0, width, height }}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <MapSearchContext.Provider value={searchContext}>
-          <PixiViewport width={width} height={height}>
-            <PixiHooks />
-            {/* any elements in a container won't be culled */}
-            <Container>
-              <Satellite />
-            </Container>
+      <Stage width={width} height={height}>
+        <QueryClientProvider client={queryClient}>
+          <MapSearchContext.Provider value={searchContext}>
+            <PixiViewport width={width} height={height}>
+              <PixiHooks />
+              {/* any elements in a container won't be culled */}
+              <Container>
+                <Satellite />
+              </Container>
 
-            <DynmapMarkers />
-            <Pin />
-            <AllCities />
-            <MapPlayers />
-          </PixiViewport>
-        </MapSearchContext.Provider>
+              <DynmapMarkers />
+              <Pin />
+              <AllCities />
+              <MapPlayers />
+            </PixiViewport>
+          </MapSearchContext.Provider>
+        </QueryClientProvider>
       </Stage>
     </Wrapper>
   )

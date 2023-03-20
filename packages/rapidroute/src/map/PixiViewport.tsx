@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
+import { PixiComponent, useApp } from "@pixi/react"
 import { Simple } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
 import { EventSystem, Ticker } from "pixi.js"
-import { CustomPIXIComponent, usePixiApp } from "react-pixi-fiber"
 
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
@@ -12,55 +12,48 @@ type ViewportProps = {
   width: number
   height: number
   events: EventSystem
+  children: React.ReactNode
 }
 
 export const worldSize = 61000
 
-const DisplayObjectViewport = CustomPIXIComponent(
-  {
-    customDisplayObject: ({
-      setViewport,
-      width,
-      height,
+const DisplayObjectViewport = PixiComponent("Viewport", {
+  create: ({ setViewport, width, height, events }: ViewportProps) => {
+    const halfSize = worldSize / 2
+    const viewport = new Viewport({
+      screenWidth: width,
+      screenHeight: height,
+      worldHeight: halfSize,
+      worldWidth: halfSize,
       events,
-    }: ViewportProps) => {
-      const halfSize = worldSize / 2
-      const viewport = new Viewport({
-        screenWidth: width,
-        screenHeight: height,
-        worldHeight: halfSize,
-        worldWidth: halfSize,
-        events,
-      })
-      viewport.drag().pinch().wheel().decelerate()
+    })
+    viewport.drag().pinch().wheel().decelerate()
 
-      const cull = new Simple()
-      cull.addList(viewport.children)
+    const cull = new Simple()
+    cull.addList(viewport.children)
+    cull.cull(viewport.getVisibleBounds())
+
+    setTimeout(() => {
       cull.cull(viewport.getVisibleBounds())
+    }, 100)
 
-      setTimeout(() => {
+    Ticker.shared.add(() => {
+      if (viewport.dirty && !viewport.destroyed) {
+        // cull whenever the viewport moves
         cull.cull(viewport.getVisibleBounds())
-      }, 100)
-
-      Ticker.shared.add(() => {
-        if (viewport.dirty && !viewport.destroyed) {
-          // cull whenever the viewport moves
-          cull.cull(viewport.getVisibleBounds())
-          viewport.dirty = false
-        }
-      })
-
-      setViewport(viewport)
-      return viewport
-    },
-    customApplyProps: (instance, oldProps, newProps) => {
-      if (instance instanceof Viewport) {
-        instance.resize(newProps.width, newProps.height)
+        viewport.dirty = false
       }
-    },
+    })
+
+    setViewport(viewport)
+    return viewport
   },
-  "Viewport"
-)
+  applyProps: (instance, _, newProps) => {
+    if (instance instanceof Viewport) {
+      instance.resize(newProps.width, newProps.height)
+    }
+  },
+})
 
 const ViewportContext = createContext<Viewport | null>(null)
 
@@ -134,7 +127,7 @@ export default function PixiViewport({
 }) {
   const [viewport, setViewport] = useState<Viewport | null>(null)
 
-  const app = usePixiApp()
+  const app = useApp()
 
   /**
    * on initial mount, move the center of the viewport to 0, 0
