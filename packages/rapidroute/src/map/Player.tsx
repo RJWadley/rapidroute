@@ -24,7 +24,6 @@ export default function MapPlayer({ player }: { player: Player }) {
   const headRef = useRef<PixiSprite>(null)
   const textRef = useRef<PixiText>(null)
   const containerRef = useRef<PixiContainer>(null)
-  const [initialPosition] = useState({ x: player.x, z: player.z })
   const [hover, setHover] = useState(false)
 
   /**
@@ -99,6 +98,19 @@ export default function MapPlayer({ player }: { player: Player }) {
     if (viewport) zoomToPlayer(player.x, player.z, viewport)
   }
 
+  /**
+   * apply initial state
+   */
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current && containerRef.current) {
+      isFirstRender.current = false
+      containerRef.current.alpha = 0
+      containerRef.current.x = player.x
+      containerRef.current.y = player.z
+    }
+  }, [player.x, player.z])
+
   return (
     <Container
       eventMode="static"
@@ -111,9 +123,6 @@ export default function MapPlayer({ player }: { player: Player }) {
         pointerOut()
         click()
       }}
-      x={initialPosition.x}
-      y={initialPosition.z}
-      alpha={0}
       ref={containerRef}
     >
       {playerHead && (

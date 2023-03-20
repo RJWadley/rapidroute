@@ -36,7 +36,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
   const pointerIn = () => {
     setHover(true)
-    updateSize()
+    setTimeout(updateSize)
     window.addEventListener("wheel", updateSize)
   }
   const pointerOut = () => {
