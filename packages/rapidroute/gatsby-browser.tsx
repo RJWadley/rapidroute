@@ -7,7 +7,6 @@ import gsap from "gsap"
 import Flip from "gsap/Flip"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-import Layout from "components/Layout"
 import PageTransition from "components/PageTransition"
 import Providers from "components/Providers"
 
@@ -19,10 +18,10 @@ export const wrapRootElement = ({ element }: { element: ReactNode }) => {
 
 export const wrapPageElement = ({ element }: { element: ReactNode }) => {
   return (
-    <Layout>
+    <>
       <PageTransition />
       {element}
-    </Layout>
+    </>
   )
 }
 

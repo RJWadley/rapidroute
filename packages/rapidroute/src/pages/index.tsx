@@ -3,6 +3,7 @@ import styled from "styled-components"
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import NavHistory from "components/ControlsOverlay/NavHistory"
 import Header from "components/Header"
+import Layout from "components/Layout"
 import OfflineBanner from "components/OfflineBanner"
 import Results from "components/Results"
 import Selection from "components/Selection"
@@ -10,7 +11,7 @@ import SEO from "components/SEO"
 
 export default function Home() {
   return (
-    <>
+    <Layout>
       <ControlsOverlay>
         <NavHistory />
       </ControlsOverlay>
@@ -23,7 +24,7 @@ export default function Home() {
         <Selection />
         <Results />
       </Content>
-    </>
+    </Layout>
   )
 }
 
