@@ -14,12 +14,14 @@ export function hideItem(item: {
 export function showItem(
   item: {
     visible?: boolean
+    renderable?: boolean
     hitArea?: IHitArea | null
     eventMode?: EventMode
   },
   eventMode: EventMode = "static"
 ) {
   item.visible = true
+  item.renderable = true
   item.eventMode = eventMode
   item.hitArea = undefined
 }

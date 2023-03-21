@@ -13,9 +13,10 @@ import useInterval from "utils/useInterval"
 
 import getAllCullDistances, { CullInfo } from "./getAllCullDistances"
 import { hideItem, showItem } from "./PixiUtils"
-import { useViewport, useViewportMoved } from "./PixiViewport"
+import { useViewport } from "./PixiViewport"
 
 type ObjectType = PixiText | PixiSprite | PixiContainer
+let updateNeeded = false
 
 type OverlappingProperties = {
   name: string
@@ -101,6 +102,8 @@ export default function useHideOverlapping({
       objects.splice(indexToInsert, 0, objectToInsert)
     }
 
+    updateNeeded = true
+
     return () => {
       const indexToRemove = objects.indexOf(objectToInsert)
       objects.splice(indexToRemove, 1)
@@ -141,7 +144,6 @@ export function useUpdateOverlapping() {
   const [distances, setDistances] = useState<CullInfo[]>([])
   const [localObjects, setLocalObjects] = useState<ObjectType[]>([])
   const isUpdating = useRef(false)
-  const isPending = useRef(false)
   const inFirstTenSeconds = useRef(true)
 
   useEffect(() => {
@@ -153,6 +155,8 @@ export function useUpdateOverlapping() {
 
   const updateObjects = () => {
     if (isUpdating.current) return
+    if (!updateNeeded) return
+    updateNeeded = false
     isUpdating.current = true
     const result = cullWorker(
       objects.map((object, i) => ({
@@ -164,36 +168,25 @@ export function useUpdateOverlapping() {
     )
     result
       .then(newResult => {
-        setTimeout(
-          () => {
-            isUpdating.current = false
-            if (isPending.current) {
-              isPending.current = false
-              updateObjects()
-            }
-          },
-          inFirstTenSeconds.current ? 1000 : 10_000
-        )
+        if (viewport) viewport.dirty = true
+        isUpdating.current = false
         setDistances(newResult)
         setLocalObjects(objects.map(obj => obj.item))
       })
       .catch(console.error)
   }
 
-  useViewportMoved(updateObjects)
-  useInterval(updateObjects, 5000)
-  useEffect(() => {
-    window.addEventListener("pointermove", updateObjects)
-    return () => {
-      window.removeEventListener("pointermove", updateObjects)
-    }
-  })
+  useInterval(updateObjects, 100)
 
+  /**
+   * apply the calculated culling
+   */
   useEffect(() => {
     const update = () => {
-      if (!viewport) return
+      if (!viewport?.dirty) return
       if (viewport.destroyed) return
       const zoom = viewport.scale.x
+      viewport.dirty = false
       distances.forEach(distance => {
         const {
           zoom: zoomLevelToCull,
