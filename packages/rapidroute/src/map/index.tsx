@@ -7,6 +7,7 @@ import styled from "styled-components"
 
 import { queryClient } from "components/Providers"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
+import DelayRender from "utils/DelayRender"
 
 import AllCities from "./AllCities"
 import DynmapMarkers from "./DynmapMarkers"
@@ -43,10 +44,12 @@ export default function Map() {
             <PixiViewport width={width} height={height}>
               <PixiHooks />
               <Satellite />
-              <DynmapMarkers />
-              <Pin />
-              <AllCities />
-              <MapPlayers />
+              <DelayRender>
+                <DynmapMarkers />
+                <Pin />
+                <AllCities />
+                <MapPlayers />
+              </DelayRender>
             </PixiViewport>
           </MapSearchContext.Provider>
         </QueryClientProvider>
