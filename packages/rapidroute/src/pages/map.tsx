@@ -49,8 +49,7 @@ const SettingsWrapper = styled.div`
   z-index: 2;
 
   @media ${media.mobile} {
-    top: 5px;
-    right: 5px;
+    padding: 25px;
   }
 `
 

@@ -73,7 +73,7 @@ const Name = styled.div`
 const Head = styled.img`
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 8px;
 `
 
 const Swap = styled(UniversalLink)<{ background: string }>`

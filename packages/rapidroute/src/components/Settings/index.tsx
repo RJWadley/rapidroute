@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import gsap from "gsap"
-import { useLocation } from "react-use"
+import { useClickAway, useLocation } from "react-use"
 import styled from "styled-components"
 
 import RoundButton from "components/RoundButton"
@@ -15,67 +15,67 @@ import RateSetting from "./RateSetting"
 import SelectedPlayerSetting from "./SelectedPlayerSetting"
 import VoiceSetting from "./VoiceSetting"
 
-const circlePosition = "at calc(100% - 35px) 35px"
-
 export default function Settings() {
   const player = getLocal("selectedPlayer")?.toString()
   const playerHead = usePlayerHead(player)
+  const location = useLocation()
+  const linkDestination = location.pathname === "/" ? "/map" : "/"
+  const viewName = location.pathname === "/" ? "Map" : "List"
+
   const [openButton, setOpenButton] = useState<HTMLButtonElement | null>(null)
   const [open, setOpen] = useState(false)
+
   const menu = useRef<HTMLDivElement>(null)
-  const location = useLocation()
+  const playerHeadRef = useRef<HTMLImageElement>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     gsap.to(menu.current, {
-      clipPath: open
-        ? `circle(200% ${circlePosition})`
-        : `circle(0% ${circlePosition})`,
-      ease: open ? "power4.in" : "power4.out",
-      duration: 0.3,
+      yPercent: open ? 0 : -100,
+      y: open ? 0 : -100,
+      duration: open ? 1 : 0.5,
+      ease: open ? "elastic.out(0.8, 0.8)" : "power2.in",
+      willChange: "transform",
     })
     gsap.to(openButton, {
       autoAlpha: open ? 0 : 1,
-    })
-    gsap.set(menu.current, {
-      autoAlpha: open ? 1 : 0,
-      delay: open ? 0 : 0.3,
+      duration: 0.1,
     })
   }, [open, openButton])
 
   /**
    * handle click outside of menu
    */
+  useClickAway(wrapperRef, () => {
+    setOpen(false)
+  })
+
+  /**
+   * fade in player head
+   */
+  const playerHeadLoad = () => {
+    gsap.to(playerHeadRef.current, {
+      autoAlpha: 1,
+      delay: 0.5,
+    })
+  }
+
+  // if player head is already loaded, fade it in
+  // otherwise, wait for load event
   useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (
-        open &&
-        e.target instanceof HTMLElement &&
-        !menu.current?.contains(e.target) &&
-        !openButton?.contains(e.target)
-      ) {
-        setOpen(false)
-      }
+    if (playerHeadRef.current?.complete) {
+      playerHeadLoad()
     }
+  }, [])
 
-    window.addEventListener("click", handleClick)
-    return () => window.removeEventListener("click", handleClick)
-  }, [open, openButton])
-
-  const linkDestination = location.pathname === "/" ? "/map" : "/"
-  const viewName = location.pathname === "/" ? "Map" : "List"
-
-  return playerHead ? (
-    <>
+  return (
+    <div ref={wrapperRef}>
       <Open ref={el => setOpenButton(el)} onClick={() => setOpen(!open)}>
         <PlayerHead
           src={playerHead}
+          ref={playerHeadRef}
           alt="your player head"
-          onLoad={e => {
-            gsap.to(e.target, {
-              autoAlpha: 1,
-              delay: 0.5,
-            })
-          }}
+          onLoad={playerHeadLoad}
         />
       </Open>
       <Menu ref={menu}>
@@ -91,8 +91,8 @@ export default function Settings() {
           Switch to {viewName} View{viewName === "Map" ? " (Beta)" : ""}
         </SwitchView>
       </Menu>
-    </>
-  ) : null
+    </div>
+  )
 }
 
 const Open = styled.button`
@@ -111,7 +111,6 @@ const PlayerHead = styled.img`
 
 const Menu = styled.div`
   position: absolute;
-  visibility: hidden;
   top: 10px;
   right: 10px;
   max-width: calc(100vw - 20px);
@@ -121,7 +120,6 @@ const Menu = styled.div`
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
   padding: 30px;
   border-radius: 35px 35px 50px 50px;
-  clip-path: circle(0% ${circlePosition});
   display: grid;
   gap: 20px;
 
