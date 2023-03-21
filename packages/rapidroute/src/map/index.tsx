@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react"
 
-import { Container, Stage } from "@pixi/react"
+import { Stage } from "@pixi/react"
 import { QueryClientProvider } from "@tanstack/react-query"
-import { createGlobalState, useMeasure } from "react-use"
-import styled, { createGlobalStyle, css } from "styled-components"
+import { useMeasure } from "react-use"
+import styled from "styled-components"
 
 import { queryClient } from "components/Providers"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
@@ -42,11 +42,7 @@ export default function Map() {
           <MapSearchContext.Provider value={searchContext}>
             <PixiViewport width={width} height={height}>
               <PixiHooks />
-              {/* any elements in a container won't be culled */}
-              <Container>
-                <Satellite />
-              </Container>
-
+              <Satellite />
               <DynmapMarkers />
               <Pin />
               <AllCities />

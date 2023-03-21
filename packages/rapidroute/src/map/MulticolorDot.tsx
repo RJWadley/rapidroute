@@ -8,7 +8,7 @@ interface LineProps {
    */
   colors: string[]
   point: { x: number; z: number }
-  renderable?: boolean
+  visible?: boolean
   renderer: IRenderer
 }
 
@@ -23,17 +23,17 @@ export default PixiComponent(TYPE, {
   applyProps(
     instance: Sprite,
     previousProps: Partial<LineProps>,
-    { point, colors, renderable, renderer }: LineProps
+    { point, colors, visible, renderer }: LineProps
   ) {
     const pointChanged =
       previousProps.point?.x !== point.x || previousProps.point.z !== point.z
     const colorsChanged =
       previousProps.colors?.length !== colors.length ||
       previousProps.colors.some((color, index) => color !== colors[index])
-    const renderableChanged = previousProps?.renderable !== renderable
+    const visibleChanged = previousProps?.visible !== visible
 
-    if (renderableChanged) {
-      instance.renderable = renderable ?? true
+    if (visibleChanged) {
+      instance.visible = visible ?? true
     }
     if (pointChanged || colorsChanged) {
       // create a renderTexture, draw the graphics object to it, and then use that for the sprite texture

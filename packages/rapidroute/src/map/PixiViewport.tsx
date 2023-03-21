@@ -1,9 +1,8 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 
 import { PixiComponent, useApp } from "@pixi/react"
-import { Simple } from "pixi-cull"
 import { Viewport } from "pixi-viewport"
-import { EventSystem, Ticker } from "pixi.js"
+import { EventSystem } from "pixi.js"
 
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
@@ -28,22 +27,6 @@ const DisplayObjectViewport = PixiComponent("Viewport", {
       events,
     })
     viewport.drag().pinch().wheel().decelerate()
-
-    const cull = new Simple()
-    cull.addList(viewport.children)
-    cull.cull(viewport.getVisibleBounds())
-
-    setTimeout(() => {
-      cull.cull(viewport.getVisibleBounds())
-    }, 100)
-
-    Ticker.shared.add(() => {
-      if (viewport.dirty && !viewport.destroyed) {
-        // cull whenever the viewport moves
-        cull.cull(viewport.getVisibleBounds())
-        viewport.dirty = false
-      }
-    })
 
     setViewport(viewport)
     return viewport

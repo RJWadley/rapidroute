@@ -83,8 +83,9 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
         onClick()
       }}
       cursor="pointer"
-      renderable={visible}
+      visible={visible}
       ref={containerRef}
+      cullable
     >
       <MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
       {hover && (

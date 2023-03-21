@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { PixiComponent } from "@pixi/react"
 import { Graphics, LINE_CAP, LINE_JOIN } from "pixi.js"
 
@@ -49,6 +50,7 @@ export default PixiComponent(TYPE, {
     _,
     { points, color, background = false }: LineProps
   ) {
+    instance.cullable = true
     instance.clear()
     renderPoints({
       instance,

@@ -124,6 +124,7 @@ export default function MapPlayer({ player }: { player: Player }) {
         click()
       }}
       ref={containerRef}
+      cullable
     >
       {playerHead && (
         <Sprite texture={Texture.from(playerHead)} anchor={0.5} ref={headRef} />

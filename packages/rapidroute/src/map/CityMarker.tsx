@@ -92,7 +92,8 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
         pointerOut()
         click()
       }}
-      renderable={false}
+      visible={false}
+      cullable
     >
       <Text text={name} style={regular} anchor={0.5} />
       <Text
@@ -100,7 +101,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
         style={regularHover}
         anchor={0.5}
         ref={hoverTextRef}
-        renderable={false}
+        visible={false}
       />
     </Container>
   )
