@@ -48,7 +48,7 @@ export default function useNavigation() {
   /**
    * set player for map
    */
-  setLocal("followingPlayer", getLocal("selectedPlayer")?.toString())
+  setLocal("following", getLocal("selectedPlayer")?.toString())
 
   /**
    * set initial spoken route to match current route

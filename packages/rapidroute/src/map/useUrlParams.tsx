@@ -29,13 +29,13 @@ export default function useUrlParams() {
     if (now - loadedAt < 5 * 1000) return
 
     const { center } = viewport
-    const zoom = Math.round(viewport.scale.x * 10000) / 10000
+    const zoom = Math.round(viewport.scale.x * 1000) / 1000
 
     if (Number.isNaN(center.x) || Number.isNaN(center.y) || Number.isNaN(zoom))
       return
 
-    setLocal("x", center.x)
-    setLocal("z", center.y)
+    setLocal("x", Math.round(center.x))
+    setLocal("z", Math.round(center.y))
     setLocal("zoom", zoom)
   }
   useViewportMoved(updateParams)

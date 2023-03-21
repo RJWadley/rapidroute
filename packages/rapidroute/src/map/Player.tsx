@@ -50,7 +50,7 @@ export default function MapPlayer({ player }: { player: Player }) {
    * and update their position for the navigator
    */
   useEffect(() => {
-    if (player.name === getLocal("followingPlayer") && viewport) {
+    if (player.name === getLocal("following") && viewport) {
       zoomToPlayer(player.x, player.z, viewport)
     }
     if (
@@ -93,7 +93,7 @@ export default function MapPlayer({ player }: { player: Player }) {
   }
   const click = () => {
     setHover(false)
-    setLocal("followingPlayer", player.name)
+    setLocal("following", player.name)
     clearLocal("lastMapInteraction")
     if (viewport) zoomToPlayer(player.x, player.z, viewport)
   }

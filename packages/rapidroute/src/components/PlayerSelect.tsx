@@ -72,7 +72,7 @@ export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
       <CustomRound
         onClick={() => {
           setLocal("selectedPlayer", name)
-          setLocal("followingPlayer", name)
+          setLocal("following", name)
           loadPage(nextUrl, "slide").catch(console.error)
         }}
         backgroundColor={`hsl(${hue}, ${saturation}%, ${midLightness}%)`}

@@ -144,7 +144,7 @@ export default function PixiViewport({
   useEffect(() => {
     const onMoved = () => {
       setLocal("lastMapInteraction", new Date())
-      clearLocal("followingPlayer")
+      clearLocal("following")
     }
     viewport?.addEventListener("touchmove", onMoved)
     viewport?.addEventListener("pointerdown", onMoved)

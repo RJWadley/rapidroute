@@ -49,7 +49,7 @@ interface Locals {
   /**
    * player name to follow on map
    */
-  followingPlayer?: string | number
+  following?: string | number
   /**
    * point of interest to follow on map
    */
@@ -95,12 +95,19 @@ const persistentKeys = [
 ] as const
 type PersistentKeys = (typeof persistentKeys)[number]
 
-const urlParameters = ["from", "to", "name", "zoom", "x", "z"] as const
+const urlParameters = [
+  "from",
+  "to",
+  "name",
+  "zoom",
+  "x",
+  "z",
+  "following",
+] as const
 type UrlParameters = (typeof urlParameters)[number]
 
 const ephemeralKeys = [
   "lastMapInteraction",
-  "followingPlayer",
   "pointOfInterest",
   "lastKnownLocation",
   "cameraPadding",

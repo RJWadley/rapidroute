@@ -65,7 +65,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
     if (hoverTextRef.current) hideItem(hoverTextRef.current)
   }
   const click = () => {
-    clearLocal("followingPlayer")
+    clearLocal("following")
     clearLocal("lastMapInteraction")
     setActiveItem(search(name)[0])
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
