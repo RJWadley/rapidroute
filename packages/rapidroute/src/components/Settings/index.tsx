@@ -122,6 +122,7 @@ const Menu = styled.div`
   border-radius: 35px 35px 50px 50px;
   display: grid;
   gap: 20px;
+  transform: translateY(-100vh);
 
   @media ${media.mobile} {
     padding: 20px;
