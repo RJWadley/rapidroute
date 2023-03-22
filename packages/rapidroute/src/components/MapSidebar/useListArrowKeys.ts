@@ -124,6 +124,7 @@ export default function useListArrowKeys(
     if (input) {
       input.value = getTextboxName(item)
       setUserTyped(undefined)
+      setActiveItem(item)
     }
   }
 
