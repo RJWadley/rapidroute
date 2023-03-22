@@ -36,18 +36,21 @@ export default function Pin() {
       return
     }
     clearLocal("lastMapInteraction")
-    getPath("locations", activeItem)
-      .then(newLocation => {
-        if (newLocation?.location && viewport) {
-          const newPoint = new Point(
-            newLocation.location.x,
-            newLocation.location.z
-          )
-          setLocation(newPoint)
-          zoomToPoint(newPoint, viewport, 250).catch(() => {})
-        }
-      })
-      .catch(() => {})
+    const debounce = setTimeout(() => {
+      getPath("locations", activeItem)
+        .then(newLocation => {
+          if (newLocation?.location && viewport) {
+            const newPoint = new Point(
+              newLocation.location.x,
+              newLocation.location.z
+            )
+            setLocation(newPoint)
+            zoomToPoint(newPoint, viewport, 250).catch(() => {})
+          }
+        })
+        .catch(() => {})
+    }, 250)
+    return () => clearTimeout(debounce)
   }, [activeItem, viewport])
 
   if (!location) return null

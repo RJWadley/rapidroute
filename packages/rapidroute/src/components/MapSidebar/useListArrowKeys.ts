@@ -52,7 +52,7 @@ export default function useListArrowKeys(
   useEffect(() => {
     if (!input) return
 
-    const handleInput = () => {
+    const handleInput = (e: Event) => {
       setUserTyped(input.value)
       setFocusedItem(undefined)
 
@@ -62,6 +62,16 @@ export default function useListArrowKeys(
         const newActiveItem = focusedItem ?? currentSearch[0]
         selectAndClose(newActiveItem)
       }
+      // scroll to top when typing
+      if (
+        !focusedItem &&
+        "data" in e &&
+        typeof e.data === "string" &&
+        e.data.match(/^[a-zA-Z0-9]$/)
+      )
+        window.scrollTo({
+          top: 0,
+        })
     }
 
     input.addEventListener("input", handleInput)
@@ -101,10 +111,7 @@ export default function useListArrowKeys(
         e.preventDefault()
         input?.blur()
         setUserTyped(undefined)
-      } else if (!focusedItem && e.key.match(/^[a-zA-Z0-9]$/))
-        window.scrollTo({
-          top: 0,
-        })
+      }
     }
 
     input?.addEventListener("keydown", handleKeyDown)
