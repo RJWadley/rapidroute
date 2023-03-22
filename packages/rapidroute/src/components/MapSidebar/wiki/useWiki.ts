@@ -15,7 +15,13 @@ import useImages from "./useImages"
 export default function useWiki(idToSearch: string | undefined) {
   const searchTerm =
     idToSearch &&
-    (getTextboxName(idToSearch).split("-").slice(1).join("-") ?? idToSearch)
+    (getTextboxName(idToSearch)
+      .split("-")
+      .slice(1)
+      .join("-")
+      .replaceAll(/Station|Terminal ?\d?/g, "")
+      .trim() ??
+      idToSearch)
 
   const specificParams = {
     action: "query",
