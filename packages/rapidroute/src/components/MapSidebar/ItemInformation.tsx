@@ -6,6 +6,8 @@ import styled, { keyframes } from "styled-components"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { defaultPadding } from "map/zoomCamera"
 import { setLocal } from "utils/localUtils"
+import media from "utils/media"
+import useMedia from "utils/useMedia"
 
 import InfoBox from "./wiki/InfoBox"
 import useWiki from "./wiki/useWiki"
@@ -25,26 +27,30 @@ export default function ItemInformation() {
     else setLocal("cameraPadding", defaultPadding)
   }, [loading, value])
 
+  const carousel = value?.images && (
+    <CarouselWrap>
+      <ImageGallery
+        items={value.images.map(image => ({
+          original: image.img,
+          originalAlt: image.alt,
+        }))}
+        showPlayButton={false}
+        showFullscreenButton={false}
+        autoPlay
+        showBullets={value.images.length > 1}
+      />
+    </CarouselWrap>
+  )
+  const isMobile = useMedia(media.mobile)
+
   return (
     <>
       {value && !loading && (
         <Wrapper>
-          {value.images && (
-            <CarouselWrap>
-              <ImageGallery
-                items={value.images.map(image => ({
-                  original: image.img,
-                  originalAlt: image.alt,
-                }))}
-                showPlayButton={false}
-                showFullscreenButton={false}
-                autoPlay
-                showBullets={value.images.length > 1}
-              />
-            </CarouselWrap>
-          )}
+          {!isMobile && carousel}
           <TextContent>
             <Title>{value.title}</Title>
+            {isMobile && carousel}
             <Desc>{value.blurb}</Desc>
             <Link href={value.pageUrl} target="_blank" rel="noreferrer">
               Read more
@@ -58,28 +64,28 @@ export default function ItemInformation() {
   )
 }
 
-const Wrapper = styled.div`
-  background: var(--default-card-background);
-  border-radius: 20px;
-  margin-top: 20px;
-  isolation: isolate;
-  overflow: hidden;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
-  margin-bottom: 20px;
-
-  svg {
-    max-width: 30px;
-  }
-`
-
 const CarouselWrap = styled.div`
   background: var(--mid-background);
+
+  @media ${media.mobile} {
+    order: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    isolation: isolate;
+    width: 100%;
+  }
 
   img {
     width: 100%;
     min-width: 100%;
     height: 200px !important;
     min-height: 200px;
+
+    @media ${media.mobile} {
+      height: 50vw !important;
+      min-height: 50vw;
+    }
+
     object-fit: cover !important;
     background: var(--mid-background);
     image-rendering: pixelated;
@@ -100,6 +106,43 @@ const CarouselWrap = styled.div`
       padding: 0 50px;
       white-space: pre-wrap;
       line-height: 1.5em;
+    }
+  }
+`
+
+const Wrapper = styled.div`
+  background: var(--default-card-background);
+  border-radius: 20px;
+  margin-top: 20px;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  position: relative;
+
+  svg {
+    max-width: 30px;
+  }
+
+  @media ${media.mobile} {
+    margin-top: calc(100vh - 280px);
+    pointer-events: none;
+    padding-top: 10px;
+
+    ::before {
+      content: "";
+      position: absolute;
+      top: 5;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 25px;
+      height: 5px;
+      border-radius: 10px;
+      background: var(--dark-background);
+    }
+
+    > * {
+      pointer-events: auto;
     }
   }
 `
@@ -160,4 +203,12 @@ const Loading = styled.div`
   pointer-events: none;
   margin-top: 20px;
   height: 200px;
+
+  @media ${media.mobile} {
+    margin-top: calc(100vh - 280px);
+
+    ${Wrapper} & {
+      margin-top: 20px;
+    }
+  }
 `

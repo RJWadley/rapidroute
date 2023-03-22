@@ -45,11 +45,11 @@ const SettingsWrapper = styled.div`
   position: fixed;
   top: 0;
   right: 0;
-  padding: 20px;
+  padding: 20px 20px 0 0;
   z-index: 2;
 
   @media ${media.mobile} {
-    padding: 25px;
+    padding: 25px 25px 0 0;
   }
 `
 

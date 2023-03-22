@@ -1,7 +1,8 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 
 import styled from "styled-components"
 
+import { MapSearchContext } from "components/Providers/MapSearchContext"
 import media from "utils/media"
 
 import SearchResults from "./SearchResults"
@@ -12,6 +13,7 @@ export default function MapSearchBox() {
   const [inputElement, setInputElement] = useState<HTMLTextAreaElement | null>(
     null
   )
+  const { setActiveItem } = useContext(MapSearchContext)
 
   useAdaptiveTextareaHeight(inputElement)
 
@@ -33,6 +35,17 @@ export default function MapSearchBox() {
           data-gramm_editor="false"
           data-enable-grammarly="false"
         />
+        <Close
+          type="button"
+          onClick={() => {
+            if (inputElement) {
+              inputElement.value = ""
+              setActiveItem("")
+            }
+          }}
+        >
+          close
+        </Close>
       </Wrapper>
       <SearchResults
         items={currentSearch}
@@ -50,6 +63,7 @@ const Wrapper = styled.div`
   top: 20px;
   z-index: 1;
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
 
   @media ${media.mobile} {
     border-radius: 15px;
@@ -61,8 +75,17 @@ const SearchBox = styled.textarea`
   height: 60px;
   vertical-align: top;
   padding: 20px;
+  padding-right: 0;
+`
+
+const Close = styled.button`
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  padding: 0 20px;
+  cursor: pointer;
+  height: 60px;
 
   @media ${media.mobile} {
-    padding-right: 60px;
+    margin-right: 55px;
   }
 `
