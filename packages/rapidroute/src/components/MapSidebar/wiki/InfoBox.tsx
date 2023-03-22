@@ -101,6 +101,10 @@ const Loading = styled.div`
 
 const Wrapper = styled.div`
   padding: 20px;
+  
+  :empty {
+    display: none;
+  }
 
   /* clear table styles */
   table,
