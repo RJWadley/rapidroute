@@ -216,6 +216,7 @@ const Loading = styled.div`
 
   @media ${media.mobile} {
     margin-top: calc(100vh - 280px);
+    height: 250px;
 
     ${Wrapper} & {
       margin-top: 20px;
