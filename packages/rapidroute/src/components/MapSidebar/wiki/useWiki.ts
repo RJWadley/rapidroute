@@ -19,7 +19,8 @@ export default function useWiki(idToSearch: string | undefined) {
       .split("-")
       .slice(1)
       .join("-")
-      .replaceAll(/Station|Terminal ?\d?/g, "")
+      // this is for u, kanto
+      .replaceAll(/Terminal ?\d?/g, "")
       .trim() ??
       idToSearch)
 
