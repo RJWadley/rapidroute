@@ -110,7 +110,8 @@ const Wrapper = styled.div`
   }
 
   td,
-  th {
+  th,
+  *[style*="table-cell"] {
     flex: 1;
     padding: 5px 10px;
     border: none !important;
@@ -122,7 +123,8 @@ const Wrapper = styled.div`
     margin-bottom: 10px;
     font-size: var(--small);
     font-weight: bold;
-    color: #111;
+    color: black;
+    background: #ddd;
   }
 
   .infobox-above {
@@ -142,7 +144,7 @@ const Wrapper = styled.div`
     color: var(--low-contrast-text);
     background: var(--mid-background);
     padding: 5px 10px;
-    border-radius: 8px;
+    border-radius: 10px;
     margin-bottom: 10px;
   }
 
@@ -157,16 +159,17 @@ const Wrapper = styled.div`
     object-fit: contain;
     border-radius: 5px;
     background: #f8f9fa;
+    padding: 5px;
   }
 
-  .infobox-image > a {
-    background: #f8f9fa;
-    padding: 5px 5px 1px;
-    border-radius: 8px;
+  .infobox-image img {
+    border-radius: 20px;
   }
 
   .thumbimage img {
     object-fit: cover;
+    border-radius: 10px;
+    padding: 2px;
   }
 
   /* service markers should be small and transparent (WN25) */
@@ -186,7 +189,7 @@ const Wrapper = styled.div`
   }
 
   /* fix default color for stuff with backgrounds */
-  & *[style*="background"] {
+  & *[style*="background"]:not(.infobox-header) {
     color: black;
   }
 

@@ -28,7 +28,7 @@ const useFirstParagraph = (text: string | undefined) => {
 
   return {
     data: page && "extract" in page ? page.extract : undefined,
-    isLoading,
+    isLoading: isLoading && !!text,
   }
 }
 

@@ -18,7 +18,7 @@ export default function useUrlParams() {
     // don't update the URL too much
     const now = Date.now()
     const diff = now - lastUpdate.current
-    const maxInterval = 200
+    const maxInterval = 1000
     if (diff < maxInterval) {
       setTimeout(updateParams, maxInterval - diff)
       return

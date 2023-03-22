@@ -55,6 +55,14 @@ export default function useWiki(idToSearch: string) {
   )
   const { data: images, isLoading: imagesLoading } = useImages(result?.title)
 
+  const contentLoading =
+    specificLoading || genericLoading || blurbLoading || imagesLoading
+
+  if (!result?.title && !contentLoading)
+    return {
+      loading: false,
+      value: undefined,
+    }
   return {
     loading: specificLoading || genericLoading || blurbLoading || imagesLoading,
     value: {
