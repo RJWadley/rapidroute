@@ -155,11 +155,23 @@ const Wrapper = styled.div`
     width: 100% !important;
     object-fit: contain;
     border-radius: 5px;
-    background: #eee;
+    background: #f8f9fa;
+  }
+
+  .infobox-image > a {
+    background: #f8f9fa;
+    padding: 5px 5px 1px;
+    border-radius: 8px;
   }
 
   .thumbimage img {
     object-fit: cover;
+  }
+
+  /* service markers should be small and transparent (WN25) */
+  img[src*="Service"] {
+    width: unset !important;
+    background: unset !important;
   }
 
   .infobox-data {

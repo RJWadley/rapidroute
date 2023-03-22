@@ -17,6 +17,7 @@
     "import": "npm run typegen && npm run start -w ./packages/database-importer",
     "typegen": "npm run build -w ./packages/database-types/",
     "build": "npm i && npm run build -w ./packages/database-types/ && npm run build -w ./packages/rapidroute/",
-    "clean": "npm run clean -workspaces && rm -r ./node_modules"
+    "clean": "npm run clean -workspaces && rm -r ./node_modules",
+    "serve": "npm run build && npm run serve -w ./packages/rapidroute/"
   }
 }
