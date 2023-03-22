@@ -73,6 +73,8 @@ const Wrapper = styled.div`
 `
 
 const CarouselWrap = styled.div`
+  background: var(--mid-background);
+
   img {
     width: 100%;
     min-width: 100%;
@@ -130,7 +132,7 @@ const Link = styled.a`
   color: var(--invert-button-green);
   padding: 10px 20px;
   display: block;
-  border-radius: 5px;
+  border-radius: 10px;
   font-weight: 600;
   transition: background 0.2s ease-in-out;
 `

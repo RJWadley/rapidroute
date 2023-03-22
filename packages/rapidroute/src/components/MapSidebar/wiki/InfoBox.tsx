@@ -100,8 +100,8 @@ const Loading = styled.div`
 `
 
 const Wrapper = styled.div`
-  padding: 20px;
-  
+  padding: 0 20px 20px;
+
   :empty {
     display: none;
   }
@@ -123,14 +123,17 @@ const Wrapper = styled.div`
   th,
   *[style*="table-cell"] {
     flex: 1;
-    padding: 5px 10px;
+    padding: 5px 0;
     border: none !important;
     border-radius: 10px;
   }
 
   .infobox-header {
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin: 20px -20px 10px;
+    width: calc(100% + 40px) !important;
+    max-width: calc(100% + 40px) !important;
+    padding: 10px 18px;
+    border-radius: 0;
     font-size: var(--small);
     font-weight: bold;
     color: black;
