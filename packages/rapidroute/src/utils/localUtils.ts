@@ -158,6 +158,8 @@ const setUrlParameter = <T extends LocalKeys>(key: T, value: Locals[T]) => {
     return
   }
   const url = new URL(window.location.href)
+  const previousValue = url.searchParams.get(key)
+  if (previousValue === value.toString()) return
   url.searchParams.set(key, value.toString())
   window.history.replaceState({}, "", url.toString())
 }
