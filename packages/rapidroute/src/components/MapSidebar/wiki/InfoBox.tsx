@@ -46,6 +46,12 @@ const parseInfoBox = (data: InfoBoxType) => {
   )
   twoThs.forEach(tr => tr.classList.add("feetAndMeters"))
 
+  // find any images with width less than 50px and add the small-image class
+  const smallImages = Array.from(newBox?.querySelectorAll("img") ?? []).filter(
+    img => img.width < 50
+  )
+  smallImages.forEach(img => img.classList.add("small-image"))
+
   // make sure URLs are valid
   const boxText = newBox?.outerHTML
     .replaceAll('src="/', `src="${WIKI_NO_CORS}`)
@@ -127,7 +133,9 @@ const Wrapper = styled.div`
     background: #ddd;
   }
 
-  .infobox-above {
+  // hide the top title rows
+  .infobox-above,
+  .infobox-subheader {
     display: none;
   }
 
@@ -172,10 +180,13 @@ const Wrapper = styled.div`
     padding: 2px;
   }
 
-  /* service markers should be small and transparent (WN25) */
-  img[src*="Service"] {
+  /* tiny images should be small and transparent (WN25, Sunshine Coast) */
+  .small-image {
     width: unset !important;
-    background: unset !important;
+    height: 20px;
+    background: unset;
+    padding: unset;
+    transform: translate(0, 4px);
   }
 
   .infobox-data {
