@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import styled, { keyframes } from "styled-components"
 
-import { InfoBoxType } from "types/wiki/InfoBox"
+import { InfoBoxType } from "types/wiki/InfoBoxType"
 import { isBrowser } from "utils/functions"
 
 import { WIKI_NO_CORS, WIKI_URL } from "./urls"
@@ -52,6 +52,22 @@ const parseInfoBox = (data: InfoBoxType) => {
     img => img.width < 50
   )
   smallImages.forEach(img => img.classList.add("small-image"))
+
+  // find any hanging text nodes on .infobox-image and convert them to divs with the class .infobox-caption
+  const infoboxImages = Array.from(
+    newBox?.querySelectorAll(".infobox-image") ?? []
+  )
+  infoboxImages.forEach(image => {
+    const children = Array.from(image.childNodes)
+    children.forEach(child => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const div = document.createElement("div")
+        div.classList.add("infobox-caption")
+        div.textContent = child.textContent ?? ""
+        child.parentNode?.replaceChild(div, child)
+      }
+    })
+  })
 
   const boxText = newBox?.outerHTML
     // fix colors and change the default background
@@ -120,6 +136,7 @@ const Wrapper = styled.div`
 
   tr {
     display: flex;
+    gap: 10px;
   }
 
   td,
@@ -245,5 +262,15 @@ const Wrapper = styled.div`
 
   sub {
     font-size: 0.5em;
+  }
+
+  .infobox-image br {
+    display: none;
+  }
+
+  .infobox-data a span {
+    white-space: nowrap;
+    display: inline-block;
+    margin-bottom: 2px;
   }
 `
