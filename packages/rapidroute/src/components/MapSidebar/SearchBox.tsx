@@ -3,6 +3,7 @@ import { useContext, useState } from "react"
 import styled from "styled-components"
 
 import { MapSearchContext } from "components/Providers/MapSearchContext"
+import { setLocal } from "utils/localUtils"
 import media from "utils/media"
 
 import SearchResults from "./SearchResults"
@@ -42,6 +43,7 @@ export default function MapSearchBox() {
               if (inputElement) {
                 inputElement.value = ""
                 setActiveItem("")
+                setLocal("lastMapInteraction", new Date())
               }
             }}
           >

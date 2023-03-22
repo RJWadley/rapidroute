@@ -117,6 +117,6 @@ export const zoomToPoint = (
     new Point(point.x - boxSize, point.y - boxSize),
     viewport
   ).then(() => {
-    zoomToPoint(point, viewport, boxSize).catch(() => {})
+    if (canMoveCamera()) zoomToPoint(point, viewport, boxSize).catch(() => {})
   })
 }
