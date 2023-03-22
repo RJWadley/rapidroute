@@ -140,8 +140,8 @@ const Wrapper = styled.div`
   .infobox-caption {
     color: var(--low-contrast-text);
     background: var(--mid-background);
-    padding: 5px;
-    border-radius: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
     margin-bottom: 10px;
   }
 
