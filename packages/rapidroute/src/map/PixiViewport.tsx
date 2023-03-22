@@ -36,6 +36,22 @@ const DisplayObjectViewport = PixiComponent("Viewport", {
       instance.resize(newProps.width, newProps.height)
     }
   },
+  willUnmount: instance => {
+    instance.children.forEach(child => {
+      child.destroy()
+    })
+    try {
+      instance.destroy({
+        children: false,
+      })
+    } catch (e) {
+      // this can fail if the domElement doesn't exist anymore. pixi-viewport issue?
+    }
+  },
+  config: {
+    destroy: false,
+    destroyChildren: false,
+  },
 })
 
 const ViewportContext = createContext<Viewport | null>(null)
