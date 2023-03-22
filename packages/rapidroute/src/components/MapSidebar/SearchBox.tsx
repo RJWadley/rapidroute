@@ -13,7 +13,7 @@ export default function MapSearchBox() {
   const [inputElement, setInputElement] = useState<HTMLTextAreaElement | null>(
     null
   )
-  const { setActiveItem } = useContext(MapSearchContext)
+  const { activeItem, setActiveItem } = useContext(MapSearchContext)
 
   useAdaptiveTextareaHeight(inputElement)
 
@@ -35,17 +35,19 @@ export default function MapSearchBox() {
           data-gramm_editor="false"
           data-enable-grammarly="false"
         />
-        <Close
-          type="button"
-          onClick={() => {
-            if (inputElement) {
-              inputElement.value = ""
-              setActiveItem("")
-            }
-          }}
-        >
-          close
-        </Close>
+        {activeItem && (
+          <Close
+            type="button"
+            onClick={() => {
+              if (inputElement) {
+                inputElement.value = ""
+                setActiveItem("")
+              }
+            }}
+          >
+            close
+          </Close>
+        )}
       </Wrapper>
       <SearchResults
         items={currentSearch}
