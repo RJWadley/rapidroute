@@ -183,6 +183,7 @@ const Desc = styled.p`
   -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-break: break-word;
 `
 
 const Link = styled.a`
