@@ -20,6 +20,7 @@ export default function InfoBox({ title }: { title: string | undefined }) {
     enabled: !!title,
   })
 
+  if (!title) return null
   if (isLoading) return <Loading />
   if (!data) return null
 
@@ -52,11 +53,13 @@ const parseInfoBox = (data: InfoBoxType) => {
   )
   smallImages.forEach(img => img.classList.add("small-image"))
 
-  // make sure URLs are valid
   const boxText = newBox?.outerHTML
+    // fix colors and change the default background
+    .replaceAll("{{{subtextcolor}}}", "var(--default-text)")
+    .replaceAll("#ccf", "#ddd")
+    // make sure URLs are valid
     .replaceAll('src="/', `src="${WIKI_NO_CORS}`)
     .replaceAll('href="/', `href="${WIKI_NO_CORS}`)
-    .replaceAll("{{{subtextcolor}}}", "var(--default-text)")
     // split apart any srcset attributes, upgrade the src, and rejoin them
     .replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
       const srcset = p1

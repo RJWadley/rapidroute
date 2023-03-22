@@ -12,15 +12,16 @@ import useImages from "./useImages"
  * If the page doesn't exist, we'll search for a similar page and return that instead.
  * @param searchTerm the search term to use
  */
-export default function useWiki(idToSearch: string) {
+export default function useWiki(idToSearch: string | undefined) {
   const searchTerm =
-    getTextboxName(idToSearch).split("-").slice(1).join("-") ?? idToSearch
+    idToSearch &&
+    (getTextboxName(idToSearch).split("-").slice(1).join("-") ?? idToSearch)
 
   const specificParams = {
     action: "query",
     list: "search",
     srwhat: "nearmatch",
-    srsearch: searchTerm,
+    srsearch: searchTerm ?? "",
     format: "json",
   }
   const specificUrl = `${WIKI_URL}api.php?${new URLSearchParams(
@@ -56,7 +57,8 @@ export default function useWiki(idToSearch: string) {
   const { data: images, isLoading: imagesLoading } = useImages(result?.title)
 
   const contentLoading =
-    specificLoading || genericLoading || blurbLoading || imagesLoading
+    searchTerm &&
+    (specificLoading || genericLoading || blurbLoading || imagesLoading)
 
   if (!result?.title && !contentLoading)
     return {
@@ -64,7 +66,7 @@ export default function useWiki(idToSearch: string) {
       value: undefined,
     }
   return {
-    loading: specificLoading || genericLoading || blurbLoading || imagesLoading,
+    loading: contentLoading,
     value: {
       title: result?.title,
       images,
