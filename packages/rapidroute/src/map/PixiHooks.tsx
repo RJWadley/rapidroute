@@ -20,13 +20,7 @@ export default function PixiHooks() {
 
   const app = useApp()
 
-  const maxResolution = 2
-  const minResolution = 1
-
-  app.renderer.resolution = Math.min(
-    maxResolution,
-    Math.max(minResolution, getDPR())
-  )
+  app.renderer.resolution = getDPR()
 
   return null
 }
