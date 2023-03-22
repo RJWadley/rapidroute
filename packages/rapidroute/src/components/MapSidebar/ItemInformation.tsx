@@ -17,15 +17,26 @@ import "react-image-gallery/styles/css/image-gallery.css"
 export default function ItemInformation() {
   const { activeItem } = useContext(MapSearchContext)
   const { value, loading } = useWiki(activeItem)
+  const isMobile = useMedia(media.mobile)
 
   useEffect(() => {
+    const newPadding = isMobile
+      ? {
+          bottom: 200,
+          left: 20,
+          right: 20,
+        }
+      : {
+          left: 450,
+        }
+
     if (value || loading)
       setLocal("cameraPadding", {
         ...defaultPadding,
-        left: 450,
+        ...newPadding,
       })
     else setLocal("cameraPadding", defaultPadding)
-  }, [loading, value])
+  }, [isMobile, loading, value])
 
   const carousel = value?.images && (
     <CarouselWrap>
@@ -41,7 +52,6 @@ export default function ItemInformation() {
       />
     </CarouselWrap>
   )
-  const isMobile = useMedia(media.mobile)
 
   return (
     <>
