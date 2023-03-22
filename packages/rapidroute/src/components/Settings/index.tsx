@@ -19,8 +19,11 @@ export default function Settings() {
   const player = getLocal("selectedPlayer")?.toString()
   const playerHead = usePlayerHead(player)
   const location = useLocation()
-  const linkDestination = location.pathname === "/" ? "/map" : "/"
-  const viewName = location.pathname === "/" ? "Map" : "List"
+  const [viewName, setViewName] = useState("Map")
+  const linkDestination = viewName === "Map" ? "/map" : "/"
+  useEffect(() => {
+    setViewName(location.pathname === "/" ? "Map" : "List")
+  }, [location.pathname])
 
   const [openButton, setOpenButton] = useState<HTMLButtonElement | null>(null)
   const [open, setOpen] = useState(false)
