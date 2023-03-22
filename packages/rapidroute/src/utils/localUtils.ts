@@ -166,6 +166,7 @@ const throttledReplace = () => {
     setTimeout(throttledReplace, 1000)
     return
   }
+  if (url.toString() === window.location.href) return // verify that the url is different
   window.history.replaceState({}, "", url.toString())
   cooldown = true
   setTimeout(() => {
