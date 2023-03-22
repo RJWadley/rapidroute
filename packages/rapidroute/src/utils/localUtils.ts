@@ -152,20 +152,39 @@ const clearEphemeral = <T extends LocalKeys>(key: T) => {
   delete tempStorage[key]
 }
 
+const url = (() => {
+  if (!isBrowser()) return new URL("https://example.com")
+  return new URL(window.location.href)
+})()
+
+let cooldown = false
+/**
+ * write the url to the browser a max of once per second
+ */
+const throttledReplace = () => {
+  if (cooldown) {
+    setTimeout(throttledReplace, 1000)
+    return
+  }
+  window.history.replaceState({}, "", url.toString())
+  cooldown = true
+  setTimeout(() => {
+    cooldown = false
+  }, 1000)
+}
+
 const setUrlParameter = <T extends LocalKeys>(key: T, value: Locals[T]) => {
   if (!value) {
     clearUrlParameter(key)
     return
   }
-  const url = new URL(window.location.href)
   const previousValue = url.searchParams.get(key)
   if (previousValue === value.toString()) return
   url.searchParams.set(key, value.toString())
-  window.history.replaceState({}, "", url.toString())
+  throttledReplace()
 }
 
 const getUrlParameter = <T extends LocalKeys>(key: T): Locals[T] | null => {
-  const url = new URL(window.location.href)
   const value = url.searchParams.get(key)
 
   if (value === null) {
@@ -183,9 +202,8 @@ const getUrlParameter = <T extends LocalKeys>(key: T): Locals[T] | null => {
 }
 
 const clearUrlParameter = <T extends LocalKeys>(key: T) => {
-  const url = new URL(window.location.href)
   url.searchParams.delete(key)
-  window.history.replaceState({}, "", url.toString())
+  throttledReplace()
 }
 
 const typeSafeIncludes = <T extends string>(

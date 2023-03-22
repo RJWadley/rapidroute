@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { getLocal, setLocal } from "utils/localUtils"
 
@@ -6,26 +6,14 @@ import { useViewport, useViewportMoved } from "./PixiViewport"
 
 export default function useUrlParams() {
   const viewport = useViewport()
-
-  const lastUpdate = useRef(0)
-
   const [loadedAt] = useState(Date.now())
 
   const updateParams = () => {
     if (!viewport) return
     if (viewport.destroyed) return
-
-    // don't update the URL too much
-    const now = Date.now()
-    const diff = now - lastUpdate.current
-    const maxInterval = 1000
-    if (diff < maxInterval) {
-      setTimeout(updateParams, maxInterval - diff)
-      return
-    }
-    lastUpdate.current = now
-
+    
     // don't update the URL within the first few seconds
+    const now = Date.now()
     if (now - loadedAt < 5 * 1000) return
 
     const { center } = viewport

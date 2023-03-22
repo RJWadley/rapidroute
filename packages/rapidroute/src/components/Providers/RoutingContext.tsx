@@ -11,6 +11,7 @@ import { RouteMode, shortHandMap } from "@rapidroute/database-types"
 
 import { getAll } from "data/getData"
 import { search } from "data/search"
+import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
 type LocationId = string
 
@@ -74,25 +75,25 @@ export function RoutingProvider({
    * on load, read the state from the URL
    */
   useEffect(() => {
-    const url = new URL(window.location.href)
-    const initFrom = url.searchParams.get("from")
-    const initTo = url.searchParams.get("to")
-    getAll("searchIndex")
-      .then(index => {
-        if (initFrom)
-          setFrom(
-            index[initFrom]?.uniqueId ??
-              search(initFrom).filter(x => x !== "Current Location")[0] ??
-              initFrom
-          )
-        if (initTo)
-          setTo(
-            index[initTo]?.uniqueId ??
-              search(initTo).filter(x => x !== "Current Location")[0] ??
-              initTo
-          )
-      })
-      .catch(console.error)
+    const initFrom = getLocal("from")
+    const initTo = getLocal("to")
+    if (initFrom || initTo)
+      getAll("searchIndex")
+        .then(index => {
+          if (initFrom)
+            setFrom(
+              index[initFrom]?.uniqueId ??
+                search(initFrom).filter(x => x !== "Current Location")[0] ??
+                initFrom
+            )
+          if (initTo)
+            setTo(
+              index[initTo]?.uniqueId ??
+                search(initTo).filter(x => x !== "Current Location")[0] ??
+                initTo
+            )
+        })
+        .catch(console.error)
   }, [])
 
   /**
@@ -105,12 +106,10 @@ export function RoutingProvider({
       firstRender.current = false
       return
     }
-    const url = new URL(window.location.href)
-    if (from) url.searchParams.set("from", from)
-    else url.searchParams.delete("from")
-    if (to) url.searchParams.set("to", to)
-    else url.searchParams.delete("to")
-    window.history.replaceState({}, "", url.toString())
+    if (from) setLocal("from", from)
+    else clearLocal("from")
+    if (to) setLocal("to", to)
+    else clearLocal("to")
   }, [from, to, allowedModes])
 
   return (
