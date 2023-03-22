@@ -3,6 +3,7 @@ import { useContext, useEffect } from "react"
 import ImageGallery from "react-image-gallery"
 import styled, { keyframes } from "styled-components"
 
+import { darkModeContext } from "components/Providers/DarkMode"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { defaultPadding } from "map/zoomCamera"
 import { setLocal } from "utils/localUtils"
@@ -18,6 +19,7 @@ export default function ItemInformation() {
   const { activeItem } = useContext(MapSearchContext)
   const { value, loading } = useWiki(activeItem)
   const isMobile = useMedia(media.mobile)
+  const isDark = useContext(darkModeContext)
 
   useEffect(() => {
     const newPadding = isMobile
@@ -56,7 +58,7 @@ export default function ItemInformation() {
   return (
     <>
       {value && !loading && (
-        <Wrapper>
+        <Wrapper darkBackground={isDark ?? true}>
           {!isMobile && carousel}
           <TextContent>
             <Title>{value.title}</Title>
@@ -120,8 +122,11 @@ const CarouselWrap = styled.div`
   }
 `
 
-const Wrapper = styled.div`
-  background: var(--default-card-background);
+const Wrapper = styled.div<{
+  darkBackground: boolean
+}>`
+  background: ${({ darkBackground }) =>
+    darkBackground ? "var(--default-card-background)" : "white"};
   border-radius: 20px;
   margin-top: 20px;
   isolation: isolate;
