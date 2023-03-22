@@ -210,7 +210,10 @@ const Wrapper = styled.div`
   }
 
   /* fix default color for stuff with backgrounds */
-  & *[style*="background"]:not(.infobox-header) {
+  &
+    *[style*="background"]:not(.infobox-header):not(
+      [style*="background:none"]
+    ) {
     color: black;
   }
 
