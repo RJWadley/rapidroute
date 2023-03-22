@@ -1,8 +1,17 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-param-reassign */
+import { useContext } from "react"
+
 import { useQuery } from "@tanstack/react-query"
+import { gsap } from "gsap"
 import styled, { keyframes } from "styled-components"
 
+import { darkModeContext } from "components/Providers/DarkMode"
 import { InfoBoxType } from "types/wiki/InfoBoxType"
 import { isBrowser } from "utils/functions"
+import { rgb2hex } from "utils/hslToHex"
+import invertLightness, { hexToHSL } from "utils/invertLightness"
+import useAnimation from "utils/useAnimation"
 
 import { WIKI_NO_CORS, WIKI_URL } from "./urls"
 
@@ -20,13 +29,46 @@ export default function InfoBox({ title }: { title: string | undefined }) {
     enabled: !!title,
   })
 
+  const isDark = useContext(darkModeContext)
+
+  // because we need computed styles, we have to do text color inversion in an effect
+  useAnimation(() => {
+    const allChildren = Array.from(
+      document.querySelectorAll(".infobox-wrap tr > * > *")
+    ).flatMap(child => (child instanceof HTMLElement ? [child] : []))
+    // filter out any children with a background color
+    const noBackgrounds = allChildren.filter(
+      child => !child.style.backgroundColor
+    )
+    noBackgrounds.forEach(child => {
+      // get the computed text color
+      const { color } = window.getComputedStyle(child)
+      const asHex = rgb2hex(color)
+
+      // get the lightness
+      const [, , lightness] = hexToHSL(asHex)
+
+      if (isDark && lightness < 0.5) {
+        gsap.set(child, { color: invertLightness(asHex) })
+      }
+      if (!isDark && lightness > 0.5) {
+        gsap.set(child, { color: invertLightness(asHex) })
+      }
+    })
+  }, [isDark, data])
+
   if (!title) return null
   if (isLoading) return <Loading />
   if (!data) return null
 
   const html = parseInfoBox(data)
 
-  return <Wrapper dangerouslySetInnerHTML={{ __html: html ?? "" }} />
+  return (
+    <Wrapper
+      className="infobox-wrap"
+      dangerouslySetInnerHTML={{ __html: html ?? "" }}
+    />
+  )
 }
 
 const parseInfoBox = (data: InfoBoxType) => {

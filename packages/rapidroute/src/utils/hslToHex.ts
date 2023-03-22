@@ -36,3 +36,12 @@ export default function hslToHex(colorIn: string) {
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
+
+export const rgb2hex = (rgb: string) =>
+  `#${
+    rgb
+      .match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+      ?.slice(1)
+      .map(n => parseInt(n, 10).toString(16).padStart(2, "0"))
+      .join("") ?? "ff0000"
+  }`
