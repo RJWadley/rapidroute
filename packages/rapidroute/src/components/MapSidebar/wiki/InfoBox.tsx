@@ -4,12 +4,12 @@ import styled, { keyframes } from "styled-components"
 import { InfoBoxType } from "types/wiki/InfoBox"
 import { isBrowser } from "utils/functions"
 
-import { WIKI_NO_CORS, WIKI_URL } from "./useWiki"
+import { WIKI_NO_CORS, WIKI_URL } from "./urls"
 
-export default function InfoBox({ title }: { title: string }) {
+export default function InfoBox({ title }: { title: string | undefined }) {
   const pageParams = {
     action: "parse",
-    page: title,
+    page: title ?? "",
     format: "json",
     redirects: "",
   }
@@ -17,6 +17,7 @@ export default function InfoBox({ title }: { title: string }) {
 
   const { data, isLoading } = useQuery<InfoBoxType>({
     queryKey: [url],
+    enabled: !!title,
   })
 
   if (isLoading) return <Loading />

@@ -7,8 +7,8 @@ import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { defaultPadding } from "map/zoomCamera"
 import { setLocal } from "utils/localUtils"
 
-import InfoBox from "./InfoBox"
-import useWiki from "./useWiki"
+import InfoBox from "./wiki/InfoBox"
+import useWiki from "./wiki/useWiki"
 
 import "react-image-gallery/styles/css/image-gallery.css"
 
