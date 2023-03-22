@@ -3,7 +3,7 @@ import { ReactNode, useContext } from "react"
 import styled, { createGlobalStyle, css } from "styled-components"
 
 import invertLightness from "utils/invertLightness"
-import { useLoaders } from "utils/Loader/TransitionUtils"
+import { useBackButton } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
 import { usePageReady } from "utils/pageReady"
 
@@ -16,7 +16,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const isDark = useContext(darkModeContext)
   usePageReady()
-  useLoaders()
+  useBackButton()
 
   return (
     <Wrapper>
@@ -126,4 +126,6 @@ const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
 const Wrapper = styled.div`
   color: var(--default-text);
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 `

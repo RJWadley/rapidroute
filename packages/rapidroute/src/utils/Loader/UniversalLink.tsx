@@ -9,18 +9,20 @@ export interface UniversalLinkProps {
   /**
    * the page to navigate to when clicked
    */
-  to: string
+  to?: string
   /**
    * the transition to use when navigating
    */
-  transition: Transitions
+  transition?: Transitions
   openInNewTab?: boolean
   children: React.ReactNode
   className?: string
   onMouseEnter?: MouseEventHandler
   onMouseLeave?: MouseEventHandler
   onClick?: MouseEventHandler
+  type?: "submit"
   forwardRef?: React.Ref<HTMLAnchorElement & HTMLButtonElement & Link<unknown>>
+  ariaLabel?: string
 }
 
 /**
@@ -28,21 +30,24 @@ export interface UniversalLinkProps {
  * @returns
  */
 export default function UniversalLink({
-  to,
-  transition,
+  to = "",
+  transition = "slide",
   openInNewTab = false,
   children,
   className = "",
   onMouseEnter = undefined,
   onMouseLeave = undefined,
   onClick = undefined,
+  type = undefined,
   forwardRef = undefined,
+  ariaLabel = undefined,
 }: UniversalLinkProps) {
+  const internal = /^\/(?!\/)/.test(to)
+
   const handleClick: React.MouseEventHandler = e => {
     e.preventDefault()
-    if (onClick) onClick(e)
 
-    if (openInNewTab) {
+    if (openInNewTab || !internal) {
       window.open(to, "_blank")
     } else {
       loadPage(to, transition).catch((err: string) => {
@@ -51,7 +56,21 @@ export default function UniversalLink({
     }
   }
 
-  const internal = /^\/(?!\/)/.test(to)
+  if (onClick || type) {
+    return (
+      <button
+        className={className}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        type={type === "submit" ? "submit" : "button"}
+        ref={forwardRef}
+        aria-label={ariaLabel}
+      >
+        {children}
+      </button>
+    )
+  }
 
   return internal ? (
     <Link
@@ -61,6 +80,7 @@ export default function UniversalLink({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       ref={forwardRef}
+      aria-label={ariaLabel}
     >
       {children}
     </Link>
@@ -72,6 +92,7 @@ export default function UniversalLink({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       ref={forwardRef}
+      aria-label={ariaLabel}
     >
       {children}
     </a>

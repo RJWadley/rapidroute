@@ -11,73 +11,40 @@ import {
 
 export default function PageTransition() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const logoRef = useRef<HTMLDivElement>(null)
-
   const duration = 0.5
 
-  const slideIn = () => {
-    gsap.fromTo(wrapperRef.current, {
-        y: "-110vh",
-        borderRadius: "500px",
-      },
-      {
-        borderRadius: 0,
-        y: "0vw",
-        ease: "power1.out",
-        duration,
-      })
-
-    gsap.fromTo(logoRef.current, {
-        y: "110vh",
-      },
-      {
-        y: "0vw",
-        duration,
-        ease: "power1.out",
-      })
+  const fadeIn = () => {
+    gsap.to(wrapperRef.current, {
+      autoAlpha: 1,
+      ease: "power1.out",
+      duration,
+    })
   }
 
-  const slideOut = () => {
-    gsap.fromTo(wrapperRef.current, {
-        y: "0vw",
-        borderRadius: 0,
-      },
-      {
-        duration,
-        borderRadius: "500px",
-        y: "110vh",
-        ease: "power1.in",
-      })
-
-    gsap.fromTo(logoRef.current, {
-        y: "0vw",
-      },
-      {
-        y: "-110vh",
-
-        duration,
-        ease: "power1.in",
-      })
+  const fadeOut = () => {
+    gsap.to(wrapperRef.current, {
+      autoAlpha: 0,
+      duration,
+      ease: "power1.in",
+    })
   }
 
   useEffect(() => {
     registerTransition("slide", {
-      in: slideIn,
-      out: slideOut,
+      in: fadeIn,
+      out: fadeOut,
       inDuration: duration,
       outDuration: duration,
     })
 
     return () => {
-      unregisterTransition("slide", [slideIn, slideOut])
+      unregisterTransition("slide", [fadeIn, fadeOut])
     }
   }, [])
 
   return (
     <Wrapper ref={wrapperRef}>
-      <div ref={logoRef}>
-        <StyledLogo />
-      </div>
+      <StyledLogo />
     </Wrapper>
   )
 }
@@ -93,8 +60,7 @@ const Wrapper = styled.div`
   pointer-events: none;
   display: grid;
   place-items: center;
-  transform: translateY(-100vh);
-  overflow: hidden;
+  visibility: hidden;
 `
 
 const StyledLogo = styled(Logo)`

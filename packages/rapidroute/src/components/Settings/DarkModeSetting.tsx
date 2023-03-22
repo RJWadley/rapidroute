@@ -43,15 +43,6 @@ export default function DarkModeSetting() {
       duration: 1,
       ease: "elastic.out(0.7, 0.5)",
     })
-
-    document.documentElement.classList.add("in-transition")
-    const call = gsap.delayedCall(1, () => {
-      document.documentElement.classList.remove("in-transition")
-    })
-
-    return () => {
-      call.kill()
-    }
   }, [mode])
 
   return (

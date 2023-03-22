@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
+import { sleep } from "utils/functions"
+
 export type Transitions = "slide"
 export type InternalTransitions = "initial" | "any" | "none"
 
@@ -10,6 +12,7 @@ interface EventMaps {
   progressUpdated: CustomEvent<number>
   transitionStart: CustomEvent<Transitions | InternalTransitions>
   transitionEnd: CustomEvent<Transitions | InternalTransitions>
+  scrollToTop: CustomEvent<never>
 }
 type EventName = keyof EventMaps
 
@@ -66,7 +69,35 @@ class Loader {
  * progressUpdated
  * - fires when the progress bar is updated
  * - event.detail is the new progress value
+ *
+ * scrollToTop
+ * - fires when the page is scrolled to the top via a link click
  */
 const loader = new Loader()
 
 export default loader
+
+export const promisesToAwait: Promise<unknown>[] = []
+
+/**
+ * wait for a promise to settle before transitioning to the next page
+ * useful for waiting on a file, such as a video, to load
+ * @param promise promise to await
+ */
+export function transitionAwaitPromise(promise: Promise<unknown>) {
+  promisesToAwait.push(Promise.race([promise, sleep(10000)]))
+}
+
+export const recursiveAllSettled = async (
+  promises: Promise<unknown>[],
+  promisesToExclude: Promise<unknown>[] = []
+): Promise<void> => {
+  const promisesCopy = [...promises].filter(
+    promise => !promisesToExclude.includes(promise)
+  )
+  if (promisesCopy.length === 0) return
+
+  await Promise.allSettled(promisesCopy)
+  await recursiveAllSettled(promises, [...promisesToExclude, ...promisesCopy])
+  promisesToAwait.length = 0
+}

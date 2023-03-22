@@ -1,20 +1,25 @@
 // need to await within loops since transition utils exists outside of react
 /* eslint-disable no-await-in-loop */
-import { useEffect } from "react"
 
-import { navigate as gatsbyNavigate } from "gatsby"
+import { startTransition, useEffect } from "react"
+
+import { navigate as gatsbyNavigate } from "@reach/router"
 import gsap from "gsap"
 
 import { pathnameMatches, sleep } from "utils/functions"
 import { onUnmount, pageReady } from "utils/pageReady"
 
-import loader, { InternalTransitions, Transitions } from "."
-import { getLoaderIsDone } from "./LoaderUtils"
+import loader, {
+  InternalTransitions,
+  promisesToAwait,
+  recursiveAllSettled,
+  Transitions,
+} from "."
 
 /**
  * A function that runs an animation and returns the duration of that animation in seconds
  */
-type Animation = {
+interface Animation {
   callback: VoidFunction
   duration: number
 }
@@ -53,7 +58,7 @@ export const registerTransition = (
     inDuration,
     outDuration,
   } = details
-  const previous = allTransitions[name] || { inAnimation: [], outAnimation: [] }
+  const previous = allTransitions[name] ?? { inAnimation: [], outAnimation: [] }
   allTransitions[name] = {
     inAnimation: [
       ...previous.inAnimation,
@@ -76,11 +81,11 @@ export const registerTransition = (
  * @param outAnimation if provided, only unregister this specific animation
  */
 export const unregisterTransition = (
-  name: Exclude<Transitions, InternalTransitions | undefined>,
+  name: string,
   callbacksToRemove?: VoidFunction[]
 ) => {
   if (callbacksToRemove) {
-    const previous = allTransitions[name] || {
+    const previous = allTransitions[name] ?? {
       inAnimation: [],
       outAnimation: [],
     }
@@ -93,7 +98,7 @@ export const unregisterTransition = (
       ),
     }
   } else {
-    delete allTransitions[name]
+    allTransitions[name] = { inAnimation: [], outAnimation: [] }
   }
 }
 
@@ -102,8 +107,6 @@ let pendingTransition: {
   transition?: Transitions | InternalTransitions
 } | null = null
 let currentAnimation: string | null = null
-let waitingForPageToLoad = false
-const promisesToAwait: Promise<unknown>[] = []
 /**
  * load a page, making use of the specified transition
  * @param to page to load
@@ -122,12 +125,15 @@ export const loadPage = async (
 
   // if we're already on the page we're trying to load, don't do anything, just scroll to the top
   if (pathnameMatches(to, window.location.pathname)) {
-    window.scrollTo(0, 0)
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+    loader.dispatchEvent("scrollToTop", new CustomEvent("scrollToTop"))
     return
   }
 
   currentAnimation = to
-  promisesToAwait.length = 0
 
   // if no transition is specified, instant transition
   if (!transition || !allTransitions[transition]) {
@@ -138,14 +144,15 @@ export const loadPage = async (
     onUnmount(() => {
       pageReady()
         .then(() => {
+          window.scrollTo(0, 1)
           // fire event with detail "none"
           loader.dispatchEvent(
             "transitionEnd",
-            new CustomEvent("transitionEnd", { detail: "none" })
+            new CustomEvent<"none">("transitionEnd", { detail: "none" })
           )
           loader.dispatchEvent(
             "anyEnd",
-            new CustomEvent("anyEnd", { detail: "none" })
+            new CustomEvent<"none">("anyEnd", { detail: "none" })
           )
         })
         .catch(console.error)
@@ -154,13 +161,8 @@ export const loadPage = async (
     return
   }
 
-  // wait for the loader to finish animation before starting the transition
-  while (!getLoaderIsDone()) await sleep(100)
-
   const animationContext = gsap.context(() => {})
-  const enterAnimations = transition
-    ? allTransitions[transition]?.inAnimation ?? []
-    : []
+  const enterAnimations = allTransitions[transition]?.inAnimation ?? []
 
   // run each animation, add it to the context, and get the duration of the longest one
   const entranceDuration = enterAnimations.reduce((duration, animation) => {
@@ -179,20 +181,17 @@ export const loadPage = async (
   // wait for entrance animation to finish
   await sleep(entranceDuration * 1000)
 
-  // if we're on the page we want to go to, we don't wait for a new page load
-  if (!pathnameMatches(window.location.pathname, to))
-    waitingForPageToLoad = true
-
   // actually navigate to the page
   await navigate(to, () => {
     animationContext.revert()
   })
-  while (waitingForPageToLoad) await sleep(10)
-  await Promise.allSettled(promisesToAwait)
+  await pageReady()
+  window.scrollTo(0, 1)
 
-  const exitAnimations = transition
-    ? allTransitions[transition]?.outAnimation ?? []
-    : []
+  promisesToAwait.push(sleep(100))
+  await recursiveAllSettled(promisesToAwait)
+
+  const exitAnimations = allTransitions[transition]?.outAnimation ?? []
 
   // run each animation, add it to the context, and get the duration of the longest one
   const exitDuration = exitAnimations.reduce((duration, animation) => {
@@ -241,24 +240,47 @@ export const navigate = async (to: string, cleanupFunction?: VoidFunction) => {
       cleanupFunction?.()
     }, 1000)
   } else {
-    await gatsbyNavigate(to)
+    return new Promise<void>((resolve, reject) => {
+      startTransition(() => {
+        gatsbyNavigate(to).then(resolve).catch(reject)
+      })
+    })
   }
 }
 
 /**
  * tracks when a page is done loading, for use in layout
+ * also handles bugs with back/forward buttons
  */
-export function useLoaders() {
+export function useBackButton() {
   useEffect(() => {
-    waitingForPageToLoad = false
-  }, [])
-}
+    const handleBackButton = () => {
+      loader.dispatchEvent("initialStart", new CustomEvent("initialStart"))
+      loader.dispatchEvent(
+        "anyStart",
+        new CustomEvent("anyStart", { detail: "none" })
+      )
 
-/**
- * wait for a promise to settle before transitioning to the next page
- * useful for waiting on a file, such as a video, to load
- * @param promise promise to await
- */
-export function transitionAwaitPromise(promise: Promise<unknown>) {
-  promisesToAwait.push(promise)
+      // we need to wait for the *next* page to load, so wait for unmount, then pageReady
+      onUnmount(() => {
+        pageReady()
+          .then(() => {
+            setTimeout(() => {
+              // fire event with detail "none"
+              loader.dispatchEvent(
+                "transitionEnd",
+                new CustomEvent("transitionEnd", { detail: "none" })
+              )
+              loader.dispatchEvent(
+                "anyEnd",
+                new CustomEvent("anyEnd", { detail: "none" })
+              )
+            }, 500)
+          })
+          .catch(console.error)
+      })
+    }
+    window.addEventListener("popstate", handleBackButton)
+    return () => window.removeEventListener("popstate", handleBackButton)
+  })
 }

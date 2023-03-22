@@ -6,6 +6,8 @@ import {
   useState,
 } from "react"
 
+import { gsap } from "gsap"
+
 import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"
 
@@ -40,6 +42,17 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
       })
     }
   }, [preference, systemIsDark])
+
+  useEffect(() => {
+    document.documentElement.classList.add("in-transition")
+    const call = gsap.delayedCall(1, () => {
+      document.documentElement.classList.remove("in-transition")
+    })
+
+    return () => {
+      call.kill()
+    }
+  }, [isDark])
 
   return (
     <darkModeContext.Provider value={isDark}>
