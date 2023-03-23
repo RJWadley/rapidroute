@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 
 export default function DelayRender({
   children,
-  time = 500,
+  time = 600,
 }: {
   children: React.ReactNode
   time?: number
