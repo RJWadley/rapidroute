@@ -35,7 +35,9 @@ export default function InfoBox({ title }: { title: string | undefined }) {
   // because we need computed styles, we have to do text color inversion in an effect
   useAnimation(() => {
     const allChildren = Array.from(
-      document.querySelectorAll(".infobox-wrap tr > * > *")
+      document.querySelectorAll(
+        ".infobox-wrap tr > * > *, .infobox-wrap tr > * > *:not([style*='background']) > *:not([style*='background'])"
+      )
     ).flatMap(child => (child instanceof HTMLElement ? [child] : []))
     // filter out any children with a background color
     const noBackgrounds = allChildren.filter(
