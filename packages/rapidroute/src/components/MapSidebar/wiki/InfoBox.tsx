@@ -181,6 +181,10 @@ const Wrapper = styled.div`
     display: flex;
     gap: 10px;
   }
+  *[style*="table-row"] {
+    display: flex !important;
+    gap: 10px;
+  }
 
   td,
   th,
