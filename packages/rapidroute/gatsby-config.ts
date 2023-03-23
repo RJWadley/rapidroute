@@ -91,9 +91,6 @@ const config: GatsbyConfig = {
     },
     "gatsby-plugin-styled-components",
   ],
-  flags: {
-    DEV_SSR: true,
-  },
 }
 
 export default config

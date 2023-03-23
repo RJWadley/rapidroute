@@ -3,10 +3,11 @@ import {
   ReactNode,
   startTransition,
   useEffect,
+  useLayoutEffect,
   useState,
 } from "react"
 
-import { gsap } from "gsap"
+import { createGlobalStyle, css } from "styled-components"
 
 import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"
@@ -43,22 +44,32 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
     }
   }, [preference, systemIsDark])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.classList.add("in-transition")
-    const call = gsap.delayedCall(1, () => {
+    const timeout = setTimeout(() => {
       document.documentElement.classList.remove("in-transition")
-    })
+    }, 1000)
 
     return () => {
-      call.kill()
+      clearTimeout(timeout)
     }
   }, [isDark])
 
   return (
     <darkModeContext.Provider value={isDark}>
       {children}
+      <TransitionStyle />
     </darkModeContext.Provider>
   )
 }
 
 export const triggerRecalculation = () => setSignal?.(prev => !prev)
+
+const TransitionStyle = createGlobalStyle`${css`
+  .in-transition {
+    &,
+    * {
+      transition: background-color 0.5s ease, color 0.1s ease !important;
+    }
+  }
+`}`

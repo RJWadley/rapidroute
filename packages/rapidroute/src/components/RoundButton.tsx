@@ -1,30 +1,25 @@
-import { MouseEventHandler, ReactNode } from "react"
-
 import styled from "styled-components"
 
+import UniversalLink, { UniversalLinkProps } from "utils/Loader/UniversalLink"
 import media from "utils/media"
 
-interface RoundButtonProps {
-  onClick: MouseEventHandler<HTMLButtonElement>
-  children: ReactNode
+interface RoundButtonProps extends UniversalLinkProps {
   flipped?: boolean
-  className?: string
 }
 
 export default function RoundButton({
-  onClick,
   children,
   flipped = false,
-  className = "",
+  ...props
 }: RoundButtonProps) {
   return (
-    <StyledButton className={className} onClick={onClick} flipped={flipped}>
+    <StyledButton flipped={flipped} {...props}>
       <span>{children}</span>
     </StyledButton>
   )
 }
 
-const StyledButton = styled.button<{ flipped: boolean }>`
+const StyledButton = styled(UniversalLink)<{ flipped: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;

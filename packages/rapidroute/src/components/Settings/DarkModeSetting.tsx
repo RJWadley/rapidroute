@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import gsap from "gsap"
-import styled, { createGlobalStyle, css } from "styled-components"
+import styled from "styled-components"
 
 import { triggerRecalculation } from "components/Providers/DarkMode"
 import { getLocal, setLocal } from "utils/localUtils"
@@ -51,18 +51,9 @@ export default function DarkModeSetting() {
       <Button onClick={() => updateMode("light")}>Light</Button>
       <Button onClick={() => updateMode("system")}>System</Button>
       <Overlay ref={overlay} />
-      <TransitionStyle />
     </Wrapper>
   )
 }
-
-const TransitionStyle = createGlobalStyle`${css`
-  .in-transition {
-    * {
-      transition: background-color 0.5s ease, color 0.1s ease !important;
-    }
-  }
-`}`
 
 const Wrapper = styled.div`
   display: grid;
