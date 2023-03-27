@@ -130,7 +130,9 @@ export default function Results() {
       const allOthers = children.slice(5)
 
       // first five children
-      gsap.fromTo(firstFive, {
+      gsap.fromTo(
+        firstFive,
+        {
           opacity: 1,
           y: 0,
         },
@@ -144,11 +146,14 @@ export default function Results() {
             if (animationOutHolder.current)
               animationOutHolder.current.innerHTML = ""
           },
-        })
+        }
+      )
 
       // all other children
       if (allOthers.length)
-        gsap.fromTo(allOthers, {
+        gsap.fromTo(
+          allOthers,
+          {
             opacity: 1,
             y: 0,
           },
@@ -157,13 +162,16 @@ export default function Results() {
             y: 200,
             duration: 0.5,
             ease: "power3.in",
-          })
+          }
+        )
     }
   }
 
   useEffect(() => {
     if (resultsWrapper.current?.children.length)
-      gsap.fromTo(resultsWrapper.current.children, {
+      gsap.fromTo(
+        resultsWrapper.current.children,
+        {
           opacity: 0,
           y: 200,
         },
@@ -172,7 +180,8 @@ export default function Results() {
           y: 0,
           duration: 0.5,
           stagger: 0.1,
-        })
+        }
+      )
   }, [results])
 
   const diff =

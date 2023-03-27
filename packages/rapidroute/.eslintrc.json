@@ -1,9 +1,5 @@
 {
-  "plugins": [
-    "@rjwadley/format-gsap",
-    "ssr-friendly",
-    "sort-styled-components"
-  ],
+  "plugins": ["ssr-friendly", "sort-styled-components"],
   "extends": [
     "plugin:ssr-friendly/recommended",
     "airbnb",
@@ -17,21 +13,15 @@
      *  Mandatory Rules
      */
 
-    // our format style for gsap
-    "@rjwadley/format-gsap/compact-functions": "error",
-
     // sort styled components
     "sort-styled-components/sort-styled-components": "warn",
     // complementary rule to sort styled components
     "no-multiple-empty-lines": "warn",
 
-    // prettier will conflict with gsap formatter
-    "prettier/prettier": "off",
-
     // we define styled components at the bottom, which is better for readability but incompatible with this rule
     "@typescript-eslint/no-use-before-define": "off",
 
-    // any custom hooks that take dependecies need to be specified here
+    // any custom hooks that take dependencies need to be specified here
     "react-hooks/exhaustive-deps": [
       "error",
       {

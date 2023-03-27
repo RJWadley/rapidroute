@@ -11,7 +11,7 @@ export default function useUrlParams() {
   const updateParams = () => {
     if (!viewport) return
     if (viewport.destroyed) return
-    
+
     // don't update the URL within the first few seconds
     const now = Date.now()
     if (now - loadedAt < 5 * 1000) return

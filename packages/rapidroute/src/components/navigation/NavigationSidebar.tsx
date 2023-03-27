@@ -66,12 +66,18 @@ export default function NavigationSidebar() {
         toggleClass: "flipping",
         // animate in from the left
         onEnter: el =>
-          gsap.fromTo(el, { xPercent: -150 },
-            { xPercent: 0, duration: 1, stagger: 0.1 }),
+          gsap.fromTo(
+            el,
+            { xPercent: -150 },
+            { xPercent: 0, duration: 1, stagger: 0.1 }
+          ),
         // animate out to the right
         onLeave: el =>
-          gsap.fromTo(el, { xPercent: 0 },
-            { xPercent: -150, duration: 1, stagger: 0.1 }),
+          gsap.fromTo(
+            el,
+            { xPercent: 0 },
+            { xPercent: -150, duration: 1, stagger: 0.1 }
+          ),
         // hide the old slot after the animation is done
         onComplete: () => {
           if (activeSlot === "A") {
