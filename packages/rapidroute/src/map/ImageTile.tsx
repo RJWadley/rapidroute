@@ -26,7 +26,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
   const spriteRef = useRef<PixiSprite>(null)
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
-  const tile = getTileUrl({
+  const url = getTileUrl({
     xIn: x / tileWidth,
     zIn: y / tileWidth,
     zoom: zoomLevel,
@@ -44,19 +44,19 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
    * check if the image exists by attempting to load it into a texture
    */
   useEffect(() => {
-    if (textureCache[tile.url]) {
-      setTexture(textureCache[tile.url])
+    if (textureCache[url]) {
+      setTexture(textureCache[url])
       setNeedsAnimation(false)
       return
     }
 
     if (skipThisTile) return
     let isMounted = true
-    Assets.load(tile.url)
+    Assets.load(url)
       .then(() => {
         if (!isMounted) return
-        const newTexture = Texture.from(tile.url)
-        textureCache[tile.url] = newTexture
+        const newTexture = Texture.from(url)
+        textureCache[url] = newTexture
         newTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
         setTexture(newTexture)
       })
@@ -67,7 +67,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     return () => {
       isMounted = false
     }
-  }, [skipThisTile, tile.url])
+  }, [skipThisTile, url])
 
   /**
    * animate in
@@ -82,6 +82,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
   if (skipThisTile) return null
   return (
     <Sprite
+      key={url}
       texture={texture}
       x={x}
       y={y + VERTICAL_OFFSET}

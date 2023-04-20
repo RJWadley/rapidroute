@@ -27,8 +27,5 @@ export default function getTileUrl(coords: {
 
   const url = `https://dynmap.minecartrapidtransit.net/tiles/new/flat/${group.x}_${group.y}/${zzz}${numberInGroup.x}_${numberInGroup.y}.png`
 
-  return {
-    id: `${group.x}.${group.y}.${zzz}.${numberInGroup.x}.${numberInGroup.y}`,
-    url,
-  }
+  return url
 }
