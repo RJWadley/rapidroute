@@ -80,12 +80,15 @@ const Colors = styled.div`
   div:nth-child(1) {
     background-color: var(--rapid-blue);
   }
+
   div:nth-child(2) {
     background-color: var(--rapid-red);
   }
+
   div:nth-child(3) {
     background-color: var(--rapid-yellow);
   }
+
   div:nth-child(4) {
     background-color: var(--rapid-green);
   }

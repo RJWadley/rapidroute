@@ -68,11 +68,13 @@ const Loader = styled.div`
     width: 40px;
     height: 40px;
     border-radius: 10px;
+
     @media ${media.mobile} {
       width: 30px;
       height: 30px;
       border-radius: 7px;
     }
+
     background-color: red;
     animation: ${bounce} 2s infinite;
     animation-timing-function: cubic-bezier(0.66, 0, 0.33, 1);

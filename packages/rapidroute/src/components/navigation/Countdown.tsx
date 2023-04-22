@@ -193,7 +193,8 @@ const Wrapper = styled.div<{
 
   &.flipping {
     border-radius: 20px;
-    &:after {
+
+    &::after {
       opacity: 0;
     }
   }

@@ -29,25 +29,25 @@ const Wrapper = styled.div`
   gap: 10px;
   position: relative;
 
-  :before {
+  ::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100px;
     height: 100%;
-    background: linear-gradient(-90deg, rgba(0, 0, 0, 0) 0%, #111 100%);
+    background: linear-gradient(-90deg, rgb(0 0 0 / 0%) 0%, #111 100%);
     z-index: -1;
   }
 
-  :after {
+  ::after {
     content: "";
     position: absolute;
     top: 0;
     right: 0;
     width: 100px;
     height: 100%;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, #111 100%);
+    background: linear-gradient(90deg, rgb(0 0 0 / 0%) 0%, #111 100%);
     z-index: -1;
   }
 `

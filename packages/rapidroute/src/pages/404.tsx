@@ -52,7 +52,6 @@ const marquee = keyframes`
 `
 
 const Numbers = styled.div`
-  color: var(--low-contrast-text);
   font-size: 400px;
   display: flex;
   color: var(--default-card-background);

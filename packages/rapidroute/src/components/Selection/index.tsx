@@ -29,7 +29,7 @@ const SearchContainer = styled.div`
   position: relative;
   z-index: 1;
 
-  :before {
+  ::before {
     content: "";
     position: absolute;
     top: 0;
@@ -51,7 +51,7 @@ const SearchContainer = styled.div`
     min-height: 80px;
     padding-right: 15px;
 
-    :before {
+    ::before {
       border-radius: 25px;
     }
 

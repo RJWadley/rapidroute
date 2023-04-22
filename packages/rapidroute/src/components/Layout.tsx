@@ -29,7 +29,6 @@ const lightColors = css`
   --mid-background: #ddd;
   --dark-background: #ccc;
   --page-background: #fff;
-
   --low-contrast-text: #555;
   --default-text: #333;
   --button-green: #7cd48a;
@@ -40,7 +39,6 @@ const lightColors = css`
   --invert-default-card-background: ${invertLightness("#eee")};
   --invert-mid-background: ${invertLightness("#ddd")};
   --invert-dark-background: ${invertLightness("#ccc")};
-
   --invert-low-contrast-text: ${invertLightness("#555")};
   --invert-default-text: ${invertLightness("#333")};
   --invert-button-green: ${invertLightness("#7cd48a")};
@@ -58,7 +56,6 @@ const darkColors = css`
   --mid-background: #444;
   --dark-background: #555;
   --page-background: #111;
-
   --low-contrast-text: #aaa;
   --default-text: #ccc;
   --button-green: #266a31;
@@ -69,7 +66,6 @@ const darkColors = css`
   --invert-default-card-background: ${invertLightness("#333")};
   --invert-mid-background: ${invertLightness("#444")};
   --invert-dark-background: ${invertLightness("#555")};
-
   --invert-low-contrast-text: ${invertLightness("#aaa")};
   --invert-default-text: ${invertLightness("#ccc")};
   --invert-button-green: ${invertLightness("#266a31")};
@@ -93,6 +89,7 @@ const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
       ${darkColors}
       ${({ isDark }) => isDark !== undefined && !isDark && lightColors}
     }
+
     @media (prefers-color-scheme: light) {
       ${lightColors}
       ${({ isDark }) => isDark !== undefined && isDark && darkColors}

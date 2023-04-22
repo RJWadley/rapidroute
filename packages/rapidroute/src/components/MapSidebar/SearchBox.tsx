@@ -64,7 +64,7 @@ const Wrapper = styled.div`
   position: sticky;
   top: 20px;
   z-index: 1;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 5px 5px 10px rgb(0 0 0 / 20%);
   display: flex;
 
   @media ${media.mobile} {

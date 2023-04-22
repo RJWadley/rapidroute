@@ -22,6 +22,7 @@ const Wrapper = styled.div`
   @media ${media.mobile} {
     width: calc(100vw - 40px);
     pointer-events: none;
+
     > * {
       pointer-events: auto;
     }

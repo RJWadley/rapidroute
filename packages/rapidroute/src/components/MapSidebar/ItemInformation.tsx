@@ -135,7 +135,7 @@ const Wrapper = styled.div<{
   margin-top: 20px;
   isolation: isolate;
   overflow: hidden;
-  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 5px 5px 10px rgb(0 0 0 / 20%);
   margin-bottom: 20px;
   position: relative;
 
@@ -182,7 +182,6 @@ const Title = styled.h1`
 
 const Desc = styled.p`
   font-size: var(--extra-small);
-
   display: -webkit-box;
   -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;

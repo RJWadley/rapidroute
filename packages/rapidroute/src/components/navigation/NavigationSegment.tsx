@@ -118,6 +118,7 @@ const SegmentWrapper = styled.div<{
   position: relative;
   z-index: 2;
   margin-top: 20px;
+
   > div {
     transform: none;
     opacity: 1;

@@ -111,7 +111,6 @@ const Via = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-
   padding: 10px 30px;
   font-size: var(--large);
 `

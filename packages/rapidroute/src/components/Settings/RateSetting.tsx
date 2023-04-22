@@ -54,7 +54,6 @@ const Slider = styled.input`
   cursor: pointer;
 
   &::-webkit-slider-thumb {
-    -webkit-appearance: none;
     appearance: none;
     width: 25px;
     height: 25px;

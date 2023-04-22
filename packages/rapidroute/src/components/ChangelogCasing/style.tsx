@@ -30,7 +30,7 @@ const Scoped = styled.div`
   li {
     margin-left: 1rem;
 
-    :before {
+    ::before {
       content: "•";
       color: black;
       font-weight: bold;
@@ -87,7 +87,6 @@ const Scoped = styled.div`
     text-align: center;
     width: max-content;
     text-decoration: none;
-    color: black;
     background-color: var(--button-green);
     color: var(--invert-button-green);
     font-weight: bold;

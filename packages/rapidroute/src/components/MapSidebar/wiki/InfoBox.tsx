@@ -183,6 +183,7 @@ const Wrapper = styled.div`
     display: flex;
     gap: 10px;
   }
+
   *[style*="table-row"] {
     display: flex !important;
     gap: 10px;
@@ -276,10 +277,7 @@ const Wrapper = styled.div`
   }
 
   /* fix default color for stuff with backgrounds */
-  &
-    *[style*="background"]:not(.infobox-header):not(
-      [style*="background:none"]
-    ) {
+  & *[style*="background"]:not(.infobox-header, [style*="background:none"]) {
     color: black;
   }
 

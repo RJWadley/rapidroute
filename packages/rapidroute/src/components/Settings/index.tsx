@@ -118,7 +118,7 @@ const Menu = styled.div`
   min-width: 450px;
   background: var(--default-card-background);
   z-index: 100;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 20%);
   padding: 30px;
   border-radius: 35px 35px 50px 50px;
   display: grid;

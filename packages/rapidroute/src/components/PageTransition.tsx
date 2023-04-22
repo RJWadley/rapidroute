@@ -63,5 +63,5 @@ const Wrapper = styled.div`
 
 const StyledLogo = styled(Logo)`
   width: 200px;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 0 10px rgb(0 0 0 / 20%));
 `

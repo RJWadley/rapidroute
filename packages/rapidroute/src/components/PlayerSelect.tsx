@@ -115,13 +115,10 @@ const Wrapper = styled.div<{
   transition: background-color 0.5s, color 0.5s;
   position: relative;
 
-  :before {
+  ::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: linear-gradient(
       to right,
       var(--page-background) 0%,

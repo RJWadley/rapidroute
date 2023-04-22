@@ -209,6 +209,7 @@ const Wrapper = styled.div`
   }
 
   pointer-events: none;
+
   > * {
     pointer-events: auto;
   }
@@ -243,6 +244,7 @@ const BeforeSpacer = styled.div<{
   navHeight: number
 }>`
   height: calc(${props => props.navHeight}px + 20px);
+
   @media ${media.mobile} {
     height: 70vh;
   }

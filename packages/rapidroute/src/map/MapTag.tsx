@@ -20,7 +20,7 @@ export default function MapTag({ className = "" }: MapTagProps) {
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
-  filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(1px 2px 2px rgb(0 0 0 / 50%));
 `
 
 const Logo = styled.img`
