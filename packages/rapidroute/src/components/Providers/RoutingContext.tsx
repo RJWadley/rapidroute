@@ -1,3 +1,6 @@
+import { RouteMode, shortHandMap } from "@rapidroute/database-types"
+import { getAll } from "data/getData"
+import { search } from "data/search"
 import {
   createContext,
   ReactNode,
@@ -6,11 +9,6 @@ import {
   useRef,
   useState,
 } from "react"
-
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
-
-import { getAll } from "data/getData"
-import { search } from "data/search"
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
 type LocationId = string
@@ -56,9 +54,9 @@ export function RoutingProvider({
 }): JSX.Element {
   const [from, setFrom] = useState<LocationId | null>(null)
   const [to, setTo] = useState<LocationId | null>(null)
-  const [allowedModes, setAllowedModes] = useState<RouteMode[]>([
-    ...Object.values(shortHandMap).filter(m => m !== "spawnWarp"),
-  ])
+  const [allowedModes, setAllowedModes] = useState<RouteMode[]>(
+    Object.values(shortHandMap).filter(m => m !== "spawnWarp")
+  )
 
   const value = useMemo(() => {
     return {
@@ -83,13 +81,13 @@ export function RoutingProvider({
           if (initFrom)
             setFrom(
               index[initFrom]?.uniqueId ??
-                search(initFrom).filter(x => x !== "Current Location")[0] ??
+                search(initFrom).find(x => x !== "Current Location") ??
                 initFrom
             )
           if (initTo)
             setTo(
               index[initTo]?.uniqueId ??
-                search(initTo).filter(x => x !== "Current Location")[0] ??
+                search(initTo).find(x => x !== "Current Location") ??
                 initTo
             )
         })

@@ -1,7 +1,5 @@
 import { ReactNode, useContext } from "react"
-
 import styled, { createGlobalStyle, css } from "styled-components"
-
 import invertLightness from "utils/invertLightness"
 import { useBackButton } from "utils/Loader/TransitionUtils"
 import media from "utils/media"

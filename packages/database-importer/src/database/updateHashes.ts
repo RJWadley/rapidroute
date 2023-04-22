@@ -21,7 +21,7 @@ const keysToIgnore: Record<
 export default function updateHashes(
   databaseBeforeUpdate: Record<string, unknown>
 ) {
-  const newHash = Math.random().toString(36).substring(2, 15)
+  const newHash = Math.random().toString(36).slice(2, 15)
   const newHashes: Record<string, string> = {}
   const upcastDatabase: Record<string, unknown> = database
 
@@ -33,12 +33,12 @@ export default function updateHashes(
       isObject(database.hashes) &&
       key in database.hashes
     ) {
-      if (!deepCompare(databaseBeforeUpdate[key], upcastDatabase[key])) {
+      if (deepCompare(databaseBeforeUpdate[key], upcastDatabase[key])) {
+        console.log("no change for", key)
+      } else {
         // need a new hash if the data has changed
         newHashes[key] = newHash
         console.log("new hash for", key)
-      } else {
-        console.log("no change for", key)
       }
     } else {
       // need a new hash if the key is new

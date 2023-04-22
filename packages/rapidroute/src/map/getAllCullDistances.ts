@@ -1,5 +1,4 @@
 import { Rectangle } from "pixi.js"
-
 import { expose } from "utils/promise-worker"
 
 export interface CullInput {

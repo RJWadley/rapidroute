@@ -15,7 +15,7 @@ export default function invertLightness(color: string) {
 
   if (colorToInvert.length === 4) {
     colorToInvert = colorToInvert.replace(
-      /#([0-9a-f])([0-9a-f])([0-9a-f])/i,
+      /#([\da-f])([\da-f])([\da-f])/i,
       "#$1$1$2$2$3$3"
     )
   }
@@ -56,9 +56,11 @@ export const hexToHSL = (hex: string) => {
       case r:
         h = (g - b) / d + (g < b ? 6 : 0)
         break
+
       case g:
         h = (b - r) / d + 2
         break
+
       default:
         h = (r - g) / d + 4
         break

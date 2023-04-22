@@ -12,7 +12,7 @@ import { getDistance } from "pathfinding/findPath/pathUtil"
 export default async function getNavigationInstruction(
   segment: SegmentType | undefined
 ) {
-  if (!segment) return undefined
+  if (!segment) return
 
   /**
    * If we're going to or from Spawn, say "Warp"
@@ -25,7 +25,7 @@ export default async function getNavigationInstruction(
    * If we're transferring, say "Transfer to <line> at <station>"
    * otherwise, say "Walk to <station>"
    */
-  if (!segment.routes.length)
+  if (segment.routes.length === 0)
     return `${
       segment.from.type === "MRT Station" &&
       segment.to.type === "MRT Station" &&
@@ -61,9 +61,9 @@ export default async function getNavigationInstruction(
      */
     if (segment.routes.length === 1) {
       const routeInfo = segment.routes[0]
-      if (!routeInfo) return undefined
-      const gate = expandGate(routeInfo?.locations[segment.from.uniqueId])
-      const flightNumber = routeInfo?.number
+      if (!routeInfo) return
+      const gate = expandGate(routeInfo.locations[segment.from.uniqueId])
+      const flightNumber = routeInfo.number
       const provider = await getProvider(routeInfo)
       const providerName = provider?.name
       return `take ${providerName ?? "a"} flight ${flightNumber ?? ""} to ${
@@ -92,9 +92,9 @@ export default async function getNavigationInstruction(
     const proms: Promise<unknown>[] = []
     for (let i = 0; i < segment.routes.length; i += 1) {
       const routeInfo = segment.routes[i]
-      if (!routeInfo) return undefined
-      const gate = expandGate(routeInfo?.locations[segment.from.uniqueId])
-      const flightNumber = routeInfo?.number
+      if (!routeInfo) return
+      const gate = expandGate(routeInfo.locations[segment.from.uniqueId])
+      const flightNumber = routeInfo.number
       const provider = getProvider(routeInfo)
       proms.push(provider)
       provider
@@ -106,8 +106,8 @@ export default async function getNavigationInstruction(
             gate
           )
         })
-        .catch(e => {
-          console.error("Error getting provider", e)
+        .catch(error => {
+          console.error("Error getting provider", error)
         })
     }
 

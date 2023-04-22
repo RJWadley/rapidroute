@@ -1,7 +1,6 @@
-import { useRef } from "react"
-
 import { Container } from "@pixi/react"
 import { Container as PixiContainer } from "pixi.js"
+import { useRef } from "react"
 
 import Line from "./Line"
 import { LineType } from "./markersType"

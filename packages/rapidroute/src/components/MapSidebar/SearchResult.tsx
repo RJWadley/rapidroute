@@ -1,9 +1,7 @@
-import { useEffect, useRef } from "react"
-
-import { gsap } from "gsap"
-import styled from "styled-components"
-
 import { getTextboxName } from "data/search"
+import { gsap } from "gsap"
+import { useEffect, useRef } from "react"
+import styled from "styled-components"
 
 export default function SearchResult({
   id,

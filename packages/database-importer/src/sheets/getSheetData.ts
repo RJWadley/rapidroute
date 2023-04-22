@@ -9,7 +9,7 @@
 // fetch for node.js
 import fetch from "node-fetch"
 
-import { Markers, isMRTLine } from "../types/dynmapTypes"
+import { isMRTLine, Markers } from "../types/dynmapTypes"
 import { SheetResponse } from "../types/googleSheetsTypes"
 import {
   Aliases,
@@ -64,26 +64,16 @@ function transpose<T>(a: T[][]): T[][] {
 }
 
 // globals
-const logos: {
-  [key: string]: string
-} = {}
-let lightColors: {
-  [key: string]: string
-} = {}
-let darkColors: {
-  [key: string]: string
-} = {}
+const logos: Record<string, string> = {}
+let lightColors: Record<string, string> = {}
+let darkColors: Record<string, string> = {}
 
 let ignoredPlaces: string[] = []
 
 let routes: LegacyRoute[] = []
 let places: LegacyPlace[] = []
 let providers: LegacyProvider[] = []
-let codeshares: {
-  [key: string]: {
-    [key: string]: string
-  }
-} = {}
+let codeshares: Record<string, Record<string, string>> = {}
 let spawnWarps: string[] = ["C1", "C33", "C61", "C89"]
 
 const aliases: Aliases[] = []
@@ -127,13 +117,13 @@ async function getTransitSheet(): Promise<SheetResponse> {
           .then((finalResult: SheetResponse) => {
             resolve(finalResult)
           })
-          .catch(err => {
-            console.error(err)
+          .catch(error => {
+            console.error(error)
             process.exit(1)
           })
       })
-      .catch(err => {
-        console.error(err)
+      .catch(error => {
+        console.error(error)
         process.exit(1)
       })
   })
@@ -155,8 +145,8 @@ async function getDataSheet(): Promise<SheetResponse> {
       .then((result: SheetResponse) => {
         resolve(result)
       })
-      .catch(err => {
-        console.error(err)
+      .catch(error => {
+        console.error(error)
         process.exit(1)
       })
   })
@@ -202,8 +192,8 @@ function getTowns() {
         spawnWarps.push("Spawn")
         resolve(result)
       })
-      .catch(err => {
-        console.error(err)
+      .catch(error => {
+        console.error(error)
         process.exit(1)
       })
   })
@@ -241,9 +231,7 @@ function parseRawFlightData(
   // for each airline
   providersRaw.forEach((airline, i) => {
     airlines.push({ name: airline })
-    const flightsByNumber: {
-      [key: string]: LegacyPlace[]
-    } = {}
+    const flightsByNumber: Record<string, LegacyPlace[]> = {}
 
     routesRaw[i]?.forEach((cell, j) => {
       // for each cell
@@ -390,27 +378,23 @@ function parseAirlineGateData(
 
   // process legacy gates
   companies.forEach(company => {
-    if (company.length > 1) {
-      if (company[1] === "Legacy") {
-        const flights = legacySheet?.filter(x => x[0] === company[2])
-        const mappedFlights = flights?.map(item => {
-          const newItem = [...item]
-          newItem[0] = company[0]
-          return newItem
-        })
-        gateData = [...gateData, ...(mappedFlights ?? [])]
-      }
+    if (company.length > 1 && company[1] === "Legacy") {
+      const flights = legacySheet?.filter(x => x[0] === company[2])
+      const mappedFlights = flights?.map(item => {
+        const newItem = [...item]
+        newItem[0] = company[0]
+        return newItem
+      })
+      gateData = [...gateData, ...(mappedFlights ?? [])]
     }
   })
 
   // process other gates
   sheets.forEach(sheet => {
-    let companyName: string = ""
-    if (sheet.range.indexOf("'") === -1) {
-      companyName = sheet.range.split("!")[0]
-    } else {
-      companyName = sheet.range.split("'")[1]
-    }
+    let companyName = ""
+    companyName = sheet.range.includes("'")
+      ? sheet.range.split("'")[1]
+      : sheet.range.split("!")[0]
 
     const flights = sheet.values.map(item => {
       const newItem = [...item]
@@ -425,13 +409,13 @@ function parseAirlineGateData(
   routes.forEach((route, i) => {
     if (route.mode === "MRT") return
 
-    const fromGate = gateData.filter(
+    const fromGate = gateData.find(
       x =>
         x[0] === route.provider && x[1] === route.number && x[2] === route.from
-    )[0]?.[3]
-    const toGate = gateData.filter(
+    )?.[3]
+    const toGate = gateData.find(
       x => x[0] === route.provider && x[1] === route.number && x[2] === route.to
-    )[0]?.[3]
+    )?.[3]
 
     if (fromGate) {
       routes[i].fromGate = fromGate
@@ -455,10 +439,8 @@ function processAirlineMetadata(rawAirlineData: string[][]) {
       if (company[4]) lightColors[company[0]] = company[4]
       if (company[5]) darkColors[company[0]] = company[5]
 
-      if (company.length > 1) {
-        if (company[1] === "Yes") {
-          requestURL += `&ranges='${company[0]}'!A:D`
-        }
+      if (company.length > 1 && company[1] === "Yes") {
+        requestURL += `&ranges='${company[0]}'!A:D`
       }
     })
 
@@ -467,8 +449,8 @@ function processAirlineMetadata(rawAirlineData: string[][]) {
       .then((result: SheetResponse) => {
         parseAirlineGateData(result, rawAirlineData, resolve)
       })
-      .catch(e => {
-        console.error(e)
+      .catch(error => {
+        console.error(error)
         resolve(true)
       })
   })
@@ -570,33 +552,32 @@ function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
   })
 
   // and C is a ring line, so add those
-  routeList.push({
-    from: "C1",
-    to: "C119",
-    mode: "MRT",
-    provider: "circle",
-  })
-  routeList.push({
-    from: "C119",
-    to: "C1",
-    mode: "MRT",
-    provider: "circle",
-  })
-
-  // mrt marina shuttle
-  routeList.push({
-    from: "XE8",
-    to: "XEM",
-    mode: "MRT",
-    provider: "expo",
-  })
-
-  routeList.push({
-    from: "XEM",
-    to: "XE8",
-    mode: "MRT",
-    provider: "expo",
-  })
+  routeList.push(
+    {
+      from: "C1",
+      to: "C119",
+      mode: "MRT",
+      provider: "circle",
+    },
+    {
+      from: "C119",
+      to: "C1",
+      mode: "MRT",
+      provider: "circle",
+    },
+    {
+      from: "XE8",
+      to: "XEM",
+      mode: "MRT",
+      provider: "expo",
+    },
+    {
+      from: "XEM",
+      to: "XE8",
+      mode: "MRT",
+      provider: "expo",
+    }
+  )
 
   routes.push(...routeList)
 }
@@ -659,8 +640,11 @@ function generateMrtFromMarkers(): Promise<boolean> {
             if (currentId === "WH24") currentId = "WN24"
 
             let name = currentLine[stopCode].label
-            if (name.substr(name.length - 1, name.length) === ")")
-              name = name.substr(0, name.length - 3 - currentId.length)
+            if (name.slice(-1, name.length - 1 + name.length) === ")")
+              name = name.slice(
+                0,
+                Math.max(0, name.length - 3 - currentId.length)
+              )
 
             places.push({
               id: currentId,
@@ -674,8 +658,8 @@ function generateMrtFromMarkers(): Promise<boolean> {
           })
         })
       })
-      .catch(err => {
-        console.error(err)
+      .catch(error => {
+        console.error(error)
         resolve(false)
       })
   })

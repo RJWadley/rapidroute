@@ -1,6 +1,5 @@
-import { createContext, ReactNode, useMemo, useState } from "react"
-
 import { SegmentType } from "components/Segment/createSegments"
+import { createContext, ReactNode, useMemo, useState } from "react"
 
 export const NavigationContext = createContext<{
   /**

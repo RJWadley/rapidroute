@@ -1,6 +1,5 @@
-import { Viewport } from "pixi-viewport"
 import { Point } from "pixi.js"
-
+import { Viewport } from "pixi-viewport"
 import { getLocal } from "utils/localUtils"
 
 import { triggerMovementManually } from "./PixiViewport"
@@ -17,7 +16,7 @@ export const canMoveCamera = () => {
   if (lastMapInteraction) {
     const now = new Date()
     const diff = now.getTime() - lastMapInteraction.getTime()
-    if (diff < 10000) {
+    if (diff < 10_000) {
       return false
     }
   }

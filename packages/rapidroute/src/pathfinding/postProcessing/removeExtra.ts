@@ -41,7 +41,5 @@ export default function removeExtras(results: ResultType[]) {
   }
 
   // remove the duplicates
-  const filteredResults = results.filter((_, i) => !indexesToRemove.includes(i))
-
-  return filteredResults
+  return results.filter((_, i) => !indexesToRemove.includes(i))
 }

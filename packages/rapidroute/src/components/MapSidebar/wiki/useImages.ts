@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { AllWikiImages } from "types/wiki/AllImages"
 import { WikiImage } from "types/wiki/ImageSearch"
 
@@ -37,11 +36,9 @@ const useImages = (pageTitle: string | undefined) => {
         .filter(
           // filter out flags, highway signs, maps, and service indicators
           im =>
-            !im.title
-              .toLowerCase()
-              .match(
-                /(flag|highway|[ab]\d+|map|service|icon|blurail|intrarail|logo)/
-              )
+            !/(flag|highway|[ab]\d+|map|service|icon|blurail|intrarail|logo)/.test(
+              im.title.toLowerCase()
+            )
         )
         // only get the first 10 images
         .slice(0, 10)

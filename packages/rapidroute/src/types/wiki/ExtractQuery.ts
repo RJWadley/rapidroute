@@ -14,9 +14,7 @@ export interface ExtractQuery {
   pages: Pages
 }
 
-export interface Pages {
-  [key: string]: Found | NotFound
-}
+export type Pages = Record<string, Found | NotFound>
 
 export interface NotFound {
   ns: number

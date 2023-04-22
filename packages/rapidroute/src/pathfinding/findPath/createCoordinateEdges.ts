@@ -1,5 +1,4 @@
 import { Pathfinding, shortHandMapKeys } from "@rapidroute/database-types"
-
 import isCoordinate from "data/isCoordinate"
 
 import getRouteTime from "./getRouteTime"
@@ -13,7 +12,7 @@ export async function createCoordinateEdges(
   nodes: Pathfinding
 ) {
   const nodeIds = Object.keys(nodes)
-  const walkingEdges = nodeIds
+  return nodeIds
     .map(nodeId => {
       const distance = getDistance(
         x,
@@ -40,8 +39,6 @@ export async function createCoordinateEdges(
         { from: id, to: "Spawn", weight: 120, mode: "spawnWarp" } as const,
       ]
     })
-
-  return walkingEdges
 }
 
 export async function generateAllCoordinateEdges(
@@ -52,10 +49,7 @@ export async function generateAllCoordinateEdges(
   const edges: GraphEdge[] = []
   // create coordinate edges if needed
   if (isCoordinate(from)) {
-    const [x, z] = from
-      .replace("Coordinate:", "")
-      .split(",")
-      .map(n => Number(n))
+    const [x, z] = from.replace("Coordinate:", "").split(",").map(Number)
     if (x && z) {
       const coordinateEdges = await createCoordinateEdges(from, x, z, nodes)
       edges.push(...coordinateEdges)
@@ -75,10 +69,7 @@ export async function generateAllCoordinateEdges(
     }
   }
   if (isCoordinate(to)) {
-    const [x, z] = to
-      .replace("Coordinate:", "")
-      .split(",")
-      .map(n => Number(n))
+    const [x, z] = to.replace("Coordinate:", "").split(",").map(Number)
     if (x && z) {
       const coordinateEdges = await createCoordinateEdges(to, x, z, nodes)
       edges.push(...coordinateEdges)

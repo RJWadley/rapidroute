@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from "react"
-
 import { Sprite } from "@pixi/react"
 import { gsap } from "gsap"
-import { Assets, SCALE_MODES, Texture, Sprite as PixiSprite } from "pixi.js"
+import { Assets, SCALE_MODES, Sprite as PixiSprite, Texture } from "pixi.js"
+import { useEffect, useRef, useState } from "react"
 
 import getTileUrl from "./getTileURL"
 import { worldSize } from "./PixiViewport"

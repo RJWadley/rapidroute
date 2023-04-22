@@ -12,7 +12,7 @@ interface LineProps {
   renderer: IRenderer
 }
 
-const textures: { [key: string]: Texture } = {}
+const textures: Record<string, Texture> = {}
 
 const BASE_WIDTH = 20
 const LAYER_WIDTH = 16
@@ -30,7 +30,7 @@ export default PixiComponent(TYPE, {
     const colorsChanged =
       previousProps.colors?.length !== colors.length ||
       previousProps.colors.some((color, index) => color !== colors[index])
-    const visibleChanged = previousProps?.visible !== visible
+    const visibleChanged = previousProps.visible !== visible
 
     if (visibleChanged) {
       instance.visible = visible ?? true

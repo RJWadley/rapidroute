@@ -1,9 +1,7 @@
-import { useContext, useRef, useState } from "react"
-
 import { Container, Text, useApp } from "@pixi/react"
-import { Point, Container as PixiContainer, Text as PixiText } from "pixi.js"
-
 import { MapSearchContext } from "components/Providers/MapSearchContext"
+import { Container as PixiContainer, Point, Text as PixiText } from "pixi.js"
+import { useContext, useRef, useState } from "react"
 import { clearLocal } from "utils/localUtils"
 
 import MulticolorDot from "./MulticolorDot"

@@ -1,7 +1,6 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
-
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { getTextboxName, useSearch } from "data/search"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 
 /**
  * This list will handle up and down arrow keys to navigate a list of items,
@@ -56,9 +55,9 @@ export default function useListArrowKeys(
       setUserTyped(input.value)
       setFocusedItem(undefined)
 
-      if (input?.value.match(/^\s+$/)) {
+      if (/^\s+$/.test(input.value)) {
         selectAndClose(undefined)
-      } else if (input?.value.includes("\n")) {
+      } else if (input.value.includes("\n")) {
         const newActiveItem = focusedItem ?? currentSearch[0]
         selectAndClose(newActiveItem)
       }
@@ -67,7 +66,7 @@ export default function useListArrowKeys(
         !focusedItem &&
         "data" in e &&
         typeof e.data === "string" &&
-        e.data.match(/^[a-zA-Z0-9]$/)
+        /^[\dA-Za-z]$/.test(e.data)
       )
         window.scrollTo({
           top: 0,
@@ -101,16 +100,27 @@ export default function useListArrowKeys(
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowUp") {
-        e.preventDefault()
-        move("up")
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault()
-        move("down")
-      } else if (e.key === "Escape") {
-        e.preventDefault()
-        input?.blur()
-        setUserTyped(undefined)
+      switch (e.key) {
+        case "ArrowUp":
+          e.preventDefault()
+          move("up")
+
+          break
+
+        case "ArrowDown":
+          e.preventDefault()
+          move("down")
+
+          break
+
+        case "Escape":
+          e.preventDefault()
+          input?.blur()
+          setUserTyped(undefined)
+
+          break
+
+        // No default
       }
     }
 

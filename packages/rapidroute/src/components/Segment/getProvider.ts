@@ -1,12 +1,11 @@
 import { Route } from "@rapidroute/database-types"
-
 import { getPath } from "data/getData"
 
 /**
  * get the provider for a route, accounting for codeshare/alias routes
  */
 export default async function getProvider(route: Route) {
-  if (!route?.provider) return undefined
+  if (!route.provider) return
   const provider = await getPath("providers", route.provider)
   if (provider?.alias) {
     const { number } = route
@@ -14,8 +13,8 @@ export default async function getProvider(route: Route) {
       const alias = provider.alias[i]
       if (
         alias &&
-        alias.numberRange?.start &&
-        alias.numberRange?.end &&
+        alias.numberRange.start &&
+        alias.numberRange.end &&
         alias.displayProvider &&
         number &&
         number >= alias.numberRange.start &&

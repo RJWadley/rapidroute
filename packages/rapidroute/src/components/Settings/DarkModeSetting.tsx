@@ -1,9 +1,7 @@
-import { useContext, useEffect, useRef, useState } from "react"
-
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { setDarkModeContext } from "components/Providers/DarkMode"
+import gsap from "gsap"
+import { useContext, useEffect, useRef, useState } from "react"
+import styled from "styled-components"
 import { getLocal } from "utils/localUtils"
 
 type Mode = "dark" | "light" | "system"

@@ -1,15 +1,13 @@
 /* eslint-disable no-console */
-import { useContext, useEffect, useRef, useState } from "react"
-
 import { RouteMode } from "@rapidroute/database-types"
-import gsap from "gsap"
-import TextPlugin from "gsap/TextPlugin"
-import styled from "styled-components"
-import { useDeepCompareEffect } from "use-deep-compare"
-
 import { darkModeContext } from "components/Providers/DarkMode"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { stopToNumber } from "components/Segment/getLineDirections"
+import gsap from "gsap"
+import TextPlugin from "gsap/TextPlugin"
+import { useContext, useEffect, useRef, useState } from "react"
+import styled from "styled-components"
+import { useDeepCompareEffect } from "use-deep-compare"
 import invertLightness from "utils/invertLightness"
 
 import getTimeToInstruction from "./timeToInstruction"
@@ -36,7 +34,7 @@ export default function Countdown({
    * use the spoken route for segment and the current route for calculating the number of stops
    */
   useDeepCompareEffect(() => {
-    if (currentRoute.length === 0 || spokenRoute.length === 0) return undefined
+    if (currentRoute.length === 0 || spokenRoute.length === 0) return
     let mounted = true
     const updateTimer = () => {
       if (!mounted) return

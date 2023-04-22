@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react"
-
 import styled from "styled-components"
-
 import { getLocal, setLocal } from "utils/localUtils"
 import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
 

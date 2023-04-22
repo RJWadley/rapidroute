@@ -1,25 +1,23 @@
-import { useContext, useMemo, useState } from "react"
-
 import { Provider } from "@rapidroute/database-types"
-import styled from "styled-components"
-
 import { darkModeContext } from "components/Providers/DarkMode"
 import { SegmentType } from "components/Segment/createSegments"
+import { useContext, useMemo, useState } from "react"
+import styled from "styled-components"
 import invertLightness from "utils/invertLightness"
 import media from "utils/media"
 
 import { getLineDirection } from "./getLineDirections"
 import getProvider from "./getProvider"
 import {
-  Wrapper,
-  Left,
-  ProviderName,
-  Name,
-  LongNames,
-  Symbols,
   GateNumber,
+  Left,
   Logo,
+  LongNames,
+  Name,
+  ProviderName,
   RouteNumber,
+  Symbols,
+  Wrapper,
 } from "./sharedComponents"
 
 interface SegmentProps {
@@ -33,14 +31,13 @@ export const expandGate = (gateString: string | null | undefined) => {
   const toGate = gateString === "none" ? null : gateString
   if (!toGate) return null
   if (
-    toGate?.toLowerCase().includes("terminal") ||
-    toGate?.toLowerCase().includes("gate")
+    toGate.toLowerCase().includes("terminal") ||
+    toGate.toLowerCase().includes("gate")
   )
     return toGate
-  const expandedToGate = toGate.match(/T/g)
+  return /T/g.test(toGate)
     ? toGate.split(" ").join(" Gate ").replace(/T/g, "Terminal ")
     : `Gate ${toGate}`
-  return expandedToGate
 }
 
 export default function SingleRoute({
@@ -57,8 +54,8 @@ export default function SingleRoute({
     if (route)
       getProvider(route)
         .then(p => p && setProvider(p))
-        .catch(e => {
-          console.error("Error getting provider info", e)
+        .catch(error => {
+          console.error("Error getting provider info", error)
           setProvider(null)
         })
   }, [route])
@@ -82,14 +79,17 @@ export default function SingleRoute({
   let routeNumberMessage = ""
   switch (route?.type) {
     case "flight":
-      routeNumberMessage = `Flight ${route?.number ?? ""}`
+      routeNumberMessage = `Flight ${route.number ?? ""}`
       break
+
     case "heli":
-      routeNumberMessage = `Helicopter Flight ${route?.number ?? ""}`
+      routeNumberMessage = `Helicopter Flight ${route.number ?? ""}`
       break
+
     case "seaplane":
-      routeNumberMessage = `Seaplane Flight ${route?.number ?? ""}`
+      routeNumberMessage = `Seaplane Flight ${route.number ?? ""}`
       break
+
     default:
       routeNumberMessage = ""
   }
@@ -144,7 +144,7 @@ export default function SingleRoute({
         </div>
         <div>-&gt;</div>
         <div>
-          {segment?.to?.shortName || "---"}
+          {segment.to.shortName || "---"}
           {expandedToGate && <GateNumber>{expandedToGate}</GateNumber>}
         </div>
       </Symbols>

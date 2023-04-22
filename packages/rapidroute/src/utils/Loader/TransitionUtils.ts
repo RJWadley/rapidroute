@@ -1,11 +1,9 @@
 // need to await within loops since transition utils exists outside of react
 /* eslint-disable no-await-in-loop */
 
-import { startTransition, useEffect } from "react"
-
 import { navigate as gatsbyNavigate } from "@reach/router"
 import gsap from "gsap"
-
+import { startTransition, useEffect } from "react"
 import { pathnameMatches, sleep } from "utils/functions"
 import { onUnmount, pageReady } from "utils/pageReady"
 
@@ -216,8 +214,8 @@ export const loadPage = async (
   if (pendingTransition) {
     // start the next transition if applicable
     loadPage(pendingTransition.name, pendingTransition.transition).catch(
-      (e: string) => {
-        throw new Error(e)
+      (error: string) => {
+        throw new Error(error)
       }
     )
     pendingTransition = null
@@ -230,7 +228,7 @@ export const loadPage = async (
  * @param cleanupFunction a function to reset the page to its original state (if back button is pressed after external link)
  */
 export const navigate = async (to: string, cleanupFunction?: VoidFunction) => {
-  const isExternal = to.substring(0, 8).includes("//")
+  const isExternal = to.slice(0, 8).includes("//")
 
   if (isExternal) {
     window.location.href = to

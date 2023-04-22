@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { Rectangle, IHitArea, EventMode } from "pixi.js"
+import { EventMode, IHitArea, Rectangle } from "pixi.js"
 
 const emptyRect = new Rectangle(0, 0, 0, 0)
 export function hideItem(item: {

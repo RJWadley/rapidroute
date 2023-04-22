@@ -1,8 +1,6 @@
-import { useContext, useEffect, useRef } from "react"
-
-import styled from "styled-components"
-
 import { NavigationContext } from "components/Providers/NavigationContext"
+import { useContext, useEffect, useRef } from "react"
+import styled from "styled-components"
 import UniversalLink from "utils/Loader/UniversalLink"
 import media from "utils/media"
 

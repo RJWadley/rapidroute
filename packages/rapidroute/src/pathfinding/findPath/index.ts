@@ -17,7 +17,7 @@ export default class Pathfinder {
 
   to: string
 
-  maxCost: number = Infinity
+  maxCost = Infinity
 
   EXTRA_TIME = 100
 
@@ -185,7 +185,7 @@ export default class Pathfinder {
     const results: ResultType[] = []
     const MAX_PATHS = 20
 
-    while (pathsInProgress.length) {
+    while (pathsInProgress.length > 0) {
       const pathInfo = pathsInProgress.pop()
       if (!pathInfo) break
 

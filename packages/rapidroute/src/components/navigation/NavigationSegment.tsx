@@ -1,12 +1,10 @@
-import { useContext, useEffect, useRef } from "react"
-
-import gsap from "gsap"
-import ScrollTrigger from "gsap/ScrollTrigger"
-import styled from "styled-components"
-
 import { darkModeContext } from "components/Providers/DarkMode"
 import Segment from "components/Segment"
 import { SegmentType } from "components/Segment/createSegments"
+import gsap from "gsap"
+import ScrollTrigger from "gsap/ScrollTrigger"
+import { useContext, useEffect, useRef } from "react"
+import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -85,9 +83,9 @@ export default function NavigationSegment({
    */
   useEffect(() => {
     if (mobile) {
-      const otherSegment = Array.from(
-        document.querySelectorAll(`[data-flip-id="${flipId}"]`)
-      ).filter(el => el !== wrapper.current)[0]
+      const otherSegment = [
+        ...document.querySelectorAll(`[data-flip-id="${flipId}"]`),
+      ].find(el => el !== wrapper.current)
 
       if (otherSegment instanceof HTMLElement && wrapper.current) {
         const { transform } = otherSegment.style

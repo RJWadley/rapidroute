@@ -1,12 +1,10 @@
-import { useContext, useEffect, useRef, useState } from "react"
-
 import { Location } from "@rapidroute/database-types"
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getPath } from "data/getData"
+import gsap from "gsap"
+import { useContext, useEffect, useRef, useState } from "react"
+import styled from "styled-components"
 import { getLocal, setLocal } from "utils/localUtils"
 
 export default function NavHistory() {

@@ -10,8 +10,7 @@ export default function getPlayerLocation(player: string) {
 
       if (playerInfo) {
         const { x, y, z, world } = playerInfo
-        const location = { x, y, z, world }
-        return location
+        return { x, y, z, world }
       }
 
       return null

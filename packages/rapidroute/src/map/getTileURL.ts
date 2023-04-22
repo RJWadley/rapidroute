@@ -4,7 +4,7 @@ export default function getTileUrl(coords: {
   zoom: number
 }) {
   const zoomFactor = 2 ** (8 - coords.zoom)
-  const x = coords.xIn * 1
+  const x = Number(coords.xIn)
   const y = coords.zIn * -1
 
   const group = {
@@ -25,7 +25,5 @@ export default function getTileUrl(coords: {
 
   if (coords.zoom !== 8) zzz += "_"
 
-  const url = `https://dynmap.minecartrapidtransit.net/tiles/new/flat/${group.x}_${group.y}/${zzz}${numberInGroup.x}_${numberInGroup.y}.png`
-
-  return url
+  return `https://dynmap.minecartrapidtransit.net/tiles/new/flat/${group.x}_${group.y}/${zzz}${numberInGroup.x}_${numberInGroup.y}.png`
 }

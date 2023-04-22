@@ -1,12 +1,10 @@
-import { useContext, useEffect } from "react"
-
 import { Stage } from "@pixi/react"
 import { QueryClientProvider } from "@tanstack/react-query"
-import { useMeasure } from "react-use"
-import styled from "styled-components"
-
 import { queryClient } from "components/Providers"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
+import { useContext, useEffect } from "react"
+import { useMeasure } from "react-use"
+import styled from "styled-components"
 import DelayRender from "utils/DelayRender"
 
 import AllCities from "./AllCities"

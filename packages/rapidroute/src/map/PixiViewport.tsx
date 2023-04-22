@@ -1,12 +1,10 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react"
-
 import { PixiComponent, useApp } from "@pixi/react"
-import { Viewport } from "pixi-viewport"
 import { EventSystem } from "pixi.js"
-
+import { Viewport } from "pixi-viewport"
+import { createContext, useContext, useEffect, useRef, useState } from "react"
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
-type ViewportProps = {
+interface ViewportProps {
   setViewport: (viewport: Viewport) => void
   width: number
   height: number
@@ -14,7 +12,7 @@ type ViewportProps = {
   children: React.ReactNode
 }
 
-export const worldSize = 61000
+export const worldSize = 61_000
 
 const DisplayObjectViewport = PixiComponent("Viewport", {
   create: ({ setViewport, width, height, events }: ViewportProps) => {
@@ -44,7 +42,7 @@ const DisplayObjectViewport = PixiComponent("Viewport", {
       instance.destroy({
         children: false,
       })
-    } catch (e) {
+    } catch (error) {
       // this can fail if the domElement doesn't exist anymore. pixi-viewport issue?
     }
   },
@@ -57,8 +55,7 @@ const DisplayObjectViewport = PixiComponent("Viewport", {
 const ViewportContext = createContext<Viewport | null>(null)
 
 export const useViewport = () => {
-  const viewport = useContext(ViewportContext)
-  return viewport
+  return useContext(ViewportContext)
 }
 
 let moveCallbacks: (() => void)[] = []
@@ -110,7 +107,7 @@ export const canMoveViewport = () => {
   if (lastInteraction) {
     const now = new Date()
     const diff = now.getTime() - lastInteraction.getTime()
-    if (diff < 10000) return false
+    if (diff < 10_000) return false
   }
   return true
 }

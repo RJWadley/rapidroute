@@ -1,9 +1,7 @@
-import { useContext, useRef } from "react"
-
-import styled from "styled-components"
-
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { SegmentType } from "components/Segment/createSegments"
+import { useContext, useRef } from "react"
+import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 

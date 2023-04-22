@@ -1,12 +1,12 @@
-const westEastLines = ["X", "N", "S", "L"]
-const northSouthLines = ["Z", "E", "J", "W"]
-const inOutLines = ["A", "T", "I", "M", "D", "P", "V", "H", "F"]
+const westEastLines = new Set(["X", "N", "S", "L"])
+const northSouthLines = new Set(["Z", "E", "J", "W"])
+const inOutLines = new Set(["A", "T", "I", "M", "D", "P", "V", "H", "F"])
 /**
  * Record of id to number of stops so that we can determine which direction around the circle is the shortest
  */
 const circleLines = {
   C: 119, // 119 stations
-  U: 99999, // unfinished line, so we'll just assume it's a big circle
+  U: 99_999, // unfinished line, so we'll just assume it's a big circle
 }
 
 const isCircleLineKey = (key: string): key is keyof typeof circleLines => {
@@ -51,21 +51,21 @@ export const getLineDirection = (fromStop: string, toStop: string) => {
   /**
    * handle east-west lines
    */
-  if (westEastLines.includes(lineCode)) {
+  if (westEastLines.has(lineCode)) {
     return fromIsBigger ? "Westbound" : "Eastbound"
   }
 
   /**
    * handle north-south lines
    */
-  if (northSouthLines.includes(lineCode)) {
+  if (northSouthLines.has(lineCode)) {
     return fromIsBigger ? "Southbound" : "Northbound"
   }
 
   /**
    * handle inbound/outbound lines
    */
-  if (inOutLines.includes(lineCode)) {
+  if (inOutLines.has(lineCode)) {
     return fromIsBigger ? "Inbound" : "Outbound"
   }
 

@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-
-import gsap from "gsap"
-import styled, { css } from "styled-components"
-
 import { getPath } from "data/getData"
+import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
+import { useEffect, useMemo, useRef, useState } from "react"
+import styled, { css } from "styled-components"
 
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
@@ -20,11 +18,7 @@ interface RouteProps {
   expandByDefault: boolean
 }
 
-export default function Route({
-  route,
-  diff = undefined,
-  expandByDefault,
-}: RouteProps) {
+export default function Route({ route, diff, expandByDefault }: RouteProps) {
   const [segments, setSegments] = useState<SegmentType[] | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
   const dropdownContent = useRef<HTMLDivElement>(null)
@@ -37,12 +31,12 @@ export default function Route({
       .then(newSegments => {
         setSegments(newSegments)
       })
-      .catch(e => {
-        console.error("error creating segments", e)
+      .catch(error => {
+        console.error("error creating segments", error)
         setSegments(null)
       })
-  }, [route]).catch(e => {
-    console.error("error while creating segments", e)
+  }, [route]).catch(error => {
+    console.error("error while creating segments", error)
   })
 
   /**
@@ -92,7 +86,7 @@ export default function Route({
         {segments && (
           <>
             <BeginNavigation route={route.path} segments={segments} />
-            {segments?.map(segment => (
+            {segments.map(segment => (
               <Segment key={segment.from.uniqueId} segment={segment} />
             ))}
             {destination && <WillArrive destination={destination} />}

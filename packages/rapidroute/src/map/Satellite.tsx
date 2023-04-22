@@ -1,6 +1,5 @@
-import { startTransition, useState } from "react"
-
 import { Viewport } from "pixi-viewport"
+import { startTransition, useState } from "react"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"
 import SatelliteLayer from "./SatelliteLayer"
@@ -13,8 +12,8 @@ const breakpoints = [
   3.75,
   1.875,
   0.9375,
-  0.46875,
-  0.234375,
+  0.468_75,
+  0.234_375,
 ]
 
 const getMaxZoom = (viewport: Viewport | null): number => {

@@ -1,15 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
-
 import { Container, Sprite, Text } from "@pixi/react"
 import { gsap } from "gsap"
 import {
-  Point,
-  Texture,
   Container as PixiContainer,
+  Point,
   Sprite as PixiSprite,
   Text as PixiText,
+  Texture,
 } from "pixi.js"
-
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 import usePlayerHead from "utils/usePlayerHead"
 

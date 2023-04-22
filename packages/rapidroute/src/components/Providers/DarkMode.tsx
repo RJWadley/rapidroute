@@ -6,9 +6,7 @@ import {
   useLayoutEffect,
   useState,
 } from "react"
-
 import { createGlobalStyle, css } from "styled-components"
-
 import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"
 

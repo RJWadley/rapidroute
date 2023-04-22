@@ -1,9 +1,7 @@
-import { useContext, useEffect, useRef } from "react"
-
 import gsap from "gsap"
+import { useContext, useEffect, useRef } from "react"
 import { useSearchParam } from "react-use"
 import styled, { keyframes } from "styled-components"
-
 import { useImageHSL } from "utils/averageImageColor"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { setLocal } from "utils/localUtils"
@@ -20,7 +18,7 @@ interface PlayerSelectProps {
 const FADE_DURATION = 0.1
 
 export default function PlayerSelect({ name: nameIn }: PlayerSelectProps) {
-  const name = nameIn.replace(/[^A-Za-z0-9_]/g, "").substring(0, 16)
+  const name = nameIn.replace(/\W/g, "").slice(0, 16)
   const imageUrl = usePlayerHead(name)
   const wrapperRef = useRef<HTMLDivElement>(null)
 

@@ -1,8 +1,6 @@
-import { useState } from "react"
-
-import { useDeepCompareEffect } from "use-deep-compare"
-
 import { SegmentType } from "components/Segment/createSegments"
+import { useState } from "react"
+import { useDeepCompareEffect } from "use-deep-compare"
 
 /**
  * given the most up-to-date route from the player to the destination,
@@ -16,7 +14,7 @@ export default function useFollowedRoute(route: SegmentType[]) {
 
   useDeepCompareEffect(() => {
     // skip if we have no route or if first run
-    if (!route.length) return
+    if (route.length === 0) return
     if (previousRoute === null) {
       setPreviousRoute(route)
       return

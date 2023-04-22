@@ -1,12 +1,11 @@
 /* eslint-disable no-console */
-import { useCallback, useContext, useEffect, useRef } from "react"
-
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
 import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
+import { useCallback, useContext, useEffect, useRef } from "react"
 import { isBrowser } from "utils/functions"
 import { getLocal, setLocal } from "utils/localUtils"
 import { wrap } from "utils/promise-worker"
@@ -55,7 +54,7 @@ export default function useNavigation() {
    */
   const firstRender = useRef(true)
   useEffect(() => {
-    if (firstRender.current && currentRoute.length) {
+    if (firstRender.current && currentRoute.length > 0) {
       firstRender.current = false
       setSpokenRoute(currentRoute)
     }
@@ -135,7 +134,10 @@ export default function useNavigation() {
                   /**
                    * Update the current route
                    */
-                  if (!segments[0]?.routes.length) {
+                  if (segments[0]?.routes.length) {
+                    // if the first segment is not a walk, update the route as normal
+                    setCurrentRoute(segments)
+                  } else {
                     // if the length of the walk is more than 500 blocks, leave the walk in
                     const { x: fromX, z: fromZ } =
                       segments[0]?.from.location || {}
@@ -167,25 +169,22 @@ export default function useNavigation() {
                         return segments
                       })
                     }
-                  } else {
-                    // if the first segment is not a walk, update the route as normal
-                    setCurrentRoute(segments)
                   }
                 })
 
                 /**
                  * If there's an issue, clear the route
                  */
-                .catch(e => {
+                .catch(error => {
                   console.error(
                     "error converting result to segments during nav",
-                    e
+                    error
                   )
                   setCurrentRoute([])
                 })
           })
-          .catch(e => {
-            console.error("Error while finding path during nav", e)
+          .catch(error => {
+            console.error("Error while finding path during nav", error)
             setCurrentRoute([])
           })
       }
@@ -222,15 +221,15 @@ export default function useNavigation() {
     }
 
     const { x: playerX, z: playerZ } = getLocal("lastKnownLocation") || {}
-    const { x: locationX, z: locationZ } = firstSpoken?.from.location || {}
+    const { x: locationX, z: locationZ } = firstSpoken.from.location || {}
     const distance = Math.sqrt(
       ((playerX ?? Infinity) - (locationX ?? Infinity)) ** 2 +
         ((playerZ ?? Infinity) - (locationZ ?? Infinity)) ** 2
     )
-    if (distance < CompletionThresholds[firstSpoken?.from.type]) {
-      setLocal("pointOfInterest", firstSpoken?.from.location)
+    if (distance < CompletionThresholds[firstSpoken.from.type]) {
+      setLocal("pointOfInterest", firstSpoken.from.location)
     } else {
-      setLocal("pointOfInterest", firstSpoken?.to.location)
+      setLocal("pointOfInterest", firstSpoken.to.location)
     }
   }, [spokenRoute])
 

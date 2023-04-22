@@ -1,14 +1,12 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react"
-
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { getAll } from "data/getData"
+import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
+import styled from "styled-components"
 import { isBrowser, sleep } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal } from "utils/localUtils"
@@ -48,11 +46,11 @@ export default function Results() {
       const player = getLocal("selectedPlayer")?.toString()
       if (player) {
         const { x, z } = (await getPlayerLocation(player)) ?? {}
-        if (!x || !z) return undefined
+        if (!x || !z) return
         return `Coordinate: ${x}, ${z}`
       }
     }
-    return undefined
+    return
   }, [from, to])
 
   useEffect(() => {
@@ -98,21 +96,21 @@ export default function Results() {
               debouncer.current = sleep(2000)
             }
           })
-          .catch(async e => {
-            console.error("Error finding path", e)
+          .catch(async error => {
+            console.error("Error finding path", error)
             await minTime
             await debouncer.current
             if (canSave) setResults("none")
           })
-      })().catch(e => {
-        console.error("error while finding path", e)
+      })().catch(error => {
+        console.error("error while finding path", error)
       })
 
       return () => {
         canSave = false
       }
     }
-    return undefined
+    return
   }, [allowedModes, from, playerLocation, to])
 
   const animateOut = () => {
@@ -120,12 +118,12 @@ export default function Results() {
     // then animate them out
     if (resultsWrapper.current && animationOutHolder.current) {
       const newElement = document.createElement("div")
-      animationOutHolder.current.appendChild(newElement)
+      animationOutHolder.current.append(newElement)
       newElement.innerHTML = resultsWrapper.current.innerHTML
 
-      const children = Array.from(newElement.children)
+      const children = [...newElement.children]
 
-      if (!children.length) return
+      if (children.length === 0) return
 
       const firstFive = children.slice(0, 5)
       const allOthers = children.slice(5)
@@ -151,7 +149,7 @@ export default function Results() {
       )
 
       // all other children
-      if (allOthers.length)
+      if (allOthers.length > 0)
         gsap.fromTo(
           allOthers,
           {

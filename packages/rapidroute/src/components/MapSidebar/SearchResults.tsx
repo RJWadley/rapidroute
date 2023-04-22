@@ -15,7 +15,7 @@ export default function SearchResults({
     <>
       {items !== undefined && (
         <Wrapper>
-          {items?.map(id => (
+          {items.map(id => (
             <SearchResult
               id={id}
               key={id}

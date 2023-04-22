@@ -67,7 +67,7 @@ export const locationSchema = z.object({
   /**
    * what route ids, if any, are available at this location?
    */
-  routes: z.array(z.string()).optional(),  
+  routes: z.array(z.string()).optional(),
   /**
    * search keywords for use in the index
    */

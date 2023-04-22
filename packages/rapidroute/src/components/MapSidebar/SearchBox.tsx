@@ -1,8 +1,6 @@
-import { useContext, useState } from "react"
-
-import styled from "styled-components"
-
 import { MapSearchContext } from "components/Providers/MapSearchContext"
+import { useContext, useState } from "react"
+import styled from "styled-components"
 import { setLocal } from "utils/localUtils"
 import media from "utils/media"
 

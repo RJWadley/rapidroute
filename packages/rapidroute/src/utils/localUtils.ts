@@ -3,7 +3,7 @@ import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"
 
-const latestVersion = 20221015
+const latestVersion = 20_221_015
 
 /**
  * return types from local storage
@@ -199,6 +199,7 @@ const getUrlParameter = <T extends LocalKeys>(key: T): Locals[T] | null => {
     case "x":
     case "z":
       return parseFloat(value) as Locals[T]
+
     default:
       return value as Locals[T]
   }
@@ -263,9 +264,7 @@ export const clearLocal = <T extends keyof Locals>(key: T) => {
 }
 
 const version = getLocal("version")
-if (isBrowser()) {
-  if (!version || version < latestVersion) {
-    localStorage.clear()
-    setPersistent("version", latestVersion)
-  }
+if (isBrowser() && (!version || version < latestVersion)) {
+  localStorage.clear()
+  setPersistent("version", latestVersion)
 }

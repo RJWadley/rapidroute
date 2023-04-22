@@ -1,7 +1,3 @@
-import { useContext, useEffect } from "react"
-
-import styled from "styled-components"
-
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import NavigationOverview from "components/ControlsOverlay/NavigationOverview"
 import Layout from "components/Layout"
@@ -11,6 +7,8 @@ import SEO from "components/SEO"
 import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
+import { useContext, useEffect } from "react"
+import styled from "styled-components"
 import { isBrowser } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal, setLocal } from "utils/localUtils"
@@ -73,7 +71,7 @@ export default function Navigate() {
       const acquireWakeLock = async () => {
         try {
           wakeLock = await navigator.wakeLock.request("screen")
-        } catch (err) {
+        } catch (error) {
           console.error("unable to acquire wake lock")
         }
       }

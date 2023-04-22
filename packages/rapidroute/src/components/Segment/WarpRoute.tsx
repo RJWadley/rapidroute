@@ -1,6 +1,5 @@
-import styled, { css } from "styled-components"
-
 import { SegmentType } from "components/Segment/createSegments"
+import styled, { css } from "styled-components"
 
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 

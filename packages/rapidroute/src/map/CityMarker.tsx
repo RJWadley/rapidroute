@@ -1,10 +1,8 @@
-import { useContext, useRef } from "react"
-
 import { Container, Text } from "@pixi/react"
-import { Container as PixiContainer, Point, Text as PixiText } from "pixi.js"
-
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { search } from "data/search"
+import { Container as PixiContainer, Point, Text as PixiText } from "pixi.js"
+import { useContext, useRef } from "react"
 import { clearLocal } from "utils/localUtils"
 
 import { hideItem, showItem } from "./PixiUtils"

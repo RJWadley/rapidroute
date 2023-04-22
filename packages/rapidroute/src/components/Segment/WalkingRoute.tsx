@@ -1,7 +1,6 @@
-import styled, { css } from "styled-components"
-
 import { SegmentType } from "components/Segment/createSegments"
 import { getDistance } from "pathfinding/findPath/pathUtil"
+import styled, { css } from "styled-components"
 
 import { Name, RouteNumber, Wrapper } from "./sharedComponents"
 

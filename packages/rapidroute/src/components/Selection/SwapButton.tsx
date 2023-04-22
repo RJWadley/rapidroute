@@ -1,10 +1,8 @@
-import { useContext, useRef } from "react"
-
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { RoutingContext } from "components/Providers/RoutingContext"
 import RoundButton from "components/RoundButton"
+import gsap from "gsap"
+import { useContext, useRef } from "react"
+import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -16,8 +14,8 @@ export default function SwapButton() {
   const clickCount = useRef<number>(0)
 
   const handleClick = () => {
-    const fromEl = document.getElementById("from")
-    const toEl = document.getElementById("to")
+    const fromEl = document.querySelector("#from")
+    const toEl = document.querySelector("#to")
     const hash = clickCount.current + 1
     clickCount.current = hash
 

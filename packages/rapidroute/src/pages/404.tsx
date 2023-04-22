@@ -1,9 +1,8 @@
-import styled, { keyframes } from "styled-components"
-
 import Header from "components/Header"
 import Layout from "components/Layout"
 import RoundButton from "components/RoundButton"
 import SEO from "components/SEO"
+import styled, { keyframes } from "styled-components"
 import invertLightness from "utils/invertLightness"
 
 export default function NotFoundPage() {

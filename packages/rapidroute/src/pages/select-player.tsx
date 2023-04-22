@@ -1,9 +1,4 @@
-import { useContext, useState } from "react"
-
 import { useQuery } from "@tanstack/react-query"
-import { useDebounce } from "react-use"
-import styled from "styled-components"
-
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
 import PlayerSelect from "components/PlayerSelect"
@@ -11,6 +6,9 @@ import { RoutingContext } from "components/Providers/RoutingContext"
 import SEO from "components/SEO"
 import searchForPlayer from "data/searchPlayers"
 import { WorldInfo } from "map/worldInfoType"
+import { useContext, useState } from "react"
+import { useDebounce } from "react-use"
+import styled from "styled-components"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
 

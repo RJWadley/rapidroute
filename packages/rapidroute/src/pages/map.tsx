@@ -1,8 +1,4 @@
-import { useEffect } from "react"
-
 import { navigate } from "@reach/router"
-import styled from "styled-components"
-
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
 import MapSidebar from "components/MapSidebar"
@@ -12,6 +8,8 @@ import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
 import { defaultPadding } from "map/zoomCamera"
+import { useEffect } from "react"
+import styled from "styled-components"
 import { setLocal } from "utils/localUtils"
 import media from "utils/media"
 

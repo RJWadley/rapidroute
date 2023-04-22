@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-
-import { MarkersResponse, isMRTLine } from "map/markersType"
+import { isMRTLine, MarkersResponse } from "map/markersType"
 import hslToHex from "utils/hslToHex"
 import invertLightness from "utils/invertLightness"
 

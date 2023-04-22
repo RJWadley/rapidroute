@@ -1,6 +1,5 @@
-import { DependencyList, EffectCallback, useEffect } from "react"
-
 import gsap from "gsap"
+import { DependencyList, EffectCallback, useEffect } from "react"
 
 /**
  * A utility hook that abstracts away the react boilerplate of gsap animation.

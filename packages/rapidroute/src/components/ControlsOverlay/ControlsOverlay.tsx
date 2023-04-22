@@ -1,5 +1,4 @@
 import styled from "styled-components"
-
 import useMedia from "utils/useMedia"
 
 interface ControlsOverlayProps {

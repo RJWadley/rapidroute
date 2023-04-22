@@ -1,6 +1,5 @@
-import { useEffect } from "react"
-
 import { getDistance } from "pathfinding/findPath/pathUtil"
+import { useEffect } from "react"
 
 import { triggerMovementManually, useViewport } from "./PixiViewport"
 

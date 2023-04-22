@@ -1,14 +1,12 @@
-import { useContext, useMemo, useState } from "react"
-
 import { Provider, Route } from "@rapidroute/database-types"
-import styled, { css } from "styled-components"
-
 import { darkModeContext } from "components/Providers/DarkMode"
 import { SegmentType } from "components/Segment/createSegments"
+import { useContext, useMemo, useState } from "react"
+import styled, { css } from "styled-components"
 import invertLightness from "utils/invertLightness"
 
 import getProvider from "./getProvider"
-import { Logo, Name, RouteNumber, GateNumber } from "./sharedComponents"
+import { GateNumber, Logo, Name, RouteNumber } from "./sharedComponents"
 import { expandGate } from "./SingleRoute"
 
 interface MultiSingleBitProps {
@@ -31,35 +29,38 @@ export default function MultiSingleBit({
   useMemo(() => {
     getProvider(route)
       .then(p => p && setProvider(p))
-      .catch(e => {
-        console.error("Error getting provider info", e)
+      .catch(error => {
+        console.error("Error getting provider info", error)
         setProvider(null)
       })
   }, [route])
 
   const image =
-    route?.type === "MRT"
+    route.type === "MRT"
       ? "https://www.minecartrapidtransit.net/wp-content/uploads/2015/01/logo.png"
       : provider?.logo
   const themeColor =
     (isDark ? provider?.color?.dark : provider?.color?.light) ??
     "var(--default-card-background)"
 
-  const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
-  const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])
+  const expandedFromGate = expandGate(route.locations[segment.from.uniqueId])
+  const expandedToGate = expandGate(route.locations[segment.to.uniqueId])
 
   let routeNumberMessage = ""
   if (route.number)
-    switch (route?.type) {
+    switch (route.type) {
       case "flight":
-        routeNumberMessage = `Flight ${route?.number ?? ""}`
+        routeNumberMessage = `Flight ${route.number ?? ""}`
         break
+
       case "heli":
-        routeNumberMessage = `Helicopter Flight ${route?.number ?? ""}`
+        routeNumberMessage = `Helicopter Flight ${route.number ?? ""}`
         break
+
       case "seaplane":
-        routeNumberMessage = `Seaplane Flight ${route?.number ?? ""}`
+        routeNumberMessage = `Seaplane Flight ${route.number ?? ""}`
         break
+
       default:
         routeNumberMessage = ""
     }
@@ -72,7 +73,7 @@ export default function MultiSingleBit({
     >
       {image && (
         <Logo
-          bigLogo={route?.type === "MRT"}
+          bigLogo={route.type === "MRT"}
           background={invertLightness(themeColor)}
           small={variant === "mobile"}
         >

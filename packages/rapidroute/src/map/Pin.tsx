@@ -1,11 +1,9 @@
-import { useContext, useEffect, useRef, useState } from "react"
-
 import { Container, Sprite } from "@pixi/react"
-import { Point, Texture, Container as PixiContainer } from "pixi.js"
-
 import PinPNG from "assets/images/pin.png"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { getPath } from "data/getData"
+import { Container as PixiContainer, Point, Texture } from "pixi.js"
+import { useContext, useEffect, useRef, useState } from "react"
 import { isBrowser } from "utils/functions"
 import { clearLocal } from "utils/localUtils"
 

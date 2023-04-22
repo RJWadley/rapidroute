@@ -8,5 +8,5 @@ export interface SheetResponse {
 export interface ValueRange {
   range: string
   majorDimension: string
-  values: Array<string[]>
+  values: string[][]
 }

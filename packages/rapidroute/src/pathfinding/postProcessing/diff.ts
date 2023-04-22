@@ -16,9 +16,7 @@ export default function resultDiffs(results: string[][]) {
   })
 
   // get the diff of each result
-  const diffs = results.map(result => {
+  return results.map(result => {
     return result.filter(item => !common.includes(item))
   })
-
-  return diffs
 }

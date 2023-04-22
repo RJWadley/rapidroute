@@ -35,16 +35,14 @@ export interface Sets {
   union: Union
 }
 
-interface SharedLinesType {
-  [key: string]: PuneHedgehog
-}
+type SharedLinesType = Record<string, PuneHedgehog>
 
 export interface Airports {
   hide: boolean
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: CirclesClass
   layerprio: number
 }
@@ -71,7 +69,7 @@ export interface Arctic {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -92,7 +90,7 @@ export interface Circle {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -102,7 +100,7 @@ export interface Desert {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -112,7 +110,7 @@ export interface Eastern {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -122,7 +120,7 @@ export interface Forest {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -132,7 +130,7 @@ export interface Island {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -142,7 +140,7 @@ export interface Jungle {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -152,7 +150,7 @@ export interface Lakeshore {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -176,7 +174,7 @@ export interface Northern {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -186,7 +184,7 @@ export interface Union {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -216,7 +214,7 @@ export interface Savannah {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -226,7 +224,7 @@ export interface Southern {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -236,7 +234,7 @@ export interface Valley {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }
@@ -246,7 +244,7 @@ export interface Western {
   circles: CirclesClass
   areas: CirclesClass
   label: string
-  markers: { [key: string]: Marker }
+  markers: Record<string, Marker>
   lines: SharedLinesType
   layerprio: number
 }

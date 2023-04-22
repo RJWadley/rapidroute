@@ -115,7 +115,7 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
             // if the header is present, wait for that amount of time
             const timeToWaitInMs = retryAfter
               ? parseInt(retryAfter, 10) * 1000
-              : 10000 + Math.random() * 10000
+              : 10_000 + Math.random() * 10_000
 
             setTimeout(() => {
               preloadedAudio[voice] = {
@@ -125,7 +125,7 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
               preloadAudio(text, voice).catch(console.error)
             }, timeToWaitInMs)
           }
-          return undefined
+          return
         })
         .then((resp: unknown) => {
           if (isSpeechResponse(resp)) {

@@ -1,5 +1,4 @@
 import { shortHandMapKeys } from "@rapidroute/database-types"
-
 import { getAll } from "data/getData"
 
 const getDistance = (
@@ -37,8 +36,7 @@ getAll("pathfinding")
         const placeB = allPlaces[j]
 
         const modes = shortHandMapKeys
-        for (let k = 0; k < modes.length; k += 1) {
-          const mode = modes[k]
+        for (const mode of modes) {
           if (mode && placeA && placeB) {
             const placesA = Object.keys(placeA[mode] || {})
 
@@ -62,6 +60,6 @@ getAll("pathfinding")
 
     return `The furthest apart points are ${furthestA} and ${furthestB} at ${furthest}`
   })
-  .catch(e => {
-    console.error("error fetching pathfinding data", e)
+  .catch(error => {
+    console.error("error fetching pathfinding data", error)
   })

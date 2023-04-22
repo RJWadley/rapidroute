@@ -1,5 +1,4 @@
 import { Index } from "flexsearch-ts"
-
 import { Member } from "types/memberList"
 
 const memberListURL =
@@ -16,16 +15,14 @@ fetch(memberListURL)
   .then((data: Member[]) => {
     data.forEach(member => {
       const name = member.Username.toString()
-      searchWorker?.add(name, name)
+      searchWorker.add(name, name)
     })
   })
   .catch(console.error)
 
 export default function searchForPlayer(query: string) {
-  const results = searchWorker.search(query, {
+  return searchWorker.search(query, {
     suggest: true,
     limit: 5,
   })
-
-  return results
 }

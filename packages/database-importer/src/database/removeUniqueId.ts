@@ -7,8 +7,8 @@ export type RemoveUniqueId<T> = Omit<T, "uniqueId">
  * recursively remove all uniqueId keys from an object type
  * output type of removeUniqueId
  */
-export type DeepRemoveUniqueId<T> = T extends Array<infer U>
-  ? Array<DeepRemoveUniqueId<U>>
+export type DeepRemoveUniqueId<T> = T extends (infer U)[]
+  ? DeepRemoveUniqueId<U>[]
   : T extends Record<string, unknown>
   ? { [K in keyof RemoveUniqueId<T>]: DeepRemoveUniqueId<T[K]> }
   : T

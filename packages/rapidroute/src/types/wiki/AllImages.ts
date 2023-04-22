@@ -14,9 +14,7 @@ export interface Query {
   pages: Pages
 }
 
-export interface Pages {
-  [key: string]: Missing | Found
-}
+export type Pages = Record<string, Missing | Found>
 
 export interface Missing {
   ns: number

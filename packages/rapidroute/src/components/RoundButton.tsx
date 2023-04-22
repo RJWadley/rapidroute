@@ -1,5 +1,4 @@
 import styled from "styled-components"
-
 import UniversalLink, { UniversalLinkProps } from "utils/Loader/UniversalLink"
 import media from "utils/media"
 

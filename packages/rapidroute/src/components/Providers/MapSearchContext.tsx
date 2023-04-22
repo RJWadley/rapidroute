@@ -1,3 +1,5 @@
+import { getAll } from "data/getData"
+import { search } from "data/search"
 import {
   createContext,
   ReactNode,
@@ -6,9 +8,6 @@ import {
   useRef,
   useState,
 } from "react"
-
-import { getAll } from "data/getData"
-import { search } from "data/search"
 import { getLocal, setLocal } from "utils/localUtils"
 
 export const MapSearchContext = createContext<{
@@ -47,7 +46,7 @@ export function MapSearchProvider({
         .then(index => {
           setActiveItem(
             index[id]?.uniqueId ??
-              search(id).filter(x => x !== "Current Location")[0] ??
+              search(id).find(x => x !== "Current Location") ??
               id
           )
         })

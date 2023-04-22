@@ -62,8 +62,8 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
     if (a.length !== b.length) return false
 
     // compare each element
-    for (let i = 0; i < a.length; i += 1) {
-      if (!deepCompare(a[i], b[i])) return false
+    for (const [i, element] of a.entries()) {
+      if (!deepCompare(element, b[i])) return false
     }
 
     // if we made it this far, they are equal
@@ -75,7 +75,7 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
     // compare each value
     const allKeys = new Set([...Object.keys(a), ...Object.keys(b)])
     let equal = true
-    Array.from(allKeys).forEach(key => {
+    ;[...allKeys].forEach(key => {
       if (!deepCompare(a[key], b[key])) equal = false
     })
 

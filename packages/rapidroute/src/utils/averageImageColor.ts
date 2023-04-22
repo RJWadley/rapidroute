@@ -10,7 +10,7 @@ export default function averageImageHSL(
     const img = new Image()
     img.crossOrigin = "Anonymous"
     img.src = imageURL
-    img.onload = () => {
+    img.addEventListener("load", () => {
       const canvas = document.createElement("canvas")
       canvas.width = img.width
       canvas.height = img.height
@@ -30,7 +30,7 @@ export default function averageImageHSL(
       const avg = [r / data.length, g / data.length, b / data.length]
       const hue = rgbToHsl(avg[0] ?? 0, avg[1] ?? 0, avg[2] ?? 0)
       return resolve(hue)
-    }
+    })
     img.onerror = err => {
       reject(err)
     }
@@ -61,9 +61,11 @@ const rgbToHsl = (
       case r:
         h = (g - b) / d + (g < b ? 6 : 0)
         break
+
       case g:
         h = (b - r) / d + 2
         break
+
       case b:
       default:
         h = (r - g) / d + 4

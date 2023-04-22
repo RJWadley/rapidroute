@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from "react"
-
+import RoundButton from "components/RoundButton"
 import gsap from "gsap"
+import { useEffect, useRef, useState } from "react"
 import { useClickAway, useLocation } from "react-use"
 import styled from "styled-components"
-
-import RoundButton from "components/RoundButton"
 import UniversalLink from "utils/Loader/UniversalLink"
 import { getLocal } from "utils/localUtils"
 import media from "utils/media"

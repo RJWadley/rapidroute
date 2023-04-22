@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { MojangUUIDResponse } from "types/Mojang"
 
 const fallbackUUID = "ec561538-f3fd-461d-aff5-086b22154bce"

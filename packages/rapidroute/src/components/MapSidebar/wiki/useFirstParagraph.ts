@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { ExtractResponse } from "types/wiki/ExtractQuery"
 
 import { WIKI_URL } from "./urls"

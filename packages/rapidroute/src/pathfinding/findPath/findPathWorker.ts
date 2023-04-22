@@ -1,5 +1,4 @@
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
-
 import { expose } from "utils/promise-worker"
 
 import Pathfinder from "."
@@ -20,9 +19,7 @@ export async function findPath(
 
   pathfinderInstance = new Pathfinder(from, to, allowedModes)
 
-  const result = await pathfinderInstance.start()
-
-  return result
+  return await pathfinderInstance.start()
 }
 
 const workerFunctions = { findPath, initPathfinder }

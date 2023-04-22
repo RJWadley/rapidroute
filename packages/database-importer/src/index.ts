@@ -2,9 +2,9 @@
 import { saveDatabase, setupDatabase } from "./database/database"
 import updateHashes from "./database/updateHashes"
 import {
+  afterLocationUpdate,
   beforeLocationUpdate,
   setLocation,
-  afterLocationUpdate,
 } from "./database/updateLocation"
 import {
   afterProviderUpdate,

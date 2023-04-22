@@ -24,7 +24,7 @@ const useInterval = (callback: Callback, delay?: number | null) => {
       }
     }
 
-    return undefined
+    return
   }, [delay])
 }
 

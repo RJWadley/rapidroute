@@ -36,8 +36,8 @@ type SafeForDatabase<T> = T extends Record<string | number | symbol, unknown>
   ? {
       [K in keyof T]: SafeForDatabase<T[K]>
     }
-  : T extends Array<unknown>
-  ? Array<SafeForDatabase<T[number]>>
+  : T extends unknown[]
+  ? SafeForDatabase<T[number]>[]
   : T extends undefined
   ? null
   : T

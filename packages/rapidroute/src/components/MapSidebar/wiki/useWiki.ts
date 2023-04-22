@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { getTextboxName } from "data/search"
 import { WikiResponse } from "types/wiki/PageSearch"
 

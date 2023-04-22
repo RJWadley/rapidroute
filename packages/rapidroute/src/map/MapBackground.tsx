@@ -1,7 +1,5 @@
 import { useRef } from "react"
-
 import styled from "styled-components"
-
 import useWindowSize from "utils/useWindowSize"
 
 export default function MapBackground() {

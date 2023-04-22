@@ -1,7 +1,6 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
 import { get, getDatabase, ref } from "firebase/database"
-
 import { isBrowser } from "utils/functions"
 import { expose } from "utils/promise-worker"
 

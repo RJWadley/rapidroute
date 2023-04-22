@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { City } from "types/cityList"
 
 const citiesURL =

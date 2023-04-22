@@ -1,10 +1,8 @@
-import { useContext, useEffect, useRef, useState } from "react"
-
 import { RouteMode, shortHandMap } from "@rapidroute/database-types"
-import gsap from "gsap"
-import styled, { css } from "styled-components"
-
 import { RoutingContext } from "components/Providers/RoutingContext"
+import gsap from "gsap"
+import { useContext, useEffect, useRef, useState } from "react"
+import styled, { css } from "styled-components"
 
 export default function AllowedModes() {
   const { allowedModes, setAllowedModes } = useContext(RoutingContext)
@@ -72,16 +70,22 @@ const getModeDisplayName = (mode: RouteMode) => {
   switch (mode) {
     case "MRT":
       return "MRT"
+
     case "flight":
       return "Flight"
+
     case "heli":
       return "Helicopter"
+
     case "seaplane":
       return "Seaplane"
+
     case "spawnWarp":
       return "Warps"
+
     case "walk":
       return "Walk"
+
     default:
       return "Missing Name"
   }

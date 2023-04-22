@@ -9,9 +9,9 @@ const easySpeechAvailable = new Promise<boolean>(resolve => {
       .then(() => {
         resolve(true)
       })
-      .catch(e => {
+      .catch(error => {
         // easy speech will fail if there are no voices
-        console.error(e)
+        console.error(error)
         resolve(false)
       })
   }
@@ -27,7 +27,7 @@ export interface UniversalVoice {
   default?: boolean
 }
 
-export const getVoices = async (lang: string = "en") => {
+export const getVoices = async (lang = "en") => {
   const useEasySpeech = await easySpeechAvailable
   const voices: UniversalVoice[] = tikVoices
     .filter(voice => voice.lang.startsWith(lang))
@@ -41,9 +41,9 @@ export const getVoices = async (lang: string = "en") => {
     }))
 
   // (English (US)) or (English US)
-  const parenthesisLanguage = /\([\w\s]+\(?(\w+)\)?\)/
-  const dashLanguage = /[eE][Nn]-(\w\w)-?/
-  const simpleLanguage = /U[SK]/
+  const parenthesisLanguage = /\([\s\w]+\(?(\w+)\)?\)/
+  const dashLanguage = /[Ee][Nn]-(\w\w)-?/
+  const simpleLanguage = /U[KS]/
   const countryNames = {
     US: /\(?United States\)?/,
     UK: /\(?United Kingdom\)?/,
@@ -130,8 +130,7 @@ export const getDefaultVoice = async () => {
   const bestOption = allVoices.find(v => v.name === preferredVoice)
   if (bestOption) return bestOption
 
-  for (let i = 0; i < fallbackDefaults.length; i += 1) {
-    const searchFor = fallbackDefaults[i]
+  for (const searchFor of fallbackDefaults) {
     const fallbackOption = allVoices.find(
       v => searchFor && v.name.includes(searchFor)
     )
@@ -154,15 +153,13 @@ export const speak = async (text: string): Promise<void> => {
   cancelTikSpeak()
   if (await easySpeechAvailable) EasySpeech.cancel()
 
-  if (voiceToUse?.source === "tik") {
-    await tikSpeak(text, voiceToUse.id.slice(1), speechRate)
-  } else {
-    await EasySpeech.speak({
-      text,
-      voice: voiceToUse?.speechSynthesisVoice,
-      rate: speechRate,
-    })
-  }
+  await (voiceToUse?.source === "tik"
+    ? tikSpeak(text, voiceToUse.id.slice(1), speechRate)
+    : EasySpeech.speak({
+        text,
+        voice: voiceToUse?.speechSynthesisVoice,
+        rate: speechRate,
+      }))
 }
 
 export const getVoiceById = async (id: string) => {

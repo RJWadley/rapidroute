@@ -1,8 +1,6 @@
-import { useEffect, useRef } from "react"
-
 import gsap from "gsap"
+import { useEffect, useRef } from "react"
 import styled, { keyframes } from "styled-components"
-
 import media from "utils/media"
 
 export default function Spinner({

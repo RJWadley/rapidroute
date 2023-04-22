@@ -1,8 +1,8 @@
 import "the-new-css-reset/css/reset.css"
-import { ReactNode } from "react"
 
 import PageTransition from "components/PageTransition"
 import Providers from "components/Providers"
+import { ReactNode } from "react"
 
 export const wrapRootElement = ({ element }: { element: ReactNode }) => {
   return <Providers>{element}</Providers>

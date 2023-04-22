@@ -39,8 +39,8 @@ export interface MarkerSet {
   circles: Circles
   areas: Areas
   label: string
-  markers: { [key: string]: Marker }
-  lines: { [key: string]: LineType }
+  markers: Record<string, Marker>
+  lines: Record<string, LineType>
   layerprio: number
 }
 

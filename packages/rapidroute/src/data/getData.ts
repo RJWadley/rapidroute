@@ -1,12 +1,11 @@
 /*  eslint-disable no-console */
 import {
-  Hashes,
-  databaseTypeGuards,
-  Location,
   DatabaseDataKeys,
+  databaseTypeGuards,
   DataDatabaseType,
+  Hashes,
+  Location,
 } from "@rapidroute/database-types"
-
 import { setShowOfflineBanner } from "components/OfflineBanner"
 import { isBrowser, sleep } from "utils/functions"
 import isObject from "utils/isObject"
@@ -35,8 +34,8 @@ const oneHashes = getLocal("oneHash") ?? defaultHashes
 const allHashes = getLocal("allHash") ?? defaultHashes
 
 const firebaseWorkerRaw = (async () => {
-  if (!isBrowser()) return undefined
-  const worker = new Worker(new URL("./firebase.ts", import.meta.url))
+  if (!isBrowser()) return
+  const worker = new Worker(new URL("firebase.ts", import.meta.url))
   return wrap<FirebaseWorkerFunctions>(worker)
 })()
 
@@ -137,7 +136,7 @@ export async function getPath<T extends DatabaseDataKeys>(
   }
   const timeout = setTimeout(() => {
     setShowOfflineBanner(true)
-  }, 10000)
+  }, 10_000)
   fetchingPaths.push(`${type}/${itemName}`)
   const done = () => {
     fetchingPaths.splice(fetchingPaths.indexOf(`${type}/${itemName}`), 1)
@@ -198,13 +197,13 @@ export async function getPath<T extends DatabaseDataKeys>(
     }
     console.log("guard failed", type, output)
   }
-  if (hash !== oneHashes[type]) {
+  if (hash === oneHashes[type]) {
+    console.log("cache miss", type, itemName)
+  } else {
     console.log("hash mismatch", type, itemName)
 
     // clear the cache
     databaseCache[type] = {}
-  } else {
-    console.log("cache miss", type, itemName)
   }
 
   const path = await getPathFromDatabase(type, itemName)
@@ -225,7 +224,7 @@ export async function getAll<T extends DatabaseDataKeys>(
   fetchingPaths.push(type)
   const timeout = setTimeout(() => {
     setShowOfflineBanner(true)
-  }, 10000)
+  }, 10_000)
   const done = () => {
     fetchingPaths.splice(fetchingPaths.indexOf(type), 1)
     clearTimeout(timeout)
@@ -251,13 +250,13 @@ export async function getAll<T extends DatabaseDataKeys>(
     done()
     return output
   }
-  if (hash !== allHashes[type]) {
+  if (hash === allHashes[type]) {
+    console.log("cache miss", type)
+  } else {
     console.log("hash mismatch", type)
 
     // clear the cache
     databaseCache[type] = {}
-  } else {
-    console.log("cache miss", type)
   }
 
   const data = await getAllFromDatabase(type)

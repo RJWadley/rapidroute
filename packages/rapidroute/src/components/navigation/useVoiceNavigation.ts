@@ -1,8 +1,4 @@
-import { useContext, useEffect, useRef } from "react"
-
 import { PlaceType } from "@rapidroute/database-types"
-import { useDeepCompareMemo } from "use-deep-compare"
-
 import AlertMP3 from "assets/audio/alert.mp3"
 import CompleteMP3 from "assets/audio/complete.mp3"
 import NeutralMP3 from "assets/audio/neutral.mp3"
@@ -10,6 +6,8 @@ import SuccessMP3 from "assets/audio/success.mp3"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { SegmentType } from "components/Segment/createSegments"
 import { stopToNumber } from "components/Segment/getLineDirections"
+import { useContext, useEffect, useRef } from "react"
+import { useDeepCompareMemo } from "use-deep-compare"
 import { isBrowser, sleep } from "utils/functions"
 import { getLocal } from "utils/localUtils"
 import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
@@ -39,12 +37,15 @@ export const playSound = (
     case "alert":
       audio.src = AlertMP3
       break
+
     case "complete":
       audio.src = CompleteMP3
       break
+
     case "neutral":
       audio.src = NeutralMP3
       break
+
     default:
       audio.src = SuccessMP3
       break
@@ -84,7 +85,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     updateVoice()
 
     await sleep(100)
-    if (!route.length || !isBrowser()) return
+    if (route.length === 0 || !isBrowser()) return
 
     const firstSegment = route[0]
     const nextSegment = route[1]
@@ -120,8 +121,8 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     } else if (firstInstruction) {
       speak(firstInstruction).catch(console.error)
     }
-  }, [route]).catch(e => {
-    console.error("Error in voice navigation", e)
+  }, [route]).catch(error => {
+    console.error("Error in voice navigation", error)
   })
 
   /**
@@ -138,7 +139,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     }
   }, [navigationComplete, spokenRoute.length]).catch(console.error)
   useEffect(() => {
-    if (route.length)
+    if (route.length > 0)
       youHaveReached.current = `You have reached ${
         route[route.length - 1]?.to.shortName ?? ""
       }, ${route[route.length - 1]?.to.name ?? "your destination"}`
@@ -159,30 +160,24 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     const destinationNumber = stopToNumber(firstSpoken?.to.uniqueId)
 
     // for MRT lines
-    if (firstSpoken && firstCurrent) {
-      // we are still going to the same stop
-      if (firstSpoken.to.uniqueId === firstCurrent.to.uniqueId) {
-        // and are still on the same line
-        if (spokenProvider === currentProvider) {
-          // and we are still within the bounds of the route we spoke
-          if (
-            (spokenNumber < currentNumber &&
-              currentNumber < destinationNumber) ||
-            (spokenNumber > currentNumber && currentNumber > destinationNumber)
-          ) {
-            // the spoken route is still valid
-            return
-          }
-        }
-      }
+    if (
+      firstSpoken &&
+      firstCurrent && // we are still going to the same stop
+      firstSpoken.to.uniqueId === firstCurrent.to.uniqueId && // and are still on the same line
+      spokenProvider === currentProvider && // and we are still within the bounds of the route we spoke
+      ((spokenNumber < currentNumber && currentNumber < destinationNumber) ||
+        (spokenNumber > currentNumber && currentNumber > destinationNumber))
+    ) {
+      // the spoken route is still valid
+      return
     }
 
     const distanceBetweenLocs = Math.sqrt(
-      ((firstSpoken?.to?.location?.x ?? Infinity) -
-        (firstCurrent?.from?.location?.x ?? Infinity)) **
+      ((firstSpoken?.to.location?.x ?? Infinity) -
+        (firstCurrent?.from.location?.x ?? Infinity)) **
         2 +
-        ((firstSpoken?.to?.location?.z ?? Infinity) -
-          (firstCurrent?.from?.location?.z ?? Infinity)) **
+        ((firstSpoken?.to.location?.z ?? Infinity) -
+          (firstCurrent?.from.location?.z ?? Infinity)) **
           2
     )
 

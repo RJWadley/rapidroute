@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react"
-
 import gsap from "gsap"
 import { ScrollToPlugin } from "gsap/all"
+import { useEffect, useMemo, useRef, useState } from "react"
 import usePromise from "react-use-promise"
 import styled, { css } from "styled-components"
-
 import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 import {
   getDefaultVoice,
@@ -60,7 +58,7 @@ export default function VoiceSetting() {
     const voiceForName = voice === "default" ? bestVoice : voice
     if (voiceForName)
       speak(`Hi, my name is ${voiceForName.name
-        .replaceAll(/\([\s\S]+\)/g, "")
+        .replaceAll(/\([\S\s]+\)/g, "")
         .replace("C3PO", "C3P-O")}.
     This is what I'll sound like when I'm helping you find your way around on the Mine cart Rapid Transit Server.`).catch(
         console.error

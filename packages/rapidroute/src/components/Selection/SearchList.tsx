@@ -1,17 +1,15 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
-
 import { SearchIndex } from "@rapidroute/database-types"
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getAll } from "data/getData"
 import isCoordinate from "data/isCoordinate"
 import { search } from "data/search"
+import gsap from "gsap"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
-type SearchListProps = {
+interface SearchListProps {
   searchRole: "from" | "to"
   searchFor: string
   show: boolean
@@ -44,8 +42,8 @@ export default function SearchList({
       .then(data => {
         setAllLocations(Object.values(data))
       })
-      .catch(e => {
-        console.error("error getting all locations", e)
+      .catch(error => {
+        console.error("error getting all locations", error)
         setAllLocations([])
       })
   }, [])
@@ -82,11 +80,8 @@ export default function SearchList({
   const previousWasInput = useRef(false)
   useEffect(() => {
     const onFocusChange = () => {
-      if (document.activeElement?.tagName === "TEXTAREA") {
-        previousWasInput.current = true
-      } else {
-        previousWasInput.current = false
-      }
+      previousWasInput.current =
+        document.activeElement?.tagName === "TEXTAREA" ? true : false
     }
     window.addEventListener("focusin", onFocusChange)
     return () => {
@@ -98,17 +93,7 @@ export default function SearchList({
     const duration =
       currentActiveIsInput && previousWasInput.current ? 0.001 : 0.5
     if (show) setHighlightedIndex(0)
-    if (!isMobile)
-      gsap.to(wrapper.current, {
-        height: show ? "auto" : 0,
-        pointerEvents: show ? "auto" : "none",
-        y: show ? 0 : -60,
-        borderTopLeftRadius: show ? 0 : 30,
-        borderTopRightRadius: show ? 0 : 30,
-        duration,
-        ease: show ? "power3.out" : "power3.inOut",
-      })
-    else
+    if (isMobile) {
       gsap.to(wrapper.current, {
         height: show ? "auto" : 0,
         pointerEvents: show ? "auto" : "none",
@@ -118,6 +103,17 @@ export default function SearchList({
         duration,
         ease: show ? "power3.out" : "power3.inOut",
       })
+    } else {
+      gsap.to(wrapper.current, {
+        height: show ? "auto" : 0,
+        pointerEvents: show ? "auto" : "none",
+        y: show ? 0 : -60,
+        borderTopLeftRadius: show ? 0 : 30,
+        borderTopRightRadius: show ? 0 : 30,
+        duration,
+        ease: show ? "power3.out" : "power3.inOut",
+      })
+    }
   }, [isMobile, show])
 
   const setPlace = useCallback(

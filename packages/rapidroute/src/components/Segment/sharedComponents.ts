@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components"
-
 import invertLightness from "utils/invertLightness"
 
 export const Wrapper = styled.div<{

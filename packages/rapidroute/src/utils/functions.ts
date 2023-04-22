@@ -18,16 +18,14 @@ export const addDebouncedEventListener = (
 
 export const vwToPx = (vw: number) => {
   if (isBrowser()) {
-    const px = vw * (window.innerWidth / 100)
-    return px
+    return vw * (window.innerWidth / 100)
   }
   return 0
 }
 
 export const vhToPx = (vh: number) => {
   if (isBrowser()) {
-    const px = vh * (window.innerHeight / 100)
-    return px
+    return vh * (window.innerHeight / 100)
   }
   return 0
 }

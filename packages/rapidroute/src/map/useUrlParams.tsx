@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-
 import { getLocal, setLocal } from "utils/localUtils"
 
 import { useViewport, useViewportMoved } from "./PixiViewport"

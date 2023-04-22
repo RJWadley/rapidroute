@@ -1,8 +1,6 @@
-import { useState } from "react"
-
-import { useDeepCompareMemo } from "use-deep-compare"
-
 import { getDistance } from "pathfinding/findPath/pathUtil"
+import { useState } from "react"
+import { useDeepCompareMemo } from "use-deep-compare"
 
 import { Marker } from "./markersType"
 import MRTStop from "./MRTStop"
@@ -57,7 +55,7 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
         existingStop.combinedColors ||= [
           existingStop.singleColors[0] ?? "#000000",
         ]
-        existingStop.combinedColors?.push(newStop.color)
+        existingStop.combinedColors.push(newStop.color)
       } else {
         newStops.push({
           x: newStop.marker.x,
@@ -91,7 +89,7 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 }
 
 const getStopName = (markers: Marker[]) => {
-  const namedRegex = /^([\S\s ]+)\((\w\w?\d*)\)$/
+  const namedRegex = /^([\S\s]+)\((\w\w?\d*)\)$/
   const unnamedRegex = /^(\w\w?\d+) Station$/
   if (markers.every(marker => namedRegex.test(marker.label))) {
     const stationName = markers[0]?.label.match(namedRegex)?.[1]?.trim()
@@ -99,7 +97,7 @@ const getStopName = (markers: Marker[]) => {
       marker => marker.label.match(namedRegex)?.[2]
     )
 
-    if (stationName && stationCodes.every(code => code))
+    if (stationName && stationCodes.every(Boolean))
       return `${stationName}\n${stationCodes.join(" - ")}`
   }
 
@@ -111,7 +109,7 @@ const getStopName = (markers: Marker[]) => {
       marker => marker.label.match(unnamedRegex)?.[1]
     )
 
-    if (stationCodes.every(code => code)) return `${stationCodes.join(" - ")}`
+    if (stationCodes.every(Boolean)) return `${stationCodes.join(" - ")}`
   }
 
   return markers.map(marker => marker.label).join("\n")

@@ -1,8 +1,6 @@
-import { useContext } from "react"
-
-import styled from "styled-components"
-
 import { darkModeContext } from "components/Providers/DarkMode"
+import { useContext } from "react"
+import styled from "styled-components"
 import { useImageHSL } from "utils/averageImageColor"
 import UniversalLink from "utils/Loader/UniversalLink"
 import { getLocal } from "utils/localUtils"

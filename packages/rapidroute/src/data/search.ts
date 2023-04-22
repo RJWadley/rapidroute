@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react"
-
 import { Index } from "flexsearch-ts"
+import { useEffect, useState } from "react"
 
 import { getAll } from "./getData"
 
@@ -36,12 +35,12 @@ export function search(query: string) {
 
   results = [...new Set([...strictMatches, ...results])]
 
-  if (results.length && "central city".startsWith(query.toLowerCase())) {
+  if (results.length > 0 && "central city".startsWith(query.toLowerCase())) {
     results = results.filter(x => x !== "Spawn")
     results = ["Spawn", ...results]
   }
 
-  if (/\d+[, ]+\d+/g.test(query)) {
+  if (/\d+[ ,]+\d+/g.test(query)) {
     const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]
     results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
   }
@@ -49,7 +48,7 @@ export function search(query: string) {
   if (
     (query && query.length < 2) ||
     /cur|loca/.test(query) ||
-    (results.length < 1 && query.length > 2)
+    (results.length === 0 && query.length > 2)
   ) {
     results.unshift("Current Location")
   }

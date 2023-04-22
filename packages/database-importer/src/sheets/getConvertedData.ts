@@ -1,9 +1,9 @@
 import {
   Location,
+  PlaceType,
   Provider,
   Route,
   RouteLocations,
-  PlaceType,
 } from "@rapidroute/database-types"
 
 import getLegacyData from "./getSheetData"
@@ -25,7 +25,7 @@ const makeKeySafe = (str: string) => {
     .replace(/#/g, "_2")
     .replace(/\$/g, "_3")
     .replace(/\[/g, "_4")
-    .replace(/\]/g, "_5")
+    .replace(/]/g, "_5")
     .replace(/\//g, "_6")
     .replace(/\\/g, "_7")
     .replace(/ /g, "_")
@@ -62,7 +62,7 @@ export default async function getConvertedData() {
 
       // if we've already seen this route, ignore it the second time
       if (routesToIgnore.includes(routeId)) {
-        return undefined
+        return
       }
       routesToIgnore.push(routeId)
 
@@ -145,10 +145,7 @@ export default async function getConvertedData() {
           const placeA = y.from > y.to ? y.to : y.from
           const placeB = y.from > y.to ? y.from : y.to
           const provider = y.provider ?? `unknown${y.from}${y.to}`
-          const routeId = makeKeySafe(
-            `${provider}-${y.number ?? placeA + placeB}`
-          )
-          return routeId
+          return makeKeySafe(`${provider}-${y.number ?? placeA + placeB}`)
         })
         .filter((value, index, self) => self.indexOf(value) === index),
     }

@@ -1,16 +1,14 @@
 /* eslint-disable no-console */
-import { ReactNode, useContext, useEffect, useState } from "react"
-
+import useFollowedRoute from "components/navigation/useFollowedRoute"
+import useNavigation from "components/navigation/useNavigation"
+import { NavigationContext } from "components/Providers/NavigationContext"
 import gsap from "gsap"
 import Flip from "gsap/Flip"
 import ScrollToPlugin from "gsap/ScrollToPlugin"
 import ScrollTrigger from "gsap/ScrollTrigger"
+import { ReactNode, useContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import { useDeepCompareEffect } from "use-deep-compare"
-
-import useFollowedRoute from "components/navigation/useFollowedRoute"
-import useNavigation from "components/navigation/useNavigation"
-import { NavigationContext } from "components/Providers/NavigationContext"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
@@ -156,12 +154,12 @@ export default function NavigationSidebar() {
           window.innerHeight * 0.6
 
     const getOverlayOffset = () => {
-      if ("windowControlsOverlay" in navigator) {
-        if (navigator.windowControlsOverlay?.visible) {
-          const { height } =
-            navigator.windowControlsOverlay.getTitlebarAreaRect()
-          return height
-        }
+      if (
+        "windowControlsOverlay" in navigator &&
+        navigator.windowControlsOverlay?.visible
+      ) {
+        const { height } = navigator.windowControlsOverlay.getTitlebarAreaRect()
+        return height
       }
       return 0
     }
@@ -182,7 +180,7 @@ export default function NavigationSidebar() {
         })
     }
     const timeout = setTimeout(updateScroll, 3000)
-    const interval = setInterval(updateScroll, 15000)
+    const interval = setInterval(updateScroll, 15_000)
     return () => {
       clearInterval(interval)
       clearTimeout(timeout)

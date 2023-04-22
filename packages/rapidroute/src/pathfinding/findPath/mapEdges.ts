@@ -1,8 +1,8 @@
 import {
+  Pathfinding,
   RouteMode,
   shortHandMap,
   shortHandMapKeys,
-  Pathfinding,
 } from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
@@ -17,7 +17,7 @@ export interface GraphEdge {
   sortWeight?: number
 }
 
-const isMRT = (id: string) => id.match(/^[a-zA-Z]{1,2}\d{1,3}$/g)
+const isMRT = (id: string) => id.match(/^[A-Za-z]{1,2}\d{1,3}$/g)
 
 export const rawEdges: GraphEdge[] = []
 export const pathfindingIndex: Pathfinding = {}
@@ -75,54 +75,54 @@ export const generateRawEdges = (data: Pathfinding) => {
   const walkingEdges: GraphEdge[] = edgeIds.flatMap(from => {
     const x1 = data[from]?.x
     const y1 = data[from]?.z
-    const closestWalks = edgeIds
-      .filter(to => to !== from)
-      .map(to => {
-        const x2 = data[to]?.x
-        const y2 = data[to]?.z
-        const distance =
-          x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
-        return { to, distance }
-      })
-      // filter out MRT stops on the same line unless the from is out of service
-      .filter(({ to }) => {
-        if (!data[from]?.M) return true
-        if (from.charAt(0) === to.charAt(0)) return false
-        return true
-      })
-      .sort((a, b) => a.distance - b.distance)
-      // only include locations which have at least one route available at them
-      .filter(({ to }, i) => {
-        if (i === 0) return true // keep the closest location regardless
-        const shortTypes = shortHandMapKeys
-        return shortTypes.some(routeTypeShort => {
-          const routes = data[to]?.[routeTypeShort]
-          return !!routes && !routes[from]
+    return (
+      edgeIds
+        .filter(to => to !== from)
+        .map(to => {
+          const x2 = data[to]?.x
+          const y2 = data[to]?.z
+          const distance =
+            x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
+          return { to, distance }
         })
-      })
-      .slice(0, 5)
-      .flatMap(({ to, distance }) => {
-        const weight = getRouteTime(distance, "walk")
+        // filter out MRT stops on the same line unless the from is out of service
+        .filter(({ to }) => {
+          if (!data[from]?.M) return true
+          if (from.charAt(0) === to.charAt(0)) return false
+          return true
+        })
+        .sort((a, b) => a.distance - b.distance)
+        // only include locations which have at least one route available at them
+        .filter(({ to }, i) => {
+          if (i === 0) return true // keep the closest location regardless
+          const shortTypes = shortHandMapKeys
+          return shortTypes.some(routeTypeShort => {
+            const routes = data[to]?.[routeTypeShort]
+            return !!routes && !routes[from]
+          })
+        })
+        .slice(0, 5)
+        .flatMap(({ to, distance }) => {
+          const weight = getRouteTime(distance, "walk")
 
-        const mode: RouteMode =
-          isMRT(from) &&
-          isMRT(to) &&
-          getDistance(
-            data[from]?.x ?? Infinity,
-            data[from]?.z ?? Infinity,
-            data[to]?.x ?? Infinity,
-            data[to]?.z ?? Infinity
-          ) < 200
-            ? "MRT"
-            : "walk"
+          const mode: RouteMode =
+            isMRT(from) &&
+            isMRT(to) &&
+            getDistance(
+              data[from]?.x ?? Infinity,
+              data[from]?.z ?? Infinity,
+              data[to]?.x ?? Infinity,
+              data[to]?.z ?? Infinity
+            ) < 200
+              ? "MRT"
+              : "walk"
 
-        return [
-          { from, to, weight, mode } as const,
-          { to: from, from: to, weight, mode } as const,
-        ]
-      })
-
-    return closestWalks
+          return [
+            { from, to, weight, mode } as const,
+            { to: from, from: to, weight, mode } as const,
+          ]
+        })
+    )
   })
 
   // spawn warp edges

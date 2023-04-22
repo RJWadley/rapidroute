@@ -33,6 +33,6 @@ export default class PriorityQueue<T> {
   }
 
   isEmpty(): boolean {
-    return !this.nodes.length
+    return this.nodes.length === 0
   }
 }

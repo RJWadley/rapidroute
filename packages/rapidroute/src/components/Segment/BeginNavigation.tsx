@@ -1,10 +1,8 @@
-import { useContext } from "react"
-
-import styled from "styled-components"
-
 import { NavigationContext } from "components/Providers/NavigationContext"
 import RoundButton from "components/RoundButton"
 import { SegmentType } from "components/Segment/createSegments"
+import { useContext } from "react"
+import styled from "styled-components"
 import invertLightness from "utils/invertLightness"
 import { loadPage } from "utils/Loader/TransitionUtils"
 

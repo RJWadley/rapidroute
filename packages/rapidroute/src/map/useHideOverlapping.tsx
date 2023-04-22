@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react"
-
 import {
-  Rectangle,
-  Ticker,
   Container as PixiContainer,
+  Rectangle,
   Sprite as PixiSprite,
   Text as PixiText,
+  Ticker,
 } from "pixi.js"
-
+import { useEffect, useRef, useState } from "react"
 import { isBrowser } from "utils/functions"
 import { wrap } from "utils/promise-worker"
 import useInterval from "utils/useInterval"
@@ -19,7 +17,7 @@ import { useViewport } from "./PixiViewport"
 type ObjectType = PixiText | PixiSprite | PixiContainer
 let updateNeeded = false
 
-type OverlappingProperties = {
+interface OverlappingProperties {
   name: string
   item: ObjectType
   priority: number
@@ -127,16 +125,15 @@ export default function useHideOverlapping({
  * @returns rectangle of the bounds
  */
 const getWorldBounds = (item: ObjectType): Rectangle => {
-  const x = item.localTransform?.tx ?? 0
-  const y = item.localTransform?.ty ?? 0
-  const localBounds = item.getLocalBounds?.() ?? new Rectangle(0, 0, 0, 0)
-  const transformedBounds = new Rectangle(
+  const x = item.localTransform.tx ?? 0
+  const y = item.localTransform.ty ?? 0
+  const localBounds = item.getLocalBounds() ?? new Rectangle(0, 0, 0, 0)
+  return new Rectangle(
     x + localBounds.x,
     y + localBounds.y,
     localBounds.width,
     localBounds.height
   )
-  return transformedBounds
 }
 
 export function useUpdateOverlapping() {
@@ -149,7 +146,7 @@ export function useUpdateOverlapping() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       inFirstTenSeconds.current = false
-    }, 10000)
+    }, 10_000)
     return () => clearTimeout(timeout)
   }, [])
 
@@ -209,10 +206,8 @@ export function useUpdateOverlapping() {
 }
 
 const overlappingWorkerRaw = (async () => {
-  if (!isBrowser()) return undefined
-  const worker = new Worker(
-    new URL("./getAllCullDistances.ts", import.meta.url)
-  )
+  if (!isBrowser()) return
+  const worker = new Worker(new URL("getAllCullDistances.ts", import.meta.url))
   return wrap<CullWorkerFunctions>(worker)
 })()
 

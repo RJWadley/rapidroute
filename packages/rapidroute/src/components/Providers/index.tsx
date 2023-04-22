@@ -1,6 +1,5 @@
-import { ReactNode } from "react"
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactNode } from "react"
 
 import { DarkModeProvider } from "./DarkMode"
 import { MapSearchProvider } from "./MapSearchContext"

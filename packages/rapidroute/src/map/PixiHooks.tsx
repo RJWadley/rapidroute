@@ -1,5 +1,4 @@
 import { useApp } from "@pixi/react"
-
 import { isBrowser } from "utils/functions"
 
 import useDoubleTapZoom from "./useDoubleTapZoom"

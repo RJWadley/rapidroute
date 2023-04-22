@@ -1,19 +1,17 @@
-import { useContext, useEffect } from "react"
-
-import ImageGallery from "react-image-gallery"
-import styled, { keyframes } from "styled-components"
+import "react-image-gallery/styles/css/image-gallery.css"
 
 import { darkModeContext } from "components/Providers/DarkMode"
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { defaultPadding } from "map/zoomCamera"
+import { useContext, useEffect } from "react"
+import ImageGallery from "react-image-gallery"
+import styled, { keyframes } from "styled-components"
 import { setLocal } from "utils/localUtils"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
 import InfoBox from "./wiki/InfoBox"
 import useWiki from "./wiki/useWiki"
-
-import "react-image-gallery/styles/css/image-gallery.css"
 
 export default function ItemInformation() {
   const { activeItem } = useContext(MapSearchContext)

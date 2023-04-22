@@ -1,13 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-param-reassign */
-import { useContext } from "react"
-
 import { useQuery } from "@tanstack/react-query"
-import { gsap } from "gsap"
-import styled, { keyframes } from "styled-components"
-
 import { darkModeContext } from "components/Providers/DarkMode"
+import { gsap } from "gsap"
+import { useContext } from "react"
+import styled, { keyframes } from "styled-components"
 import { InfoBoxType } from "types/wiki/InfoBoxType"
 import { isBrowser } from "utils/functions"
 import { rgb2hex } from "utils/hslToHex"
@@ -34,11 +32,11 @@ export default function InfoBox({ title }: { title: string | undefined }) {
 
   // because we need computed styles, we have to do text color inversion in an effect
   useAnimation(() => {
-    const allChildren = Array.from(
-      document.querySelectorAll(
+    const allChildren = [
+      ...document.querySelectorAll(
         ".infobox-wrap tr > * > *, .infobox-wrap tr > * > *:not([style*='background']) > *:not([style*='background'])"
-      )
-    ).flatMap(child => (child instanceof HTMLElement ? [child] : []))
+      ),
+    ].flatMap(child => (child instanceof HTMLElement ? [child] : []))
     // filter out any children with a background color
     const noBackgrounds = allChildren.filter(
       child => !child.style.backgroundColor
@@ -49,7 +47,7 @@ export default function InfoBox({ title }: { title: string | undefined }) {
       const asHex = rgb2hex(color)
 
       // get the lightness
-      const [, , lightness] = hexToHSL(asHex)
+      const lightness = hexToHSL(asHex)[2]
 
       if (lightness) {
         if (isDark && lightness < 0.51) {
@@ -86,7 +84,7 @@ const parseInfoBox = (data: InfoBoxType) => {
   // find any trs with exactly two ths, where the first th says ft and the second m
   // add the feetAndMeters class to that tr
   // this is for airports that list runway lengths
-  const twoThs = Array.from(newBox?.querySelectorAll("tr") ?? []).filter(
+  const twoThs = [...(newBox?.querySelectorAll("tr") ?? [])].filter(
     tr =>
       tr.querySelectorAll("th").length === 2 &&
       tr.querySelector("th")?.textContent?.trim() === "ft" &&
@@ -95,17 +93,15 @@ const parseInfoBox = (data: InfoBoxType) => {
   twoThs.forEach(tr => tr.classList.add("feetAndMeters"))
 
   // find any images with width less than 50px and add the small-image class
-  const smallImages = Array.from(newBox?.querySelectorAll("img") ?? []).filter(
+  const smallImages = [...(newBox?.querySelectorAll("img") ?? [])].filter(
     img => img.width < 50
   )
   smallImages.forEach(img => img.classList.add("small-image"))
 
   // find any hanging text nodes on .infobox-image and convert them to divs with the class .infobox-caption
-  const infoboxImages = Array.from(
-    newBox?.querySelectorAll(".infobox-image") ?? []
-  )
+  const infoboxImages = [...(newBox?.querySelectorAll(".infobox-image") ?? [])]
   infoboxImages.forEach(image => {
-    const children = Array.from(image.childNodes)
+    const children = [...image.childNodes]
     children.forEach(child => {
       if (child.nodeType === Node.TEXT_NODE) {
         const div = document.createElement("div")
@@ -116,30 +112,30 @@ const parseInfoBox = (data: InfoBoxType) => {
     })
   })
 
-  const boxText = newBox?.outerHTML
-    // fix colors and change the default background
-    .replaceAll("{{{subtextcolor}}}", "var(--default-text)")
-    .replaceAll("#ccf", "#ddd")
-    // make sure URLs are valid
-    .replaceAll('src="/', `src="${WIKI_NO_CORS}`)
-    .replaceAll('href="/', `href="${WIKI_NO_CORS}`)
-    // split apart any srcset attributes, upgrade the src, and rejoin them
-    .replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
-      const srcset = p1
-        .split(",")
-        .map(src => src.trim())
-        .map(src => {
-          const [imageURL, size] = src.split(" ")
-          return imageURL && size
-            ? `${WIKI_NO_CORS}${imageURL} ${size}
+  return (
+    newBox?.outerHTML
+      // fix colors and change the default background
+      .replaceAll("{{{subtextcolor}}}", "var(--default-text)")
+      .replaceAll("#ccf", "#ddd")
+      // make sure URLs are valid
+      .replaceAll('src="/', `src="${WIKI_NO_CORS}`)
+      .replaceAll('href="/', `href="${WIKI_NO_CORS}`)
+      // split apart any srcset attributes, upgrade the src, and rejoin them
+      .replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
+        const srcset = p1
+          .split(",")
+          .map(src => src.trim())
+          .map(src => {
+            const [imageURL, size] = src.split(" ")
+            return imageURL && size
+              ? `${WIKI_NO_CORS}${imageURL} ${size}
                 `
-            : ""
-        })
-        .join(",")
-      return `srcset="${srcset}"`
-    })
-
-  return boxText
+              : ""
+          })
+          .join(",")
+        return `srcset="${srcset}"`
+      })
+  )
 }
 
 const pulse = keyframes`

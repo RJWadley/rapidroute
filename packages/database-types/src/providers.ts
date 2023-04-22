@@ -29,7 +29,6 @@ export const colorSchema = z.object({
   dark: z.string(),
 })
 
-
 /**
  * Information about a provider alias relationship
  */

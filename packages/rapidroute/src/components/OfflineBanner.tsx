@@ -1,8 +1,6 @@
 import { useState } from "react"
-
 import { useInterval } from "react-use"
 import styled from "styled-components"
-
 import { isBrowser } from "utils/functions"
 
 let showOfflineBanner = false

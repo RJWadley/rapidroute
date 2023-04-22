@@ -1,40 +1,10 @@
 import { z } from "zod"
-import {
-  Locations,
-  Location,
-  PlaceType,
-  isLocation,
-  locationsSchema,
-} from "./src/locations"
-import {
-  isPathingPlace,
-  Pathfinding,
-  pathfindingSchema,
-  PathingPlace,
-  reverseShortHandMap,
-  shortHandMap,
-  shortHandMapKeys,
-} from "./src/pathfinding"
-import {
-  Providers,
-  Provider,
-  isProvider,
-  providersSchema,
-} from "./src/providers"
-import {
-  Routes,
-  Route,
-  RouteMode,
-  RouteLocations,
-  isRoute,
-  routesSchema,
-} from "./src/routes"
-import {
-  isSearchIndexItem,
-  SearchIndex,
-  SearchIndexItem,
-  searchIndexSchema,
-} from "./src/searchIndex"
+
+import { isLocation, locationsSchema } from "./src/locations"
+import { isPathingPlace, pathfindingSchema } from "./src/pathfinding"
+import { isProvider, providersSchema } from "./src/providers"
+import { isRoute, routesSchema } from "./src/routes"
+import { isSearchIndexItem, searchIndexSchema } from "./src/searchIndex"
 
 export const hashesSchema = z.object({
   providers: z.string().optional(),
@@ -102,21 +72,14 @@ export const isWholeDatabase = (value: unknown): value is DatabaseType =>
 export const validateDatabase = (value: unknown) =>
   databaseSchema.safeParse(value)
 
+export { Location, Locations, PlaceType } from "./src/locations"
 export {
-  Provider,
-  Providers,
-  Location,
-  Locations,
-  Route,
-  Routes,
   Pathfinding,
   PathingPlace as PathfindingEdge,
-  SearchIndex,
-  SearchIndexItem,
-  RouteMode,
-  shortHandMap,
   reverseShortHandMap,
+  shortHandMap,
   shortHandMapKeys,
-  RouteLocations,
-  PlaceType,
-}
+} from "./src/pathfinding"
+export { Provider, Providers } from "./src/providers"
+export { Route, RouteLocations, RouteMode, Routes } from "./src/routes"
+export { SearchIndex, SearchIndexItem } from "./src/searchIndex"

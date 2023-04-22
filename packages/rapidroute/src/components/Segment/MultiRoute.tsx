@@ -1,6 +1,5 @@
-import styled, { css } from "styled-components"
-
 import { SegmentType } from "components/Segment/createSegments"
+import styled, { css } from "styled-components"
 
 import MultiSingleBit from "./MultiSingleBit"
 import { Left, LongNames, Symbols, Wrapper } from "./sharedComponents"
@@ -31,7 +30,7 @@ export default function MultiRoute({
           route =>
             route && (
               <MultiSingleBit
-                key={route?.uniqueId}
+                key={route.uniqueId}
                 route={route}
                 segment={segment}
                 variant={variant}
@@ -43,7 +42,7 @@ export default function MultiRoute({
         <Symbols singleLine={false}>
           <div>{segment.from.shortName || "---"}</div>
           <div>-&gt;</div>
-          <div>{segment?.to?.shortName || "---"}</div>
+          <div>{segment.to.shortName || "---"}</div>
         </Symbols>
         <LongNames>
           {segment.from.name} to <br />
