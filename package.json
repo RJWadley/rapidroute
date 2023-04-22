@@ -65,8 +65,5 @@
     "build": "npm i && npm run build -w ./packages/database-types/ && npm run build -w ./packages/rapidroute/",
     "clean": "npm run clean -workspaces && rm -r ./node_modules",
     "serve": "npm run build && npm run serve -w ./packages/rapidroute/"
-  },
-  "dependencies": {
-    "eslint-plugin-react-perf": "^3.3.1"
   }
 }
