@@ -93,5 +93,5 @@ const workerFunctions = { getAllCullDistances }
 // Export the type for type checking
 expose(workerFunctions)
 type CullWorkerFunctions = typeof workerFunctions
-// eslint-disable-next-line import/prefer-default-export
+// TODO -next-line import/prefer-default-export
 export type { CullWorkerFunctions }

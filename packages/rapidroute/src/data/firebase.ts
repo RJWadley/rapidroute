@@ -48,5 +48,5 @@ const workerFunctions = { getData }
 // Export the type for type checking
 expose(workerFunctions)
 type FirebaseWorkerFunctions = typeof workerFunctions
-// eslint-disable-next-line import/prefer-default-export
+// TODO -next-line import/prefer-default-export
 export type { FirebaseWorkerFunctions }

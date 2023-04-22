@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+/* TODO  @typescript-eslint/consistent-type-assertions */
 import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"

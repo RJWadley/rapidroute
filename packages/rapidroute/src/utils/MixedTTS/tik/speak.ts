@@ -34,7 +34,7 @@ async function playAudio(data: string, rate: number) {
   currentAudio.playbackRate = rate
 
   await currentAudio.play().catch(() => {
-    // eslint-disable-next-line no-console
+    // TODO -next-line no-console
     console.log("interrupted")
   })
 

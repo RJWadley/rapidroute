@@ -1,6 +1,6 @@
-/* eslint-disable max-lines */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-param-reassign */
+/* TODO  max-lines */
+/* TODO  react-hooks/exhaustive-deps */
+/* TODO  no-param-reassign */
 import { useQuery } from "@tanstack/react-query"
 import { darkModeContext } from "components/Providers/DarkMode"
 import { gsap } from "gsap"

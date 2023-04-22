@@ -91,7 +91,7 @@ export const useViewportMoved = (callback: () => void) => {
       moveCallbacks = moveCallbacks.filter(cb => cb !== onViewportMoved)
     }
     // we only want to run this on the first render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // TODO -next-line react-hooks/exhaustive-deps
   }, [viewport])
 }
 

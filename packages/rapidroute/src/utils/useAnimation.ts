@@ -33,7 +33,7 @@ const useAnimation = (
     }
 
     // have to spread deps here
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // TODO -next-line react-hooks/exhaustive-deps
   }, [options?.kill, options?.scope, ...deps])
 }
 

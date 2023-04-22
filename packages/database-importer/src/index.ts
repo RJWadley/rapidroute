@@ -19,7 +19,7 @@ import {
 import getConvertedData from "./sheets/getConvertedData"
 
 function stupidDeepCopy<T>(obj: T): T {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  // TODO -next-line @typescript-eslint/no-unsafe-return
   return JSON.parse(JSON.stringify(obj))
 }
 

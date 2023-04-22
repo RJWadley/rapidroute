@@ -1,5 +1,5 @@
-/*  eslint-disable @typescript-eslint/no-unsafe-assignment */
-/*  eslint-disable import/prefer-default-export */
+/*  TODO  @typescript-eslint/no-unsafe-assignment */
+/*  TODO  import/prefer-default-export */
 
 import { GatsbyNode } from "gatsby"
 

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* TODO  no-console */
 import { RouteMode } from "@rapidroute/database-types"
 import { darkModeContext } from "components/Providers/DarkMode"
 import { NavigationContext } from "components/Providers/NavigationContext"

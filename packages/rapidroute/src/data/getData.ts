@@ -1,4 +1,4 @@
-/*  eslint-disable no-console */
+/*  TODO  no-console */
 import {
   DatabaseDataKeys,
   databaseTypeGuards,
@@ -131,7 +131,7 @@ export async function getPath<T extends DatabaseDataKeys>(
   itemName: string
 ): Promise<GetOne<T> | null> {
   while (fetchingPaths.includes(`${type}/${itemName}`)) {
-    // eslint-disable-next-line no-await-in-loop
+    // TODO -next-line no-await-in-loop
     await sleep(250)
   }
   const timeout = setTimeout(() => {
@@ -218,7 +218,7 @@ export async function getAll<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
   while (fetchingPaths.includes(type)) {
-    // eslint-disable-next-line no-await-in-loop
+    // TODO -next-line no-await-in-loop
     await sleep(250)
   }
   fetchingPaths.push(type)

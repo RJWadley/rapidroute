@@ -6,7 +6,7 @@ let waitingForPage = true
 
 export async function pageReady(callback?: VoidFunction) {
   // need to await in loop since pageReady is outside the react cycle
-  // eslint-disable-next-line no-await-in-loop
+  // TODO -next-line no-await-in-loop
   while (waitingForPage) await sleep(100)
 
   return callback?.()

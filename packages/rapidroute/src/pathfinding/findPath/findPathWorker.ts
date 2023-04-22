@@ -27,5 +27,5 @@ const workerFunctions = { findPath, initPathfinder }
 // Export the type for type checking
 expose(workerFunctions)
 type WorkerFunctions = typeof workerFunctions
-// eslint-disable-next-line import/prefer-default-export
+// TODO -next-line import/prefer-default-export
 export type { WorkerFunctions }

@@ -5,7 +5,7 @@ export const isObject = (
 }
 
 /* recursion in this case requires type assertions */
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+/* TODO  @typescript-eslint/consistent-type-assertions */
 /**
  * recursively replace all undefined values with null
  * this is because firebase does not allow undefined values

@@ -1,4 +1,4 @@
-/* eslint-disable ssr-friendly/no-dom-globals-in-module-scope */
+/* TODO  ssr-friendly/no-dom-globals-in-module-scope */
 import "the-new-css-reset/css/reset.css"
 import "hacktimer/HackTimer"
 

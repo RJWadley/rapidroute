@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* TODO  no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
 import { generateAllCoordinateEdges } from "./createCoordinateEdges"
@@ -59,7 +59,7 @@ export default class Pathfinder {
     while (!frontier.isEmpty()) {
       if (this.cancelled) return []
 
-      // eslint-disable-next-line no-await-in-loop
+      // TODO -next-line no-await-in-loop
       await throttle()
       const current = frontier.dequeue()
 

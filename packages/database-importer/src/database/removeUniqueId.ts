@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
+/* TODO  @typescript-eslint/consistent-type-assertions */
 import { isObject } from "./makeSafeForDatabase"
 
 export type RemoveUniqueId<T> = Omit<T, "uniqueId">

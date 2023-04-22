@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* TODO  no-console */
 import useFollowedRoute from "components/navigation/useFollowedRoute"
 import useNavigation from "components/navigation/useNavigation"
 import { NavigationContext } from "components/Providers/NavigationContext"
