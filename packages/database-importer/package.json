@@ -12,12 +12,12 @@
   "main": "dist/index.js",
   "dependencies": {
     "@rapidroute/database-types": "^1.0.0",
-    "@types/node": "^18.15.3",
-    "@types/node-fetch": "^2.6.2",
+    "@types/node": "^18.15.13",
+    "@types/node-fetch": "^2.6.3",
     "dotenv": "^16.0.3",
-    "firebase-admin": "^11.5.0"
+    "firebase-admin": "^11.7.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.4"
   }
 }

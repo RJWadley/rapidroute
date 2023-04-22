@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 
 import gsap from "gsap"
 import styled from "styled-components"
 
-import { triggerRecalculation } from "components/Providers/DarkMode"
-import { getLocal, setLocal } from "utils/localUtils"
+import { setDarkModeContext } from "components/Providers/DarkMode"
+import { getLocal } from "utils/localUtils"
 
 type Mode = "dark" | "light" | "system"
 
@@ -13,11 +13,11 @@ const PAD = 10
 export default function DarkModeSetting() {
   const [mode, setMode] = useState<Mode>("system")
   const overlay = useRef<HTMLDivElement>(null)
+  const setDarkMode = useContext(setDarkModeContext)
 
   const updateMode = (newMode: Mode) => {
-    setLocal("darkMode", newMode)
+    setDarkMode?.(newMode)
     setMode(newMode)
-    triggerRecalculation()
   }
 
   useEffect(() => {

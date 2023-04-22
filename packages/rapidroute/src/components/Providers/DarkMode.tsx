@@ -13,27 +13,32 @@ import { getLocal, setLocal } from "utils/localUtils"
 import useMedia from "utils/useMedia"
 
 export const darkModeContext = createContext<boolean | undefined>(undefined)
+export const setDarkModeContext = createContext<
+  ((value: "dark" | "light" | "system") => void) | undefined
+>(undefined)
 
 type Preference = "dark" | "light" | "system"
 const isPreference = (value?: string | null): value is Preference =>
   ["dark", "light", "system"].includes(value || "")
 
-let setSignal: React.Dispatch<React.SetStateAction<boolean>> | undefined
-
 export function DarkModeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreference] = useState<Preference | undefined>()
   const [isDark, setIsDark] = useState<boolean | undefined>()
   const systemIsDark = useMedia("(prefers-color-scheme: dark)")
-  const [refreshSignal, setRefreshSignal] = useState(false)
-  setSignal = setRefreshSignal
 
+  /**
+   * pull the initial state from local storage
+   */
   useEffect(() => {
     const savedPreference = getLocal("darkMode")
     if (isPreference(savedPreference)) {
       setPreference(savedPreference)
     } else setPreference("system")
-  }, [refreshSignal])
+  }, [])
 
+  /**
+   * update the local storage when the preference changes
+   */
   useEffect(() => {
     if (preference) {
       setLocal("darkMode", preference)
@@ -57,13 +62,13 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
 
   return (
     <darkModeContext.Provider value={isDark}>
-      {children}
-      <TransitionStyle />
+      <setDarkModeContext.Provider value={setPreference}>
+        {children}
+        <TransitionStyle />
+      </setDarkModeContext.Provider>
     </darkModeContext.Provider>
   )
 }
-
-export const triggerRecalculation = () => setSignal?.(prev => !prev)
 
 const TransitionStyle = createGlobalStyle`${css`
   .in-transition {
