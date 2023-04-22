@@ -4,18 +4,14 @@ import { isObject } from "./makeSafeForDatabase"
 export type RemoveUniqueId<T> = Omit<T, "uniqueId">
 
 /**
- * recursively remove all uniqueId values from an object type
+ * recursively remove all uniqueId keys from an object type
  * output type of removeUniqueId
  */
 export type DeepRemoveUniqueId<T> = T extends Array<infer U>
   ? Array<DeepRemoveUniqueId<U>>
   : T extends Record<string, unknown>
-  ? { [K in keyof T]: DeepRemoveUniqueId<T[K]> }
-  : T extends undefined
-  ? undefined
-  : T extends null
-  ? null
-  : RemoveUniqueId<T>
+  ? { [K in keyof RemoveUniqueId<T>]: DeepRemoveUniqueId<T[K]> }
+  : T
 
 /**
  * recursively remove all uniqueId values from an object type
