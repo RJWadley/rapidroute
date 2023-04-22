@@ -23,7 +23,6 @@ module.exports = {
     "plugin:jsx-a11y/recommended", // a11y for react elements
     "plugin:styled-components-a11y/recommended", // a11y for styled components
     "plugin:prettier/recommended", // disable any pure style rules
-    "plugin:react-perf/recommended", // performance mistakes
   ],
   plugins: [
     "@typescript-eslint",
@@ -36,7 +35,6 @@ module.exports = {
     "prettier",
     "react-hooks",
     "jsx-a11y",
-    "react-perf",
     "validate-jsx-nesting",
   ],
   env: {
