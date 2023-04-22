@@ -72,6 +72,9 @@ module.exports = {
     // ban bad types
     "@typescript-eslint/no-explicit-any": "error",
 
+    // no shadowing
+    "@typescript-eslint/no-shadow": "error",
+
     // consistent export style
     "function-component-export/ban-FC": "error",
     "function-component-export/combine-default-export": "error",
