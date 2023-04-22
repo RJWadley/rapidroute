@@ -13,7 +13,20 @@
     "composite": true,
     "incremental": true
   },
-  "references": [{ "path": "./packages/*" }],
+  "references": [
+    {
+      "path": "./packages/database-importer"
+    },
+    {
+      "path": "./packages/database-types"
+    },
+    {
+      "path": "./packages/rapidroute"
+    },
+    {
+      "path": "./packages/wiki-scraper"
+    }
+  ],
   "include": ["packages/**/*"],
   "exclude": ["node_modules", "packages/**/node_modules", "packages/**/dist"]
 }
