@@ -147,7 +147,9 @@ export const loadPage = async (
     return
   }
 
-  const animationContext = gsap.context()
+  const animationContext = gsap.context(() => {
+    // we must pass a function to gsap.context for it to initialize properly
+  })
   const enterAnimations = allTransitions[transition]?.inAnimation ?? []
 
   // run each animation, add it to the context, and get the duration of the longest one

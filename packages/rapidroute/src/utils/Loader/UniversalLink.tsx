@@ -49,9 +49,7 @@ export default function UniversalLink({
     if (openInNewTab || !internal) {
       window.open(to, "_blank")
     } else {
-      loadPage(to, transition).catch((error: string) => {
-        throw new Error(error)
-      })
+      loadPage(to, transition).catch(console.error)
     }
   }
 

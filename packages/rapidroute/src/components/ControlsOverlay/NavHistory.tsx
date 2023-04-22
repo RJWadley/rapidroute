@@ -1,7 +1,6 @@
-import { Location } from "@rapidroute/database-types"
 import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import { getPath } from "data/getData"
+import useLocations from "data/useLocations"
 import gsap from "gsap"
 import { useContext, useEffect, useRef, useState } from "react"
 import styled from "styled-components"
@@ -12,9 +11,9 @@ export default function NavHistory() {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
   const [history, setHistory] = useState<[string, string][]>(
-    getLocal("navigationHistory") || []
+    getLocal("navigationHistory") ?? []
   )
-  const [locations, setLocations] = useState<Record<string, Location>>({})
+  const locations = useLocations(history.flat())
 
   /**
    * hide the logo until the page is scrolled down
@@ -47,22 +46,6 @@ export default function NavHistory() {
   }, [from, to, history])
 
   /**
-   * fetch location names!
-   */
-  useEffect(() => {
-    const ids = [...new Set(history.flat())]
-    ids.forEach(id => {
-      if (!locations[id]) {
-        getPath("locations", id)
-          .then(location => {
-            if (location) setLocations(prev => ({ ...prev, [id]: location }))
-          })
-          .catch(console.error)
-      }
-    })
-  }, [history, locations])
-
-  /**
    * animate in when a new item is added to the history
    */
   useEffect(() => {
@@ -79,8 +62,8 @@ export default function NavHistory() {
   })
 
   const historyItems = history.map((item, index) => {
-    const fromLocation = locations[item[0]]
-    const toLocation = locations[item[1]]
+    const fromLocation = locations?.[item[0]]
+    const toLocation = locations?.[item[1]]
     const fromName =
       fromLocation?.type === "City"
         ? fromLocation.name
@@ -130,7 +113,7 @@ export const Bold = styled.span`
   font-weight: 700;
 `
 
-const Box = styled.div`
+const Box = styled.button`
   height: calc(var(--height) * 0.6);
   background: #333;
   display: grid;
@@ -156,6 +139,7 @@ const Box = styled.div`
 
 const Wrapper = styled.div`
   --height: env(titlebar-area-height, 40px);
+
   width: max-content;
   height: var(--height);
   display: flex;
@@ -193,12 +177,15 @@ const Colors = styled.div`
   div:nth-child(1) {
     background-color: var(--rapid-blue);
   }
+
   div:nth-child(2) {
     background-color: var(--rapid-red);
   }
+
   div:nth-child(3) {
     background-color: var(--rapid-yellow);
   }
+
   div:nth-child(4) {
     background-color: var(--rapid-green);
   }

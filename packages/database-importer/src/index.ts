@@ -19,8 +19,7 @@ import {
 import getConvertedData from "./sheets/getConvertedData"
 
 function stupidDeepCopy<T>(obj: T): T {
-  // TODO -next-line @typescript-eslint/no-unsafe-return
-  return JSON.parse(JSON.stringify(obj))
+  return JSON.parse(JSON.stringify(obj)) as T
 }
 
 async function runImport() {
@@ -90,12 +89,10 @@ async function runImport() {
   console.log("ALL DONE!")
 }
 
-runImport()
-  .then(() => {
-    console.log("Finished all operations")
-    process.exit(0)
-  })
-  .catch(error => {
-    console.error(error)
-    process.exit(1)
-  })
+await runImport().catch(error => {
+  console.error(error)
+  process.exit(1)
+})
+
+console.log("Finished all operations")
+process.exit(0)

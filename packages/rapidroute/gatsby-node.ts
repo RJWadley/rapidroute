@@ -14,7 +14,7 @@ export const onCreateWebpackConfig: GatsbyNode["onCreateWebpackConfig"] = ({
         rules: [
           {
             test: /pixi-viewport/,
-            use: loaders.null(),
+            use: loaders.null() as unknown,
           },
         ],
       },

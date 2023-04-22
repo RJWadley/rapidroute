@@ -85,7 +85,7 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-plugin-tsconfig-paths",
       options: {
-        configFile: `${__dirname}/tsconfig.json`,
+        configFile: `./tsconfig.json`,
         silent: true,
       },
     },
