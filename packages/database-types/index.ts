@@ -1,56 +1,81 @@
-import TSON from "typescript-json"
-import { Locations, Location, PlaceType, isLocation } from "./src/locations"
+import { z } from "zod"
+import {
+  Locations,
+  Location,
+  PlaceType,
+  isLocation,
+  locationsSchema,
+} from "./src/locations"
 import {
   isPathingPlace,
   Pathfinding,
+  pathfindingSchema,
   PathingPlace,
   reverseShortHandMap,
   shortHandMap,
   shortHandMapKeys,
 } from "./src/pathfinding"
-import { Providers, Provider, isProvider } from "./src/providers"
-import { Routes, Route, RouteMode, RouteLocations, isRoute } from "./src/routes"
+import {
+  Providers,
+  Provider,
+  isProvider,
+  providersSchema,
+} from "./src/providers"
+import {
+  Routes,
+  Route,
+  RouteMode,
+  RouteLocations,
+  isRoute,
+  routesSchema,
+} from "./src/routes"
 import {
   isSearchIndexItem,
   SearchIndex,
   SearchIndexItem,
+  searchIndexSchema,
 } from "./src/searchIndex"
-import { Worlds, World } from "./src/worlds"
 
-export interface DatabaseType {
+export const hashesSchema = z.object({
+  providers: z.string().optional(),
+  locations: z.string().optional(),
+  routes: z.string().optional(),
+  pathfinding: z.string().optional(),
+  searchIndex: z.string().optional(),
+})
+
+const databaseSchema = z.object({
   /**
    * companies, train lines, etc.
    */
-  providers?: Providers
+  providers: providersSchema.optional(),
   /**
    * stations, stops, towns, etc.
    */
-  locations?: Locations
+  locations: locationsSchema.optional(),
   /**
    * route by train, bus, etc.
    */
-  routes?: Routes
-  /**
-   * information about the world
-   */
-  // worlds: Worlds
+  routes: routesSchema.optional(),
   /**
    * information needed to perform pathfinding
    */
-  pathfinding?: Pathfinding
+  pathfinding: pathfindingSchema.optional(),
   /**
    * information needed to perform searching
    */
-  searchIndex?: SearchIndex
+  searchIndex: searchIndexSchema.optional(),
   /**
    * hashes used for validating client-side data
    */
-  hashes?: Hashes
+  hashes: hashesSchema.optional(),
   /**
    * date of last import
    */
-  lastImport?: string
-}
+  lastImport: z.string().optional(),
+})
+
+export type DatabaseType = z.TypeOf<typeof databaseSchema>
 
 /**
  * data keys are any keys that lead to a data object
@@ -58,7 +83,6 @@ export interface DatabaseType {
  */
 export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
 export type DataDatabaseType = Omit<DatabaseType, "hashes" | "lastImport">
-
 export type Hashes = Partial<Record<DatabaseDataKeys, string>>
 
 export const databaseTypeGuards: {
@@ -74,9 +98,9 @@ export const databaseTypeGuards: {
 }
 
 export const isWholeDatabase = (value: unknown): value is DatabaseType =>
-  TSON.is<DatabaseType>(value)
+  databaseSchema.safeParse(value).success
 export const validateDatabase = (value: unknown) =>
-  TSON.validate<DatabaseType>(value)
+  databaseSchema.safeParse(value)
 
 export {
   Provider,
@@ -89,8 +113,6 @@ export {
   PathingPlace as PathfindingEdge,
   SearchIndex,
   SearchIndexItem,
-  World,
-  Worlds,
   RouteMode,
   shortHandMap,
   reverseShortHandMap,

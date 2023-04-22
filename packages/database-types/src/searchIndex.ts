@@ -1,25 +1,26 @@
-import TSON from "typescript-json"
+import { z } from "zod"
 
-export interface SearchIndex {
-  [key: string]: SearchIndexItem
-}
-
-export interface SearchIndexItem {
+export const searchIndexItemSchema = z.object({
   /**
    * unique id of the item
    */
-  uniqueId: string
+  uniqueId: z.string(),
   /**
    * display name of the item
    */
-  d: string
+  d: z.string(),
   /**
    * search index for the item
    */
-  i: string
-}
+  i: z.string(),
+})
+
+export const searchIndexSchema = z.record(searchIndexItemSchema)
+
+export type SearchIndexItem = z.TypeOf<typeof searchIndexItemSchema>
+export type SearchIndex = z.TypeOf<typeof searchIndexSchema>
 
 export const isSearchIndexItem = (obj: unknown): obj is SearchIndexItem =>
-  TSON.is<SearchIndexItem>(obj)
+  searchIndexItemSchema.safeParse(obj).success
 export const isWholeSearchIndex = (obj: unknown): obj is SearchIndex =>
-  TSON.is<SearchIndex>(obj)
+  searchIndexSchema.safeParse(obj).success

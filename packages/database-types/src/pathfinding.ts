@@ -1,8 +1,4 @@
-import TSON from "typescript-json"
-
-export interface Pathfinding {
-  [key: string]: PathingPlace
-}
+import { z } from "zod"
 
 /**
  * all locations reachable from this location via this mode of transport
@@ -11,33 +7,41 @@ export interface Pathfinding {
  * value value: routeIds that can be used to get to that location,
  * N: route name, G: number of gates (0 if undefined)
  */
-type ShortHandType = Record<string, { n: string; g?: number }[]>
+const shortHandTypeSchema = z.record(
+  z.array(
+    z.object({
+      n: z.string(),
+      g: z.number().optional(),
+    })
+  )
+)
 
-export interface PathingPlace {
+export const pathingPlaceSchema = z.object({
   /**
    * should match the database key and the uniqueId of the location
    */
-  uniqueId: string
+  uniqueId: z.string(),
   /**
    * the X coordinate of the location
    */
-  x?: number
+  x: z.number().optional(),
   /**
    * the Z coordinate of the location
    */
-  z?: number
+  z: z.number().optional(),
   /**
    * is a spawn warp
    */
-  w?: boolean
+  w: z.boolean().optional(),
+  F: shortHandTypeSchema.optional(),
+  S: shortHandTypeSchema.optional(),
+  H: shortHandTypeSchema.optional(),
+  M: shortHandTypeSchema.optional(),
+  W: shortHandTypeSchema.optional(),
+  P: shortHandTypeSchema.optional(),
+})
 
-  F?: ShortHandType
-  S?: ShortHandType
-  H?: ShortHandType
-  M?: ShortHandType
-  W?: ShortHandType
-  P?: ShortHandType
-}
+export const pathfindingSchema = z.record(pathingPlaceSchema)
 
 export const shortHandMap = {
   F: "flight",
@@ -57,9 +61,12 @@ export const reverseShortHandMap = {
   spawnWarp: "P",
 } as const
 
+export type PathingPlace = z.TypeOf<typeof pathingPlaceSchema>
+export type Pathfinding = z.TypeOf<typeof pathfindingSchema>
+
 export const shortHandMapKeys = ["F", "S", "H", "M", "W", "P"] as const
 
 export const isPathingPlace = (obj: unknown): obj is PathingPlace =>
-  TSON.is<PathingPlace>(obj)
+  pathingPlaceSchema.safeParse(obj).success
 export const isWholePathfinding = (obj: unknown): obj is Pathfinding =>
-  TSON.is<Pathfinding>(obj)
+  pathfindingSchema.safeParse(obj).success
