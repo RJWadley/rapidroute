@@ -1,14 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "outDir": "dist",
-    "sourceMap": true,
-    "strict": true,
-    "target": "es6",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "composite": true,
-    "resolveJsonModule": true
+    "outDir": "dist"
   },
-  "include": ["src/**/*", "src/importers/*.json"]
+  "include": ["src/**/*"]
 }

@@ -1,9 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "incremental": true,
-    "composite": true,
     "outDir": "dist",
-    "skipLibCheck": true,
     "plugins": [
       {
         "transform": "typescript-json/lib/transform"

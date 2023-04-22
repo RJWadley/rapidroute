@@ -1,14 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "outDir": "dist",
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2021",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "composite": true
+    "outDir": "dist"
   },
   "include": ["src/**/*", "src/serviceAccountKey.json"]
 }
