@@ -1,4 +1,4 @@
-/* TODO  no-param-reassign */
+// TODO /*  no-param-reassign */
 import { PixiComponent } from "@pixi/react"
 import { Graphics, IRenderer, Sprite, Texture } from "pixi.js"
 

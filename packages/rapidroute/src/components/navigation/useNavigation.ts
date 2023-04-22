@@ -1,4 +1,4 @@
-/* TODO  no-console */
+// TODO /*  no-console */
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"

@@ -1,9 +1,9 @@
 // this file comes mostly from RapidRoute 2
 // eventually it should probably be replaced with something more efficient
 
-/* TODO  prefer-destructuring */
-/* TODO  max-lines */
-/* TODO  @typescript-eslint/restrict-template-expressions */
+// TODO /*  prefer-destructuring */
+// TODO /*  max-lines */
+// TODO /*  @typescript-eslint/restrict-template-expressions */
 // 1 call
 
 // fetch for node.js

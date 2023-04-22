@@ -1,4 +1,4 @@
-/* TODO  no-console */
+// TODO /*  no-console */
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
 
 import { generateAllCoordinateEdges } from "./createCoordinateEdges"

@@ -1,4 +1,4 @@
-/* TODO  no-param-reassign */
+// TODO /*  no-param-reassign */
 import { EventMode, IHitArea, Rectangle } from "pixi.js"
 
 const emptyRect = new Rectangle(0, 0, 0, 0)
