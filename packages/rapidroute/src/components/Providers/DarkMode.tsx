@@ -23,7 +23,7 @@ const isPreference = (value?: string | null): value is Preference =>
 
 export function DarkModeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreference] = useState<Preference | undefined>()
-  const [isDark, setIsDark] = useState<boolean | undefined>()
+  const [isDark, setIsDark] = useState<boolean>()
   const systemIsDark = useMedia("(prefers-color-scheme: dark)")
 
   /**
@@ -50,6 +50,7 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
   }, [preference, systemIsDark])
 
   useLayoutEffect(() => {
+    if (isDark === undefined) return
     document.documentElement.classList.add("in-transition")
     const timeout = setTimeout(() => {
       document.documentElement.classList.remove("in-transition")
