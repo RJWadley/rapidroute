@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "noUncheckedIndexedAccess": false
+    "noUncheckedIndexedAccess": false,
+    "module": "ES2022"
   },
   "include": ["src/**/*", "src/serviceAccountKey.json"]
 }
