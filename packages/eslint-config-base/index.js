@@ -110,6 +110,7 @@ module.exports = {
     "max-params": ["warn", 6],
     "consistent-return": "off",
     "no-nested-ternary": "warn",
+    "const-case/uppercase": "off",
   },
   parserOptions: {
     project: ["./tsconfig.json"],

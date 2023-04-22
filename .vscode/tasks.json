@@ -24,9 +24,6 @@
       "label": "Lint Project",
       "command": "npm run lint || exit 0",
       "problemMatcher": ["$eslint-stylish"],
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
       "icon": {
         "id": "notebook",
         "color": "terminal.ansiGreen"
