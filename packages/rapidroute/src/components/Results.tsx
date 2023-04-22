@@ -1,13 +1,14 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 
-import { getAll } from "data/getData"
 import gsap from "gsap"
+import styled from "styled-components"
+
+import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
-import styled from "styled-components"
 import { isBrowser, sleep } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal } from "utils/localUtils"

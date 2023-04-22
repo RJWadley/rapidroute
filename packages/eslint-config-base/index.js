@@ -73,5 +73,7 @@ module.exports = {
 
     // consistent return
     "consistent-return": "off",
+
+    "react/require-default-props": "off",
   },
 }

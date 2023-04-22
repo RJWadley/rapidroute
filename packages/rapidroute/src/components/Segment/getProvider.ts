@@ -1,4 +1,5 @@
 import { Route } from "@rapidroute/database-types"
+
 import { getPath } from "data/getData"
 
 /**

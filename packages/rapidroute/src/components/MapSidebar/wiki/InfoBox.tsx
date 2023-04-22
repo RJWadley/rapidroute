@@ -130,8 +130,10 @@ const parseInfoBox = (data: InfoBoxType) => {
         .map(src => src.trim())
         .map(src => {
           const [imageURL, size] = src.split(" ")
-          return `${WIKI_NO_CORS}${imageURL} ${size}
+          return imageURL && size
+            ? `${WIKI_NO_CORS}${imageURL} ${size}
                 `
+            : ""
         })
         .join(",")
       return `srcset="${srcset}"`

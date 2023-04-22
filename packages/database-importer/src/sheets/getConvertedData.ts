@@ -157,6 +157,9 @@ export default async function getConvertedData() {
   })
 
   const mappedProviders: Provider[] = providers.map(provider => {
+    const lightColor = lightColors[provider.name]
+    const darkColor = darkColors[provider.name]
+
     const newProvider: Provider = {
       uniqueId: makeKeySafe(provider.name),
       name: provider.displayName ?? provider.name,
@@ -169,10 +172,10 @@ export default async function getConvertedData() {
             end: x.end,
           },
         })),
-      color: {
-        light: lightColors[provider.name] ?? undefined,
-        dark: darkColors[provider.name] ?? undefined,
-      },
+      color:
+        lightColor && darkColor
+          ? { light: lightColor, dark: darkColor }
+          : undefined,
       description: undefined,
       logo: logos[provider.name] ?? undefined,
       numberPrefix: provider.prefix ?? undefined,

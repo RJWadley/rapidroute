@@ -21,9 +21,10 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
   })
 
   // Get the previous route from the database
-  const previousRoute: Route | undefined = database.routes[routeId]
+  const thisRoute = database.routes[routeId]
+  const previousRoute: Route | undefined = thisRoute
     ? {
-        ...database.routes[routeId],
+        ...thisRoute,
         uniqueId: routeId,
       }
     : undefined
@@ -83,13 +84,12 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
                 )
                 // update the pathfinding index
                 if (!database.pathfinding) database.pathfinding = {}
-                if (!database.pathfinding[locationId])
-                  database.pathfinding[locationId] = {}
-                if (!database.pathfinding[locationId][shortHand])
-                  database.pathfinding[locationId][shortHand] = {}
-                database.pathfinding[locationId][shortHand] = {
-                  ...secondLocation,
-                  [secondLocId]: newRoutesToPlace,
+                database.pathfinding[locationId] = {
+                  ...database.pathfinding[locationId],
+                  [shortHand]: {
+                    ...database.pathfinding[locationId]?.[shortHand],
+                    [secondLocId]: newRoutesToPlace,
+                  },
                 }
               }
             )

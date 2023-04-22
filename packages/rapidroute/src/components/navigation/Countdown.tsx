@@ -46,7 +46,7 @@ export default function Countdown({
       const numberOfStops = Math.abs(toNumber - fromNumber)
 
       const numberToUse = Number.isFinite(numberOfStops) ? numberOfStops : 0
-      
+
       const firstSpoken = spokenRoute[0]
       if (firstSpoken) {
         const time = Math.round(getTimeToInstruction(firstSpoken, numberToUse))

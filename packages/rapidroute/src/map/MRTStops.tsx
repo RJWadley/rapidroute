@@ -1,7 +1,8 @@
 import { useState } from "react"
 
-import { getDistance } from "pathfinding/findPath/pathUtil"
 import { useDeepCompareMemo } from "use-deep-compare"
+
+import { getDistance } from "pathfinding/findPath/pathUtil"
 
 import { Marker } from "./markersType"
 import MRTStop from "./MRTStop"

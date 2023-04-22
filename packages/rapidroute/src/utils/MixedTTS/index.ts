@@ -132,7 +132,9 @@ export const getDefaultVoice = async () => {
 
   for (let i = 0; i < fallbackDefaults.length; i += 1) {
     const searchFor = fallbackDefaults[i]
-    const fallbackOption = allVoices.find(v => searchFor && v.name.includes(searchFor))
+    const fallbackOption = allVoices.find(
+      v => searchFor && v.name.includes(searchFor)
+    )
     if (fallbackOption) return fallbackOption
   }
 

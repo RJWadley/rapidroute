@@ -1,6 +1,8 @@
 import { useContext, useEffect, useRef } from "react"
 
 import { PlaceType } from "@rapidroute/database-types"
+import { useDeepCompareMemo } from "use-deep-compare"
+
 import AlertMP3 from "assets/audio/alert.mp3"
 import CompleteMP3 from "assets/audio/complete.mp3"
 import NeutralMP3 from "assets/audio/neutral.mp3"
@@ -8,7 +10,6 @@ import SuccessMP3 from "assets/audio/success.mp3"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { SegmentType } from "components/Segment/createSegments"
 import { stopToNumber } from "components/Segment/getLineDirections"
-import { useDeepCompareMemo } from "use-deep-compare"
 import { isBrowser, sleep } from "utils/functions"
 import { getLocal } from "utils/localUtils"
 import { setSpeechRate, setVoiceById, speak } from "utils/MixedTTS"
@@ -91,7 +92,9 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     const firstInstruction = await getNavigationInstruction(firstSegment)
     const nextInstruction =
       route.length === 1
-        ? `You will arrive at ${firstSegment?.to.shortName}, ${firstSegment?.to.name}`
+        ? `You will arrive at ${firstSegment?.to.shortName ?? ""}, ${
+            firstSegment?.to.name ?? "your destination"
+          }`
         : await getNavigationInstruction(nextSegment)
 
     const newTwoMinuteWarning = nextInstruction
@@ -137,8 +140,8 @@ export default function useVoiceNavigation(route: SegmentType[]) {
   useEffect(() => {
     if (route.length)
       youHaveReached.current = `You have reached ${
-        route[route.length - 1]?.to.shortName
-      }, ${route[route.length - 1]?.to.name}`
+        route[route.length - 1]?.to.shortName ?? ""
+      }, ${route[route.length - 1]?.to.name ?? "your destination"}`
   }, [route])
 
   /**

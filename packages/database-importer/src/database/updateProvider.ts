@@ -19,9 +19,10 @@ export function setProvider(
   })
 
   // Get the previous provider from the database
-  const previousProvider: Provider | undefined = database.providers[providerId]
+  const thisProvider = database.providers[providerId]
+  const previousProvider: Provider | undefined = thisProvider
     ? {
-        ...database.providers[providerId],
+        ...thisProvider,
         uniqueId: providerId,
       }
     : undefined

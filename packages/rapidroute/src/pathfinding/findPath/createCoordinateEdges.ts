@@ -1,4 +1,5 @@
 import { Pathfinding, shortHandMapKeys } from "@rapidroute/database-types"
+
 import isCoordinate from "data/isCoordinate"
 
 import getRouteTime from "./getRouteTime"

@@ -22,9 +22,10 @@ export function setLocation(
   })
 
   // Get the previous location from the database
-  const previousLocation: Location | undefined = database.locations[locationId]
+  const thisLocation = database.locations[locationId]
+  const previousLocation: Location | undefined = thisLocation
     ? {
-        ...database.locations[locationId],
+        ...thisLocation,
         uniqueId: locationId,
       }
     : undefined

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import { getPath } from "data/getData"
 import gsap from "gsap"
+import styled, { css } from "styled-components"
+
+import { getPath } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
-import styled, { css } from "styled-components"
 
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
@@ -19,7 +20,11 @@ interface RouteProps {
   expandByDefault: boolean
 }
 
-export default function Route({ route, diff, expandByDefault }: RouteProps) {
+export default function Route({
+  route,
+  diff = undefined,
+  expandByDefault,
+}: RouteProps) {
   const [segments, setSegments] = useState<SegmentType[] | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
   const dropdownContent = useRef<HTMLDivElement>(null)

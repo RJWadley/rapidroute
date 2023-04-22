@@ -3,6 +3,7 @@
 
 /* eslint-disable prefer-destructuring */
 /* eslint-disable max-lines */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 // 1 call
 
 // fetch for node.js
