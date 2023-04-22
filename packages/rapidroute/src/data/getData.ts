@@ -1,4 +1,3 @@
-/*  TODO  no-console */
 import {
   DatabaseDataKeys,
   databaseTypeGuards,
@@ -6,13 +5,13 @@ import {
   Hashes,
   Location,
 } from "@rapidroute/database-types"
+import { wrap } from "comlink"
 import { setShowOfflineBanner } from "components/OfflineBanner"
 import { isBrowser, sleep } from "utils/functions"
 import isObject from "utils/isObject"
 import { getLocal, setLocal } from "utils/localUtils"
-import { wrap } from "utils/promise-worker"
 
-import { FirebaseWorkerFunctions } from "./firebase"
+import { FirebaseWorkerType } from "./firebase"
 import isCoordinate from "./isCoordinate"
 
 const defaultDatabaseCache: DataDatabaseType = {
@@ -33,10 +32,10 @@ const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
 const oneHashes = getLocal("oneHash") ?? defaultHashes
 const allHashes = getLocal("allHash") ?? defaultHashes
 
-const firebaseWorkerRaw = (async () => {
+const getData = (() => {
   if (!isBrowser()) return
   const worker = new Worker(new URL("firebase.ts", import.meta.url))
-  return wrap<FirebaseWorkerFunctions>(worker)
+  return wrap<FirebaseWorkerType>(worker)
 })()
 
 let databaseHashes: Hashes = {
@@ -46,27 +45,15 @@ let databaseHashes: Hashes = {
   routes: "",
   searchIndex: "",
 }
-const hashesExist = new Promise(resolve => {
-  // getData("hashes", rawValue => {
-  //   if (isObject(rawValue)) {
-  //     databaseHashes = { ...defaultHashes, ...rawValue }
-  //   }
-  //   resolve(true)
-  // })
-  firebaseWorkerRaw
-    .then(async worker => {
-      if (worker) {
-        const rawValue = await worker.getData("hashes")
-        if (isObject(rawValue)) {
-          databaseHashes = { ...defaultHashes, ...rawValue }
-          resolve(true)
-        }
-      }
-    })
-    .catch(() => {
-      resolve(true)
-    })
-})
+
+const hashesExist = (async () => {
+  const rawValue = await getData?.("hashes")
+  if (isObject(rawValue)) {
+    databaseHashes = { ...defaultHashes, ...rawValue }
+    return true
+  }
+  return false
+})()
 
 type GetAll<T extends DatabaseDataKeys> = NonNullable<DataDatabaseType[T]>
 type GetOne<T extends DatabaseDataKeys> = NonNullable<
@@ -77,9 +64,7 @@ async function getPathFromDatabase<T extends DatabaseDataKeys>(
   type: T,
   itemName: string
 ): Promise<GetOne<T> | null> {
-  const firebaseWorker = await firebaseWorkerRaw
-  if (!firebaseWorker) return null
-  const dataIn = await firebaseWorker.getData(`${type}/${itemName}`)
+  const dataIn = await getData?.(`${type}/${itemName}`)
   const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
   if (!databaseTypeGuards[type](data)) {
     console.log("guard failed", type, data)
@@ -96,9 +81,7 @@ async function getAllFromDatabase<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
   console.log("getAllFromDatabase", type)
-  const firebaseWorker = await firebaseWorkerRaw
-  if (!firebaseWorker) return {}
-  const rawData = await firebaseWorker.getData(type)
+  const rawData = await getData?.(type)
   const data: GetAll<T> = {}
 
   if (isObject(rawData)) {
@@ -131,7 +114,6 @@ export async function getPath<T extends DatabaseDataKeys>(
   itemName: string
 ): Promise<GetOne<T> | null> {
   while (fetchingPaths.includes(`${type}/${itemName}`)) {
-    // TODO -next-line no-await-in-loop
     await sleep(250)
   }
   const timeout = setTimeout(() => {

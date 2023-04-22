@@ -1,5 +1,5 @@
 import { Pathfinding, RouteMode } from "@rapidroute/database-types"
-import { expose } from "utils/promise-worker"
+import { expose } from "comlink"
 
 import Pathfinder from "."
 import { generateRawEdges } from "./mapEdges"
@@ -23,9 +23,5 @@ export async function findPath(
 }
 
 const workerFunctions = { findPath, initPathfinder }
-
-// Export the type for type checking
 expose(workerFunctions)
-type WorkerFunctions = typeof workerFunctions
-// TODO -next-line import/prefer-default-export
-export type { WorkerFunctions }
+export type FindPathWorkerType = typeof workerFunctions

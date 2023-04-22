@@ -1,7 +1,8 @@
+import { wrap } from "comlink"
 import { getAll } from "data/getData"
 import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
-import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
+import { FindPathWorkerType } from "pathfinding/findPath/findPathWorker"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
@@ -10,23 +11,23 @@ import styled from "styled-components"
 import { isBrowser, sleep } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal } from "utils/localUtils"
-import { wrap } from "utils/promise-worker"
 
 import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
 import Spinner from "./Spinner"
 
-const rawWrapper = (async () => {
-  const worker =
-    isBrowser() &&
-    new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
-  return worker && wrap<WorkerFunctions>(worker)
-})()
+const { findPath, initPathfinder } =
+  (() => {
+    if (!isBrowser()) return
+    const worker = new Worker(
+      new URL("pathfinding/findPath/findPathWorker", import.meta.url)
+    )
+    return wrap<FindPathWorkerType>(worker)
+  })() ?? {}
 
 getAll("pathfinding")
-  .then(async data => {
-    const wrapper = await rawWrapper
-    if (wrapper) wrapper.initPathfinder(data).catch(console.error)
+  .then(data => {
+    return initPathfinder?.(data)
   })
   .catch(console.error)
 
@@ -50,7 +51,6 @@ export default function Results() {
         return `Coordinate: ${x}, ${z}`
       }
     }
-    return
   }, [from, to])
 
   useEffect(() => {
@@ -58,8 +58,6 @@ export default function Results() {
       let canSave = true
 
       ;(async () => {
-        const wrapper = await rawWrapper
-        if (!wrapper) return
         await debouncer.current
         const fromToUse =
           from === "Current Location" ? await playerLocation : from
@@ -79,8 +77,7 @@ export default function Results() {
 
         const minTime = sleep(500)
 
-        wrapper
-          .findPath(fromToUse, toToUse, allowedModes)
+        findPath?.(fromToUse, toToUse, allowedModes)
           .then(async r => {
             await minTime
             await debouncer.current

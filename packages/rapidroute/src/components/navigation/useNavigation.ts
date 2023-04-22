@@ -1,27 +1,28 @@
-// TODO /*  no-console */
+import { wrap } from "comlink"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
 import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
-import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
+import { FindPathWorkerType } from "pathfinding/findPath/findPathWorker"
 import { useCallback, useContext, useEffect, useRef } from "react"
 import { isBrowser } from "utils/functions"
 import { getLocal, setLocal } from "utils/localUtils"
-import { wrap } from "utils/promise-worker"
 
 import useVoiceNavigation, { CompletionThresholds } from "./useVoiceNavigation"
 
-const rawWrapper = (async () => {
-  const worker =
-    isBrowser() &&
-    new Worker(new URL("pathfinding/findPath/findPathWorker", import.meta.url))
-  return worker && wrap<WorkerFunctions>(worker)
-})()
+const { findPath, initPathfinder } =
+  (() => {
+    if (!isBrowser()) return
+    const worker = new Worker(
+      new URL("pathfinding/findPath/findPathWorker", import.meta.url)
+    )
+    return wrap<FindPathWorkerType>(worker)
+  })() ?? {}
+
 getAll("pathfinding")
-  .then(async data => {
-    const wrapper = await rawWrapper
-    if (wrapper) wrapper.initPathfinder(data).catch(console.error)
+  .then(data => {
+    return initPathfinder?.(data)
   })
   .catch(console.error)
 
@@ -68,17 +69,13 @@ export default function useNavigation() {
     /**
      * Calculate and save a new route
      */
-    const updateRoute = async () => {
-      const wrapper = await rawWrapper
-      if (!wrapper) return
-
+    const updateRoute = () => {
       const playersLocation = getLocal("lastKnownLocation")
       if (playersLocation) {
         const { x, z } = playersLocation
         const coordId = `Coordinate: ${x}, ${z}`
 
-        wrapper
-          .findPath(coordId, destinationId, allowedModes)
+        findPath?.(coordId, destinationId, allowedModes)
           .then(results => {
             // sort the results by distance
             const sortedResults = results.sort(
@@ -191,9 +188,7 @@ export default function useNavigation() {
     }
 
     // update every 10 seconds
-    const interval = setInterval(() => {
-      updateRoute().catch(console.error)
-    }, 10 * 1000)
+    const interval = setInterval(updateRoute, 10 * 1000)
     return () => {
       clearInterval(interval)
     }

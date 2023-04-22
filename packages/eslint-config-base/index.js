@@ -80,7 +80,7 @@ module.exports = {
     "function-component-export/combine-default-export": "error",
 
     // allow console.error and console.warn
-    "no-console": ["error", { allow: ["error", "warn"] }],
+    "no-console": ["error", { allow: ["error", "warn", "info"] }],
 
     // disable rules that typescript handles
     "react/jsx-props-no-spreading": "off",
@@ -101,6 +101,9 @@ module.exports = {
 
     // we can remove this once TS 5.1 drops
     "react/jsx-no-useless-fragment": ["error", { allowExpressions: true }],
+
+    // need more time for top-level await to be supported
+    "unicorn/prefer-top-level-await": "off",
 
     // the following rules seem annoying, so I've loosened them up (so they can stay on)
     // the goal should probably be to decrease these over time

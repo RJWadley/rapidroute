@@ -1,8 +1,8 @@
+import { expose } from "comlink"
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
 import { get, getDatabase, ref } from "firebase/database"
 import { isBrowser } from "utils/functions"
-import { expose } from "utils/promise-worker"
 
 const firebaseConfig = {
   apiKey: "AIzaSyAk72DEr-1lB3XeRWIHKQ-yq_mTytWXxoo",
@@ -43,10 +43,6 @@ const getData = async (path: string): Promise<unknown> => {
   return value
 }
 
-const workerFunctions = { getData }
-
 // Export the type for type checking
-expose(workerFunctions)
-type FirebaseWorkerFunctions = typeof workerFunctions
-// TODO -next-line import/prefer-default-export
-export type { FirebaseWorkerFunctions }
+expose(getData)
+export type FirebaseWorkerType = typeof getData

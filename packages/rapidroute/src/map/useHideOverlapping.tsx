@@ -1,3 +1,4 @@
+import { wrap } from "comlink"
 import {
   Container as PixiContainer,
   Rectangle,
@@ -7,10 +8,9 @@ import {
 } from "pixi.js"
 import { useEffect, useRef, useState } from "react"
 import { isBrowser } from "utils/functions"
-import { wrap } from "utils/promise-worker"
 import useInterval from "utils/useInterval"
 
-import { CullInfo, CullInput, CullWorkerFunctions } from "./getAllCullDistances"
+import { CullInfo, CullWorkerType } from "./getAllCullDistances"
 import { hideItem, showItem } from "./PixiUtils"
 import { useViewport } from "./PixiViewport"
 
@@ -150,12 +150,13 @@ export function useUpdateOverlapping() {
     return () => clearTimeout(timeout)
   }, [])
 
-  const updateObjects = () => {
+  const updateObjects = async () => {
     if (isUpdating.current) return
     if (!updateNeeded) return
     updateNeeded = false
     isUpdating.current = true
-    const result = runCull(
+
+    const newResult = await getAllCullDistances?.(
       objects.map((object, i) => ({
         bounds: getWorldBounds(object.item),
         ...object,
@@ -163,17 +164,17 @@ export function useUpdateOverlapping() {
         itemIndex: i,
       }))
     )
-    result
-      .then(newResult => {
-        if (viewport) viewport.dirty = true
-        isUpdating.current = false
-        setDistances(newResult)
-        setLocalObjects(objects.map(obj => obj.item))
-      })
-      .catch(console.error)
+    if (!newResult) return
+
+    if (viewport) viewport.dirty = true
+    isUpdating.current = false
+    setDistances(newResult)
+    setLocalObjects(objects.map(obj => obj.item))
   }
 
-  useInterval(updateObjects, 100)
+  useInterval(() => {
+    updateObjects().catch(console.error)
+  }, 100)
 
   /**
    * apply the calculated culling
@@ -198,6 +199,7 @@ export function useUpdateOverlapping() {
         }
       })
     }
+
     Ticker.shared.add(update)
     return () => {
       Ticker.shared.remove(update)
@@ -205,14 +207,8 @@ export function useUpdateOverlapping() {
   }, [distances, localObjects, viewport])
 }
 
-const overlappingWorkerRaw = (async () => {
+const getAllCullDistances = (() => {
   if (!isBrowser()) return
   const worker = new Worker(new URL("getAllCullDistances.ts", import.meta.url))
-  return wrap<CullWorkerFunctions>(worker)
+  return wrap<CullWorkerType>(worker)
 })()
-
-const runCull = async (input: CullInput[]): Promise<CullInfo[]> => {
-  const worker = await overlappingWorkerRaw
-  if (!worker) return []
-  return worker.getAllCullDistances(input)
-}

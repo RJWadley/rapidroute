@@ -8,6 +8,7 @@
     "@rapidroute/database-types": "^1.0.0",
     "@tanstack/react-query": "^4.29.3",
     "@types/react-image-gallery": "^1.2.0",
+    "comlink": "^4.4.1",
     "easy-speech": "^2.0.0",
     "firebase": "^9.20.0",
     "flexsearch-ts": "^0.7.31",
