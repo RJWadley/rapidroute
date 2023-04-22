@@ -102,6 +102,7 @@ module.exports = {
     // the following rules seem annoying, so I've loosened them up (so they can stay on)
     // the goal should probably be to decrease these over time
     complexity: ["warn", 40],
+    "sonarjs/cognitive-complexity": ["warn", 40],
     "max-nested-callbacks": ["warn", 5],
     "max-params": ["warn", 6],
     "consistent-return": "off",

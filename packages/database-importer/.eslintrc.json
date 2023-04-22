@@ -1,3 +1,6 @@
 {
-  "extends": ["@rapidroute/eslint-config-base"]
+  "extends": ["@rapidroute/eslint-config-base"],
+  "rules": {
+    "no-console": "off"
+  }
 }
