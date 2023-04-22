@@ -1,5 +1,4 @@
 import { Route } from "@rapidroute/database-types"
-
 import { getPath } from "data/getData"
 
 /**
@@ -13,6 +12,7 @@ export default async function getProvider(route: Route) {
     for (let i = 0; i < provider.alias.length; i += 1) {
       const alias = provider.alias[i]
       if (
+        alias &&
         alias.numberRange?.start &&
         alias.numberRange?.end &&
         alias.displayProvider &&

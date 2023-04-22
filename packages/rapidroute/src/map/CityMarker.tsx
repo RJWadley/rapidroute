@@ -1,10 +1,9 @@
 import { useContext, useRef } from "react"
 
 import { Container, Text } from "@pixi/react"
-import { Container as PixiContainer, Point, Text as PixiText } from "pixi.js"
-
 import { MapSearchContext } from "components/Providers/MapSearchContext"
 import { search } from "data/search"
+import { Container as PixiContainer, Point, Text as PixiText } from "pixi.js"
 import { clearLocal } from "utils/localUtils"
 
 import { hideItem, showItem } from "./PixiUtils"
@@ -67,7 +66,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
   const click = () => {
     clearLocal("following")
     clearLocal("lastMapInteraction")
-    setActiveItem(search(name)[0])
+    setActiveItem(search(name)[0] ?? "")
     if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
   }
 

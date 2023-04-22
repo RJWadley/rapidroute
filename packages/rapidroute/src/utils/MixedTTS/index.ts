@@ -131,9 +131,8 @@ export const getDefaultVoice = async () => {
   if (bestOption) return bestOption
 
   for (let i = 0; i < fallbackDefaults.length; i += 1) {
-    const fallbackOption = allVoices.find(v =>
-      v.name.includes(fallbackDefaults[i])
-    )
+    const searchFor = fallbackDefaults[i]
+    const fallbackOption = allVoices.find(v => searchFor && v.name.includes(searchFor))
     if (fallbackOption) return fallbackOption
   }
 
@@ -153,12 +152,12 @@ export const speak = async (text: string): Promise<void> => {
   cancelTikSpeak()
   if (await easySpeechAvailable) EasySpeech.cancel()
 
-  if (voiceToUse.source === "tik") {
+  if (voiceToUse?.source === "tik") {
     await tikSpeak(text, voiceToUse.id.slice(1), speechRate)
   } else {
     await EasySpeech.speak({
       text,
-      voice: voiceToUse.speechSynthesisVoice,
+      voice: voiceToUse?.speechSynthesisVoice,
       rate: speechRate,
     })
   }

@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query"
-
 import { MarkersResponse, isMRTLine } from "map/markersType"
 import hslToHex from "utils/hslToHex"
 import invertLightness from "utils/invertLightness"
@@ -20,7 +19,8 @@ export default function DynmapMarkers() {
   const allStops: ColoredMarker[] = Object.keys(markerSets).flatMap(name => {
     if (isMRTLine(name)) {
       return Object.values(markerSets[name].markers).map(marker => {
-        const color = Object.values(markerSets[name].lines)[0]?.color
+        const color =
+          Object.values(markerSets[name].lines)[0]?.color ?? "#000000"
         const invertedColor = hslToHex(invertLightness(color))
         return {
           marker,

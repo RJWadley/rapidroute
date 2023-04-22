@@ -41,16 +41,18 @@ export default function Countdown({
     const updateTimer = () => {
       if (!mounted) return
 
-      const fromNumber = stopToNumber(currentRoute[0].from.shortName)
-      const toNumber = stopToNumber(currentRoute[0].to.shortName)
+      const fromNumber = stopToNumber(currentRoute[0]?.from.shortName)
+      const toNumber = stopToNumber(currentRoute[0]?.to.shortName)
       const numberOfStops = Math.abs(toNumber - fromNumber)
 
       const numberToUse = Number.isFinite(numberOfStops) ? numberOfStops : 0
-
-      const time = Math.round(getTimeToInstruction(spokenRoute[0], numberToUse))
-      setTimeToInstruction(Math.max(time, 0))
-      setCurrentTime(p => Math.max(0, p - 1))
-
+      
+      const firstSpoken = spokenRoute[0]
+      if (firstSpoken) {
+        const time = Math.round(getTimeToInstruction(firstSpoken, numberToUse))
+        setTimeToInstruction(Math.max(time, 0))
+        setCurrentTime(p => Math.max(0, p - 1))
+      }
       setTimeout(updateTimer, timerInterval.current)
     }
     updateTimer()

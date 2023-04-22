@@ -1,14 +1,13 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 
-import gsap from "gsap"
-import styled from "styled-components"
-
 import { getAll } from "data/getData"
+import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
 import { WorkerFunctions } from "pathfinding/findPath/findPathWorker"
 import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
+import styled from "styled-components"
 import { isBrowser, sleep } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal } from "utils/localUtils"
@@ -91,7 +90,8 @@ export default function Results() {
                 // fewer totalCost comes first
                 (a, b) => a.totalCost - b.totalCost
               )
-              if (newResults.length && newResults[0].path.length > 1)
+              const firstResult = newResults[0]
+              if (firstResult && firstResult.path.length > 1)
                 setResults(newResults)
               else setResults("none")
               debouncer.current = sleep(2000)

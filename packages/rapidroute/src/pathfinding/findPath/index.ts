@@ -67,15 +67,17 @@ export default class Pathfinder {
         break
       }
 
-      this.updateMaxCost(nodes, current, costSoFar[current])
+      this.updateMaxCost(nodes, current, costSoFar[current] ?? Infinity)
       this.distanceTraveled = Math.max(
         this.distanceTraveled,
-        costSoFar[current]
+        costSoFar[current] ?? 0
       )
 
       edges
         .filter(edge => edge.from === current)
-        .filter(edge => costSoFar[current] + edge.weight < this.maxCost)
+        .filter(
+          edge => (costSoFar[current] ?? Infinity) + edge.weight < this.maxCost
+        )
         .map(async edge => {
           // skip edges that are not allowed
           if (this.allowedModes.length === 0) {
@@ -90,18 +92,21 @@ export default class Pathfinder {
           // if we just walked, we can't walk again
           if (
             modeTo[current] &&
-            modeTo[current].includes("walk") &&
+            modeTo[current]?.includes("walk") &&
             edge.mode === "walk"
           )
             return
 
-          const newCost = costSoFar[current] + edge.weight
+          const newCost = (costSoFar[current] ?? Infinity) + edge.weight
           this.updateMaxCost(nodes, edge.to, newCost)
 
           if (edge.to === this.from) return
           if (newCost > this.maxCost) return
 
-          if (!costSoFar[edge.to] || newCost < costSoFar[edge.to]) {
+          if (
+            !costSoFar[edge.to] ||
+            newCost < (costSoFar[edge.to] ?? Infinity)
+          ) {
             costSoFar[edge.to] = newCost
             const priority = newCost
             frontier.enqueue(edge.to, priority)
@@ -109,10 +114,10 @@ export default class Pathfinder {
             modeTo[edge.to] = [edge.mode]
           } else if (
             newCost === costSoFar[edge.to] &&
-            !cameFrom[edge.to].includes(current)
+            !cameFrom[edge.to]?.includes(current)
           ) {
-            cameFrom[edge.to].push(current)
-            modeTo[edge.to].push(edge.mode)
+            cameFrom[edge.to]?.push(current)
+            modeTo[edge.to]?.push(edge.mode)
           }
         })
     }
@@ -184,7 +189,7 @@ export default class Pathfinder {
       const pathInfo = pathsInProgress.pop()
       if (!pathInfo) break
 
-      const lastNode = pathInfo.path[pathInfo.path.length - 1]
+      const lastNode = pathInfo.path[pathInfo.path.length - 1] ?? ""
       const parents = cameFrom[lastNode]
 
       if (parents) {

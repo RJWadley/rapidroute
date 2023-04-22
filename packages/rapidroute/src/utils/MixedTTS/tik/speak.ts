@@ -118,7 +118,10 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
               : 10000 + Math.random() * 10000
 
             setTimeout(() => {
-              preloadedAudio[voice][text] = undefined
+              preloadedAudio[voice] = {
+                ...preloadedAudio[voice],
+                [text]: undefined,
+              }
               preloadAudio(text, voice).catch(console.error)
             }, timeToWaitInMs)
           }

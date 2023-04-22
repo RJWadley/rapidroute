@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import gsap from "gsap"
-import styled, { css } from "styled-components"
-
 import { getPath } from "data/getData"
+import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
+import styled, { css } from "styled-components"
 
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
@@ -16,7 +15,7 @@ import Spinner from "./Spinner"
 
 interface RouteProps {
   route: ResultType
-  diff: string[]
+  diff?: string[]
   expandByDefault: boolean
 }
 
@@ -70,7 +69,7 @@ export default function Route({ route, diff, expandByDefault }: RouteProps) {
     }
   }, [dropdownOpen, segments])
 
-  const destination = segments?.[segments.length - 1].to
+  const destination = segments?.[segments.length - 1]?.to
 
   return (
     <Wrapper>

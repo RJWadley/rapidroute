@@ -23,7 +23,8 @@ const useImages = (pageTitle: string | undefined) => {
     enabled: !!pageTitle,
   })
 
-  const page = result?.query.pages[Object.keys(result.query.pages)[0]]
+  const pageKey = Object.keys(result?.query.pages ?? {})[0]
+  const page = pageKey ? result?.query.pages[pageKey] : undefined
   const images = page && "images" in page ? page.images : undefined
 
   const { data, isLoading } = useQuery({
@@ -61,12 +62,14 @@ const useImages = (pageTitle: string | undefined) => {
           // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
           const imageData = (await imageResp.json()) as WikiImage
 
-          const imagePage =
-            imageData.query.pages[Object.keys(imageData.query.pages)[0]]
+          const imagePageKey = Object.keys(imageData.query.pages)[0]
+          const imagePage = imagePageKey
+            ? imageData.query.pages[imagePageKey]
+            : undefined
 
-          return "imageinfo" in imagePage
+          return imagePage && "imageinfo" in imagePage
             ? {
-                img: imagePage.imageinfo[0].thumburl,
+                img: imagePage.imageinfo[0]?.thumburl,
                 alt: imagePage.title.replace("File:", "").replace(/\.\w+$/, ""),
               }
             : null

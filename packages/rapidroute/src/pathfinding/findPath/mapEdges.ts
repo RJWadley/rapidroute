@@ -34,7 +34,7 @@ export const generateRawEdges = (data: Pathfinding) => {
   const routeEdges: GraphEdge[] = edgeIds.flatMap(from => {
     const shortTypes = shortHandMapKeys
     return shortTypes.flatMap(routeTypeShort => {
-      const routes = data[from][routeTypeShort]
+      const routes = data[from]?.[routeTypeShort]
 
       if (routes) {
         return Object.entries(routes).flatMap(([to, routeInfo]) => {
@@ -42,10 +42,10 @@ export const generateRawEdges = (data: Pathfinding) => {
 
           const routeIds = routeInfo.map(route => route.n)
 
-          const x1 = data[from].x
-          const y1 = data[from].z
-          const x2 = data[to].x
-          const y2 = data[to].z
+          const x1 = data[from]?.x
+          const y1 = data[from]?.z
+          const x2 = data[to]?.x
+          const y2 = data[to]?.z
           const distance =
             x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
           const weight = getRouteTime(distance, shortHandMap[routeTypeShort])
@@ -73,20 +73,20 @@ export const generateRawEdges = (data: Pathfinding) => {
 
   // for each node, generate 5 walking edges to the closest nodes
   const walkingEdges: GraphEdge[] = edgeIds.flatMap(from => {
-    const x1 = data[from].x
-    const y1 = data[from].z
+    const x1 = data[from]?.x
+    const y1 = data[from]?.z
     const closestWalks = edgeIds
       .filter(to => to !== from)
       .map(to => {
-        const x2 = data[to].x
-        const y2 = data[to].z
+        const x2 = data[to]?.x
+        const y2 = data[to]?.z
         const distance =
           x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
         return { to, distance }
       })
       // filter out MRT stops on the same line unless the from is out of service
       .filter(({ to }) => {
-        if (!data[from].M) return true
+        if (!data[from]?.M) return true
         if (from.charAt(0) === to.charAt(0)) return false
         return true
       })
@@ -96,7 +96,7 @@ export const generateRawEdges = (data: Pathfinding) => {
         if (i === 0) return true // keep the closest location regardless
         const shortTypes = shortHandMapKeys
         return shortTypes.some(routeTypeShort => {
-          const routes = data[to][routeTypeShort]
+          const routes = data[to]?.[routeTypeShort]
           return !!routes && !routes[from]
         })
       })
@@ -108,10 +108,10 @@ export const generateRawEdges = (data: Pathfinding) => {
           isMRT(from) &&
           isMRT(to) &&
           getDistance(
-            data[from].x ?? Infinity,
-            data[from].z ?? Infinity,
-            data[to].x ?? Infinity,
-            data[to].z ?? Infinity
+            data[from]?.x ?? Infinity,
+            data[from]?.z ?? Infinity,
+            data[to]?.x ?? Infinity,
+            data[to]?.z ?? Infinity
           ) < 200
             ? "MRT"
             : "walk"
@@ -127,7 +127,7 @@ export const generateRawEdges = (data: Pathfinding) => {
 
   // spawn warp edges
   const warpEdges: GraphEdge[] = edgeIds.flatMap(placeId => {
-    const isWarp = data[placeId].w
+    const isWarp = data[placeId]?.w
     if (isWarp) {
       return [
         {

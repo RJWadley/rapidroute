@@ -24,7 +24,8 @@ const useFirstParagraph = (text: string | undefined) => {
     enabled: !!text,
   })
 
-  const page = data?.query.pages[Object.keys(data.query.pages)[0]]
+  const pageKey = Object.keys(data?.query.pages ?? {})[0]
+  const page = pageKey ? data?.query.pages[pageKey] : undefined
 
   return {
     data: page && "extract" in page ? page.extract : undefined,

@@ -24,14 +24,16 @@ export default function useFollowedRoute(route: SegmentType[]) {
 
     const firstSegment = route[0]
 
-    const firstTo = previousRoute[0]?.to
-    const secondTo = previousRoute[1]?.to
-    const { from } = firstSegment
+    const prevFirst = previousRoute[0]
+    const prevSecond = previousRoute[1]
+    const firstTo = prevFirst?.to
+    const secondTo = prevSecond?.to
+    const { from } = firstSegment ?? {}
 
-    if (firstTo?.uniqueId === from.uniqueId)
-      setFollowedRoute([...followedRoute, previousRoute[0]])
-    else if (secondTo?.uniqueId === from.uniqueId)
-      setFollowedRoute([...followedRoute, previousRoute[0], previousRoute[1]])
+    if (firstTo?.uniqueId === from?.uniqueId && prevFirst)
+      setFollowedRoute([...followedRoute, prevFirst])
+    else if (secondTo?.uniqueId === from?.uniqueId && prevSecond && prevFirst)
+      setFollowedRoute([...followedRoute, prevFirst, prevSecond])
 
     setPreviousRoute(route)
   }, [followedRoute, previousRoute, route])

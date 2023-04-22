@@ -46,9 +46,9 @@ export function pathnameMatches(pathA: string, pathB: string) {
 export const isColorLight = (color: string) => {
   const rgb = color.match(/\d+/g)
   if (!rgb) return false
-  const r = parseInt(rgb[0], 10)
-  const g = parseInt(rgb[1], 10)
-  const b = parseInt(rgb[2], 10)
+  const r = parseInt(rgb[0] ?? "0", 10)
+  const g = parseInt(rgb[1] ?? "0", 10)
+  const b = parseInt(rgb[2] ?? "0", 10)
   const brightness = (r * 299 + g * 587 + b * 114) / 1000
   return brightness > 125
 }

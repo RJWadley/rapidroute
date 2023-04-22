@@ -51,11 +51,13 @@ export default function InfoBox({ title }: { title: string | undefined }) {
       // get the lightness
       const [, , lightness] = hexToHSL(asHex)
 
-      if (isDark && lightness < 0.51) {
-        gsap.set(child, { color: invertLightness(asHex) })
-      }
-      if (!isDark && lightness > 0.5) {
-        gsap.set(child, { color: invertLightness(asHex) })
+      if (lightness) {
+        if (isDark && lightness < 0.51) {
+          gsap.set(child, { color: invertLightness(asHex) })
+        }
+        if (!isDark && lightness > 0.5) {
+          gsap.set(child, { color: invertLightness(asHex) })
+        }
       }
     })
   }, [isDark, data])

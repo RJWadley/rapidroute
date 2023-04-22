@@ -1,5 +1,4 @@
 import { Pathfinding, shortHandMapKeys } from "@rapidroute/database-types"
-
 import isCoordinate from "data/isCoordinate"
 
 import getRouteTime from "./getRouteTime"
@@ -18,15 +17,15 @@ export async function createCoordinateEdges(
       const distance = getDistance(
         x,
         z,
-        nodes[nodeId].x ?? Infinity,
-        nodes[nodeId].z ?? Infinity
+        nodes[nodeId]?.x ?? Infinity,
+        nodes[nodeId]?.z ?? Infinity
       )
       return { to: nodeId, distance }
     })
     .filter(({ to }) => {
       const shortTypes = shortHandMapKeys
       return shortTypes.some(routeTypeShort => {
-        const routes = nodes[to][routeTypeShort]
+        const routes = nodes[to]?.[routeTypeShort]
         return !!routes
       })
     })
@@ -56,29 +55,33 @@ export async function generateAllCoordinateEdges(
       .replace("Coordinate:", "")
       .split(",")
       .map(n => Number(n))
-    const coordinateEdges = await createCoordinateEdges(from, x, z, nodes)
-    edges.push(...coordinateEdges)
+    if (x && z) {
+      const coordinateEdges = await createCoordinateEdges(from, x, z, nodes)
+      edges.push(...coordinateEdges)
 
-    const distanceFromStartToFinish = getDistance(
-      x,
-      z,
-      nodes[to]?.x ?? Infinity,
-      nodes[to]?.z ?? Infinity
-    )
-    edges.push({
-      from,
-      to,
-      weight: getRouteTime(distanceFromStartToFinish, "walk"),
-      mode: "walk",
-    })
+      const distanceFromStartToFinish = getDistance(
+        x,
+        z,
+        nodes[to]?.x ?? Infinity,
+        nodes[to]?.z ?? Infinity
+      )
+      edges.push({
+        from,
+        to,
+        weight: getRouteTime(distanceFromStartToFinish, "walk"),
+        mode: "walk",
+      })
+    }
   }
   if (isCoordinate(to)) {
     const [x, z] = to
       .replace("Coordinate:", "")
       .split(",")
       .map(n => Number(n))
-    const coordinateEdges = await createCoordinateEdges(to, x, z, nodes)
-    edges.push(...coordinateEdges)
+    if (x && z) {
+      const coordinateEdges = await createCoordinateEdges(to, x, z, nodes)
+      edges.push(...coordinateEdges)
+    }
   }
 
   return edges

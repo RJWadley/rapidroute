@@ -41,9 +41,9 @@ const describeGroups = (groups: string[][]) => {
 
     // find the common prefix
     let prefix = ""
-    for (let i = 0; i < group[0].length; i += 1) {
-      const char = group[0][i]
-      if (group.every(str => str[i] === char) && /\D/.test(char)) {
+    for (let i = 0; i < (group[0]?.length ?? 0); i += 1) {
+      const char = group[0]?.[i]
+      if (char && group.every(str => str[i] === char) && /\D/.test(char)) {
         prefix += char
       } else {
         break
@@ -86,10 +86,11 @@ const listify = (arr: string[]) => {
   )
 }
 
-export default function describeDiff(diff: string[]) {
+export default function describeDiff(diff: string[] | undefined) {
+  if (!diff) return <B>Fastest Route</B>
   const groups = groupByCommonLetters(diff)
   const descriptions = describeGroups(groups)
-  return listify(descriptions)
+  return listify(descriptions.flatMap(d => (d ? [d] : [])))
 }
 
 const B = styled.strong`

@@ -15,10 +15,9 @@ const displayLookup: Record<string, string> = {}
 
 getAll("searchIndex")
   .then(data => {
-    Object.keys(data).forEach(key => {
-      searchWorker.add(key, data[key].i)
-      // strictSearchWorker.add(key, data[key].i)
-      displayLookup[key] = data[key].d
+    Object.entries(data).forEach(([key, value]) => {
+      searchWorker.add(key, value.i)
+      displayLookup[key] = value.d
     })
   })
 
@@ -58,7 +57,7 @@ export function search(query: string) {
   return results.map(x => (typeof x === "number" ? x.toString() : x))
 }
 
-export function getTextboxName(locationId: string | null) {
+export function getTextboxName(locationId: string | null | undefined) {
   if (!locationId) return ""
   return displayLookup[locationId] ?? locationId
 }

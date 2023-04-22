@@ -23,11 +23,11 @@ export default function removeExtras(results: ResultType[]) {
     const beforeDiff = resultDiffs([prev.path, curr.path])
     const afterDiff = resultDiffs([curr.path, next.path])
 
-    const beforeIndex = curr.path.indexOf(beforeDiff[1][0])
-    const afterIndex = curr.path.indexOf(afterDiff[0][0])
+    const beforeIndex = curr.path.indexOf(beforeDiff[1]?.[0] ?? "")
+    const afterIndex = curr.path.indexOf(afterDiff[0]?.[0] ?? "")
 
     // if the current result has a single difference
-    if (beforeDiff[1].length === 1 && afterDiff[0].length === 1) {
+    if (beforeDiff[1]?.length === 1 && afterDiff[0]?.length === 1) {
       // and the index of that difference is i in the previous result and i+1 in the next result
       if (beforeIndex + 1 === afterIndex) {
         // then we can assume that the current result is a duplicate

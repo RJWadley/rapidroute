@@ -25,7 +25,7 @@ const getMaxZoom = (viewport: Viewport | null): number => {
 
   // return the largest zoom level where the density is smaller than the breakpoint
   for (let i = breakpoints.length - 1; i >= 0; i -= 1) {
-    if (density < breakpoints[i]) {
+    if (density < (breakpoints[i] ?? Infinity)) {
       return i
     }
   }

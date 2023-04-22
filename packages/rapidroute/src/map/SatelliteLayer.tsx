@@ -99,7 +99,8 @@ const create2DArray = <T,>(
   for (let row = 0; row < rows; row += 1) {
     array[row] = []
     for (let column = 0; column < columns; column += 1) {
-      array[row][column] = fill(row, column)
+      const thisRow = array[row]
+      if (thisRow) thisRow[column] = fill(row, column)
     }
   }
   return array.flat()

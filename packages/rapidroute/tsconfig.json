@@ -4,6 +4,7 @@
   "compilerOptions": {
     "lib": ["dom", "DOM.Iterable", "esnext"],
     "jsx": "react-jsx",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "module": "ES2020"
   }
 }

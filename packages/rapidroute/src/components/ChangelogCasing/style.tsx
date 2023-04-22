@@ -69,7 +69,7 @@ const Scoped = styled.div`
     // add back bullet points
     :before {
       content: "🔥";
-      color: var(--text-color)
+      color: var(--text-color);
       font-weight: bold;
       display: inline-block;
       width: 1.5rem;

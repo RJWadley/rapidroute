@@ -86,7 +86,7 @@ function expose(functions: ExposedFunctions): void {
     const func = functions[request.action]
     const args = request.payload
 
-    const result = func(...args) as unknown
+    const result = func?.(...args) as unknown
 
     if (result instanceof Promise) {
       return result
@@ -150,8 +150,8 @@ async function wrap<T extends ExposedFunctions>(
     } else {
       const job = activeJobs.splice(jobIndex, 1)[0]
       response.type == "success"
-        ? job.resolve(response.payload)
-        : job.reject(response.payload)
+        ? job?.resolve(response.payload)
+        : job?.reject(response.payload)
     }
   }
 

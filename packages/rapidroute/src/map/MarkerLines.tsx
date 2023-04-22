@@ -21,7 +21,7 @@ function MarkerLine({
 }) {
   const points = line.x.map((x, i) => ({
     x,
-    z: line.z[i],
+    z: line.z[i] ?? 0,
   }))
 
   return <Line points={points} color={line.color} background={background} />

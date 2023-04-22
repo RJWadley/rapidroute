@@ -39,7 +39,8 @@ export default PixiComponent(TYPE, {
       // create a renderTexture, draw the graphics object to it, and then use that for the sprite texture
       const key = colors.join(",")
       if (!textures[key]) generateTexture(colors, renderer)
-      instance.texture = textures[key]
+      const newTexture = textures[key]
+      if (newTexture) instance.texture = newTexture
       instance.x = point.x
       instance.y = point.z
       instance.anchor.set(0.5, 0.5)

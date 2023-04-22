@@ -1,5 +1,4 @@
 import { shortHandMapKeys } from "@rapidroute/database-types"
-
 import { getAll } from "data/getData"
 
 const getDistance = (
@@ -39,15 +38,21 @@ getAll("pathfinding")
         const modes = shortHandMapKeys
         for (let k = 0; k < modes.length; k += 1) {
           const mode = modes[k]
+          if (mode && placeA && placeB) {
+            const placesA = Object.keys(placeA[mode] || {})
 
-          const placesA = Object.keys(placeA[mode] || {})
-
-          if (placesA.includes(placeB.uniqueId)) {
-            const distance = getDistance(placeA.x, placeA.z, placeB.x, placeB.z)
-            if (distance > furthest) {
-              furthest = distance
-              furthestA = placeA.uniqueId
-              furthestB = placeB.uniqueId
+            if (placesA.includes(placeB.uniqueId)) {
+              const distance = getDistance(
+                placeA.x,
+                placeA.z,
+                placeB.x,
+                placeB.z
+              )
+              if (distance > furthest) {
+                furthest = distance
+                furthestA = placeA.uniqueId
+                furthestB = placeB.uniqueId
+              }
             }
           }
         }

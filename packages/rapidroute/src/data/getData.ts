@@ -6,7 +6,6 @@ import {
   DatabaseDataKeys,
   DataDatabaseType,
 } from "@rapidroute/database-types"
-
 import { setShowOfflineBanner } from "components/OfflineBanner"
 import { isBrowser, sleep } from "utils/functions"
 import isObject from "utils/isObject"
@@ -146,8 +145,8 @@ export async function getPath<T extends DatabaseDataKeys>(
 
   // some things are not in the database, so we need to check for that
   if (type === "locations" && isCoordinate(itemName)) {
-    const xCoord = parseInt(itemName.split(", ")[0].split(": ")[1], 10)
-    const zCoord = parseInt(itemName.split(", ")[1], 10)
+    const xCoord = parseInt(itemName.split(", ")[0]?.split(": ")[1] ?? "0", 10)
+    const zCoord = parseInt(itemName.split(", ")[1] ?? "0", 10)
     const out: Location = {
       uniqueId: itemName,
       name: itemName,

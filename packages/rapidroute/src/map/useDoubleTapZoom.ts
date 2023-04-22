@@ -28,20 +28,20 @@ export default function useDoubleTapZoom() {
         const distanceBetweenTaps = getDistance(
           previousX,
           previousY,
-          e.touches[0].clientX,
-          e.touches[0].clientY
+          e.touches[0]?.clientX ?? 0,
+          e.touches[0]?.clientY ?? 0
         )
         if (distanceBetweenTaps > MAX_TAP_DISTANCE) return
         isZooming = true
         firstTap = 0
-        previousY = e.touches[0].clientY
-        previousX = e.touches[0].clientX
+        previousY = e.touches[0]?.clientY ?? 0
+        previousX = e.touches[0]?.clientX ?? 0
         dy = 0
         if (viewport) viewport.pause = true
       } else {
         if (e.touches.length > 1) return
-        previousY = e.touches[0].clientY
-        previousX = e.touches[0].clientX
+        previousY = e.touches[0]?.clientY ?? 0
+        previousX = e.touches[0]?.clientX ?? 0
         firstTap = now
       }
     }
@@ -70,9 +70,9 @@ export default function useDoubleTapZoom() {
       if (isZooming) {
         e.preventDefault()
         e.stopPropagation()
-        const distance = e.touches[0].clientY - previousY
+        const distance = (e.touches[0]?.clientY ?? 0) - previousY
         viewport?.zoomPercent(distance / 100, true)
-        previousY = e.touches[0].clientY
+        previousY = e.touches[0]?.clientY ?? 0
         distances.push(distance)
         if (distances.length > 10) distances.shift()
         triggerMovementManually()

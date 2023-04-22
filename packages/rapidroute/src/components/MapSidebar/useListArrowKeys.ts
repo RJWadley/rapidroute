@@ -92,7 +92,7 @@ export default function useListArrowKeys(
       if (nextIndex >= currentSearch.length) nextIndex = -1
       const nextItem = currentSearch[nextIndex]
       setFocusedItem(nextItem)
-      updateActive(nextItem)
+      if (nextItem !== undefined) updateActive(nextItem)
 
       if (input) {
         input.value =

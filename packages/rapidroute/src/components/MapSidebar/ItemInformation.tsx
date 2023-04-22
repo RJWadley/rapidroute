@@ -43,10 +43,16 @@ export default function ItemInformation() {
   const carousel = value?.images && (
     <CarouselWrap>
       <ImageGallery
-        items={value.images.map(image => ({
-          original: image.img,
-          originalAlt: image.alt,
-        }))}
+        items={value.images.flatMap(image =>
+          image.img
+            ? [
+                {
+                  original: image.img,
+                  originalAlt: image.alt,
+                },
+              ]
+            : []
+        )}
         showPlayButton={false}
         showFullscreenButton={false}
         autoPlay

@@ -36,7 +36,8 @@ const renderPoints = ({
     width,
     native,
   })
-  instance.moveTo(points[0].x, points[0].z)
+  const [firstX, firstZ] = [points[0]?.x, points[0]?.z]
+  if (firstX && firstZ) instance.moveTo(firstX, firstZ)
   points.forEach(({ x, z }) => {
     instance.lineTo(x, z)
   })

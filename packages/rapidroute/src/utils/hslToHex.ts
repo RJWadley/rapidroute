@@ -1,8 +1,8 @@
 export default function hslToHex(colorIn: string) {
   const color = colorIn.replace(/hsl\(|\)/g, "").split(",")
-  const h = parseInt(color[0], 10) / 360
-  const s = parseInt(color[1], 10) / 100
-  const l = parseInt(color[2], 10) / 100
+  const h = parseInt(color[0] ?? "0", 10) / 360
+  const s = parseInt(color[1] ?? "0", 10) / 100
+  const l = parseInt(color[2] ?? "0", 10) / 100
   let r
   let g
   let b

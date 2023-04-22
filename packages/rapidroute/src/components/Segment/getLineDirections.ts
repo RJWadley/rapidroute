@@ -42,6 +42,7 @@ export const stopToNumber = (stop: string | undefined) => {
  */
 export const getLineDirection = (fromStop: string, toStop: string) => {
   const lineCode = fromStop[0]
+  if (!lineCode) return ""
 
   const fromStopNumber = stopToNumber(fromStop)
   const toStopNumber = stopToNumber(toStop)
