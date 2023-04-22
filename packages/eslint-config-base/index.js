@@ -85,6 +85,7 @@ module.exports = {
     "react/jsx-props-no-spreading": "off",
     "react/no-unknown-property": "off",
     "no-undef": "off",
+    "unicorn/no-useless-undefined": ["error", { checkArguments: false }],
 
     // validate nesting
     "validate-jsx-nesting/no-invalid-jsx-nesting": "error",
