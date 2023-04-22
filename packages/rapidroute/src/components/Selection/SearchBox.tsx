@@ -34,14 +34,18 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
     if (inputRef.current?.value.includes("\n")) {
       inputRef.current.value = inputRef.current.value.replace(/\n/g, "")
       setShowSearchList(false)
-      if (searchRole === "from") {
-        document.querySelector("#to")?.focus()
-      } else {
-        document.querySelector("#to")?.blur()
+
+      const toElement = document.querySelector("#to")
+      if (toElement instanceof HTMLTextAreaElement) {
+        if (searchRole === "from") {
+          toElement.focus()
+        } else {
+          toElement.blur()
+        }
       }
+
       // update text to match the context
-      if (searchRole === "from") inputRef.current.value = getTextboxName(from)
-      else if (searchRole === "to") inputRef.current.value = getTextboxName(to)
+      inputRef.current.value = getTextboxName(searchRole === "from" ? from : to)
     }
   }
 
