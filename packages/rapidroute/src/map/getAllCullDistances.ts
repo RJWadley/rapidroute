@@ -1,6 +1,8 @@
 import { Rectangle } from "pixi.js"
 
-interface CullInput {
+import { expose } from "utils/promise-worker"
+
+export interface CullInput {
   bounds: Rectangle
   priority: number
   minZoom?: number
@@ -87,3 +89,10 @@ const getAllCullDistances = (objectsToCheck: CullInput[]): CullInfo[] => {
 }
 
 export default getAllCullDistances
+
+const workerFunctions = { getAllCullDistances }
+// Export the type for type checking
+expose(workerFunctions)
+type CullWorkerFunctions = typeof workerFunctions
+// eslint-disable-next-line import/prefer-default-export
+export type { CullWorkerFunctions }

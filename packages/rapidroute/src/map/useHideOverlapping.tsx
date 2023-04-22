@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 
-import { useWorker } from "@koale/useworker"
 import {
   Rectangle,
   Ticker,
@@ -9,9 +8,11 @@ import {
   Text as PixiText,
 } from "pixi.js"
 
+import { isBrowser } from "utils/functions"
+import { wrap } from "utils/promise-worker"
 import useInterval from "utils/useInterval"
 
-import getAllCullDistances, { CullInfo } from "./getAllCullDistances"
+import { CullInfo, CullInput, CullWorkerFunctions } from "./getAllCullDistances"
 import { hideItem, showItem } from "./PixiUtils"
 import { useViewport } from "./PixiViewport"
 
@@ -140,7 +141,6 @@ const getWorldBounds = (item: ObjectType): Rectangle => {
 
 export function useUpdateOverlapping() {
   const viewport = useViewport()
-  const [cullWorker] = useWorker(getAllCullDistances)
   const [distances, setDistances] = useState<CullInfo[]>([])
   const [localObjects, setLocalObjects] = useState<ObjectType[]>([])
   const isUpdating = useRef(false)
@@ -158,7 +158,7 @@ export function useUpdateOverlapping() {
     if (!updateNeeded) return
     updateNeeded = false
     isUpdating.current = true
-    const result = cullWorker(
+    const result = runCull(
       objects.map((object, i) => ({
         bounds: getWorldBounds(object.item),
         ...object,
@@ -206,4 +206,18 @@ export function useUpdateOverlapping() {
       Ticker.shared.remove(update)
     }
   }, [distances, localObjects, viewport])
+}
+
+const overlappingWorkerRaw = (async () => {
+  if (!isBrowser()) return undefined
+  const worker = new Worker(
+    new URL("./getAllCullDistances.ts", import.meta.url)
+  )
+  return wrap<CullWorkerFunctions>(worker)
+})()
+
+const runCull = async (input: CullInput[]): Promise<CullInfo[]> => {
+  const worker = await overlappingWorkerRaw
+  if (!worker) return []
+  return worker.getAllCullDistances(input)
 }

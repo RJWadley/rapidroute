@@ -4,7 +4,6 @@
   "version": "3.0.0",
   "author": "rjwadley",
   "dependencies": {
-    "@koale/useworker": "^4.0.2",
     "@pixi/react": "^7.0.3",
     "@rapidroute/database-types": "^1.0.0",
     "@tanstack/react-query": "^4.27.0",
