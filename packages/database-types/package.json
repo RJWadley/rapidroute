@@ -2,7 +2,8 @@
   "name": "@rapidroute/database-types",
   "version": "1.0.0",
   "scripts": {
-    "lint": "",
+    "lint": "npx eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint:fix": "npx eslint --ext .js,.jsx,.ts,.tsx . --fix",
     "build": "tsc",
     "clean": "rm -rf dist"
   },
