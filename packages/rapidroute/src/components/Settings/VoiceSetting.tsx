@@ -189,7 +189,8 @@ const Voice = styled.button<{ active: boolean; showBorder: boolean }>`
   cursor: pointer;
   ${({ showBorder }) =>
     css`
-      border-bottom: 1px solid var(--${showBorder ? "dark" : "mid"}-background);
+      border-bottom: 1px solid
+        ${showBorder ? "var(--dark-background)" : "var(--mid-background)"};
     `}
   transition: border-bottom 0.5s ease;
 
@@ -197,7 +198,7 @@ const Voice = styled.button<{ active: boolean; showBorder: boolean }>`
     margin-bottom: 10px;
   }
 
-  // line clamp to 3 lines
+  /* line clamp to 3 lines */
   span {
     display: -webkit-box;
     -webkit-line-clamp: 1;

@@ -122,8 +122,8 @@ const Selection = styled.button<{ active: boolean }>`
   white-space: nowrap;
   opacity: 0;
 
-  //check
-  :before {
+  /* check */
+  ::before {
     content: "";
     position: absolute;
     top: calc(50% - 10px);

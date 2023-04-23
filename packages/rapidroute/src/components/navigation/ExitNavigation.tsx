@@ -30,11 +30,9 @@ const Wrapper = styled.div`
   background-color: var(--glassy-default-card-background);
   border-radius: 25px;
   backdrop-filter: blur(3px);
-
   position: fixed;
   z-index: 3;
   top: 20px;
-
   width: 350px;
   min-height: 80px;
   padding: 15px;
@@ -47,7 +45,7 @@ const Wrapper = styled.div`
     margin-bottom: 60vh;
   }
 
-  // if using window controls overlay, move down
+  /* if using window controls overlay, move down */
   @media (display-mode: window-controls-overlay) {
     transform: translateY(env(titlebar-area-height, 40px));
   }

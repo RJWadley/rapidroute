@@ -124,8 +124,8 @@ const SegmentWrapper = styled.div<{
     opacity: 1;
   }
 
-  // add an invisible panel to catch any scrolling in the 20px above the segment
-  &:before {
+  /* add an invisible panel to catch any scrolling in the 20px above the segment */
+  ::before {
     content: "";
     position: absolute;
     top: -20px;

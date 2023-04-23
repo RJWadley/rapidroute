@@ -27,10 +27,10 @@ export default function ControlsOverlay({
 }
 
 const Spacer = styled.div`
-  // if not using window controls overlay, hide
+  /* if not using window controls overlay, hide */
   display: none;
 
-  // if using window controls overlay, show
+  /* if using window controls overlay, show */
   @media (display-mode: window-controls-overlay) {
     display: block;
     height: env(titlebar-area-height, 40px);
@@ -38,10 +38,10 @@ const Spacer = styled.div`
 `
 
 const Wrapper = styled.div<{ fillBackground: boolean }>`
-  // if not using window controls overlay, hide
+  /* if not using window controls overlay, hide */
   display: none;
 
-  // if using window controls overlay, show
+  /* if using window controls overlay, show */
   @media (display-mode: window-controls-overlay) {
     display: flex;
     align-items: center;

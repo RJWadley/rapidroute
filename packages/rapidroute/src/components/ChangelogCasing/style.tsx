@@ -27,19 +27,6 @@ const Scoped = styled.div`
     margin: 20px 0;
   }
 
-  li {
-    margin-left: 1rem;
-
-    ::before {
-      content: "•";
-      color: black;
-      font-weight: bold;
-      display: inline-block;
-      width: 1rem;
-      margin-left: -1rem;
-    }
-  }
-
   .title-container {
     width: 100%;
     height: 350px;
@@ -65,9 +52,11 @@ const Scoped = styled.div`
   }
 
   li {
+    margin-left: 1rem;
     margin-bottom: 10px;
-    // add back bullet points
-    :before {
+
+    /* add back bullet points */
+    ::before {
       content: "🔥";
       color: var(--text-color);
       font-weight: bold;
