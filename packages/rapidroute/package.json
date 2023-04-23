@@ -53,6 +53,16 @@
     "lint:fix": "npx eslint --ext .js,.jsx,.ts,.tsx . --fix",
     "start": "gatsby develop -H 0.0.0.0",
     "serve": "gatsby serve",
-    "clean": "gatsby clean && rm -f ./src/types/gatsby-types.d.ts"
-  }
+    "clean": "gatsby clean && rm -f ./src/types/gatsby-types.d.ts",
+    "lint:css": "npx stylelint './src/**/*.{js,jsx,ts,tsx}' --fix || exit 0"
+  },
+  "browserslist": [
+    "last 99 chrome versions and last 1 year",
+    "last 99 ChromeAndroid versions and last 1 year",
+    "last 99 Safari versions and last 1 year",
+    "last 99 iOS versions and last 1 year",
+    "last 99 firefox versions and last 1 year",
+    "last 99 FirefoxAndroid versions and last 1 year",
+    ">0.15% and last 1 year"
+  ]
 }

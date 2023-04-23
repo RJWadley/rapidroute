@@ -22,5 +22,15 @@
     "@rapidroute/eslint-config-base": "^1.0.0",
     "@types/flexsearch": "^0.7.3",
     "typescript": "^5.0.4"
-  }
+  },
+  "browserslist": [
+    "last 99 chrome versions and last 1 year",
+    "last 99 ChromeAndroid versions and last 1 year",
+    "last 99 Safari versions and last 1 year",
+    "last 99 iOS versions and last 1 year",
+    "last 99 firefox versions and last 1 year",
+    "last 99 FirefoxAndroid versions and last 1 year",
+    ">0.15% and last 1 year",
+    "node 18"
+  ]
 }

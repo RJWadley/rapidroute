@@ -23,6 +23,7 @@ module.exports = {
     "plugin:jsx-a11y/recommended", // a11y for react elements
     "plugin:styled-components-a11y/recommended", // a11y for styled components
     "plugin:prettier/recommended", // disable any pure style rules
+    "plugin:compat/recommended", // browser compatibility
   ],
   plugins: [
     "@typescript-eslint",
@@ -36,6 +37,7 @@ module.exports = {
     "react-hooks",
     "jsx-a11y",
     "validate-jsx-nesting",
+    "compat",
   ],
   env: {
     browser: true,

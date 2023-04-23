@@ -6,6 +6,8 @@ overrides:
       - "**/*.jsx"
       - "**/*.ts"
       - "**/*.tsx"
+plugins:
+  - stylelint-no-unsupported-browser-features
 rules:
   # allow empty sources (e.g. styled.div``)
   no-empty-source: null
@@ -13,3 +15,6 @@ rules:
   block-no-empty: null
   # allow unknown selectors (the fresponsive utils can trigger this)
   selector-type-no-unknown: null
+  # check for browser support
+  plugin/no-unsupported-browser-features:
+    [true, { severity: warning, ignorePartialSupport: true }]

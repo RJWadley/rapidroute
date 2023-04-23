@@ -20,5 +20,8 @@
   },
   "devDependencies": {
     "typescript": "^5.0.4"
-  }
+  },
+  "browserslist": [
+    "node 18"
+  ]
 }
