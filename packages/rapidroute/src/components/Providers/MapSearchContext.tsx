@@ -21,7 +21,9 @@ export const MapSearchContext = createContext<{
   setActiveItem: React.Dispatch<React.SetStateAction<string>>
 }>({
   activeItem: "",
-  setActiveItem: () => {},
+  setActiveItem: () => {
+    throw new Error("no provider")
+  },
 })
 
 export function MapSearchProvider({
@@ -38,21 +40,23 @@ export function MapSearchProvider({
     }
   }, [activeItem])
 
-  // sync to and from URL params
+  // sync from URL param
   useEffect(() => {
     const id = getLocal("name")
-    if (id)
+    if (id) {
       getAll("searchIndex")
         .then(index => {
-          setActiveItem(
+          return setActiveItem(
             index[id]?.uniqueId ??
               search(id).find(x => x !== "Current Location") ??
               id
           )
         })
         .catch(console.error)
+    }
   }, [])
 
+  // sync to URL param
   const firstRender = useRef(true)
   useEffect(() => {
     if (firstRender.current) {

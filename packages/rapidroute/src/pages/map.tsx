@@ -2,7 +2,7 @@ import { navigate } from "@reach/router"
 import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
 import MapSidebar from "components/MapSidebar"
-import SEO from "components/SEO"
+import Seo from "components/SEO"
 import Settings from "components/Settings"
 import Map from "map"
 import MapBackground from "map/MapBackground"
@@ -59,5 +59,5 @@ const StyledMapTag = styled(MapTag)`
 `
 
 export function Head() {
-  return <SEO />
+  return <Seo />
 }

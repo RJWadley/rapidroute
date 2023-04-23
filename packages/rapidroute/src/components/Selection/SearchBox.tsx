@@ -26,6 +26,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
       inputRef.current.value = getTextboxName(to)
   }, [searchRole, to])
 
+  // false positive
   const handleInput = () => {
     setSearchFor(inputRef.current?.value.replace(/\n/g, "") ?? "")
     setShowSearchList(true)
@@ -57,9 +58,10 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
 
   return (
     <>
-      <Label>
+      <Label htmlFor={searchRole}>
         <Text
           id={searchRole}
+          name={searchRole}
           ref={inputRef}
           onChange={handleInput}
           placeholder={`Search ${searchRole}`}
@@ -106,7 +108,7 @@ const Text = styled.textarea<{ isTo: boolean }>`
   text-align: ${props => (props.isTo ? "right" : "left")};
   overflow: hidden;
 
-  //vertically center text
+  /* vertically center text */
   display: flex;
   align-items: center;
 

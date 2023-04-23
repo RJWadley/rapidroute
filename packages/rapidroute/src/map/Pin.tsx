@@ -34,6 +34,7 @@ export default function Pin() {
       return
     }
     clearLocal("lastMapInteraction")
+
     const debounce = setTimeout(() => {
       getPath("locations", activeItem)
         .then(newLocation => {
@@ -43,10 +44,11 @@ export default function Pin() {
               newLocation.location.z
             )
             setLocation(newPoint)
-            zoomToPoint(newPoint, viewport, 250).catch(() => {})
+            return zoomToPoint(newPoint, viewport, 250)
           }
+          return null
         })
-        .catch(() => {})
+        .catch(console.error)
     }, 250)
     return () => clearTimeout(debounce)
   }, [activeItem, viewport])

@@ -81,6 +81,7 @@ const SearchBox = styled.textarea`
 `
 
 const Close = styled.button`
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
   font-weight: normal;
   padding: 0 20px;

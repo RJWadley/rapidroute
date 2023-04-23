@@ -3,7 +3,7 @@ import ControlsOverlay from "components/ControlsOverlay/ControlsOverlay"
 import Layout from "components/Layout"
 import PlayerSelect from "components/PlayerSelect"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import SEO from "components/SEO"
+import Seo from "components/SEO"
 import searchForPlayer from "data/searchPlayers"
 import { WorldInfo } from "map/worldInfoType"
 import { useContext, useState } from "react"
@@ -158,6 +158,7 @@ const Search = styled.input`
 `
 
 const Icon = styled.div`
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
   position: absolute;
   right: 20px;
@@ -177,5 +178,5 @@ const Players = styled.div`
 `
 
 export function Head() {
-  return <SEO />
+  return <Seo />
 }

@@ -5,7 +5,7 @@ import Layout from "components/Layout"
 import OfflineBanner from "components/OfflineBanner"
 import Results from "components/Results"
 import Selection from "components/Selection"
-import SEO from "components/SEO"
+import Seo from "components/SEO"
 import styled from "styled-components"
 
 export default function Home() {
@@ -33,7 +33,7 @@ const Content = styled.div`
 `
 
 export function Head() {
-  return <SEO />
+  return <Seo />
 }
 
 const Title = styled.div`

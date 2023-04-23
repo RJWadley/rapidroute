@@ -1,4 +1,3 @@
-/* eslint-disable scanjs-rules/identifier_localStorage */
 import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"
@@ -206,6 +205,7 @@ export const clearLocal = <K extends LocalKeys>(key: K) => {
  * initializes persistent local variables
  */
 export const initLocals = () => {
+  // get from local storage
   for (const key of persistentKeys) {
     const value = localStorage.getItem(key)
     if (value !== null) {
@@ -219,6 +219,8 @@ export const initLocals = () => {
       }
     }
   }
+
+  // get the url parameters
   const url = new URL(window.location.href)
   for (const key of urlParameters) {
     const value = url.searchParams.get(key)
@@ -239,5 +241,3 @@ export const initLocals = () => {
 }
 
 if (isBrowser()) initLocals()
-
-/* eslint-enable scanjs-rules/identifier_localStorage */

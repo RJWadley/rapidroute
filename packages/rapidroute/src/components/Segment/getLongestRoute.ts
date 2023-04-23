@@ -30,28 +30,17 @@ getAll("pathfinding")
     let furthest = 0
     let furthestA = "never"
     let furthestB = "never"
-    for (let i = 0; i < allPlaces.length; i += 1) {
-      for (let j = 0; j < allPlaces.length; j += 1) {
-        const placeA = allPlaces[i]
-        const placeB = allPlaces[j]
-
+    for (const placeA of allPlaces) {
+      for (const placeB of allPlaces) {
         const modes = shortHandMapKeys
         for (const mode of modes) {
-          if (mode && placeA && placeB) {
-            const placesA = Object.keys(placeA[mode] || {})
-
-            if (placesA.includes(placeB.uniqueId)) {
-              const distance = getDistance(
-                placeA.x,
-                placeA.z,
-                placeB.x,
-                placeB.z
-              )
-              if (distance > furthest) {
-                furthest = distance
-                furthestA = placeA.uniqueId
-                furthestB = placeB.uniqueId
-              }
+          const placesA = Object.keys(placeA[mode] ?? {})
+          if (placesA.includes(placeB.uniqueId)) {
+            const distance = getDistance(placeA.x, placeA.z, placeB.x, placeB.z)
+            if (distance > furthest) {
+              furthest = distance
+              furthestA = placeA.uniqueId
+              furthestB = placeB.uniqueId
             }
           }
         }

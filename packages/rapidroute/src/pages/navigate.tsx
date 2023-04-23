@@ -3,7 +3,7 @@ import NavigationOverview from "components/ControlsOverlay/NavigationOverview"
 import Layout from "components/Layout"
 import NavigationSidebar from "components/navigation/NavigationSidebar"
 import { NavigationContext } from "components/Providers/NavigationContext"
-import SEO from "components/SEO"
+import Seo from "components/SEO"
 import Map from "map"
 import MapBackground from "map/MapBackground"
 import MapTag from "map/MapTag"
@@ -101,7 +101,7 @@ export default function Navigate() {
 }
 
 export function Head() {
-  return <SEO />
+  return <Seo />
 }
 
 const StyledMapTag = styled(MapTag)`

@@ -42,6 +42,7 @@ const Warp = styled(Wrapper)`
 `
 
 const WarpIcon = styled.div<{ small: boolean }>`
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
   font-size: var(--symbol);
   grid-row: ${props => props.small && "span 2"};

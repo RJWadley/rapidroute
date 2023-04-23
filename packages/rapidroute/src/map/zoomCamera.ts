@@ -32,9 +32,9 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
       viewport
     )
       .then(() => {
-        zoomToPlayer(x, z, viewport)
+        return zoomToPlayer(x, z, viewport)
       })
-      .catch(() => {})
+      .catch(console.error)
   } else {
     // if the player moved a long ways, zoom out first
     const currentCenter = viewport.center
@@ -44,17 +44,16 @@ export const zoomToPlayer = (x: number, z: number, viewport: Viewport) => {
     if (distance > 3000)
       zoomToTwoPoints(new Point(x, z), currentCenter, viewport)
         .then(() => {
-          zoomToPlayer(x, z, viewport)
+          return zoomToPlayer(x, z, viewport)
         })
-        .catch(() => {})
+        .catch(console.error)
     else
       zoomToPoint(new Point(x, z), viewport)
         .then(() => {
-          zoomToPlayer(x, z, viewport)
+          return zoomToPlayer(x, z, viewport)
         })
-        .catch(() => {})
+        .catch(console.error)
   }
-  // zoomToTwoPoints(new Point(x, z), new Point(0, 0), viewport)
 }
 
 /**
@@ -110,12 +109,14 @@ export const zoomToPoint = (
   point: Point,
   viewport: Viewport,
   boxSize = 500
-) => {
+): Promise<void> => {
   return zoomToTwoPoints(
     new Point(point.x + boxSize, point.y + boxSize),
     new Point(point.x - boxSize, point.y - boxSize),
     viewport
-  ).then(() => {
-    if (canMoveCamera()) zoomToPoint(point, viewport, boxSize).catch(() => {})
-  })
+  )
+    .then(() => {
+      return canMoveCamera() ? zoomToPoint(point, viewport, boxSize) : undefined
+    })
+    .catch(console.error)
 }

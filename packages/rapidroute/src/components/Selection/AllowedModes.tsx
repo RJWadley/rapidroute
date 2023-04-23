@@ -110,7 +110,7 @@ const Filters = styled.div`
   flex-wrap: wrap;
 `
 
-const Selection = styled.div<{ active: boolean }>`
+const Selection = styled.button<{ active: boolean }>`
   background-color: var(--default-card-background);
   padding: 20px 30px 20px 60px;
   border-radius: 20px;
@@ -135,7 +135,8 @@ const Selection = styled.div<{ active: boolean }>`
     border-radius: 2px;
     transition: all 0.2s ease-in-out;
   }
-  :after {
+
+  ::after {
     content: "";
     position: absolute;
     top: calc(50% - 10px);
@@ -148,7 +149,7 @@ const Selection = styled.div<{ active: boolean }>`
     transition: all 0.2s ease-in-out;
   }
 
-  // active
+  /* active */
   ${({ active }) =>
     active &&
     css`
@@ -156,13 +157,14 @@ const Selection = styled.div<{ active: boolean }>`
       font-weight: bold;
       letter-spacing: 0;
 
-      :before {
+      ::before {
         top: calc(50% - 2px);
         left: 30px;
         height: 10px;
         rotate: 135deg;
       }
-      :after {
+
+      ::after {
         left: 40px;
         rotate: 45deg;
       }

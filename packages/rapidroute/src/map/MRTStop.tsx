@@ -44,7 +44,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   const onClick = () => {
     clearLocal("lastMapInteraction")
     setActiveItem(name.match(/(\w\w?\d+)/)?.[1] ?? "")
-    if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
+    if (viewport) zoomToPoint(new Point(x, z), viewport).catch(console.error)
   }
 
   const app = useApp()

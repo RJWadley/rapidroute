@@ -57,7 +57,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
         const newTexture = Texture.from(url)
         textureCache[url] = newTexture
         newTexture.baseTexture.scaleMode = SCALE_MODES.NEAREST
-        setTexture(newTexture)
+        return setTexture(newTexture)
       })
       .catch(() => {
         // generally, this just means the tile isn't available

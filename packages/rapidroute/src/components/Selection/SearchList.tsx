@@ -15,6 +15,8 @@ interface SearchListProps {
   show: boolean
 }
 
+const CURRENT_LOCATION = "Current Location"
+
 export default function SearchList({
   searchRole,
   show,
@@ -40,7 +42,7 @@ export default function SearchList({
   useEffect(() => {
     getAll("searchIndex")
       .then(data => {
-        setAllLocations(Object.values(data))
+        return setAllLocations(Object.values(data))
       })
       .catch(error => {
         console.error("error getting all locations", error)
@@ -54,15 +56,15 @@ export default function SearchList({
     if (results.length === 0) {
       setSearchResults([
         {
-          uniqueId: "Current Location",
-          d: "Current Location",
-          i: "Current Location",
+          uniqueId: CURRENT_LOCATION,
+          d: CURRENT_LOCATION,
+          i: CURRENT_LOCATION,
         },
       ])
     }
     setSearchResults(
       results.flatMap(result => {
-        if (isCoordinate(result) || result === "Current Location")
+        if (isCoordinate(result) || result === CURRENT_LOCATION)
           return [
             {
               uniqueId: result,
@@ -70,7 +72,7 @@ export default function SearchList({
               i: result,
             },
           ]
-        return allLocations.find(location => location.uniqueId === result) || []
+        return allLocations.find(location => location.uniqueId === result) ?? []
       })
     )
   }, [allLocations, searchFor])
@@ -225,7 +227,7 @@ const Wrapper = styled.div`
   }
 `
 
-const Option = styled.div<{ selected: boolean }>`
+const Option = styled.button<{ selected: boolean }>`
   background-color: ${props =>
     props.selected ? "var(--dark-background)" : "var(--mid-background)"};
   padding: 5px 6px;

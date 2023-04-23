@@ -1,6 +1,10 @@
 import { SegmentType } from "components/Segment/createSegments"
 import { createContext, ReactNode, useMemo, useState } from "react"
 
+const throwError = () => {
+  throw new Error("no provider")
+}
+
 export const NavigationContext = createContext<{
   /**
    * The route the user would prefer to take, if possible
@@ -48,15 +52,15 @@ export const NavigationContext = createContext<{
   setHeaderHeight: React.Dispatch<React.SetStateAction<number>>
 }>({
   preferredRoute: [],
-  setPreferredRoute: () => {},
+  setPreferredRoute: throwError,
   currentRoute: [],
-  setCurrentRoute: () => {},
+  setCurrentRoute: throwError,
   spokenRoute: [],
-  setSpokenRoute: () => {},
+  setSpokenRoute: throwError,
   navigationComplete: false,
-  setNavigationComplete: () => {},
+  setNavigationComplete: throwError,
   headerHeight: 80,
-  setHeaderHeight: () => {},
+  setHeaderHeight: throwError,
 })
 
 export function NavigationProvider({

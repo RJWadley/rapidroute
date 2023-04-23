@@ -66,53 +66,46 @@ export default async function getNavigationInstruction(
       const flightNumber = routeInfo.number
       const provider = await getProvider(routeInfo)
       const providerName = provider?.name
+      const atGate = gate ? `at ${gate}` : ""
       return `take ${providerName ?? "a"} flight ${flightNumber ?? ""} to ${
         segment.to.shortName
-      }, ${segment.to.name} ${gate ? `at ${gate}` : ""}`
+      }, ${segment.to.name} ${atGate}`
     }
 
     /**
      * If there are multiple flights, first say the destination airport, then
      * list the number of flights and information about each flight
      */
-    let output = `take any flight to ${segment.to.shortName}. You have ${segment.routes.length} options:`
+    const output = `take any flight to ${segment.to.shortName}. You have ${segment.routes.length} options:`
 
-    const addToList = (
+    const getTextOfMultiFlight = (
       last: boolean,
       providerName: string,
       number: string | number,
       gate?: string | null
     ) => {
-      output += `${last ? "And," : ""} ${providerName} flight ${number} ${
+      return `${last ? "And," : ""} ${providerName} flight ${number} ${
         gate ? `at ${gate}` : ""
       }. `
     }
 
-    // actual fetching of flight information happens here
-    const proms: Promise<unknown>[] = []
-    for (let i = 0; i < segment.routes.length; i += 1) {
-      const routeInfo = segment.routes[i]
+    const segments = segment.routes.map(async routeInfo => {
       if (!routeInfo) return
       const gate = expandGate(routeInfo.locations[segment.from.uniqueId])
       const flightNumber = routeInfo.number
-      const provider = getProvider(routeInfo)
-      proms.push(provider)
-      provider
-        .then(providerName => {
-          addToList(
-            i === segment.routes.length - 1,
-            providerName?.name ?? "",
-            flightNumber ?? "",
-            gate
-          )
-        })
-        .catch(error => {
-          console.error("Error getting provider", error)
-        })
-    }
+      const provider = await getProvider(routeInfo)
+      const providerName = provider?.name
 
-    await Promise.allSettled(proms)
-    return output
+      return getTextOfMultiFlight(
+        routeInfo === segment.routes[segment.routes.length - 1],
+        providerName ?? "",
+        flightNumber ?? "",
+        gate
+      )
+    })
+
+    await Promise.allSettled(segments)
+    return output + segments.join("")
   }
 
   // if we get here, we don't know how to handle this segment, so give a generic instruction

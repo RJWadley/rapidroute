@@ -9,7 +9,7 @@ interface SEOProps {
   image?: string
 }
 
-export default function SEO({
+export default function Seo({
   title,
   description,
   pathname,
@@ -21,13 +21,13 @@ export default function SEO({
     description: defaultDescription,
     image: defaultImage,
     siteUrl,
-  } = useSiteMetadata() || {}
+  } = useSiteMetadata() ?? {}
 
   const seo = {
-    title: title || defaultTitle || "Untitled",
-    description: description || defaultDescription || "No description",
-    image: image || defaultImage || "",
-    url: `${siteUrl || ""}/${pathname || ``}`,
+    title: title ?? defaultTitle ?? "Untitled",
+    description: description ?? defaultDescription ?? "No description",
+    image: image ?? defaultImage ?? "",
+    url: siteUrl && pathname ? `${siteUrl}/${pathname}` : "",
     creator,
   }
 
@@ -47,10 +47,12 @@ export default function SEO({
       {/* google fonts (Inter and Material Symbols Outlined) */}
       <link rel="preconnect" href="https://fonts.gstatic.com" />
       <link
+        // eslint-disable-next-line no-secrets/no-secrets
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
         rel="stylesheet"
       />
       <link
+        // eslint-disable-next-line no-secrets/no-secrets
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         rel="stylesheet"
       />

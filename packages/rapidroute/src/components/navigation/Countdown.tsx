@@ -15,6 +15,31 @@ import { thirtySecondWarning, twoMinuteWarning } from "./useVoiceNavigation"
 
 gsap.registerPlugin(TextPlugin)
 
+/**
+ * format the time left
+ * 1 seconds -> 0:01
+ * 60 seconds -> 1:00
+ * 2400 seconds -> 40:00
+ * 4000 seconds -> 1:06:40
+ * @param numSeconds the number of seconds to format
+ */
+const formatTime = (numSeconds: number) => {
+  if (!Number.isFinite(numSeconds)) return "Player Offline"
+  if (numSeconds === 0 || numSeconds > 100 * 60 * 60) return "—:—"
+
+  const hours = Math.floor(numSeconds / 3600)
+  const minutes = Math.floor((numSeconds - hours * 3600) / 60)
+  const seconds = numSeconds - hours * 3600 - minutes * 60
+
+  const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds
+  const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes
+
+  const hoursString = hours > 0 ? `${hours}:` : ""
+  const minutesString = `${hours > 0 ? paddedMinutes : minutes}:`
+
+  return `${hoursString}${minutesString}${paddedSeconds}`
+}
+
 export default function Countdown({
   type = "walk",
 }: {
@@ -85,31 +110,6 @@ export default function Countdown({
   }, [timeToInstruction, currentTime])
 
   /**
-   * format the time left
-   * 1 seconds -> 0:01
-   * 60 seconds -> 1:00
-   * 2400 seconds -> 40:00
-   * 4000 seconds -> 1:06:40
-   * @param numSeconds the number of seconds to format
-   */
-  const formatTime = (numSeconds: number) => {
-    if (!Number.isFinite(numSeconds)) return "Player Offline"
-    if (numSeconds === 0 || numSeconds > 100 * 60 * 60) return "—:—"
-
-    const hours = Math.floor(numSeconds / 3600)
-    const minutes = Math.floor((numSeconds - hours * 3600) / 60)
-    const seconds = numSeconds - hours * 3600 - minutes * 60
-
-    const paddedSeconds = seconds < 10 ? `0${seconds}` : seconds
-    const paddedMinutes = minutes < 10 ? `0${minutes}` : minutes
-
-    const hoursString = hours > 0 ? `${hours}:` : ""
-    const minutesString = `${hours > 0 ? paddedMinutes : minutes}:`
-
-    return `${hoursString}${minutesString}${paddedSeconds}`
-  }
-
-  /**
    * give a two-minute warning
    */
   useEffect(() => {
@@ -174,8 +174,8 @@ const Wrapper = styled.div<{
   transition: border-radius 0.5s;
   backdrop-filter: blur(3px);
 
-  // a shadow to fade out the bottom of the countdown
-  &:after {
+  /* a shadow to fade out the bottom of the countdown */
+  ::after {
     content: "";
     position: absolute;
     top: 100%;
@@ -199,8 +199,8 @@ const Wrapper = styled.div<{
     }
   }
 
-  // add an invisible panel to catch any scrolling in the 20px above the segment
-  &:before {
+  /* add an invisible panel to catch any scrolling in the 20px above the segment */
+  ::before {
     content: "";
     position: absolute;
     top: -20px;

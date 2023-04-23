@@ -40,7 +40,7 @@ export default function useFollowedRoute(route: SegmentType[]) {
   return followedRoute
     .filter(
       segment =>
-        !route.find(
+        !route.some(
           r =>
             r.from.uniqueId === segment.from.uniqueId &&
             r.to.uniqueId === segment.to.uniqueId

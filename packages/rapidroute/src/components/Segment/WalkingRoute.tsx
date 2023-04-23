@@ -66,6 +66,7 @@ const WalkWrapper = styled(Wrapper)`
 `
 
 const WalkIcon = styled.div<{ small: boolean }>`
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
   font-size: var(--symbol);
   ${({ small }) =>

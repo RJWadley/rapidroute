@@ -15,8 +15,11 @@ export default function useUrlParams() {
     const now = Date.now()
     if (now - loadedAt < 5 * 1000) return
 
-    const { center } = viewport
-    const zoom = Math.round(viewport.scale.x * 1000) / 1000
+    const {
+      center,
+      scale: { x },
+    } = viewport
+    const zoom = Math.round(x * 1000) / 1000
 
     if (Number.isNaN(center.x) || Number.isNaN(center.y) || Number.isNaN(zoom))
       return

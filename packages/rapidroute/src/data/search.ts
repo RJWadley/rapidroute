@@ -1,32 +1,33 @@
 import { Index } from "flexsearch-ts"
 import { useEffect, useState } from "react"
+import { isBrowser } from "utils/functions"
 
 import { getAll } from "./getData"
 
-const searchWorker =
-  Index &&
-  new Index({
-    tokenize: "reverse",
-    charset: "latin:simple",
-  })
+const searchWorker = isBrowser()
+  ? new Index({
+      tokenize: "reverse",
+      charset: "latin:simple",
+    })
+  : undefined
 
 const displayLookup: Record<string, string> = {}
 
 getAll("searchIndex")
   .then(data => {
-    Object.entries(data).forEach(([key, value]) => {
-      searchWorker.add(key, value.i)
+    return Object.entries(data).forEach(([key, value]) => {
+      searchWorker?.add(key, value.i)
       displayLookup[key] = value.d
     })
   })
-
   .catch(console.error)
 
 export function search(query: string) {
-  let results = searchWorker.search(query, {
-    suggest: true,
-    limit: 200,
-  })
+  let results =
+    searchWorker?.search(query, {
+      suggest: true,
+      limit: 200,
+    }) ?? []
 
   const strictMatches = results.filter(x =>
     x.toString().toLowerCase().replace("_", " ").startsWith(query.toLowerCase())
@@ -41,7 +42,7 @@ export function search(query: string) {
   }
 
   if (/\d+[ ,]+\d+/g.test(query)) {
-    const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]
+    const [xCoord, yCoord] = query.match(/\d+/g) ?? [0, 0]
     results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
   }
 

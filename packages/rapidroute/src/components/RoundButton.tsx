@@ -22,6 +22,7 @@ const StyledButton = styled(UniversalLink)<{ flipped: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
   font-weight: normal;
   background-color: var(--button-green);

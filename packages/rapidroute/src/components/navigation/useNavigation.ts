@@ -1,14 +1,17 @@
+import { useQuery } from "@tanstack/react-query"
 import { wrap } from "comlink"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { resultToSegments } from "components/Route"
+import { SegmentType } from "components/Segment/createSegments"
 import { getAll } from "data/getData"
 import { ResultType } from "pathfinding/findPath"
 import { FindPathWorkerType } from "pathfinding/findPath/findPathWorker"
-import { useCallback, useContext, useEffect, useRef } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { isBrowser } from "utils/functions"
 import { getLocal, setLocal } from "utils/localUtils"
 
+import usePointOfInterest from "./usePointOfInterest"
 import useVoiceNavigation, { CompletionThresholds } from "./useVoiceNavigation"
 
 const { findPath, initPathfinder } =
@@ -39,15 +42,13 @@ export default function useNavigation() {
     preferredRoute,
   } = useContext(NavigationContext)
   const { allowedModes } = useContext(RoutingContext)
+  const destinationId = currentRoute[currentRoute.length - 1]?.to.uniqueId
 
-  /**
-   * start voice navigation
-   */
+  // start voice navigation
   useVoiceNavigation(spokenRoute)
-
-  /**
-   * set player for map
-   */
+  // keep the map updated
+  usePointOfInterest(spokenRoute)
+  // make sure we're following the player
   setLocal("following", getLocal("selectedPlayer")?.toString())
 
   /**
@@ -62,178 +63,118 @@ export default function useNavigation() {
   }, [currentRoute, setSpokenRoute])
 
   /**
-   * Keep the current route up to date
+   * determine how well a route matches the preferred route
+   * routes gain points for each stop that occurs in the preferred route
    */
-  const destinationId = currentRoute[currentRoute.length - 1]?.to.uniqueId || ""
-  useEffect(() => {
+  const calculateRouteMatch = (result: ResultType) => {
+    let score = 0
+    result.path.forEach(leg => {
+      if (preferredRoute.includes(leg)) {
+        score += 1
+      }
+    })
+    return score
+  }
+
+  /**
+   * apply the new route
+   */
+  const updateRoute = (segments: SegmentType[]) => {
     /**
-     * Calculate and save a new route
+     * if we've reached the destination, but the player is not there,
+     * don't update the route, since we need to wait for the player to get there first
      */
-    const updateRoute = () => {
-      const playersLocation = getLocal("lastKnownLocation")
-      if (playersLocation) {
-        const { x, z } = playersLocation
-        const coordId = `Coordinate: ${x}, ${z}`
+    if (segments.length === 1) {
+      // check if we've reached the destination
+      const { x: fromX, z: fromZ } = getLocal("lastKnownLocation") ?? {}
+      const { x: toX, z: toZ } = segments[0]?.to.location ?? {}
+      const distance = Math.sqrt(
+        ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
+          ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
+      )
 
-        findPath?.(coordId, destinationId, allowedModes)
-          .then(results => {
-            // sort the results by distance
-            const sortedResults = results.sort(
-              (a, b) => a.totalCost - b.totalCost
-            )
+      if (distance < CompletionThresholds[segments[0]?.to.type ?? "Other"])
+        setNavigationComplete(true)
+      else setNavigationComplete(false)
 
-            // sort the results by how well they match the preferred route
-            // routes gain points for each stop that occurs in the preferred route
-            const calculateScore = (result: ResultType) => {
-              let score = 0
-              result.path.forEach(leg => {
-                if (preferredRoute.includes(leg)) {
-                  score += 1
-                }
-              })
-              return score
-            }
-            const preferredSegment = sortedResults.sort(
-              (a, b) => calculateScore(b) - calculateScore(a)
-            )[0]
-
-            if (preferredSegment)
-              resultToSegments(preferredSegment)
-                .then(segments => {
-                  /**
-                   * if we've reached the destination, but the player is not there,
-                   * don't update the route
-                   */
-                  if (segments.length === 1) {
-                    // check if we've reached the destination
-                    const { x: fromX, z: fromZ } =
-                      getLocal("lastKnownLocation") ?? {}
-                    const { x: toX, z: toZ } = segments[0]?.to.location ?? {}
-                    const distance = Math.sqrt(
-                      ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
-                        ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
-                    )
-
-                    if (
-                      distance <
-                      CompletionThresholds[segments[0]?.to.type ?? "Other"]
-                    )
-                      setNavigationComplete(true)
-                    else setNavigationComplete(false)
-
-                    // if the segment is a walk, use the last segment from the previous route
-                    if (segments[0]?.routes.length === 0) {
-                      setCurrentRoute(previous => previous.slice(-1))
-                      return
-                    }
-                  }
-
-                  /**
-                   * Update the current route
-                   */
-                  if (segments[0]?.routes.length) {
-                    // if the first segment is not a walk, update the route as normal
-                    setCurrentRoute(segments)
-                  } else {
-                    // if the length of the walk is more than 500 blocks, leave the walk in
-                    const { x: fromX, z: fromZ } =
-                      segments[0]?.from.location || {}
-                    const { x: toX, z: toZ } = segments[0]?.to.location || {}
-                    const distance = Math.sqrt(
-                      ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
-                        ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
-                    )
-
-                    if (distance > 500) setCurrentRoute(segments)
-                    else {
-                      // otherwise
-                      // if the first segment is a walk, remove it
-                      // UNLESS the walk's destination is the previous third segment's origin
-                      // because that means the walk is part of the original route
-                      // if this is the case, we want to use the walk from the original route
-                      setCurrentRoute(previousRoute => {
-                        const thirdSegment = previousRoute[2]
-                        const previousWalk = previousRoute[1]
-                        const newWalk = segments.shift()
-                        if (
-                          thirdSegment &&
-                          previousWalk &&
-                          newWalk &&
-                          thirdSegment.from.uniqueId === newWalk.to.uniqueId
-                        ) {
-                          return [previousWalk, ...segments]
-                        }
-                        return segments
-                      })
-                    }
-                  }
-                })
-
-                /**
-                 * If there's an issue, clear the route
-                 */
-                .catch(error => {
-                  console.error(
-                    "error converting result to segments during nav",
-                    error
-                  )
-                  setCurrentRoute([])
-                })
-          })
-          .catch(error => {
-            console.error("Error while finding path during nav", error)
-            setCurrentRoute([])
-          })
+      // if the segment is a walk, use the last segment from the previous route
+      if (segments[0]?.routes.length === 0) {
+        setCurrentRoute(previous => previous.slice(-1))
+        return
       }
     }
 
-    // update every 10 seconds
-    const interval = setInterval(updateRoute, 10 * 1000)
-    return () => {
-      clearInterval(interval)
+    /**
+     * now update the route
+     * if it's not a walk, update the route as normal
+     * if it is a walk, we need to do a few extra things
+     */
+    if (segments[0]?.routes.length) {
+      // if the first segment is not a walk, update the route as normal
+      setCurrentRoute(segments)
+    } else {
+      // if the length of the walk is more than 500 blocks, leave the walk in
+      const { x: fromX, z: fromZ } = segments[0]?.from.location ?? {}
+      const { x: toX, z: toZ } = segments[0]?.to.location ?? {}
+      const distance = Math.sqrt(
+        ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
+          ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
+      )
+
+      if (distance > 500) setCurrentRoute(segments)
+      else {
+        // otherwise
+        // if the first segment is a walk, remove it
+        // UNLESS the walk's destination is the previous third segment's origin
+        // because that means the walk is part of the original route
+        // if this is the case, we want to use the walk from the original route
+        // (so it doesn't get spoken over and over)
+        setCurrentRoute(previousRoute => {
+          const thirdSegment = previousRoute[2]
+          const previousWalk = previousRoute[1]
+          const newWalk = segments.shift()
+          if (
+            thirdSegment &&
+            previousWalk &&
+            newWalk &&
+            thirdSegment.from.uniqueId === newWalk.to.uniqueId
+          ) {
+            return [previousWalk, ...segments]
+          }
+          return segments
+        })
+      }
     }
-  }, [
-    allowedModes,
-    destinationId,
-    preferredRoute,
-    setCurrentRoute,
-    setNavigationComplete,
-  ])
+  }
 
   /**
-   * update point of interest on the map
+   * Calculate and save a new route
    */
-  const updatePointOfInterest = useCallback(() => {
-    // point of interest is the from location if we're there, otherwise the to location
-    const firstSpoken = spokenRoute[0]
-    if (!firstSpoken) return
+  const recalculateRoute = async () => {
+    const playersLocation = getLocal("lastKnownLocation")
+    if (!playersLocation || !destinationId) return
+    const { x, z } = playersLocation
+    const coordId = `Coordinate: ${x}, ${z}`
+    const results =
+      (await findPath?.(coordId, destinationId, allowedModes)) ?? []
 
-    // if this is a walk, we want to use the to location always
-    if (firstSpoken.routes.length === 0) {
-      setLocal("pointOfInterest", firstSpoken.to.location)
+    // sort the results by distance and by route match
+    const sortedResults = results.sort((a, b) => a.totalCost - b.totalCost)
+    const preferredSegment = sortedResults.sort(
+      (a, b) => calculateRouteMatch(b) - calculateRouteMatch(a)
+    )[0]
+    if (!preferredSegment) return
 
-      return
-    }
+    const segments = await resultToSegments(preferredSegment)
+    updateRoute(segments)
+  }
 
-    const { x: playerX, z: playerZ } = getLocal("lastKnownLocation") || {}
-    const { x: locationX, z: locationZ } = firstSpoken.from.location || {}
-    const distance = Math.sqrt(
-      ((playerX ?? Infinity) - (locationX ?? Infinity)) ** 2 +
-        ((playerZ ?? Infinity) - (locationZ ?? Infinity)) ** 2
-    )
-    if (distance < CompletionThresholds[firstSpoken.from.type]) {
-      setLocal("pointOfInterest", firstSpoken.from.location)
-    } else {
-      setLocal("pointOfInterest", firstSpoken.to.location)
-    }
-  }, [spokenRoute])
-
-  // check every 1 seconds
-  useEffect(() => {
-    const interval = setInterval(updatePointOfInterest, 1 * 1000)
-    updatePointOfInterest()
-    return () => {
-      clearInterval(interval)
-    }
-  }, [updatePointOfInterest])
+  /**
+   * update the route every 10 seconds
+   */
+  useQuery({
+    queryKey: ["recalculateRoute", destinationId],
+    refetchInterval: 10_000,
+    queryFn: recalculateRoute,
+  })
 }

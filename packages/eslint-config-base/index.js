@@ -48,14 +48,14 @@ module.exports = {
     // sort styled components based on their usage order
     "sort-styled-components/sort-styled-components": "warn",
 
-    // we define styled components at the bottom, which is better for readability but incompatible with this rule
+    // define styled components at the bottom, which is better for readability but incompatible with this rule
     "@typescript-eslint/no-use-before-define": "off",
 
     // any custom hooks that take dependencies need to be specified here
     "react-hooks/exhaustive-deps": [
       "error",
       {
-        additionalHooks: "useAnimation",
+        additionalHooks: "useAnimation|useDeepCompareEffect|useDeepCompareMemo",
       },
     ],
 
@@ -82,7 +82,7 @@ module.exports = {
     // allow console.error and console.warn
     "no-console": ["error", { allow: ["error", "warn", "info"] }],
 
-    // disable rules that typescript handles
+    // disable rules that typescript fully handles
     "react/jsx-props-no-spreading": "off",
     "react/no-unknown-property": "off",
     "no-undef": "off",
@@ -91,6 +91,9 @@ module.exports = {
 
     // validate nesting
     "validate-jsx-nesting/no-invalid-jsx-nesting": "error",
+
+    // this rule prevents us from type checking elements
+    "xss/no-mixed-html": "off",
 
     /**
      *  Optional or Temporary Rules
@@ -102,18 +105,19 @@ module.exports = {
     // we can remove this once TS 5.1 drops
     "react/jsx-no-useless-fragment": ["error", { allowExpressions: true }],
 
-    // need more time for top-level await to be supported
+    // need more time for top-level await to be supported in browsers
     "unicorn/prefer-top-level-await": "off",
 
-    // the following rules seem annoying, so I've loosened them up (so they can stay on)
+    // the following rules seem annoying, so I've loosened them up (that way they can at least stay on)
     // the goal should probably be to decrease these over time
     complexity: ["warn", 40],
     "sonarjs/cognitive-complexity": ["warn", 40],
-    "max-nested-callbacks": ["warn", 5],
     "max-params": ["warn", 6],
     "consistent-return": "off",
     "no-nested-ternary": "warn",
     "const-case/uppercase": "off",
+    "eslint-comments/disable-enable-pair": "off",
+    "scanjs-rules/identifier_localStorage": "off",
   },
   parserOptions: {
     project: ["./tsconfig.json"],

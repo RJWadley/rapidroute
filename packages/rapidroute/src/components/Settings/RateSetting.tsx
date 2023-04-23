@@ -26,7 +26,7 @@ export default function RateSetting() {
           setSpeechRate(parseFloat(e.target.value))
           setVoiceById(getLocal("voice") ?? "")
             .then(() => {
-              speak("This is how fast I'll speak to you.").catch(console.error)
+              return speak("This is how fast I'll speak to you.")
             })
             .catch(console.error)
         }}

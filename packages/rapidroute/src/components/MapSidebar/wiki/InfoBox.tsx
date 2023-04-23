@@ -1,6 +1,6 @@
-// TODO /*  max-lines */
-// TODO /*  react-hooks/exhaustive-deps */
-// TODO /*  no-param-reassign */
+// wiki html is already sanitized, so this isn't strictly necessary
+/* eslint-disable scanjs-rules/call_parseFromString */
+
 import { useQuery } from "@tanstack/react-query"
 import { darkModeContext } from "components/Providers/DarkMode"
 import { gsap } from "gsap"
@@ -58,6 +58,8 @@ export default function InfoBox({ title }: { title: string | undefined }) {
         }
       }
     })
+    // we need to re-run this when data changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDark, data])
 
   if (!title) return null
@@ -82,7 +84,7 @@ const parseInfoBox = (data: InfoBoxType) => {
   const newBox = html.querySelector(".infobox")
 
   // find any trs with exactly two ths, where the first th says ft and the second m
-  // add the feetAndMeters class to that tr
+  // add the feet-and-meters class to that tr
   // this is for airports that list runway lengths
   const twoThs = [...(newBox?.querySelectorAll("tr") ?? [])].filter(
     tr =>
@@ -90,7 +92,7 @@ const parseInfoBox = (data: InfoBoxType) => {
       tr.querySelector("th")?.textContent?.trim() === "ft" &&
       tr.querySelectorAll("th")[1]?.textContent?.trim() === "m"
   )
-  twoThs.forEach(tr => tr.classList.add("feetAndMeters"))
+  twoThs.forEach(tr => tr.classList.add("feet-and-meters"))
 
   // find any images with width less than 50px and add the small-image class
   const smallImages = [...(newBox?.querySelectorAll("img") ?? [])].filter(
@@ -170,6 +172,12 @@ const Wrapper = styled.div`
     display: none;
   }
 
+  * {
+    max-width: 100% !important;
+    width: unset;
+    height: unset;
+  }
+
   /* clear table styles */
   table,
   tbody,
@@ -210,7 +218,7 @@ const Wrapper = styled.div`
     background: #ddd;
   }
 
-  // hide the top title rows
+  /* hide the top title rows */
   .infobox-above,
   .infobox-subheader {
     display: none;
@@ -270,12 +278,6 @@ const Wrapper = styled.div`
     line-height: 1.5em;
   }
 
-  * {
-    max-width: 100% !important;
-    width: unset;
-    height: unset;
-  }
-
   /* fix default color for stuff with backgrounds */
   & *[style*="background"]:not(.infobox-header, [style*="background:none"]) {
     color: black;
@@ -294,7 +296,7 @@ const Wrapper = styled.div`
     text-decoration: none;
   }
 
-  .feetAndMeters {
+  .feet-and-meters {
     width: 50%;
     margin-left: 25% !important;
     background: var(--mid-background) !important;

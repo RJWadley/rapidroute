@@ -6,6 +6,8 @@ export interface SegmentType {
   routes: (Route | null)[]
 }
 
+const MRT = "MRT Station"
+
 export default function createSegments(
   locations: (Location | null)[],
   routes: (Route | null)[][]
@@ -23,9 +25,9 @@ export default function createSegments(
     const afterRoutes = routes[i] ?? []
 
     if (
-      from?.type === "MRT Station" &&
-      to?.type === "MRT Station" &&
-      afterFrom?.type === "MRT Station" &&
+      from?.type === MRT &&
+      to?.type === MRT &&
+      afterFrom?.type === MRT &&
       segmentRoutes.length === 1 &&
       afterRoutes.length === 1
     ) {

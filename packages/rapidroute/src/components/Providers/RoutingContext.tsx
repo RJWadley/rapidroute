@@ -13,6 +13,10 @@ import { clearLocal, getLocal, setLocal } from "utils/localUtils"
 
 type LocationId = string
 
+const throwError = () => {
+  throw new Error("no provider")
+}
+
 export const RoutingContext = createContext<{
   /**
    * unique id of the origin location
@@ -41,10 +45,10 @@ export const RoutingContext = createContext<{
 }>({
   from: null,
   to: null,
-  setFrom: () => {},
-  setTo: () => {},
+  setFrom: throwError,
+  setTo: throwError,
   allowedModes: Object.values(shortHandMap),
-  setAllowedModes: () => {},
+  setAllowedModes: throwError,
 })
 
 export function RoutingProvider({
@@ -75,7 +79,7 @@ export function RoutingProvider({
   useEffect(() => {
     const initFrom = getLocal("from")
     const initTo = getLocal("to")
-    if (initFrom || initTo)
+    if (initFrom || initTo) {
       getAll("searchIndex")
         .then(index => {
           if (initFrom)
@@ -90,8 +94,10 @@ export function RoutingProvider({
                 search(initTo).find(x => x !== "Current Location") ??
                 initTo
             )
+          return null
         })
         .catch(console.error)
+    }
   }, [])
 
   /**

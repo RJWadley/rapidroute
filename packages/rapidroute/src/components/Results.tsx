@@ -7,10 +7,12 @@ import getPlayerLocation from "pathfinding/getPlayerLocation"
 import resultDiff from "pathfinding/postProcessing/diff"
 import removeExtras from "pathfinding/postProcessing/removeExtra"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useAsync } from "react-use"
 import styled from "styled-components"
 import { isBrowser, sleep } from "utils/functions"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import { getLocal } from "utils/localUtils"
+import useIsMounted from "utils/useIsMounted"
 
 import { RoutingContext } from "./Providers/RoutingContext"
 import Route from "./Route"
@@ -31,6 +33,8 @@ getAll("pathfinding")
   })
   .catch(console.error)
 
+const CURRENT_LOCATION = "Current Location"
+
 export default function Results() {
   const { from, to } = useContext(RoutingContext)
   const [results, setResults] = useState<
@@ -39,11 +43,14 @@ export default function Results() {
   const resultsWrapper = useRef<HTMLDivElement>(null)
   const animationOutHolder = useRef<HTMLDivElement>(null)
   const { allowedModes } = useContext(RoutingContext)
-
   const debouncer = useRef<Promise<unknown>>(Promise.resolve())
+  const isMounted = useIsMounted()
 
+  /**
+   * get the player location if the from or to is the current location
+   */
   const playerLocation = useMemo(async () => {
-    if (from === "Current Location" || to === "Current Location") {
+    if (from === CURRENT_LOCATION || to === CURRENT_LOCATION) {
       const player = getLocal("selectedPlayer")?.toString()
       if (player) {
         const { x, z } = (await getPlayerLocation(player)) ?? {}
@@ -53,61 +60,40 @@ export default function Results() {
     }
   }, [from, to])
 
-  useEffect(() => {
-    if (from && to) {
-      let canSave = true
+  useAsync(async () => {
+    if (!from || !to) return
+    await debouncer.current
+    const fromToUse = from === CURRENT_LOCATION ? await playerLocation : from
+    const toToUse = to === CURRENT_LOCATION ? await playerLocation : to
 
-      ;(async () => {
-        await debouncer.current
-        const fromToUse =
-          from === "Current Location" ? await playerLocation : from
-        const toToUse = to === "Current Location" ? await playerLocation : to
-
-        if (!fromToUse || !toToUse) {
-          if (!getLocal("selectedPlayer")) {
-            loadPage("/select-player", "slide").catch(console.error)
-            return
-          }
-          setResults("none")
-          return
-        }
-
-        animateOut()
-        setResults("loading")
-
-        const minTime = sleep(500)
-
-        findPath?.(fromToUse, toToUse, allowedModes)
-          .then(async r => {
-            await minTime
-            await debouncer.current
-            if (canSave) {
-              const newResults = removeExtras(r).sort(
-                // fewer totalCost comes first
-                (a, b) => a.totalCost - b.totalCost
-              )
-              const firstResult = newResults[0]
-              if (firstResult && firstResult.path.length > 1)
-                setResults(newResults)
-              else setResults("none")
-              debouncer.current = sleep(2000)
-            }
-          })
-          .catch(async error => {
-            console.error("Error finding path", error)
-            await minTime
-            await debouncer.current
-            if (canSave) setResults("none")
-          })
-      })().catch(error => {
-        console.error("error while finding path", error)
-      })
-
-      return () => {
-        canSave = false
+    if (!fromToUse || !toToUse) {
+      if (!getLocal("selectedPlayer")) {
+        loadPage("/select-player", "slide").catch(console.error)
+        return
       }
+      setResults("none")
+      return
     }
-    return
+
+    animateOut()
+    setResults("loading")
+
+    const minTime = sleep(500)
+
+    const r = await findPath?.(fromToUse, toToUse, allowedModes)
+
+    await minTime
+    await debouncer.current
+    if (isMounted.current && r) {
+      const newResults = removeExtras(r).sort(
+        // fewer totalCost comes first
+        (a, b) => a.totalCost - b.totalCost
+      )
+      const firstResult = newResults[0]
+      if (firstResult && firstResult.path.length > 1) setResults(newResults)
+      else setResults("none")
+      debouncer.current = sleep(2000)
+    }
   }, [allowedModes, from, playerLocation, to])
 
   const animateOut = () => {
@@ -116,6 +102,7 @@ export default function Results() {
     if (resultsWrapper.current && animationOutHolder.current) {
       const newElement = document.createElement("div")
       animationOutHolder.current.append(newElement)
+      // eslint-disable-next-line no-unsanitized/property
       newElement.innerHTML = resultsWrapper.current.innerHTML
 
       const children = [...newElement.children]

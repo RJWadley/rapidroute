@@ -5,7 +5,7 @@ import getRouteTime from "./getRouteTime"
 import { GraphEdge } from "./mapEdges"
 import { getDistance } from "./pathUtil"
 
-export async function createCoordinateEdges(
+export function createCoordinateEdges(
   id: string,
   x: number,
   z: number,
@@ -41,17 +41,17 @@ export async function createCoordinateEdges(
     })
 }
 
-export async function generateAllCoordinateEdges(
+export function generateAllCoordinateEdges(
   from: string,
   to: string,
   nodes: Pathfinding
-): Promise<GraphEdge[]> {
+): GraphEdge[] {
   const edges: GraphEdge[] = []
   // create coordinate edges if needed
   if (isCoordinate(from)) {
     const [x, z] = from.replace("Coordinate:", "").split(",").map(Number)
     if (x && z) {
-      const coordinateEdges = await createCoordinateEdges(from, x, z, nodes)
+      const coordinateEdges = createCoordinateEdges(from, x, z, nodes)
       edges.push(...coordinateEdges)
 
       const distanceFromStartToFinish = getDistance(
@@ -71,7 +71,7 @@ export async function generateAllCoordinateEdges(
   if (isCoordinate(to)) {
     const [x, z] = to.replace("Coordinate:", "").split(",").map(Number)
     if (x && z) {
-      const coordinateEdges = await createCoordinateEdges(to, x, z, nodes)
+      const coordinateEdges = createCoordinateEdges(to, x, z, nodes)
       edges.push(...coordinateEdges)
     }
   }

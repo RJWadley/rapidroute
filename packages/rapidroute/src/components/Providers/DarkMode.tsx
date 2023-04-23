@@ -17,7 +17,7 @@ export const setDarkModeContext = createContext<
 
 type Preference = "dark" | "light" | "system"
 const isPreference = (value?: string | null): value is Preference =>
-  ["dark", "light", "system"].includes(value || "")
+  ["dark", "light", "system"].includes(value ?? "")
 
 export function DarkModeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreference] = useState<Preference | undefined>()
@@ -69,11 +69,13 @@ export function DarkModeProvider({ children }: { children: ReactNode }) {
   )
 }
 
-const TransitionStyle = createGlobalStyle`${css`
+const transitionStyle = css`
   .in-transition {
     &,
     * {
       transition: background-color 0.5s ease, color 0.1s ease !important;
     }
   }
-`}`
+`
+
+const TransitionStyle = createGlobalStyle`${transitionStyle}`

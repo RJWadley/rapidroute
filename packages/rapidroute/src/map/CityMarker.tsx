@@ -66,7 +66,7 @@ export default function CityMarker({ name, x, z, type }: CityMarkerProps) {
     clearLocal("following")
     clearLocal("lastMapInteraction")
     setActiveItem(search(name)[0] ?? "")
-    if (viewport) zoomToPoint(new Point(x, z), viewport).catch(() => {})
+    if (viewport) zoomToPoint(new Point(x, z), viewport).catch(console.error)
   }
 
   useHideOverlapping({

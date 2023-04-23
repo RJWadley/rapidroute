@@ -34,6 +34,7 @@ const Wrapper = styled.div`
 `
 
 const Icon = styled.div`
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
   font-size: var(--symbol);
 `

@@ -13,33 +13,37 @@ export interface ResultType {
 }
 
 export default class Pathfinder {
-  from: string
+  private from: string
 
-  to: string
+  private to: string
 
-  maxCost = Infinity
+  private maxCost = Infinity
 
-  EXTRA_TIME = 100
+  private EXTRA_TIME = 100
 
-  distanceTraveled = 0
+  private distanceTraveled = 0
 
-  cancelled = false
+  private cancelled = false
 
-  allowedModes: RouteMode[]
+  private allowedModes: RouteMode[]
 
-  edges: GraphEdge[] = []
+  private edges: GraphEdge[] = []
 
-  constructor(from: string, to: string, allowedModes: RouteMode[]) {
+  public constructor(from: string, to: string, allowedModes: RouteMode[]) {
     this.from = from
     this.to = to
     this.allowedModes = [...allowedModes]
   }
 
-  getPercentComplete() {
+  public cancel() {
+    this.cancelled = true
+  }
+
+  public getPercentComplete() {
     return this.distanceTraveled / (this.maxCost - this.EXTRA_TIME)
   }
 
-  async start(preventReverse = false): Promise<ResultType[]> {
+  public async start(preventReverse = false): Promise<ResultType[]> {
     const frontier = new PriorityQueue<string>()
     const cameFrom: Record<string, string[]> = {}
     const costSoFar: Record<string, number> = {}
@@ -48,9 +52,9 @@ export default class Pathfinder {
     this.edges = edges
     const nodes = pathfindingIndex
 
-    console.log("starting pathfinding from", this.from, "to", this.to)
+    console.info("starting pathfinding from", this.from, "to", this.to)
 
-    edges.push(...(await generateAllCoordinateEdges(this.from, this.to, nodes)))
+    edges.push(...generateAllCoordinateEdges(this.from, this.to, nodes))
 
     frontier.enqueue(this.from, 0)
     costSoFar[this.from] = 0
@@ -59,7 +63,6 @@ export default class Pathfinder {
     while (!frontier.isEmpty()) {
       if (this.cancelled) return []
 
-      // TODO -next-line no-await-in-loop
       await throttle()
       const current = frontier.dequeue()
 
@@ -78,7 +81,7 @@ export default class Pathfinder {
         .filter(
           edge => (costSoFar[current] ?? Infinity) + edge.weight < this.maxCost
         )
-        .map(async edge => {
+        .forEach(edge => {
           // skip edges that are not allowed
           if (this.allowedModes.length === 0) {
             return
@@ -90,12 +93,7 @@ export default class Pathfinder {
             return
 
           // if we just walked, we can't walk again
-          if (
-            modeTo[current] &&
-            modeTo[current]?.includes("walk") &&
-            edge.mode === "walk"
-          )
-            return
+          if (modeTo[current]?.includes("walk") && edge.mode === "walk") return
 
           const newCost = (costSoFar[current] ?? Infinity) + edge.weight
           this.updateMaxCost(nodes, edge.to, newCost)
@@ -129,7 +127,7 @@ export default class Pathfinder {
       !preventReverse &&
       !this.allowedModes.includes("spawnWarp")
     ) {
-      console.log("COULD NOT FIND PATH, TRYING REVERSE")
+      console.info("Couldn't find a path... trying to go backwards!")
       const reversed = await new Pathfinder(
         this.to,
         this.from,
@@ -141,12 +139,12 @@ export default class Pathfinder {
     }
 
     const end = performance.now()
-    if (!preventReverse) console.log(`Pathfinding took ${end - start}ms`)
+    if (!preventReverse) console.info(`Pathfinding took ${end - start}ms`)
 
     return paths
   }
 
-  updateMaxCost(nodes: Pathfinding, nodeId: string, costSoFar: number) {
+  private updateMaxCost(nodes: Pathfinding, nodeId: string, costSoFar: number) {
     const distanceToTo = getDistance(
       nodes[nodeId]?.x ?? Infinity,
       nodes[nodeId]?.z ?? Infinity,
@@ -158,7 +156,7 @@ export default class Pathfinder {
     if (maxCost) this.maxCost = Math.min(this.maxCost, maxCost)
   }
 
-  getSortingCost(from: string, to: string) {
+  private getSortingCost(from: string, to: string) {
     const allEdges = this.edges.filter(
       edge =>
         edge.from === from &&
@@ -177,7 +175,7 @@ export default class Pathfinder {
    * @param current the node to start reconstructing from
    * @returns array of possible paths, with a maximum
    */
-  reconstructPaths(
+  private reconstructPaths(
     cameFrom: Record<string, string[]>,
     current: string
   ): ResultType[] {
@@ -214,9 +212,5 @@ export default class Pathfinder {
     })
 
     return results
-  }
-
-  cancel() {
-    this.cancelled = true
   }
 }

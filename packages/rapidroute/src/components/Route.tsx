@@ -1,14 +1,15 @@
+import { useQuery } from "@tanstack/react-query"
 import { getPath } from "data/getData"
 import gsap from "gsap"
 import { ResultType } from "pathfinding/findPath"
 import describeDiff from "pathfinding/postProcessing/describeDiff"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import styled, { css } from "styled-components"
 
 import RoundButton from "./RoundButton"
 import Segment from "./Segment"
 import BeginNavigation from "./Segment/BeginNavigation"
-import createSegments, { SegmentType } from "./Segment/createSegments"
+import createSegments from "./Segment/createSegments"
 import WillArrive from "./Segment/WillArrive"
 import Spinner from "./Spinner"
 
@@ -19,24 +20,15 @@ interface RouteProps {
 }
 
 export default function Route({ route, diff, expandByDefault }: RouteProps) {
-  const [segments, setSegments] = useState<SegmentType[] | null>(null)
   const [dropdownOpen, setDropdownOpen] = useState(expandByDefault)
   const dropdownContent = useRef<HTMLDivElement>(null)
 
   /**
    * Create segments from route data
    */
-  useMemo(async () => {
-    resultToSegments(route)
-      .then(newSegments => {
-        setSegments(newSegments)
-      })
-      .catch(error => {
-        console.error("error creating segments", error)
-        setSegments(null)
-      })
-  }, [route]).catch(error => {
-    console.error("error while creating segments", error)
+  const { data: segments } = useQuery({
+    queryKey: ["segments", ...route.path],
+    queryFn: async () => await resultToSegments(route),
   })
 
   /**
@@ -150,8 +142,8 @@ export const resultToSegments = async (result: ResultType) => {
       return [Promise.resolve(null)]
     }
 
-    const commonRoutes = (location.routes || []).filter(routeId =>
-      (previousLocation.routes || []).includes(routeId)
+    const commonRoutes = (location.routes ?? []).filter(routeId =>
+      (previousLocation.routes ?? []).includes(routeId)
     )
 
     return commonRoutes.map(async routeId => {

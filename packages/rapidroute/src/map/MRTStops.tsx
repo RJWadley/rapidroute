@@ -75,7 +75,7 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
         const { combinedColors, singleColors, markers, x, z } = stop
         return (
           <MRTStop
-            key={`${stop.x}${stop.z}`}
+            key={`${x}${z}`}
             colors={combinedColors ?? singleColors}
             x={x}
             z={z}

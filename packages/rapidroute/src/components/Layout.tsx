@@ -78,7 +78,7 @@ const darkColors = css`
   --glassy-dark-background: #555c;
 `
 
-const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
+const globalCss = css<{ isDark?: boolean }>`
   :root {
     --rapid-red: #f15152;
     --rapid-blue: #416788;
@@ -116,7 +116,9 @@ const GlobalStyle = createGlobalStyle`${css<{ isDark?: boolean }>`
     background-color: var(--page-background);
     font-family: Inter, Arial, sans-serif;
   }
-`}`
+`
+
+const GlobalStyle = createGlobalStyle`${globalCss}`
 
 const Wrapper = styled.div`
   color: var(--default-text);

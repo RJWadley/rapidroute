@@ -62,7 +62,7 @@ export interface Area1 {
   fillopacity: number
 }
 
-export interface Circles {}
+export type Circles = unknown
 
 export interface LineType {
   color: string

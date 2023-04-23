@@ -32,6 +32,10 @@ const databaseCache = getLocal("databaseCache") ?? defaultDatabaseCache
 const oneHashes = getLocal("oneHash") ?? defaultHashes
 const allHashes = getLocal("allHash") ?? defaultHashes
 
+const guardFailed = (...args: unknown[]) => {
+  console.warn("guard failed", ...args)
+}
+
 const getData = (() => {
   if (!isBrowser()) return
   const worker = new Worker(new URL("firebase.ts", import.meta.url))
@@ -67,7 +71,7 @@ async function getPathFromDatabase<T extends DatabaseDataKeys>(
   const dataIn = await getData?.(`${type}/${itemName}`)
   const data = isObject(dataIn) ? { ...dataIn, uniqueId: itemName } : dataIn
   if (!databaseTypeGuards[type](data)) {
-    console.log("guard failed", type, data)
+    guardFailed(type, data)
     return null
   }
   databaseCache[type] = {
@@ -80,7 +84,7 @@ async function getPathFromDatabase<T extends DatabaseDataKeys>(
 async function getAllFromDatabase<T extends DatabaseDataKeys>(
   type: T
 ): Promise<GetAll<T>> {
-  console.log("getAllFromDatabase", type)
+  console.info("getAllFromDatabase", type)
   const rawData = await getData?.(type)
   const data: GetAll<T> = {}
 
@@ -99,7 +103,7 @@ async function getAllFromDatabase<T extends DatabaseDataKeys>(
       if (databaseTypeGuards[type](item)) {
         data[key] = item
       } else {
-        console.log("guard failed", type, item)
+        guardFailed(type, item)
       }
     })
   }
@@ -167,29 +171,30 @@ export async function getPath<T extends DatabaseDataKeys>(
 
   // first get the hash from the database
   await hashesExist
-  const hash = databaseHashes[type]
+  const typeHash = databaseHashes[type]
 
   // if the hash matches the one we have, return the cached value
-  if (hash === oneHashes[type] && databaseCache[type]?.[itemName]) {
-    console.log("cache hit", type, itemName)
+  if (typeHash === oneHashes[type] && databaseCache[type]?.[itemName]) {
+    console.info("cache hit", type, itemName)
     const output = databaseCache[type]?.[itemName]
     if (databaseTypeGuards[type](output)) {
       done()
       return output
     }
-    console.log("guard failed", type, output)
+    console.info("guard failed", type, output)
   }
-  if (hash === oneHashes[type]) {
-    console.log("cache miss", type, itemName)
+
+  if (typeHash === oneHashes[type]) {
+    console.info("cache miss", type, itemName)
   } else {
-    console.log("hash mismatch", type, itemName)
+    console.info("hash mismatch", type, itemName)
 
     // clear the cache
     databaseCache[type] = {}
   }
 
   const path = await getPathFromDatabase(type, itemName)
-  oneHashes[type] = hash
+  oneHashes[type] = typeHash
   setLocal("databaseCache", databaseCache)
   setLocal("oneHash", oneHashes)
   done()
@@ -212,30 +217,31 @@ export async function getAll<T extends DatabaseDataKeys>(
     clearTimeout(timeout)
   }
 
-  console.log("getAll", type)
+  console.info("getAll", type)
   // first get the hash from the database
   await hashesExist
-  const hash = databaseHashes[type]
+  const typeHash = databaseHashes[type]
 
   // if the hash matches the one we have, return the cached value
-  if (hash === allHashes[type] && databaseCache[type]) {
-    console.log("cache hit", type)
+  if (typeHash === allHashes[type] && databaseCache[type]) {
+    console.info("cache hit", type)
     const output: GetAll<T> = databaseCache[type] ?? {}
 
-    // filter out values that don't match the type guard
+    // check for values that don't match the type guard
     Object.keys(output).forEach(key => {
       if (!databaseTypeGuards[type](output[key])) {
-        console.log("guard failed", type, output[key])
-        delete output[key]
+        guardFailed(type, output[key])
+        databaseCache[type] = undefined
       }
     })
     done()
     return output
   }
-  if (hash === allHashes[type]) {
-    console.log("cache miss", type)
+
+  if (typeHash === allHashes[type]) {
+    console.info("cache miss", type)
   } else {
-    console.log("hash mismatch", type)
+    console.info("hash mismatch", type)
 
     // clear the cache
     databaseCache[type] = {}
@@ -243,8 +249,8 @@ export async function getAll<T extends DatabaseDataKeys>(
 
   const data = await getAllFromDatabase(type)
   databaseCache[type] = data
-  allHashes[type] = hash
-  oneHashes[type] = hash
+  allHashes[type] = typeHash
+  oneHashes[type] = typeHash
   setLocal("databaseCache", databaseCache)
   setLocal("allHash", allHashes)
   setLocal("oneHash", oneHashes)
