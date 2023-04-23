@@ -35,15 +35,3 @@ export default class TypedEventEmitter<
     }
   }
 }
-
-const Demo = new TypedEventEmitter<{
-  foo: [string]
-  bar: [number]
-}>()
-
-const listener = (str: string) => {
-  console.warn(str)
-}
-Demo.addEventListener("foo", listener)
-Demo.dispatchEvent("foo", "hello")
-Demo.removeEventListener("foo", listener)

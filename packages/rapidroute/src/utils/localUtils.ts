@@ -1,13 +1,21 @@
-// TODO /*  @typescript-eslint/consistent-type-assertions */
+/* eslint-disable scanjs-rules/identifier_localStorage */
 import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"
 
-const latestVersion = 20_221_015
+const version = new Date("2023-04-22")
+
+const typeSafeIncludes = <T extends string>(
+  array: readonly T[],
+  key: string
+): key is (typeof array)[number] => {
+  return (array as readonly string[]).includes(key)
+}
 
 /**
- * return types from local storage
+ * === TYPES ===
  */
+
 interface Locals {
   /**
    * cache for the database
@@ -80,7 +88,6 @@ interface Locals {
   x: number
   z: number
 }
-type LocalKeys = keyof Locals
 
 const persistentKeys = [
   "databaseCache",
@@ -92,7 +99,7 @@ const persistentKeys = [
   "voice",
   "speechRate",
   "navigationHistory",
-] as const
+] satisfies readonly (keyof Locals)[]
 type PersistentKeys = (typeof persistentKeys)[number]
 
 const urlParameters = [
@@ -103,7 +110,7 @@ const urlParameters = [
   "x",
   "z",
   "following",
-] as const
+] satisfies readonly Exclude<keyof Locals, PersistentKeys>[]
 type UrlParameters = (typeof urlParameters)[number]
 
 const ephemeralKeys = [
@@ -111,160 +118,126 @@ const ephemeralKeys = [
   "pointOfInterest",
   "lastKnownLocation",
   "cameraPadding",
-] as const
+] satisfies readonly Exclude<keyof Locals, PersistentKeys | UrlParameters>[]
 type EphemeralKeys = (typeof ephemeralKeys)[number]
 
-const setPersistent = <T extends LocalKeys>(key: T, value: Locals[T]) => {
-  localStorage.setItem(key, JSON.stringify(value))
-}
+type LocalKeys = PersistentKeys | UrlParameters | EphemeralKeys
 
-const getPersistent = <T extends LocalKeys>(key: T): Locals[T] | null => {
-  const value = localStorage.getItem(key)
-  if (value === null) {
-    return null
-  }
-  try {
-    return JSON.parse(value) as Locals[T]
-  } catch {
-    return null
-  }
-}
+const locals: Partial<Locals> = {}
 
-const clearPersistent = <T extends LocalKeys>(key: T) => {
-  localStorage.removeItem(key)
-}
-
-const tempStorage: Partial<Locals> = {}
-
-const setEphemeral = <T extends LocalKeys>(key: T, value: Locals[T]) => {
-  tempStorage[key] = value
-}
-
-const getEphemeral = <T extends LocalKeys>(key: T): Locals[T] | null => {
-  const value = tempStorage[key]
-  if (value === undefined) {
-    return null
-  }
-  return value
-}
-
-const clearEphemeral = <T extends LocalKeys>(key: T) => {
-  delete tempStorage[key]
-}
-
-const url = (() => {
-  if (!isBrowser()) return new URL("https://example.com")
-  return new URL(window.location.href)
-})()
-
-let cooldown = false
 /**
- * write the url to the browser a max of once per second
+ * === FUNCTIONS ===
  */
-const throttledReplace = () => {
-  if (cooldown) {
-    setTimeout(throttledReplace, 1000)
-    return
-  }
-  // verify that the url is different, but that the path is the same
-  if (url.toString() === window.location.href) return
-  if (url.pathname !== window.location.pathname) return
-  window.history.replaceState({}, "", url.toString())
-  cooldown = true
+
+/**
+ * schedules an update to the URL parameters
+ * updates happen every second on the second
+ */
+const saveAllUrlParameters = () => {
+  if (updatePending) return
+  updatePending = true
+  const now = new Date()
+  const seconds = now.getSeconds()
+  const milliseconds = now.getMilliseconds()
+  const timeout = 1000 - milliseconds + (seconds % 2 === 0 ? 0 : 500)
   setTimeout(() => {
-    cooldown = false
-  }, 1000)
+    updatePending = false
+    const url = new URL(window.location.href)
+    for (const key of urlParameters) {
+      if (locals[key]) {
+        url.searchParams.set(key, locals[key] as string)
+      } else {
+        url.searchParams.delete(key)
+      }
+    }
+    window.history.replaceState({ path: url.href }, "", url.href)
+  }, timeout)
 }
+let updatePending = false
 
-const setUrlParameter = <T extends LocalKeys>(key: T, value: Locals[T]) => {
-  if (!value) {
-    clearUrlParameter(key)
-    return
-  }
-  const previousValue = url.searchParams.get(key)
-  if (previousValue === value.toString()) return
-  url.searchParams.set(key, value.toString())
-  throttledReplace()
-}
-
-const getUrlParameter = <T extends LocalKeys>(key: T): Locals[T] | null => {
-  const value = url.searchParams.get(key)
-
-  if (value === null) {
-    return null
-  }
-
-  switch (key) {
-    case "zoom":
-    case "x":
-    case "z":
-      return parseFloat(value) as Locals[T]
-
-    default:
-      return value as Locals[T]
+/**
+ * saves just the given key to local storage
+ */
+const saveToLocalStorage = (key: PersistentKeys) => {
+  const value = locals[key]
+  if (value === undefined) {
+    localStorage.removeItem(key)
+  } else {
+    localStorage.setItem(key, JSON.stringify(value))
   }
 }
 
-const clearUrlParameter = <T extends LocalKeys>(key: T) => {
-  url.searchParams.delete(key)
-  throttledReplace()
-}
-
-const typeSafeIncludes = <T extends string>(
-  array: readonly T[],
-  key: string
-): key is (typeof array)[number] => {
-  return (array as readonly string[]).includes(key)
-}
-
-export const getLocal = <
-  T extends PersistentKeys | EphemeralKeys | UrlParameters
->(
-  key: T
-): Locals[T] | null => {
-  if (!isBrowser()) return null
+/**
+ * sets a local variable
+ */
+export const setLocal = <K extends LocalKeys>(
+  key: K,
+  value: Locals[K] | undefined
+) => {
+  locals[key] = value
   if (typeSafeIncludes(persistentKeys, key)) {
-    return getPersistent(key)
+    saveToLocalStorage(key)
+  } else if (typeSafeIncludes(urlParameters, key)) {
+    saveAllUrlParameters()
   }
-  if (typeSafeIncludes(ephemeralKeys, key)) {
-    return getEphemeral(key)
-  }
-  if (typeSafeIncludes(urlParameters, key)) {
-    return getUrlParameter(key)
-  }
-  return null
 }
 
-export const setLocal = <T extends keyof Locals>(key: T, value: Locals[T]) => {
-  if (!isBrowser()) return
-  if (typeSafeIncludes(persistentKeys, key)) {
-    return setPersistent(key, value)
-  }
-  if (typeSafeIncludes(ephemeralKeys, key)) {
-    return setEphemeral(key, value)
-  }
-  if (typeSafeIncludes(urlParameters, key)) {
-    return setUrlParameter(key, value)
-  }
-  return null
+/**
+ * gets a local variable
+ */
+export const getLocal = <K extends LocalKeys>(
+  key: K
+): Locals[K] | undefined => {
+  return locals[key]
 }
 
-export const clearLocal = <T extends keyof Locals>(key: T) => {
-  if (!isBrowser()) return
-  if (typeSafeIncludes(persistentKeys, key)) {
-    return clearPersistent(key)
-  }
-  if (typeSafeIncludes(ephemeralKeys, key)) {
-    return clearEphemeral(key)
-  }
-  if (typeSafeIncludes(urlParameters, key)) {
-    return clearUrlParameter(key)
-  }
-  return null
+/**
+ * removes a local variable
+ */
+export const clearLocal = <K extends LocalKeys>(key: K) => {
+  setLocal(key, undefined)
 }
 
-const version = getLocal("version")
-if (isBrowser() && (!version || version < latestVersion)) {
-  localStorage.clear()
-  setPersistent("version", latestVersion)
+/**
+ * === INITIALIZATION ===
+ */
+
+/**
+ * initializes persistent local variables
+ */
+export const initLocals = () => {
+  for (const key of persistentKeys) {
+    const value = localStorage.getItem(key)
+    if (value !== null) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        locals[key] = JSON.parse(value)
+      } catch (error) {
+        console.error(`Error parsing local storage key ${key}`)
+        localStorage.removeItem(key)
+        locals[key] = undefined
+      }
+    }
+  }
+  const url = new URL(window.location.href)
+  for (const key of urlParameters) {
+    const value = url.searchParams.get(key)
+    if (value !== null) {
+      // @ts-expect-error typescript is doing some weird stuff here and it's not worth the effort to fix
+      locals[key] =
+        key === "x" || key === "z" || key === "zoom" ? Number(value) : value
+    }
+  }
+
+  // check the version of local storage. If it doesn't match, clear it
+  const localVersion = localStorage.getItem("version")
+  if (Number(localVersion) !== version.getTime()) {
+    console.info("Clearing local storage")
+    localStorage.clear()
+  }
+  setLocal("version", version.getTime())
 }
+
+if (isBrowser()) initLocals()
+
+/* eslint-enable scanjs-rules/identifier_localStorage */
