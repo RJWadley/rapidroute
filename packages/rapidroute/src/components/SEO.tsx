@@ -47,12 +47,10 @@ export default function Seo({
       {/* google fonts (Inter and Material Symbols Outlined) */}
       <link rel="preconnect" href="https://fonts.gstatic.com" />
       <link
-        // eslint-disable-next-line no-secrets/no-secrets
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
         rel="stylesheet"
       />
       <link
-        // eslint-disable-next-line no-secrets/no-secrets
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         rel="stylesheet"
       />

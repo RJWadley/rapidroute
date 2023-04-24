@@ -1,14 +1,14 @@
 export default class PriorityQueue<T> {
-  nodes: {
+  private nodes: {
     element: T
     priority: number
   }[]
 
-  constructor() {
+  public constructor() {
     this.nodes = []
   }
 
-  enqueue(element: T, priority: number): void {
+  public enqueue(element: T, priority: number): void {
     // insert the element in the correct position using binary search
     const newNode = { element, priority }
     const index = this.nodes.findIndex(node => priority < node.priority)
@@ -28,11 +28,11 @@ export default class PriorityQueue<T> {
     })
   }
 
-  dequeue(): T | undefined {
+  public dequeue(): T | undefined {
     return this.nodes.shift()?.element
   }
 
-  isEmpty(): boolean {
+  public isEmpty(): boolean {
     return this.nodes.length === 0
   }
 }

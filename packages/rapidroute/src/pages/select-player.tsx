@@ -32,11 +32,11 @@ export default function SelectPlayer() {
 
   useDebounce(() => setDebouncedSearch(search), 500, [search])
 
-  const playerResults = search && searchForPlayer(search)
+  const playerResults = search ? searchForPlayer(search) : undefined
   const searchIsInResults =
-    playerResults &&
+    !!search &&
     playerResults
-      .map(x => x.toString().toLowerCase())
+      ?.map(x => x.toString().toLowerCase())
       .includes(search.toLowerCase())
 
   return (
@@ -82,10 +82,9 @@ export default function SelectPlayer() {
             staticPlayers.every(
               player => player.toLowerCase() !== search?.toLowerCase()
             ) && <PlayerSelect key="SearchName" name={debouncedSearch} />}
-          {playerResults &&
-            playerResults.map(player => (
-              <PlayerSelect key={player} name={player.toString()} />
-            ))}
+          {playerResults?.map(player => (
+            <PlayerSelect key={player} name={player.toString()} />
+          ))}
         </Players>
       </Content>
     </Layout>

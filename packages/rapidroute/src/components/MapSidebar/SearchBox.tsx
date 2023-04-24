@@ -6,7 +6,7 @@ import media from "utils/media"
 
 import SearchResults from "./SearchResults"
 import useAdaptiveTextareaHeight from "./useAdaptiveTextareaHeight"
-import useListArrowKeys from "./useListArrowKeys"
+import useLocationSearch from "./useLocationSearch"
 
 export default function MapSearchBox() {
   const [inputElement, setInputElement] = useState<HTMLTextAreaElement | null>(
@@ -16,8 +16,10 @@ export default function MapSearchBox() {
 
   useAdaptiveTextareaHeight(inputElement)
 
-  const { currentSearch, selectItem, focusedItem } =
-    useListArrowKeys(inputElement)
+  const { currentSearch, selectItem, focusedItem } = useLocationSearch(
+    inputElement,
+    [activeItem, setActiveItem]
+  )
 
   return (
     <>

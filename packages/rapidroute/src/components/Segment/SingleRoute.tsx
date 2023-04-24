@@ -115,7 +115,7 @@ export default function SingleRoute({
             >
               <img
                 src={image}
-                alt={`${provider?.name || "placeholder"} logo`}
+                alt={`${provider?.name ?? "placeholder"} logo`}
               />
             </Logo>
           )}

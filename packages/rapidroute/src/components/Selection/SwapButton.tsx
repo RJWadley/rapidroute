@@ -6,19 +6,25 @@ import styled from "styled-components"
 import media from "utils/media"
 import useMedia from "utils/useMedia"
 
+/**
+ * displays a button that swaps the to and from locations and animates the change
+ */
 export default function SwapButton() {
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
   const swapRef = useRef<HTMLDivElement>(null)
   const isMobile = useMedia(media.mobile)
-
   const clickCount = useRef<number>(0)
 
+  /**
+   * swaps the from and to locations and animates the change
+   * note that we need to track any consecutive clicks to prevent
+   * the state from changing at the wrong time
+   */
   const handleClick = () => {
     const fromEl = document.querySelector("#from")
     const toEl = document.querySelector("#to")
-    const hash = clickCount.current + 1
-    clickCount.current = hash
-
+    const thisId = clickCount.current + 1
+    clickCount.current = thisId
     const duration = 0.5
 
     gsap.to(fromEl, {
@@ -28,7 +34,7 @@ export default function SwapButton() {
       yPercent: isMobile ? 100 : 0,
       ease: "power2.in",
       onComplete: () => {
-        if (clickCount.current === hash) {
+        if (clickCount.current === thisId) {
           setFrom(to)
           setTo(from)
           gsap.to(fromEl, {
@@ -49,7 +55,7 @@ export default function SwapButton() {
       yPercent: isMobile ? -100 : 0,
       ease: "power2.in",
       onComplete: () => {
-        if (clickCount.current === hash)
+        if (clickCount.current === thisId)
           gsap.to(toEl, {
             duration,
             opacity: 1,

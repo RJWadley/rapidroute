@@ -210,6 +210,7 @@ export const initLocals = () => {
     const value = localStorage.getItem(key)
     if (value !== null) {
       try {
+        // we put the data in, so unless someone is messing with local storage, this should be safe
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         locals[key] = JSON.parse(value)
       } catch (error) {

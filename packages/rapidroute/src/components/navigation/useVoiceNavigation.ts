@@ -196,8 +196,8 @@ export default function useVoiceNavigation(route: SegmentType[]) {
           ))
     ) {
       // and we are too far away from that location
-      const { x: fromX, z: fromZ } = getLocal("lastKnownLocation") || {}
-      const { x: toX, z: toZ } = firstSpoken.to.location || {}
+      const { x: fromX, z: fromZ } = getLocal("lastKnownLocation") ?? {}
+      const { x: toX, z: toZ } = firstSpoken.to.location ?? {}
       const distance = Math.sqrt(
         ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
           ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2

@@ -1,13 +1,13 @@
 import EasySpeech from "easy-speech"
 
 import tikSpeak, { cancelTikSpeak } from "./tik/speak"
-import tikVoices from "./tik/voices"
+import tikVoices from "./tik/voices.json"
 
 const easySpeechAvailable = new Promise<boolean>(resolve => {
   if (typeof window !== "undefined") {
     EasySpeech.init({ maxTimeout: 5000, interval: 250 })
       .then(() => {
-        resolve(true)
+        return resolve(true)
       })
       .catch(error => {
         // easy speech will fail if there are no voices
@@ -148,7 +148,7 @@ export const setSpeechRate = (rate: number) => {
 }
 
 export const speak = async (text: string): Promise<void> => {
-  const voiceToUse = currentVoice || (await getDefaultVoice())
+  const voiceToUse = currentVoice ?? (await getDefaultVoice())
 
   cancelTikSpeak()
   if (await easySpeechAvailable) EasySpeech.cancel()

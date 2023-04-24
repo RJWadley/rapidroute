@@ -3,16 +3,21 @@ import { getPath } from "data/getData"
 
 /**
  * get the provider for a route, accounting for codeshare/alias routes
+ * @param route the route to get the provider for
+ * @returns the displayed provider for the route
  */
 export default async function getProvider(route: Route) {
   if (!route.provider) return
   const provider = await getPath("providers", route.provider)
+
+  /**
+   * check if we have an alias for this route
+   * if we do, return the aliased provider instead
+   */
   if (provider?.alias) {
     const { number } = route
-    for (let i = 0; i < provider.alias.length; i += 1) {
-      const alias = provider.alias[i]
+    for (const alias of provider.alias) {
       if (
-        alias &&
         alias.numberRange.start &&
         alias.numberRange.end &&
         alias.displayProvider &&
@@ -24,5 +29,6 @@ export default async function getProvider(route: Route) {
       }
     }
   }
+
   return provider
 }

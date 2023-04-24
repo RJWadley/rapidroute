@@ -125,9 +125,9 @@ export default function useHideOverlapping({
  * @returns rectangle of the bounds
  */
 const getWorldBounds = (item: ObjectType): Rectangle => {
-  const x = item.localTransform.tx ?? 0
-  const y = item.localTransform.ty ?? 0
-  const localBounds = item.getLocalBounds() ?? new Rectangle(0, 0, 0, 0)
+  const x = item.localTransform.tx
+  const y = item.localTransform.ty
+  const localBounds = item.getLocalBounds()
   return new Rectangle(
     x + localBounds.x,
     y + localBounds.y,

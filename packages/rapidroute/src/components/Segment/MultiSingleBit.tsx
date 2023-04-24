@@ -50,15 +50,15 @@ export default function MultiSingleBit({
   if (route.number)
     switch (route.type) {
       case "flight":
-        routeNumberMessage = `Flight ${route.number ?? ""}`
+        routeNumberMessage = `Flight ${route.number}`
         break
 
       case "heli":
-        routeNumberMessage = `Helicopter Flight ${route.number ?? ""}`
+        routeNumberMessage = `Helicopter Flight ${route.number}`
         break
 
       case "seaplane":
-        routeNumberMessage = `Seaplane Flight ${route.number ?? ""}`
+        routeNumberMessage = `Seaplane Flight ${route.number}`
         break
 
       default:
@@ -77,7 +77,7 @@ export default function MultiSingleBit({
           background={invertLightness(themeColor)}
           small={variant === "mobile"}
         >
-          <img src={image} alt={`${provider?.name || "placeholder"} logo`} />
+          <img src={image} alt={`${provider?.name ?? "placeholder"} logo`} />
         </Logo>
       )}
       <div>

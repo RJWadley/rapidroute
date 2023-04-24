@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react"
-
 /**
  * return the average hue of an image
  */
-export default function averageImageHSL(
+const averageImageHSL = (
   imageURL: string
-): Promise<[number, number, number]> {
+): Promise<[number, number, number]> => {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.crossOrigin = "Anonymous"
     img.src = imageURL
-    img.addEventListener("load", () => {
+
+    const onLoad = () => {
       const canvas = document.createElement("canvas")
       canvas.width = img.width
       canvas.height = img.height
@@ -29,53 +28,26 @@ export default function averageImageHSL(
       }
       const avg = [r / data.length, g / data.length, b / data.length]
       const hue = rgbToHsl(avg[0] ?? 0, avg[1] ?? 0, avg[2] ?? 0)
+
+      img.removeEventListener("load", onLoad)
+      img.removeEventListener("error", reject)
       return resolve(hue)
-    })
-    img.onerror = err => {
-      reject(err)
     }
+
+    const onError = () => {
+      img.removeEventListener("load", onLoad)
+      img.removeEventListener("error", onError)
+      return reject(new Error("Could not load image"))
+    }
+
+    img.addEventListener("load", onLoad)
+    img.addEventListener("error", onError)
   })
 }
 
-const rgbToHsl = (
-  rIn: number,
-  gIn: number,
-  bIn: number
-): [number, number, number] => {
-  const r = rIn / 255
-  const g = gIn / 255
-  const b = bIn / 255
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  let h
-  let s
-  const l = (max + min) / 2
+import { useEffect, useState } from "react"
 
-  if (max === min) {
-    h = 0
-    s = 0
-  } else {
-    const d = max - min
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
-    switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0)
-        break
-
-      case g:
-        h = (b - r) / d + 2
-        break
-
-      case b:
-      default:
-        h = (r - g) / d + 4
-        break
-    }
-    h /= 6
-  }
-
-  return [h, s, l]
-}
+import { rgbToHsl } from "./colorUtils"
 
 export const useImageHSL = (imageURL: string | null | undefined) => {
   const [hue, setHue] = useState<number>()
@@ -89,7 +61,7 @@ export const useImageHSL = (imageURL: string | null | undefined) => {
         .then(newHSL => {
           setHue(newHSL[0] * 360)
           setSaturation(newHSL[1] * 300)
-          setLightness(newHSL[2] * 300)
+          return setLightness(newHSL[2] * 300)
         })
         .catch(() => {
           setHue(0)

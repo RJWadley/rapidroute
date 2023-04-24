@@ -1,6 +1,11 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src/**/*", "./*.tsx", "./*.ts"],
+  "include": [
+    "./src/**/*",
+    "./*.tsx",
+    "./*.ts",
+    "./src/utils/MixedTTS/*/*.json"
+  ],
   "compilerOptions": {
     "lib": ["dom", "DOM.Iterable", "esnext"],
     "jsx": "react-jsx",

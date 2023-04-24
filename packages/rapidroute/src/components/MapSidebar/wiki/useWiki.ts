@@ -14,14 +14,13 @@ import useImages from "./useImages"
 export default function useWiki(idToSearch: string | undefined) {
   const searchTerm =
     idToSearch &&
-    (getTextboxName(idToSearch)
+    getTextboxName(idToSearch)
       .split("-")
       .slice(1)
       .join("-")
       // this is for u, kanto
       .replaceAll(/Terminal ?\d?/g, "")
-      .trim() ??
-      idToSearch)
+      .trim()
 
   const specificParams = {
     action: "query",

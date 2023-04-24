@@ -17,15 +17,15 @@ import { DependencyList, EffectCallback, useEffect } from "react"
  */
 const useAnimation = (
   createAnimations: EffectCallback,
-  deps: DependencyList = [],
+  deps: DependencyList,
   options?: {
-    scope?: string | object | Element | null
+    scope?: string | Element | null
     kill?: boolean
   }
 ) => {
   useEffect(() => {
     // create animations using a gsap context so they can be reverted easily
-    const ctx = gsap.context(createAnimations, options?.scope || undefined)
+    const ctx = gsap.context(createAnimations, options?.scope ?? undefined)
     return () => {
       if (options?.kill) {
         ctx.kill()
@@ -33,7 +33,7 @@ const useAnimation = (
     }
 
     // have to spread deps here
-    // TODO -next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options?.kill, options?.scope, ...deps])
 }
 

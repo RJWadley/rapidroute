@@ -1,3 +1,4 @@
+import { sleep } from "utils/functions"
 import isObject from "utils/isObject"
 
 const ENDPOINT = "https://tiktok-tts.weilnet.workers.dev"
@@ -34,13 +35,16 @@ async function playAudio(data: string, rate: number) {
   currentAudio.playbackRate = rate
 
   await currentAudio.play().catch(() => {
-    // TODO -next-line no-console
-    console.log("interrupted")
+    console.info("audio playback interrupted")
   })
 
   // wait for the audio to finish playing
-  await new Promise(resolve => {
-    currentAudio?.addEventListener("ended", resolve)
+  await new Promise<void>(resolve => {
+    const onEnded = () => {
+      currentAudio?.removeEventListener("ended", onEnded)
+      return resolve()
+    }
+    currentAudio?.addEventListener("ended", onEnded)
   })
 }
 
@@ -104,7 +108,7 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
           voice,
         }),
       })
-        .then(res => {
+        .then(async res => {
           if (res.ok) {
             return res.json()
           }
@@ -117,22 +121,20 @@ const preloadAudio = async (text: string, voice: string): Promise<void> => {
               ? parseInt(retryAfter, 10) * 1000
               : 10_000 + Math.random() * 10_000
 
-            setTimeout(() => {
-              preloadedAudio[voice] = {
-                ...preloadedAudio[voice],
-                [text]: undefined,
-              }
-              preloadAudio(text, voice).catch(console.error)
-            }, timeToWaitInMs)
+            await sleep(timeToWaitInMs)
+
+            preloadedAudio[voice] = {
+              ...preloadedAudio[voice],
+              [text]: undefined,
+            }
+
+            return preloadAudio(text, voice)
+          } else {
+            throw new Error("Request to speech api failed")
           }
-          return
         })
         .then((resp: unknown) => {
-          if (isSpeechResponse(resp)) {
-            resolve(resp.data)
-          } else {
-            resolve(null)
-          }
+          return isSpeechResponse(resp) ? resolve(resp.data) : resolve(null)
         })
         .catch(console.error)
     }),

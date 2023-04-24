@@ -97,6 +97,13 @@ module.exports = {
     // this rule prevents us from type checking elements
     "xss/no-mixed-html": "off",
 
+    // disable secrets and PII rules (they don't really apply to us)
+    "no-secrets/no-secrets": "off",
+    "pii/no-phone-number": "off",
+
+    // let me have my src attributes >:(
+    "scanjs-rules/assign_to_src": "off",
+
     /**
      *  Optional or Temporary Rules
      */

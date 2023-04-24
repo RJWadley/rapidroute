@@ -40,6 +40,7 @@ export const generateRawEdges = (data: Pathfinding) => {
         return Object.entries(routes).flatMap(([to, routeInfo]) => {
           if (to === from || !data[to] || !data[from]) return []
 
+          // eslint-disable-next-line max-nested-callbacks
           const routeIds = routeInfo.map(route => route.n)
 
           const x1 = data[from]?.x
@@ -52,7 +53,8 @@ export const generateRawEdges = (data: Pathfinding) => {
           const sortWeight = getRouteTime(
             distance,
             shortHandMap[routeTypeShort],
-            Math.max(...routeInfo.map(r => r.g || 0))
+            // eslint-disable-next-line max-nested-callbacks
+            Math.max(...routeInfo.map(r => r.g ?? 0))
           )
 
           return [
@@ -88,8 +90,7 @@ export const generateRawEdges = (data: Pathfinding) => {
         // filter out MRT stops on the same line unless the from is out of service
         .filter(({ to }) => {
           if (!data[from]?.M) return true
-          if (from.charAt(0) === to.charAt(0)) return false
-          return true
+          return !from.startsWith(to.charAt(0))
         })
         .sort((a, b) => a.distance - b.distance)
         // only include locations which have at least one route available at them

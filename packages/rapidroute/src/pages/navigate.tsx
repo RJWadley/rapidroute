@@ -84,7 +84,6 @@ export default function Navigate() {
         if (wakeLock) wakeLock.release().catch(console.error)
       }
     }
-    return () => {}
   }, [])
 
   return (
