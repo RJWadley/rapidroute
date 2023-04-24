@@ -28,12 +28,13 @@ const isObject = (
 
 export const getSearchIndex = async () => {
   const snapshotRef = ref(database, "searchIndex")
-  const snapshot: unknown = (await get(snapshotRef)).val()
+  const snapshot = await get(snapshotRef)
+  const value: unknown = snapshot.val()
   const out: Record<string, SearchIndexItem> = {}
 
-  if (isObject(snapshot)) {
-    Object.keys(snapshot).forEach(key => {
-      const item = snapshot[key]
+  if (isObject(value)) {
+    Object.keys(value).forEach(key => {
+      const item = value[key]
       if (isObject(item)) item.uniqueId = key
       if (isSearchIndexItem(item)) {
         out[key] = item

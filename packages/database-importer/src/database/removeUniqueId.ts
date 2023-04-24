@@ -1,4 +1,3 @@
-// TODO /*  @typescript-eslint/consistent-type-assertions */
 import { isObject } from "./makeSafeForDatabase"
 
 export type RemoveUniqueId<T> = Omit<T, "uniqueId">
@@ -22,10 +21,10 @@ export const removeUniqueId = <T>(input: T): DeepRemoveUniqueId<T> => {
     return input.map(removeUniqueId) as DeepRemoveUniqueId<T>
   }
   if (isObject(input)) {
-    const output = {} as Record<keyof T, unknown>
+    const output: Record<string, unknown> = {}
     Object.entries(input).forEach(([key, value]) => {
       if (key !== "uniqueId") {
-        output[key as keyof T] = removeUniqueId(value)
+        output[key] = removeUniqueId(value)
       }
     })
     return output as DeepRemoveUniqueId<T>

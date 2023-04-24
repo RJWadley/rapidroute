@@ -47,7 +47,7 @@ export interface Airports {
   layerprio: number
 }
 
-export interface CirclesClass {}
+export type CirclesClass = unknown
 
 export interface Marker {
   markup: boolean
