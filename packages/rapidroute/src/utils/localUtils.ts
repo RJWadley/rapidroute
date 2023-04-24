@@ -158,6 +158,7 @@ let updatePending = false
  * saves just the given key to local storage
  */
 const saveToLocalStorage = (key: PersistentKeys) => {
+  if (!isBrowser()) return
   const value = locals[key]
   if (value === undefined) {
     localStorage.removeItem(key)
