@@ -96,8 +96,6 @@ module.exports = {
     // disable secrets and PII rules (they don't really apply to us)
     "no-secrets/no-secrets": "off",
     "pii/no-phone-number": "off",
-    "pii/no-email": "error",
-    "pii/no-dob": "warn",
 
     /**
      *  Optional or Temporary Rules
