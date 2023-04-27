@@ -32,10 +32,10 @@ export default function WalkingRoute({
     segment.to.type === "MRT Station" &&
     segment.from.type === "MRT Station" &&
     getDistance(
-      segment.from.location?.x ?? Infinity,
-      segment.from.location?.z ?? Infinity,
-      segment.to.location?.x ?? Infinity,
-      segment.to.location?.z ?? Infinity
+      segment.from.coords?.x ?? Infinity,
+      segment.from.coords?.z ?? Infinity,
+      segment.to.coords?.x ?? Infinity,
+      segment.to.coords?.z ?? Infinity
     ) < 200
 
   const isMobile = variant === "mobile" || forceMobile

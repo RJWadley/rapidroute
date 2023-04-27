@@ -1,6 +1,6 @@
 import { ReactComponent as Logo } from "assets/images/global/RapidRouteLogo.svg"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import useLocations from "data/useLocations"
+import usePlaces from "data/useLocations"
 import gsap from "gsap"
 import { useContext, useEffect, useRef, useState } from "react"
 import styled from "styled-components"
@@ -13,7 +13,7 @@ export default function NavHistory() {
   const [history, setHistory] = useState<[string, string][]>(
     getLocal("navigationHistory") ?? []
   )
-  const locations = useLocations(history.flat())
+  const locations = usePlaces(history.flat())
 
   /**
    * hide the logo until the page is scrolled down

@@ -1,4 +1,4 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
+import { RouteMode, routeModes } from "@rapidroute/database-types"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import gsap from "gsap"
 import { useContext, useEffect, useRef, useState } from "react"
@@ -52,7 +52,7 @@ export default function AllowedModes() {
         Filter Search
       </FilterButton>
       <Filters ref={filtersRef}>
-        {Object.values(shortHandMap).map(mode => (
+        {Object.values(routeModes).map(mode => (
           <Selection
             active={allowedModes.includes(mode)}
             key={mode}

@@ -1,4 +1,4 @@
-import { shortHandMapKeys } from "@rapidroute/database-types"
+import { pathingRouteTypes } from "@rapidroute/database-types"
 import { getAll } from "data/getData"
 
 const getDistance = (
@@ -32,7 +32,7 @@ getAll("pathfinding")
     let furthestB = "never"
     for (const placeA of allPlaces) {
       for (const placeB of allPlaces) {
-        const modes = shortHandMapKeys
+        const modes = pathingRouteTypes
         for (const mode of modes) {
           const placesA = Object.keys(placeA[mode] ?? {})
           if (placesA.includes(placeB.uniqueId)) {

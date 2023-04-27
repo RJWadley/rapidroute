@@ -17,7 +17,7 @@ export default function getTimeToInstruction(
     x: Infinity,
     z: Infinity,
   }
-  const toCoords = segment.to.location ?? { x: Infinity, z: Infinity }
+  const toCoords = segment.to.coords ?? { x: Infinity, z: Infinity }
   const diffX = Math.abs(fromCoords.x - toCoords.x)
   const diffZ = Math.abs(fromCoords.z - toCoords.z)
 

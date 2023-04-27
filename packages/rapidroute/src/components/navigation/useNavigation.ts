@@ -87,7 +87,7 @@ export default function useNavigation() {
     if (segments.length === 1) {
       // check if we've reached the destination
       const { x: fromX, z: fromZ } = getLocal("lastKnownLocation") ?? {}
-      const { x: toX, z: toZ } = segments[0]?.to.location ?? {}
+      const { x: toX, z: toZ } = segments[0]?.to.coords ?? {}
       const distance = Math.sqrt(
         ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
           ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2
@@ -114,8 +114,8 @@ export default function useNavigation() {
       setCurrentRoute(segments)
     } else {
       // if the length of the walk is more than 500 blocks, leave the walk in
-      const { x: fromX, z: fromZ } = segments[0]?.from.location ?? {}
-      const { x: toX, z: toZ } = segments[0]?.to.location ?? {}
+      const { x: fromX, z: fromZ } = segments[0]?.from.coords ?? {}
+      const { x: toX, z: toZ } = segments[0]?.to.coords ?? {}
       const distance = Math.sqrt(
         ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
           ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2

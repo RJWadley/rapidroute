@@ -1,8 +1,9 @@
-import { databaseTypeGuards, Route } from "@rapidroute/database-types"
 import {
-  reverseShortHandMap,
-  shortHandMapKeys,
-} from "@rapidroute/database-types/dist/src/pathfinding"
+  databaseTypeGuards,
+  isPathingRouteType,
+  pathingRouteTypes,
+  Route,
+} from "@rapidroute/database-types"
 
 import { database } from "./database"
 import deepCompare from "./deepCompare"
@@ -64,15 +65,15 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
   else delete database.routes[routeId]
 
   // if the route locations don't match the previous route, update the pathfinding index
-  if (!deepCompare(previousRoute?.locations, route?.locations)) {
+  if (!deepCompare(previousRoute?.places, route?.places)) {
     console.log("Updating pathfinding index for", routeId)
     // remove this route from any locations it was previously in
     if (previousRoute) {
       // for every location in the pathfinding index
-      Object.keys(previousRoute.locations).forEach(locationId => {
+      Object.keys(previousRoute.places).forEach(locationId => {
         const location = database.pathfinding?.[locationId]
         // check every mode in that location
-        shortHandMapKeys.forEach(shortHand => {
+        pathingRouteTypes.forEach(shortHand => {
           // check every location in that mode
           const secondLocation = location?.[shortHand]
           if (secondLocation)
@@ -80,7 +81,7 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
               ([secondLocId, routesToPlace]) => {
                 // actually remove the route from the list
                 const newRoutesToPlace = routesToPlace.filter(
-                  r => r.n !== routeId
+                  r => r.routeName !== routeId
                 )
                 // update the pathfinding index
                 if (!database.pathfinding) database.pathfinding = {}
@@ -99,18 +100,19 @@ export function setRoute(routeId: string, route: Route | undefined | null) {
 
     // add this route to the locations it's in
     if (route) {
-      Object.keys(route.locations).forEach(locationId => {
+      Object.keys(route.places).forEach(locationId => {
         const location = database.pathfinding?.[locationId] || {}
-        const mode = reverseShortHandMap[route.type]
+        const mode = route.type
+        if (!isPathingRouteType(mode)) return
         if (location[mode] === undefined) {
           location[mode] = {}
         }
         const routes = location[mode]?.[routeId] || []
         routes.push({
-          n: routeId,
-          g: route.numGates,
+          routeName: routeId,
+          numberOfGates: route.numGates,
         })
-        Object.keys(route.locations).forEach(toLocation => {
+        Object.keys(route.places).forEach(toLocation => {
           if (toLocation !== locationId) {
             // add the route to the pathfinding index
             if (!database.pathfinding) database.pathfinding = {}

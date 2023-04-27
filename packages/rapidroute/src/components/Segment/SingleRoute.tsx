@@ -73,8 +73,8 @@ export default function SingleRoute({
       ? `${themeColor}CC`
       : "var(--glassy-default-card-background)"
 
-  const expandedToGate = expandGate(route?.locations[segment.to.uniqueId])
-  const expandedFromGate = expandGate(route?.locations[segment.from.uniqueId])
+  const expandedToGate = expandGate(route?.places[segment.to.uniqueId])
+  const expandedFromGate = expandGate(route?.places[segment.from.uniqueId])
 
   let routeNumberMessage = ""
   switch (route?.type) {

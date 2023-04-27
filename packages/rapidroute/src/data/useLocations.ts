@@ -1,20 +1,20 @@
-import { Location } from "@rapidroute/database-types"
+import { Place } from "@rapidroute/database-types"
 import { useQuery } from "@tanstack/react-query"
 
 import { getPath } from "./getData"
 
-export default function useLocations(names: string[]) {
+export default function usePlaces(names: string[]) {
   const { data: locations } = useQuery({
     queryKey: ["locations", ...names],
     keepPreviousData: true,
     queryFn: () => {
-      return Promise.all(names.map(name => getPath("locations", name)))
+      return Promise.all(names.map(name => getPath("places", name)))
     },
   })
   if (!locations) return
 
   // transform locations into a map
-  const locationsMap: Record<string, Location> = {}
+  const locationsMap: Record<string, Place> = {}
 
   for (const location of locations) {
     if (location) locationsMap[location.name] = location

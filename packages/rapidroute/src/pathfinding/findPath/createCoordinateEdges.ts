@@ -1,4 +1,4 @@
-import { Pathfinding, shortHandMapKeys } from "@rapidroute/database-types"
+import { Pathfinding, pathingRouteTypes } from "@rapidroute/database-types"
 import isCoordinate from "data/isCoordinate"
 
 import getRouteTime from "./getRouteTime"
@@ -23,7 +23,7 @@ export function createCoordinateEdges(
       return { to: nodeId, distance }
     })
     .filter(({ to }) => {
-      const shortTypes = shortHandMapKeys
+      const shortTypes = pathingRouteTypes
       return shortTypes.some(routeTypeShort => {
         const routes = nodes[to]?.[routeTypeShort]
         return !!routes

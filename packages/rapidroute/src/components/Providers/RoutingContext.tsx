@@ -1,4 +1,4 @@
-import { RouteMode, shortHandMap } from "@rapidroute/database-types"
+import { RouteMode, routeModes } from "@rapidroute/database-types"
 import { getAll } from "data/getData"
 import { search } from "data/search"
 import {
@@ -37,7 +37,7 @@ export const RoutingContext = createContext<{
   /**
    * list of modes to use for routing
    */
-  allowedModes: RouteMode[]
+  allowedModes: readonly RouteMode[]
   /**
    * update the list of modes to use for routing
    */
@@ -47,7 +47,7 @@ export const RoutingContext = createContext<{
   to: null,
   setFrom: throwError,
   setTo: throwError,
-  allowedModes: Object.values(shortHandMap),
+  allowedModes: routeModes,
   setAllowedModes: throwError,
 })
 
@@ -58,8 +58,8 @@ export function RoutingProvider({
 }): JSX.Element {
   const [from, setFrom] = useState<LocationId | null>(null)
   const [to, setTo] = useState<LocationId | null>(null)
-  const [allowedModes, setAllowedModes] = useState<RouteMode[]>(
-    Object.values(shortHandMap).filter(m => m !== "spawnWarp")
+  const [allowedModes, setAllowedModes] = useState<readonly RouteMode[]>(
+    Object.values(routeModes).filter(m => m !== "spawnWarp")
   )
 
   const value = useMemo(() => {

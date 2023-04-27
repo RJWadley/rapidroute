@@ -13,7 +13,7 @@ export const initPathfinder = (pathfinding: Pathfinding) => {
 export async function findPath(
   from: string,
   to: string,
-  allowedModes: RouteMode[]
+  allowedModes: readonly RouteMode[]
 ) {
   pathfinderInstance?.cancel()
 

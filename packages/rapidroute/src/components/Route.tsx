@@ -127,7 +127,7 @@ const Dropdown = styled.div`
 // rewritten with async/await
 export const resultToSegments = async (result: ResultType) => {
   const promises = result.path.map(async locationId => {
-    return getPath("locations", locationId)
+    return getPath("places", locationId)
   })
 
   const locations = await Promise.all(promises)

@@ -1,19 +1,25 @@
 import { z } from "zod"
 
-import { isLocation, locationsSchema } from "./src/locations"
 import { isPathingPlace, pathfindingSchema } from "./src/pathfinding"
+import { isPlace, placesSchema } from "./src/places"
 import { isProvider, providersSchema } from "./src/providers"
 import { isRoute, routesSchema } from "./src/routes"
 import { isSearchIndexItem, searchIndexSchema } from "./src/searchIndex"
 
+/**
+ * used to check if there's new data available. If not, the cached data can be used.
+ */
 export const hashesSchema = z.object({
   providers: z.string().optional(),
-  locations: z.string().optional(),
+  places: z.string().optional(),
   routes: z.string().optional(),
   pathfinding: z.string().optional(),
   searchIndex: z.string().optional(),
 })
 
+/**
+ * the whole database
+ */
 const databaseSchema = z.object({
   /**
    * companies, train lines, etc.
@@ -22,7 +28,7 @@ const databaseSchema = z.object({
   /**
    * stations, stops, towns, etc.
    */
-  locations: locationsSchema.optional(),
+  places: placesSchema.optional(),
   /**
    * route by train, bus, etc.
    */
@@ -49,7 +55,7 @@ export type DatabaseType = z.TypeOf<typeof databaseSchema>
 
 /**
  * data keys are any keys that lead to a data object
- * (e.g. "locations", "routes", "providers")
+ * (e.g. "places", "routes", "providers")
  */
 export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
 export type DataDatabaseType = Omit<DatabaseType, "hashes" | "lastImport">
@@ -61,7 +67,7 @@ export const databaseTypeGuards: {
   ) => value is NonNullable<DatabaseType[key]>[string]
 } = {
   providers: isProvider,
-  locations: isLocation,
+  places: isPlace,
   routes: isRoute,
   pathfinding: isPathingPlace,
   searchIndex: isSearchIndexItem,
@@ -72,14 +78,16 @@ export const isWholeDatabase = (value: unknown): value is DatabaseType =>
 export const validateDatabase = (value: unknown) =>
   databaseSchema.safeParse(value)
 
-export { Location, Locations, PlaceType } from "./src/locations"
+/**
+ * exports
+ */
 export {
+  isPathingRouteType,
   Pathfinding,
-  PathingPlace as PathfindingEdge,
-  reverseShortHandMap,
-  shortHandMap,
-  shortHandMapKeys,
+  PathingPlace,
+  pathingRouteTypes,
 } from "./src/pathfinding"
+export { Place, Places, PlaceType } from "./src/places"
 export { Provider, Providers } from "./src/providers"
-export { Route, RouteLocations, RouteMode, Routes } from "./src/routes"
+export { Route, RouteMode, routeModes, RoutePlaces, Routes } from "./src/routes"
 export { SearchIndex, SearchIndexItem } from "./src/searchIndex"

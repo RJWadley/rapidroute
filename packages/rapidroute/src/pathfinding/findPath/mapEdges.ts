@@ -1,8 +1,7 @@
 import {
   Pathfinding,
+  pathingRouteTypes,
   RouteMode,
-  shortHandMap,
-  shortHandMapKeys,
 } from "@rapidroute/database-types"
 
 import getRouteTime from "./getRouteTime"
@@ -32,7 +31,7 @@ export const generateRawEdges = (data: Pathfinding) => {
 
   // for each route type in each nodes, generate edges to all listed nodes
   const routeEdges: GraphEdge[] = edgeIds.flatMap(from => {
-    const shortTypes = shortHandMapKeys
+    const shortTypes = pathingRouteTypes
     return shortTypes.flatMap(routeTypeShort => {
       const routes = data[from]?.[routeTypeShort]
 
@@ -41,7 +40,7 @@ export const generateRawEdges = (data: Pathfinding) => {
           if (to === from || !data[to] || !data[from]) return []
 
           // eslint-disable-next-line max-nested-callbacks
-          const routeIds = routeInfo.map(route => route.n)
+          const routeIds = routeInfo.map(route => route.routeName)
 
           const x1 = data[from]?.x
           const y1 = data[from]?.z
@@ -49,12 +48,12 @@ export const generateRawEdges = (data: Pathfinding) => {
           const y2 = data[to]?.z
           const distance =
             x1 && y1 && x2 && y2 ? getDistance(x1, y1, x2, y2) : Infinity
-          const weight = getRouteTime(distance, shortHandMap[routeTypeShort])
+          const weight = getRouteTime(distance, routeTypeShort)
           const sortWeight = getRouteTime(
             distance,
-            shortHandMap[routeTypeShort],
+            routeTypeShort,
             // eslint-disable-next-line max-nested-callbacks
-            Math.max(...routeInfo.map(r => r.g ?? 0))
+            Math.max(...routeInfo.map(r => r.numberOfGates ?? 0))
           )
 
           return [
@@ -64,7 +63,7 @@ export const generateRawEdges = (data: Pathfinding) => {
               weight,
               sortWeight,
               routes: routeIds,
-              mode: shortHandMap[routeTypeShort],
+              mode: routeTypeShort,
             },
           ]
         })
@@ -89,14 +88,14 @@ export const generateRawEdges = (data: Pathfinding) => {
         })
         // filter out MRT stops on the same line unless the from is out of service
         .filter(({ to }) => {
-          if (!data[from]?.M) return true
+          if (!data[from]?.MRT) return true
           return !from.startsWith(to.charAt(0))
         })
         .sort((a, b) => a.distance - b.distance)
         // only include locations which have at least one route available at them
         .filter(({ to }, i) => {
           if (i === 0) return true // keep the closest location regardless
-          const shortTypes = shortHandMapKeys
+          const shortTypes = pathingRouteTypes
           return shortTypes.some(routeTypeShort => {
             const routes = data[to]?.[routeTypeShort]
             return !!routes && !routes[from]
@@ -128,7 +127,7 @@ export const generateRawEdges = (data: Pathfinding) => {
 
   // spawn warp edges
   const warpEdges: GraphEdge[] = edgeIds.flatMap(placeId => {
-    const isWarp = data[placeId]?.w
+    const isWarp = data[placeId]?.isWarp
     if (isWarp) {
       return [
         {

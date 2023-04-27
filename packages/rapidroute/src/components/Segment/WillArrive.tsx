@@ -1,9 +1,9 @@
-import { Location } from "@rapidroute/database-types"
+import { Place } from "@rapidroute/database-types"
 import styled from "styled-components"
 import invertLightness from "utils/invertLightness"
 
 interface WillArriveProps {
-  destination: Location
+  destination: Place
 }
 
 export default function WillArrive({ destination }: WillArriveProps) {

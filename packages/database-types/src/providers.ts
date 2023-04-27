@@ -38,11 +38,14 @@ export const aliasSchema = z.object({
    */
   displayProvider: z.string(),
   /**
-   * under which numbers this provider is known as an alias
+   * under which numbers this provider is should display the displayProvider
    */
   numberRange: numberRangeSchema,
 })
 
+/**
+ * a provider is the owner of a route, e.g. an airline or a train company
+ */
 export const providerSchema = z.object({
   /**
    * should match the database key

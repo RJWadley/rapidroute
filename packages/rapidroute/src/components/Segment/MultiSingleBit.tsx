@@ -43,8 +43,8 @@ export default function MultiSingleBit({
     (isDark ? provider?.color?.dark : provider?.color?.light) ??
     "var(--default-card-background)"
 
-  const expandedFromGate = expandGate(route.locations[segment.from.uniqueId])
-  const expandedToGate = expandGate(route.locations[segment.to.uniqueId])
+  const expandedFromGate = expandGate(route.places[segment.from.uniqueId])
+  const expandedToGate = expandGate(route.places[segment.to.uniqueId])
 
   let routeNumberMessage = ""
   if (route.number)

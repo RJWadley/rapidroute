@@ -36,12 +36,12 @@ export default function Pin() {
     clearLocal("lastMapInteraction")
 
     const debounce = setTimeout(() => {
-      getPath("locations", activeItem)
+      getPath("places", activeItem)
         .then(newLocation => {
-          if (newLocation?.location && viewport) {
+          if (newLocation?.coords && viewport) {
             const newPoint = new Point(
-              newLocation.location.x,
-              newLocation.location.z
+              newLocation.coords.x,
+              newLocation.coords.z
             )
             setLocation(newPoint)
             return zoomToPoint(newPoint, viewport, 250)

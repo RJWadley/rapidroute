@@ -1,19 +1,19 @@
-import { Location, Route } from "@rapidroute/database-types"
+import { Place, Route } from "@rapidroute/database-types"
 
 export interface SegmentType {
-  from: Location
-  to: Location
+  from: Place
+  to: Place
   routes: (Route | null)[]
 }
 
 const MRT = "MRT Station"
 
 export default function createSegments(
-  locations: (Location | null)[],
+  locations: (Place | null)[],
   routes: (Route | null)[][]
 ) {
   const segments: SegmentType[] = []
-  let passAlongMRT: Location | undefined
+  let passAlongMRT: Place | undefined
 
   // for each pair of locations, create a segment
   locations.forEach((to, i) => {

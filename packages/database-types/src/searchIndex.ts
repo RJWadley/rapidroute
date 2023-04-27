@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+/**
+ * bare minimum information needed to search for places
+ */
 export const searchIndexItemSchema = z.object({
   /**
    * unique id of the item

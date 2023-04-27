@@ -29,7 +29,11 @@ export default class Pathfinder {
 
   private edges: GraphEdge[] = []
 
-  public constructor(from: string, to: string, allowedModes: RouteMode[]) {
+  public constructor(
+    from: string,
+    to: string,
+    allowedModes: readonly RouteMode[]
+  ) {
     this.from = from
     this.to = to
     this.allowedModes = [...allowedModes]

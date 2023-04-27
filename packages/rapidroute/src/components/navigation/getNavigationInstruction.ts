@@ -30,10 +30,10 @@ export default async function getNavigationInstruction(
       segment.from.type === "MRT Station" &&
       segment.to.type === "MRT Station" &&
       getDistance(
-        segment.from.location?.x ?? Infinity,
-        segment.from.location?.z ?? Infinity,
-        segment.to.location?.x ?? Infinity,
-        segment.to.location?.z ?? Infinity
+        segment.from.coords?.x ?? Infinity,
+        segment.from.coords?.z ?? Infinity,
+        segment.to.coords?.x ?? Infinity,
+        segment.to.coords?.z ?? Infinity
       ) < 200
         ? "transfer"
         : "walk"
@@ -62,7 +62,7 @@ export default async function getNavigationInstruction(
     if (segment.routes.length === 1) {
       const routeInfo = segment.routes[0]
       if (!routeInfo) return
-      const gate = expandGate(routeInfo.locations[segment.from.uniqueId])
+      const gate = expandGate(routeInfo.places[segment.from.uniqueId])
       const flightNumber = routeInfo.number
       const provider = await getProvider(routeInfo)
       const providerName = provider?.name
@@ -91,7 +91,7 @@ export default async function getNavigationInstruction(
 
     const segments = segment.routes.map(async routeInfo => {
       if (!routeInfo) return
-      const gate = expandGate(routeInfo.locations[segment.from.uniqueId])
+      const gate = expandGate(routeInfo.places[segment.from.uniqueId])
       const flightNumber = routeInfo.number
       const provider = await getProvider(routeInfo)
       const providerName = provider?.name

@@ -16,21 +16,21 @@ export default function usePointOfInterest(route: SegmentType[]) {
 
       // if this is a walk, we want to use the to location always
       if (firstSpoken.routes.length === 0) {
-        setLocal("pointOfInterest", firstSpoken.to.location)
+        setLocal("pointOfInterest", firstSpoken.to.coords)
 
         return
       }
 
       const { x: playerX, z: playerZ } = getLocal("lastKnownLocation") ?? {}
-      const { x: locationX, z: locationZ } = firstSpoken.from.location ?? {}
+      const { x: locationX, z: locationZ } = firstSpoken.from.coords ?? {}
       const distance = Math.sqrt(
         ((playerX ?? Infinity) - (locationX ?? Infinity)) ** 2 +
           ((playerZ ?? Infinity) - (locationZ ?? Infinity)) ** 2
       )
       if (distance < CompletionThresholds[firstSpoken.from.type]) {
-        setLocal("pointOfInterest", firstSpoken.from.location)
+        setLocal("pointOfInterest", firstSpoken.from.coords)
       } else {
-        setLocal("pointOfInterest", firstSpoken.to.location)
+        setLocal("pointOfInterest", firstSpoken.to.coords)
       }
     }
 

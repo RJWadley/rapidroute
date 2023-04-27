@@ -3,7 +3,7 @@ import {
   databaseTypeGuards,
   DataDatabaseType,
   Hashes,
-  Location,
+  Place,
 } from "@rapidroute/database-types"
 import { wrap } from "comlink"
 import { setShowOfflineBanner } from "components/OfflineBanner"
@@ -15,14 +15,14 @@ import { FirebaseWorkerType } from "./firebase"
 import isCoordinate from "./isCoordinate"
 
 const defaultDatabaseCache: DataDatabaseType = {
-  locations: {},
+  places: {},
   pathfinding: {},
   providers: {},
   routes: {},
   searchIndex: {},
 }
 const defaultHashes: Hashes = {
-  locations: undefined,
+  places: undefined,
   pathfinding: undefined,
   providers: undefined,
   routes: undefined,
@@ -43,7 +43,7 @@ const getData = (() => {
 })()
 
 let databaseHashes: Hashes = {
-  locations: "",
+  places: "",
   pathfinding: "",
   providers: "",
   routes: "",
@@ -130,10 +130,10 @@ export async function getPath<T extends DatabaseDataKeys>(
   }
 
   // some things are not in the database, so we need to check for that
-  if (type === "locations" && isCoordinate(itemName)) {
+  if (type === "places" && isCoordinate(itemName)) {
     const xCoord = parseInt(itemName.split(", ")[0]?.split(": ")[1] ?? "0", 10)
     const zCoord = parseInt(itemName.split(", ")[1] ?? "0", 10)
-    const out: Location = {
+    const out: Place = {
       uniqueId: itemName,
       name: itemName,
       shortName: `${xCoord}, ${zCoord}`,
@@ -142,7 +142,7 @@ export async function getPath<T extends DatabaseDataKeys>(
       world: "New",
       enabled: true,
       isSpawnWarp: false,
-      location: {
+      coords: {
         x: xCoord,
         z: zCoord,
       },
@@ -152,8 +152,8 @@ export async function getPath<T extends DatabaseDataKeys>(
       return out
     }
   }
-  if (type === "locations" && itemName === "Current Location") {
-    const out: Location = {
+  if (type === "places" && itemName === "Current Location") {
+    const out: Place = {
       uniqueId: itemName,
       name: itemName,
       shortName: "Location",

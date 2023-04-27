@@ -173,11 +173,11 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     }
 
     const distanceBetweenLocs = Math.sqrt(
-      ((firstSpoken?.to.location?.x ?? Infinity) -
-        (firstCurrent?.from.location?.x ?? Infinity)) **
+      ((firstSpoken?.to.coords?.x ?? Infinity) -
+        (firstCurrent?.from.coords?.x ?? Infinity)) **
         2 +
-        ((firstSpoken?.to.location?.z ?? Infinity) -
-          (firstCurrent?.from.location?.z ?? Infinity)) **
+        ((firstSpoken?.to.coords?.z ?? Infinity) -
+          (firstCurrent?.from.coords?.z ?? Infinity)) **
           2
     )
 
@@ -197,7 +197,7 @@ export default function useVoiceNavigation(route: SegmentType[]) {
     ) {
       // and we are too far away from that location
       const { x: fromX, z: fromZ } = getLocal("lastKnownLocation") ?? {}
-      const { x: toX, z: toZ } = firstSpoken.to.location ?? {}
+      const { x: toX, z: toZ } = firstSpoken.to.coords ?? {}
       const distance = Math.sqrt(
         ((fromX ?? Infinity) - (toX ?? Infinity)) ** 2 +
           ((fromZ ?? Infinity) - (toZ ?? Infinity)) ** 2

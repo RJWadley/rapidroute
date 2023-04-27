@@ -1,3 +1,3 @@
 # Database Types
 
-Contains typings for the RapidRoute database. The database is a Firebase Realtime Database.
+Contains typings and utils for the RapidRoute database. The database is a Firebase Realtime Database.
