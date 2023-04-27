@@ -1,7 +1,7 @@
 import {
   isSearchIndexItem,
   SearchIndexItem,
-} from "@rapidroute/database-types/dist/src/searchIndex"
+} from "@rapidroute/database-utils/dist/src/searchIndex"
 import { initializeApp } from "firebase/app"
 import { get, getDatabase, ref } from "firebase/database"
 import FlexSearch from "flexsearch-ts"

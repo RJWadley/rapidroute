@@ -1,5 +1,5 @@
 {
-  "name": "@rapidroute/database-types",
+  "name": "@rapidroute/database-utils",
   "version": "1.0.0",
   "scripts": {
     "lint": "npx eslint --ext .js,.jsx,.ts,.tsx .",

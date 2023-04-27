@@ -1,4 +1,4 @@
-import { Pathfinding, pathingRouteTypes } from "@rapidroute/database-types"
+import { Pathfinding, pathingRouteTypes } from "@rapidroute/database-utils"
 import isCoordinate from "data/isCoordinate"
 
 import getRouteTime from "./getRouteTime"

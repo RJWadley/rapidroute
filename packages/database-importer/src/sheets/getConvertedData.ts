@@ -4,7 +4,7 @@ import {
   Provider,
   Route,
   RoutePlaces,
-} from "@rapidroute/database-types"
+} from "@rapidroute/database-utils"
 
 import getLegacyData from "./getSheetData"
 

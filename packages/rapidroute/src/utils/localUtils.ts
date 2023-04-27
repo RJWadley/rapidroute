@@ -1,4 +1,4 @@
-import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
+import { DataDatabaseType, Hashes } from "@rapidroute/database-utils"
 
 import { isBrowser } from "./functions"
 

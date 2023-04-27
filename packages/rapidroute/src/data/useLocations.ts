@@ -1,4 +1,4 @@
-import { Place } from "@rapidroute/database-types"
+import { Place } from "@rapidroute/database-utils"
 import { useQuery } from "@tanstack/react-query"
 
 import { getPath } from "./getData"

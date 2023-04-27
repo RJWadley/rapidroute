@@ -1,4 +1,4 @@
-import { databaseTypeGuards, Provider } from "@rapidroute/database-types"
+import { databaseTypeGuards, Provider } from "@rapidroute/database-utils"
 
 import { database } from "./database"
 import deepCompare from "./deepCompare"

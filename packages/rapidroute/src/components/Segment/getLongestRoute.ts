@@ -1,4 +1,4 @@
-import { pathingRouteTypes } from "@rapidroute/database-types"
+import { pathingRouteTypes } from "@rapidroute/database-utils"
 import { getAll } from "data/getData"
 
 const getDistance = (

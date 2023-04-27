@@ -1,4 +1,4 @@
-import { Provider } from "@rapidroute/database-types"
+import { Provider } from "@rapidroute/database-utils"
 import { darkModeContext } from "components/Providers/DarkMode"
 import { SegmentType } from "components/Segment/createSegments"
 import { useContext, useMemo, useState } from "react"

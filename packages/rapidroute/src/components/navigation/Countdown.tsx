@@ -1,5 +1,5 @@
 // TODO /*  no-console */
-import { RouteMode } from "@rapidroute/database-types"
+import { RouteMode } from "@rapidroute/database-utils"
 import { darkModeContext } from "components/Providers/DarkMode"
 import { NavigationContext } from "components/Providers/NavigationContext"
 import { stopToNumber } from "components/Segment/getLineDirections"

@@ -1,4 +1,4 @@
-import { RouteMode, routeModes } from "@rapidroute/database-types"
+import { RouteMode, routeModes } from "@rapidroute/database-utils"
 import { getAll } from "data/getData"
 import { search } from "data/search"
 import {

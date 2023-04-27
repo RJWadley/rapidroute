@@ -1,4 +1,4 @@
-import { SearchIndex } from "@rapidroute/database-types"
+import { SearchIndex } from "@rapidroute/database-utils"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import { getAll } from "data/getData"
 import isCoordinate from "data/isCoordinate"

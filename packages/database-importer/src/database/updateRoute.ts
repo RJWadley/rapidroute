@@ -3,7 +3,7 @@ import {
   isPathingRouteType,
   pathingRouteTypes,
   Route,
-} from "@rapidroute/database-types"
+} from "@rapidroute/database-utils"
 
 import { database } from "./database"
 import deepCompare from "./deepCompare"

@@ -1,6 +1,6 @@
-import { databaseTypeGuards, Place } from "@rapidroute/database-types"
-import { PathingPlace } from "@rapidroute/database-types/dist/src/pathfinding"
-import { SearchIndexItem } from "@rapidroute/database-types/dist/src/searchIndex"
+import { databaseTypeGuards, Place } from "@rapidroute/database-utils"
+import { PathingPlace } from "@rapidroute/database-utils/dist/src/pathfinding"
+import { SearchIndexItem } from "@rapidroute/database-utils/dist/src/searchIndex"
 
 import { database } from "./database"
 import deepCompare from "./deepCompare"

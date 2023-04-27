@@ -1,4 +1,4 @@
-import { Pathfinding, RouteMode } from "@rapidroute/database-types"
+import { Pathfinding, RouteMode } from "@rapidroute/database-utils"
 import { expose } from "comlink"
 
 import Pathfinder from "."

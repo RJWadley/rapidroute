@@ -18,7 +18,7 @@
       "path": "./packages/database-importer"
     },
     {
-      "path": "./packages/database-types"
+      "path": "./packages/database-utils"
     },
     {
       "path": "./packages/rapidroute"

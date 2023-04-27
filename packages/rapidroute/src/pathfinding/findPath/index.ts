@@ -1,5 +1,5 @@
 // TODO /*  no-console */
-import { Pathfinding, RouteMode } from "@rapidroute/database-types"
+import { Pathfinding, RouteMode } from "@rapidroute/database-utils"
 
 import { generateAllCoordinateEdges } from "./createCoordinateEdges"
 import getRouteTime from "./getRouteTime"

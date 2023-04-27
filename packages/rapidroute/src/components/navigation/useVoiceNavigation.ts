@@ -1,4 +1,4 @@
-import { PlaceType } from "@rapidroute/database-types"
+import { PlaceType } from "@rapidroute/database-utils"
 import AlertMP3 from "assets/audio/alert.mp3"
 import CompleteMP3 from "assets/audio/complete.mp3"
 import NeutralMP3 from "assets/audio/neutral.mp3"

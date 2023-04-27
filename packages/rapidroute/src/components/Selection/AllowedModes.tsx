@@ -1,4 +1,4 @@
-import { RouteMode, routeModes } from "@rapidroute/database-types"
+import { RouteMode, routeModes } from "@rapidroute/database-utils"
 import { RoutingContext } from "components/Providers/RoutingContext"
 import gsap from "gsap"
 import { useContext, useEffect, useRef, useState } from "react"

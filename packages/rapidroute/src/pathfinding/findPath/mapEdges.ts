@@ -2,7 +2,7 @@ import {
   Pathfinding,
   pathingRouteTypes,
   RouteMode,
-} from "@rapidroute/database-types"
+} from "@rapidroute/database-utils"
 
 import getRouteTime from "./getRouteTime"
 import { getDistance } from "./pathUtil"

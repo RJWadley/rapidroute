@@ -20,7 +20,7 @@ Imports data from various spreadsheets and dynmap into the RapidRoute database
 
 ### Database Types
 
-`packages/database-types`
+`packages/database-utils`
 
 Contains typings for the RapidRoute database and other shared types
 
@@ -47,14 +47,14 @@ If you're using the VSCode ESLint extension, you may need to add the following t
     "packages/rapidroute",
     "packages/database-importer",
     "packages/wiki-scraper",
-    "packages/database-types"
+    "packages/database-utils"
   ],
 ```
 
 You can run the following command to update this file automatically
 
 ```bash
-touch .vscode/settings.json && echo '{\n  "eslint.workingDirectories": [\n    "packages/rapidroute",\n    "packages/database-importer",\n    "packages/wiki-scraper",\n "packages/database-types"]\n}' > .vscode/settings.json
+touch .vscode/settings.json && echo '{\n  "eslint.workingDirectories": [\n    "packages/rapidroute",\n    "packages/database-importer",\n    "packages/wiki-scraper",\n "packages/database-utils"]\n}' > .vscode/settings.json
 ```
 
 ### Automatic Dev Server Task

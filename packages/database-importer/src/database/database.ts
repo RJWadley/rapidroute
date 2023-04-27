@@ -2,7 +2,7 @@ import {
   DatabaseType,
   isWholeDatabase,
   validateDatabase,
-} from "@rapidroute/database-types"
+} from "@rapidroute/database-utils"
 import { config } from "dotenv"
 import admin, { ServiceAccount } from "firebase-admin"
 

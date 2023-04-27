@@ -4,7 +4,7 @@ import {
   DataDatabaseType,
   Hashes,
   Place,
-} from "@rapidroute/database-types"
+} from "@rapidroute/database-utils"
 import { wrap } from "comlink"
 import { setShowOfflineBanner } from "components/OfflineBanner"
 import { isBrowser, sleep } from "utils/functions"
