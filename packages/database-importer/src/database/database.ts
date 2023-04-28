@@ -6,7 +6,6 @@ import {
 import { config } from "dotenv"
 import admin, { ServiceAccount } from "firebase-admin"
 
-// import accountKeyRAW from "../serviceAccountKey.json"
 import makeSafeForDatabase, { isObject } from "./makeSafeForDatabase"
 import { DeepRemoveUniqueId, removeUniqueId } from "./removeUniqueId"
 

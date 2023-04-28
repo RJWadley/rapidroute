@@ -4,7 +4,8 @@
     "./src/**/*",
     "./*.tsx",
     "./*.ts",
-    "./src/utils/MixedTTS/*/*.json"
+    "./src/utils/MixedTTS/*/*.json",
+    "./src/data/*.json"
   ],
   "compilerOptions": {
     "lib": ["dom", "DOM.Iterable", "esnext"],
