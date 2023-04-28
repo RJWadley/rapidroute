@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "noUncheckedIndexedAccess": false,
-    "module": "ES2022"
+    "module": "CommonJS"
   },
   "include": ["src/**/*"]
 }

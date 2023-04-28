@@ -89,10 +89,12 @@ async function runImport() {
   console.log("ALL DONE!")
 }
 
-await runImport().catch(error => {
-  console.error(error)
-  process.exit(1)
-})
-
-console.log("Finished all operations")
-process.exit(0)
+runImport()
+  .then(() => {
+    console.log("Finished all operations")
+    return process.exit(0)
+  })
+  .catch(error => {
+    console.error(error)
+    process.exit(1)
+  })

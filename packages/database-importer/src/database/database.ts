@@ -19,7 +19,9 @@ const accountKey: ServiceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(accountKey),
-  databaseURL: "https://rapidroute-7beef-default-rtdb.firebaseio.com",
+  databaseURL:
+    process.env.DATABASE_URL ??
+    "https://rapidroute-7beef-default-rtdb.firebaseio.com",
 })
 
 const rawDatabase = admin.database()
