@@ -1,9 +1,9 @@
+/* eslint-disable promise/no-nesting */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable max-lines */
 // this file comes mostly from RapidRoute 2
 // eventually it should probably be replaced with something more efficient
 
-// TODO /*  prefer-destructuring */
-// TODO /*  max-lines */
-// TODO /*  @typescript-eslint/restrict-template-expressions */
 // 1 call
 
 // fetch for node.js
@@ -27,7 +27,7 @@ const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
 
 function transpose<T>(a: T[][]): T[][] {
   // Calculate the width and height of the Array
-  const w = a.length || 0
+  const w = a.length
 
   // calculate the max height of array
   let maxHeight = 0
@@ -95,7 +95,7 @@ async function getTransitSheet(): Promise<SheetResponse> {
         const cols = result.valueRanges[1].values
         ignoredPlaces = result.valueRanges[2].values.flat()
         // now get transit sheet
-        fetch(
+        return fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${TRANSIT_SHEET_ID}/values:batchGet?` +
             // rows[0] is the last row and cols[0] is last column
             `ranges='Airline Class Distribution'!A3:C${rows[0][0]}` + // airports
@@ -115,7 +115,7 @@ async function getTransitSheet(): Promise<SheetResponse> {
             return res.json()
           })
           .then((finalResult: SheetResponse) => {
-            resolve(finalResult)
+            return resolve(finalResult)
           })
           .catch(error => {
             console.error(error)
@@ -143,7 +143,7 @@ async function getDataSheet(): Promise<SheetResponse> {
         return res.json()
       })
       .then((result: SheetResponse) => {
-        resolve(result)
+        return resolve(result)
       })
       .catch(error => {
         console.error(error)
@@ -190,7 +190,7 @@ function getTowns() {
           z: 1,
         })
         spawnWarps.push("Spawn")
-        resolve(result)
+        return resolve(result)
       })
       .catch(error => {
         console.error(error)
@@ -250,6 +250,7 @@ function parseRawFlightData(
 
     Object.keys(flightsByNumber).forEach(flightNumber => {
       flightsByNumber[flightNumber].forEach(destinationA => {
+        // eslint-disable-next-line max-nested-callbacks
         flightsByNumber[flightNumber].forEach(destinationB => {
           if (destinationA === destinationB) return
           flights.push({
@@ -270,7 +271,7 @@ function parseRawFlightData(
 
 function parseCodeshares(codesharesRaw: string[][]) {
   codesharesRaw.forEach(company => {
-    const range = company[1]?.split("-") || [] // range.split
+    const range = company[1]?.split("-") ?? [] // range.split
 
     if (range.length < 2) return
 
@@ -447,7 +448,7 @@ function processAirlineMetadata(rawAirlineData: string[][]) {
     fetch(`${requestURL}&key=${API_KEY}`)
       .then(response => response.json())
       .then((result: SheetResponse) => {
-        parseAirlineGateData(result, rawAirlineData, resolve)
+        return parseAirlineGateData(result, rawAirlineData, resolve)
       })
       .catch(error => {
         console.error(error)
@@ -580,6 +581,7 @@ function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
   )
 
   routes.push(...routeList)
+  places.push(...placeList)
 }
 
 const placeLocations: Record<
@@ -600,8 +602,6 @@ function generateMrtFromMarkers(): Promise<boolean> {
         return response.json()
       })
       .then((data: Markers) => {
-        resolve(true)
-
         const { sets } = data
 
         Object.keys(sets).forEach(lineName => {
@@ -657,6 +657,8 @@ function generateMrtFromMarkers(): Promise<boolean> {
             })
           })
         })
+
+        return resolve(true)
       })
       .catch(error => {
         console.error(error)

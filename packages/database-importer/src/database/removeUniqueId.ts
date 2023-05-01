@@ -1,4 +1,4 @@
-import { isObject } from "./makeSafeForDatabase"
+import { isRecord } from "@rapidroute/database-utils"
 
 export type RemoveUniqueId<T> = Omit<T, "uniqueId">
 
@@ -20,7 +20,7 @@ export const removeUniqueId = <T>(input: T): DeepRemoveUniqueId<T> => {
   if (Array.isArray(input)) {
     return input.map(removeUniqueId) as DeepRemoveUniqueId<T>
   }
-  if (isObject(input)) {
+  if (isRecord(input)) {
     const output: Record<string, unknown> = {}
     Object.entries(input).forEach(([key, value]) => {
       if (key !== "uniqueId") {

@@ -1,6 +1,3 @@
-/*  TODO  @typescript-eslint/no-unsafe-assignment */
-/*  TODO  import/prefer-default-export */
-
 import { GatsbyNode } from "gatsby"
 
 export const onCreateWebpackConfig: GatsbyNode["onCreateWebpackConfig"] = ({

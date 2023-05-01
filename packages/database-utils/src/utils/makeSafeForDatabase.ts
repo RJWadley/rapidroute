@@ -1,17 +1,15 @@
-export const isObject = (
+export const isRecord = (
   input: unknown
 ): input is Record<string | number | symbol, unknown> => {
   return typeof input === "object" && input !== null && !Array.isArray(input)
 }
 
-/* recursion in this case requires type assertions */
-// TODO /*  @typescript-eslint/consistent-type-assertions */
 /**
  * recursively replace all undefined values with null
  * this is because firebase does not allow undefined values
  */
 const makeSafeForDatabase = <T>(input: T): SafeForDatabase<T> => {
-  if (isObject(input)) {
+  if (isRecord(input)) {
     const output: Record<string | number | symbol, unknown> = {}
     Object.entries(input).forEach(([key, value]) => {
       output[key] = makeSafeForDatabase(value)

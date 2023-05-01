@@ -5,7 +5,8 @@
     "start": "(npx tsc || exit 0) && node dist/src/index.js",
     "lint": "npx eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "npx eslint --ext .js,.jsx,.ts,.tsx . --fix",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "clear-database": "tsc && node dist/src/index.js --clearDatabase"
   },
   "engines": {
     "node": "16"

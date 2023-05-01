@@ -53,7 +53,6 @@ export const getVoices = async (lang = "en") => {
   } as const
 
   const getLangLabel = (name: string) => {
-    // TODO -next-line no-restricted-syntax
     for (const [language, regex] of Object.entries(countryNames)) {
       if (regex.test(name)) return language
     }

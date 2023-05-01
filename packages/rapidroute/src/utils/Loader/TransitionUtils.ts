@@ -137,9 +137,6 @@ export const loadPage = async (
     currentAnimation = null
     await navigate(to)
 
-    // we need to wait for the *next* page to load, so wait for unmount, then pageReady
-    await pageUnmounted()
-    await pageReady()
     window.scrollTo(0, 1)
     loader.dispatchEvent("transitionEnd", "none")
     loader.dispatchEvent("anyEnd", "none")
@@ -171,7 +168,6 @@ export const loadPage = async (
   await navigate(to, () => {
     animationContext.revert()
   })
-  await pageReady()
   window.scrollTo(0, 1)
 
   promisesToAwait.push(sleep(100))
@@ -224,11 +220,15 @@ export const navigate = async (to: string, cleanupFunction?: VoidFunction) => {
       cleanupFunction?.()
     }, 1000)
   } else {
-    return new Promise<void>((resolve, reject) => {
-      startTransition(() => {
-        gatsbyNavigate(to).then(resolve).catch(reject)
+    startTransition(() => {
+      gatsbyNavigate(to).catch(error => {
+        console.error(error)
+        window.open(to)
       })
     })
+    // we need to wait for the *next* page to load, so wait for unmount, then pageReady
+    await pageUnmounted()
+    await pageReady()
   }
 }
 

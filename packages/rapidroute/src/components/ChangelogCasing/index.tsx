@@ -1,5 +1,3 @@
-// TODO /*  max-lines */
-
 import UniversalLink from "utils/Loader/UniversalLink"
 
 import Scoped from "./style"

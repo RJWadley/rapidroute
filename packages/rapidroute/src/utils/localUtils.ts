@@ -2,7 +2,7 @@ import { DataDatabaseType, Hashes } from "@rapidroute/database-utils"
 
 import { isBrowser } from "./functions"
 
-const version = new Date("2023-04-22")
+const version = "2023-04-27"
 
 const typeSafeIncludes = <T extends string>(
   array: readonly T[],
@@ -36,7 +36,7 @@ interface Locals {
   /**
    * version of local storage
    */
-  version: number
+  version: string
   /**
    * voice to use for tts
    */
@@ -235,11 +235,11 @@ export const initLocals = () => {
 
   // check the version of local storage. If it doesn't match, clear it
   const localVersion = localStorage.getItem("version")
-  if (Number(localVersion) !== version.getTime()) {
+  if (localVersion !== version) {
     console.info("Clearing local storage")
     localStorage.clear()
   }
-  setLocal("version", version.getTime())
+  setLocal("version", version)
 }
 
 if (isBrowser()) initLocals()

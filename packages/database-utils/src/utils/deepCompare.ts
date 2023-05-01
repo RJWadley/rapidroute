@@ -1,4 +1,4 @@
-import { isObject } from "./makeSafeForDatabase"
+import { isRecord } from "./makeSafeForDatabase"
 
 /**
  * return true every entry in the object is a) undefined | null | [] | {} or b) an object that passes the same test recursively
@@ -12,8 +12,8 @@ const objectIsDeepUndefined = (
       value === undefined ||
       value === null ||
       (Array.isArray(value) && value.length === 0) ||
-      (isObject(value) && Object.keys(value).length === 0) ||
-      (isObject(value) && objectIsDeepUndefined(value))
+      (isRecord(value) && Object.keys(value).length === 0) ||
+      (isRecord(value) && objectIsDeepUndefined(value))
   )
 }
 
@@ -34,14 +34,14 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
   if (Array.isArray(b) && b.length === 0) return deepCompare(a, undefined)
 
   // same for objects
-  if (isObject(a) && Object.keys(a).length === 0)
+  if (isRecord(a) && Object.keys(a).length === 0)
     return deepCompare(undefined, b)
-  if (isObject(b) && Object.keys(b).length === 0)
+  if (isRecord(b) && Object.keys(b).length === 0)
     return deepCompare(a, undefined)
 
   // recursively undefined objects are the same as undefined
-  if (isObject(a) && objectIsDeepUndefined(a)) return deepCompare(undefined, b)
-  if (isObject(b) && objectIsDeepUndefined(b)) return deepCompare(a, undefined)
+  if (isRecord(a) && objectIsDeepUndefined(a)) return deepCompare(undefined, b)
+  if (isRecord(b) && objectIsDeepUndefined(b)) return deepCompare(a, undefined)
 
   // if one is null or undefined, but not both, they are not equal
   if (a === null || a === undefined || b === null || b === undefined)
@@ -71,7 +71,7 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
   }
 
   // if they are both objects, compare them as objects
-  if (isObject(a) && isObject(b)) {
+  if (isRecord(a) && isRecord(b)) {
     // compare each value
     const allKeys = new Set([...Object.keys(a), ...Object.keys(b)])
     let equal = true

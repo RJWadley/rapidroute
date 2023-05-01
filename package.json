@@ -61,6 +61,7 @@
     "lint:fix": "npm run lint:fix -workspaces",
     "start": "npm run typegen && npm start -w ./packages/rapidroute/",
     "import": "npm run typegen && npm run start -w ./packages/database-importer",
+    "clear-database": "npm run clear-database -w ./packages/database-importer/",
     "typegen": "npm run build -w ./packages/database-utils/",
     "build": "npm i && npm run build -w ./packages/database-utils/ && npm run build -w ./packages/rapidroute/",
     "clean": "npm run clean -workspaces && rm -r ./node_modules",

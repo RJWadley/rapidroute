@@ -56,7 +56,6 @@ const useImages = (pageTitle: string | undefined) => {
             getOneImageParams
           ).toString()}`
           const imageResp = await fetch(getOneImageUrl, { signal })
-          // TODO -next-line @typescript-eslint/consistent-type-assertions
           const imageData = (await imageResp.json()) as WikiImage
 
           const imagePageKey = Object.keys(imageData.query.pages)[0]

@@ -1,3 +1,4 @@
+import { isRecord } from "@rapidroute/database-utils"
 import {
   isSearchIndexItem,
   SearchIndexItem,
@@ -20,22 +21,16 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 export const database = getDatabase(app)
 
-const isObject = (
-  obj: unknown
-): obj is Record<string | number | symbol, unknown> => {
-  return obj !== null && typeof obj === "object" && !Array.isArray(obj)
-}
-
 export const getSearchIndex = async () => {
   const snapshotRef = ref(database, "searchIndex")
   const snapshot = await get(snapshotRef)
   const value: unknown = snapshot.val()
   const out: Record<string, SearchIndexItem> = {}
 
-  if (isObject(value)) {
+  if (isRecord(value)) {
     Object.keys(value).forEach(key => {
       const item = value[key]
-      if (isObject(item)) item.uniqueId = key
+      if (isRecord(item)) item.uniqueId = key
       if (isSearchIndexItem(item)) {
         out[key] = item
       }

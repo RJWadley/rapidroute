@@ -63,9 +63,7 @@ export const pathingRouteTypes = ["flight", "seaplane", "heli", "MRT"] as const
 export const isPathingRouteType = (
   obj: unknown
 ): obj is (typeof pathingRouteTypes)[number] =>
-  pathingRouteTypes.includes(
-    obj as unknown as (typeof pathingRouteTypes)[number]
-  )
+  pathingRouteTypes.includes(obj as (typeof pathingRouteTypes)[number])
 
 export type PathingPlace = z.TypeOf<typeof pathingPlaceSchema>
 export type Pathfinding = z.TypeOf<typeof pathfindingSchema>

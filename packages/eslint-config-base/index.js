@@ -1,6 +1,12 @@
 module.exports = {
   extends: [
     /**
+     * The base for this config is alloy
+     */
+    "alloy",
+    "alloy/react",
+    "alloy/typescript",
+    /**
      * Bring in @typescript-eslint rules and react rules for TS checking
      */
     "plugin:react/recommended",
@@ -8,12 +14,6 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:@typescript-eslint/strict",
-    /**
-     * The base for this config is alloy
-     */
-    "alloy",
-    "alloy/react",
-    "alloy/typescript",
     /**
      * and some utility plugins with extra rules
      */

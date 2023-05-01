@@ -1,10 +1,10 @@
 import { z } from "zod"
 
-import { isPathingPlace, pathfindingSchema } from "./src/pathfinding"
-import { isPlace, placesSchema } from "./src/places"
-import { isProvider, providersSchema } from "./src/providers"
-import { isRoute, routesSchema } from "./src/routes"
-import { isSearchIndexItem, searchIndexSchema } from "./src/searchIndex"
+import { isPathingPlace, pathfindingSchema } from "./src/schema/pathfinding"
+import { isPlace, placesSchema } from "./src/schema/places"
+import { isProvider, providersSchema } from "./src/schema/providers"
+import { isRoute, routesSchema } from "./src/schema/routes"
+import { isSearchIndexItem, searchIndexSchema } from "./src/schema/searchIndex"
 
 /**
  * used to check if there's new data available. If not, the cached data can be used.
@@ -49,6 +49,10 @@ const databaseSchema = z.object({
    * date of last import
    */
   lastImport: z.string().optional(),
+  /**
+   * database version
+   */
+  version: z.string().optional(),
 })
 
 export type DatabaseType = z.TypeOf<typeof databaseSchema>
@@ -57,8 +61,14 @@ export type DatabaseType = z.TypeOf<typeof databaseSchema>
  * data keys are any keys that lead to a data object
  * (e.g. "places", "routes", "providers")
  */
-export type DatabaseDataKeys = keyof Omit<DatabaseType, "hashes" | "lastImport">
-export type DataDatabaseType = Omit<DatabaseType, "hashes" | "lastImport">
+export type DatabaseDataKeys = keyof Omit<
+  DatabaseType,
+  "hashes" | "lastImport" | "version"
+>
+export type DataDatabaseType = Omit<
+  DatabaseType,
+  "hashes" | "lastImport" | "version"
+>
 export type Hashes = Partial<Record<DatabaseDataKeys, string>>
 
 export const databaseTypeGuards: {
@@ -75,19 +85,40 @@ export const databaseTypeGuards: {
 
 export const isWholeDatabase = (value: unknown): value is DatabaseType =>
   databaseSchema.safeParse(value).success
-export const validateDatabase = (value: unknown) =>
-  databaseSchema.safeParse(value)
+export const validateDatabase = (value: unknown) => {
+  // parse the database with ZOD and return any errors
+  try {
+    databaseSchema.parse(value)
+  } catch (error) {
+    if (error instanceof z.ZodError) console.error(error.errors)
+  }
+}
 
 /**
  * exports
  */
+export { setConfig } from "./src/config"
 export {
   isPathingRouteType,
   Pathfinding,
   PathingPlace,
   pathingRouteTypes,
-} from "./src/pathfinding"
-export { Place, Places, PlaceType } from "./src/places"
-export { Provider, Providers } from "./src/providers"
-export { Route, RouteMode, routeModes, RoutePlaces, Routes } from "./src/routes"
-export { SearchIndex, SearchIndexItem } from "./src/searchIndex"
+} from "./src/schema/pathfinding"
+export { Place, Places, PlaceType } from "./src/schema/places"
+export { Provider, Providers } from "./src/schema/providers"
+export {
+  Route,
+  RouteMode,
+  routeModes,
+  RoutePlaces,
+  Routes,
+} from "./src/schema/routes"
+export { SearchIndex, SearchIndexItem } from "./src/schema/searchIndex"
+export { default as deepCompare } from "./src/utils/deepCompare"
+export {
+  isRecord,
+  default as makeSafeForDatabase,
+} from "./src/utils/makeSafeForDatabase"
+export { removePlace, setPlace } from "./src/utils/places"
+export { removeProvider, setProvider } from "./src/utils/providers"
+export { removeRoute, setRoute } from "./src/utils/routes"

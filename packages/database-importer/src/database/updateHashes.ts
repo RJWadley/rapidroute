@@ -1,8 +1,10 @@
-import { DatabaseDataKeys } from "@rapidroute/database-utils"
+import {
+  DatabaseDataKeys,
+  deepCompare,
+  isRecord,
+} from "@rapidroute/database-utils"
 
 import { database } from "./database"
-import deepCompare from "./deepCompare"
-import { isObject } from "./makeSafeForDatabase"
 
 const keysToIgnore: Record<
   Exclude<keyof typeof database, DatabaseDataKeys>,
@@ -10,6 +12,7 @@ const keysToIgnore: Record<
 > = {
   hashes: true,
   lastImport: true,
+  version: true,
 }
 
 /**
@@ -30,20 +33,20 @@ export default function updateHashes(
     if (
       key in databaseBeforeUpdate &&
       key in upcastDatabase &&
-      isObject(database.hashes) &&
+      isRecord(database.hashes) &&
       key in database.hashes
     ) {
       if (deepCompare(databaseBeforeUpdate[key], upcastDatabase[key])) {
-        console.log("no change for", key)
+        console.info("no change for", key)
       } else {
         // need a new hash if the data has changed
         newHashes[key] = newHash
-        console.log("new hash for", key)
+        console.info("new hash for", key)
       }
     } else {
       // need a new hash if the key is new
       newHashes[key] = newHash
-      console.log("new hash for", key)
+      console.info("new hash for", key)
     }
   })
 

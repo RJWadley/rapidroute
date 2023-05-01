@@ -1,7 +1,6 @@
 {
   "extends": ["@rapidroute/eslint-config-base"],
   "rules": {
-    "no-console": "off",
     "unicorn/no-process-exit": "off"
   },
   "env": {
