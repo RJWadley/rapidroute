@@ -457,9 +457,8 @@ function processAirlineMetadata(rawAirlineData: string[][]) {
   })
 }
 
-function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
+function generateMrt(rawMRTInfo: string[][]) {
   const routeList: LegacyRoute[] = []
-  const placeList: LegacyPlace[] = []
 
   // generate list of MRT stop routes
   rawMRTInfo.forEach(item => {
@@ -541,17 +540,6 @@ function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
     }
   })
 
-  // and generate stop names for place list
-  rawStopInfo.forEach(item => {
-    // add place
-    if (item[0] === undefined) return
-    placeList.push({
-      id: item[0],
-      world: "New",
-      type: "MRT",
-    })
-  })
-
   // and C is a ring line, so add those
   routeList.push(
     {
@@ -581,7 +569,6 @@ function generateMrt(rawMRTInfo: string[][], rawStopInfo: string[][]) {
   )
 
   routes.push(...routeList)
-  places.push(...placeList)
 }
 
 const placeLocations: Record<
@@ -729,7 +716,7 @@ export default async function getLegacyData() {
 
   const dataSheet = dataSheetRaw.valueRanges
 
-  generateMrt(dataSheet[0].values, dataSheet[0].values)
+  generateMrt(dataSheet[0].values)
 
   const transitSheet = transitSheetRaw.valueRanges
 
