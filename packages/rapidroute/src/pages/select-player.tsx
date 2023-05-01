@@ -7,7 +7,6 @@ import Seo from "components/SEO"
 import searchForPlayer from "data/searchPlayers"
 import { WorldInfo } from "map/worldInfoType"
 import { useContext, useState } from "react"
-import { useDebounce } from "react-use"
 import styled from "styled-components"
 import { loadPage } from "utils/Loader/TransitionUtils"
 import media from "utils/media"
@@ -15,7 +14,6 @@ import media from "utils/media"
 export default function SelectPlayer() {
   const [search, setSearch] = useState<string>()
   const [staticPlayers] = useState<string[]>([])
-  const [debouncedSearch, setDebouncedSearch] = useState<string>()
   const { from, to, setFrom, setTo } = useContext(RoutingContext)
 
   const { data } = useQuery<WorldInfo>({
@@ -30,14 +28,17 @@ export default function SelectPlayer() {
     if (!staticPlayers.includes(player)) staticPlayers.push(player)
   })
 
-  useDebounce(() => setDebouncedSearch(search), 500, [search])
-
-  const playerResults = search ? searchForPlayer(search) : undefined
-  const searchIsInResults =
-    !!search &&
-    playerResults
-      ?.map(x => x.toString().toLowerCase())
-      .includes(search.toLowerCase())
+  const playerResults = search
+    ? searchForPlayer(search).filter(
+        player => !staticPlayers.includes(player.toString())
+      )
+    : undefined
+  const resultHasSearch = playerResults
+    ?.map(x => x.toString().toLowerCase())
+    .includes(search?.toLowerCase() ?? "")
+  const staticHasSearch = staticPlayers
+    .map(x => x.toLowerCase())
+    .includes(search?.toLowerCase() ?? "")
 
   return (
     <Layout>
@@ -69,6 +70,11 @@ export default function SelectPlayer() {
           <Icon>search</Icon>
         </SearchContainer>
         <Players>
+          {/* First, show the search term directly */}
+          {!resultHasSearch && !staticHasSearch && search && (
+            <PlayerSelect name={search} key="SearchName" />
+          )}
+          {/* then, show any static players */}
           {staticPlayers
             .filter(
               player =>
@@ -77,11 +83,7 @@ export default function SelectPlayer() {
             .map(player => (
               <PlayerSelect key={player} name={player} />
             ))}
-          {debouncedSearch &&
-            !searchIsInResults &&
-            staticPlayers.every(
-              player => player.toLowerCase() !== search?.toLowerCase()
-            ) && <PlayerSelect key="SearchName" name={debouncedSearch} />}
+          {/* then, show search results */}
           {playerResults?.map(player => (
             <PlayerSelect key={player} name={player.toString()} />
           ))}
