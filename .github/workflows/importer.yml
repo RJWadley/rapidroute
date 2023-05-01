@@ -1,4 +1,7 @@
-# github action that runs every day at midnight mdt
+# github action that runs every day at
+#   UTC - 07:00 AM
+#   MST - 12:00 AM
+#   MDT - 01:00 AM
 # and can also be triggered manually
 name: Importer
 on:
@@ -23,6 +26,11 @@ jobs:
       - name: Import to Database
         run: |
           npm run import
+      - name: Upload database artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: database
+          path: packages/database-importer/database.json
       - name: Send Heartbeat
         run: |
           curl -X GET https://betteruptime.com/api/v1/heartbeat/WZxUmQ6m6wYxkwCSWPPz1tAD

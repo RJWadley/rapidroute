@@ -1,3 +1,6 @@
+import fs from "node:fs"
+import path from "node:path"
+
 import {
   DatabaseType,
   isRecord,
@@ -107,6 +110,8 @@ export const setupDatabase = async () => {
 
 export const saveDatabase = async () => {
   await rawDatabase.ref("/").set(makeSafeForDatabase(removeUniqueId(database)))
+
+  writeDatabaseToDisk()
 }
 
 const clearDatabase = async () => {
@@ -139,4 +144,14 @@ export const versionCheck = async () => {
     Object.assign(database, {})
     await rawDatabase.ref("/version").set(currentVersion)
   }
+}
+
+/**
+ * saves the database in a JSON file at database.json in the base of the repository
+ */
+const writeDatabaseToDisk = () => {
+  const filteredDatabase = makeSafeForDatabase(removeUniqueId(database))
+  const databasePath = path.join(__dirname, "..", "..", "..", "database.json")
+  fs.writeFileSync(databasePath, JSON.stringify(filteredDatabase, null, 2))
+  console.info("Database written to disk")
 }
