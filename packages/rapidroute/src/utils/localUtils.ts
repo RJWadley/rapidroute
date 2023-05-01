@@ -234,7 +234,7 @@ export const initLocals = () => {
   }
 
   // check the version of local storage. If it doesn't match, clear it
-  const localVersion = localStorage.getItem("version")
+  const localVersion = getLocal("version")
   if (localVersion !== version) {
     console.info("Clearing local storage")
     localStorage.clear()
