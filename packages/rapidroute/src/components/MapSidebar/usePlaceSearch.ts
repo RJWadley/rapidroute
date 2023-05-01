@@ -9,11 +9,10 @@ import { useCallback, useEffect, useRef, useState } from "react"
  *
  * and gives you everything you need to display the list and make it interactive
  */
-export default function useLocationSearch(
+export default function usePlaceSearch(
   inputElement: HTMLTextAreaElement | null,
   state: [string, (item: string) => void]
 ) {
-  const input = inputElement
   /**
    * the currently selected item
    */
@@ -35,6 +34,14 @@ export default function useLocationSearch(
    */
   const activeUpdateInternal = useRef(false)
 
+  const setInputText = useCallback(
+    (item: string | undefined) => {
+      if (inputElement && item) inputElement.value = getTextboxName(item)
+      else if (inputElement) inputElement.value = ""
+    },
+    [inputElement]
+  )
+
   /**
    * select a new item internally
    * @param item the item to select
@@ -42,15 +49,15 @@ export default function useLocationSearch(
    */
   const updateItem = useCallback(
     (item: string | undefined, closeMenu = false) => {
-      if (closeMenu && input) {
+      if (closeMenu) {
         setUserTyped(undefined)
-        input.value = item ? getTextboxName(item) : ""
-        input.blur()
+        setInputText(item)
+        inputElement?.blur()
       }
       activeUpdateInternal.current = true
       setActiveItem(item ?? "")
     },
-    [input, setActiveItem]
+    [inputElement, setActiveItem, setInputText]
   )
 
   /**
@@ -59,11 +66,9 @@ export default function useLocationSearch(
    * @param item the item to select
    */
   const updateItemExternally = (item: string) => {
-    if (input) {
-      input.value = getTextboxName(item)
-      setUserTyped(undefined)
-      setActiveItem(item)
-    }
+    setInputText(item)
+    setUserTyped(undefined)
+    setActiveItem(item)
   }
 
   /**
@@ -73,25 +78,24 @@ export default function useLocationSearch(
   useEffect(() => {
     if (activeUpdateInternal.current) {
       activeUpdateInternal.current = false
-    } else if (input) {
-      input.value = getTextboxName(activeItem)
+    } else {
+      setInputText(activeItem)
     }
-  }, [activeItem, input])
+  }, [activeItem, setInputText])
 
   /**
    * handle text input on the box
    */
   const handleInput = (e: Event) => {
-    if (!input) return
-    setUserTyped(input.value)
+    setUserTyped(inputElement?.value)
     setFocusedItem(undefined)
 
     // if the box is empty, select nothing
     // otherwise, check if the user has pressed enter
     // mobile devices don't have enter, so we check for a newline instead
-    if (/^\s+$/.test(input.value)) {
+    if (/^\s+$/.test(inputElement?.value ?? "")) {
       updateItem(undefined, true)
-    } else if (input.value.includes("\n")) {
+    } else if (inputElement?.value.includes("\n")) {
       const newActiveItem = focusedItem ?? currentSearch[0]
       updateItem(newActiveItem, true)
     }
@@ -122,12 +126,13 @@ export default function useLocationSearch(
 
     const nextItem = currentSearch[nextIndex]
     setFocusedItem(nextItem)
-    if (nextItem !== undefined) updateItem(nextItem)
+    if (nextItem !== "Current Location") updateItem(nextItem)
 
     // if the value is -1, restore the user's typed value, otherwise use the name of the item
-    if (input)
-      input.value =
+    if (inputElement) {
+      inputElement.value =
         nextIndex === -1 ? userTyped ?? "" : getTextboxName(nextItem)
+    }
   }
 
   /**
@@ -150,9 +155,9 @@ export default function useLocationSearch(
         break
 
       case "Escape":
-        e.preventDefault()
-        input?.blur()
-        setUserTyped(undefined)
+      case "Tab":
+        inputElement?.blur()
+        updateItem(focusedItem ?? currentSearch[0], true)
 
         break
     }
@@ -162,12 +167,17 @@ export default function useLocationSearch(
    * register event listeners for the events we need
    */
   useEffect(() => {
-    input?.addEventListener("input", handleInput)
-    input?.addEventListener("keydown", handleKeyDown)
+    const handleBlur = () =>
+      setTimeout(() => updateItem(focusedItem ?? currentSearch[0], true), 100)
+
+    inputElement?.addEventListener("input", handleInput)
+    inputElement?.addEventListener("keydown", handleKeyDown)
+    inputElement?.addEventListener("blur", handleBlur)
 
     return () => {
-      input?.removeEventListener("input", handleInput)
-      input?.removeEventListener("keydown", handleKeyDown)
+      inputElement?.removeEventListener("input", handleInput)
+      inputElement?.removeEventListener("keydown", handleKeyDown)
+      inputElement?.removeEventListener("blur", handleBlur)
     }
   })
 

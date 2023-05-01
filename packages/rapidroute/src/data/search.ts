@@ -63,11 +63,5 @@ export function getTextboxName(locationId: string | null | undefined) {
 }
 
 export function useSearch(searchTerm: string | undefined) {
-  const [results, setResults] = useState<string[]>([])
-  const numberOfItems = Object.keys(displayLookup).length
-
-  useEffect(() => {
-    if (searchTerm) setResults(search(searchTerm))
-  }, [searchTerm, numberOfItems])
-  return results
+  return searchTerm ? search(searchTerm) : []
 }

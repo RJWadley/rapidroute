@@ -1,6 +1,7 @@
+import useAdaptiveTextareaHeight from "components/MapSidebar/useAdaptiveTextareaHeight"
+import usePlaceSearch from "components/MapSidebar/usePlaceSearch"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import { getTextboxName } from "data/search"
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useState } from "react"
 import styled, { css } from "styled-components"
 import media from "utils/media"
 
@@ -11,50 +12,18 @@ interface SearchBoxProps {
 }
 
 export default function SearchBox({ searchRole }: SearchBoxProps) {
-  const inputRef = useRef<HTMLTextAreaElement>(null)
-  const [searchFor, setSearchFor] = useState("")
-  const [showSearchList, setShowSearchList] = useState(false)
-  const { to, from } = useContext(RoutingContext)
+  const [input, setInput] = useState<HTMLTextAreaElement | null>(null)
+  const { to, from, setTo, setFrom } = useContext(RoutingContext)
 
-  // update the search box when the context changes
-  useEffect(() => {
-    if (searchRole === "from" && inputRef.current)
-      inputRef.current.value = getTextboxName(from)
-  }, [from, searchRole])
-  useEffect(() => {
-    if (searchRole === "to" && inputRef.current)
-      inputRef.current.value = getTextboxName(to)
-  }, [searchRole, to])
+  const place = searchRole === "to" ? to : from
+  const setPlace = searchRole === "to" ? setTo : setFrom
 
-  // false positive
-  const handleInput = () => {
-    setSearchFor(inputRef.current?.value.replace(/\n/g, "") ?? "")
-    setShowSearchList(true)
+  useAdaptiveTextareaHeight(input)
 
-    // check for newlines in the input
-    if (inputRef.current?.value.includes("\n")) {
-      inputRef.current.value = inputRef.current.value.replace(/\n/g, "")
-      setShowSearchList(false)
-
-      const toElement = document.querySelector("#to")
-      if (toElement instanceof HTMLTextAreaElement) {
-        if (searchRole === "from") {
-          toElement.focus()
-        } else {
-          toElement.blur()
-        }
-      }
-
-      // update text to match the context
-      inputRef.current.value = getTextboxName(searchRole === "from" ? from : to)
-    }
-  }
-
-  const handleBlur = () => {
-    setTimeout(() => {
-      setShowSearchList(false)
-    }, 200)
-  }
+  const { currentSearch, focusedItem, selectItem } = usePlaceSearch(input, [
+    place ?? "",
+    setPlace,
+  ])
 
   return (
     <>
@@ -62,13 +31,8 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
         <Text
           id={searchRole}
           name={searchRole}
-          ref={inputRef}
-          onChange={handleInput}
+          ref={setInput}
           placeholder={`Search ${searchRole}`}
-          onFocus={() => {
-            setShowSearchList(true)
-          }}
-          onBlur={handleBlur}
           isTo={searchRole === "to"}
           // disable spellcheck, autocorrect, and autocapitalize, grammarly, etc.
           spellCheck={false}
@@ -81,9 +45,9 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
         />
       </Label>
       <SearchList
-        show={showSearchList}
-        searchFor={searchFor}
-        searchRole={searchRole}
+        items={currentSearch}
+        focusedItem={focusedItem}
+        selectItem={selectItem}
       />
     </>
   )
