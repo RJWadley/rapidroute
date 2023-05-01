@@ -11,9 +11,9 @@ export const setRoute = (route: Route) => {
   const previous = getRoute(route.uniqueId)
 
   // save any manual keys
-  const manualKeys = previous?.manualKeys ?? []
+  const manualKeys = new Set([...(previous?.manualKeys ?? []), "manualKeys"])
   const manualEntries =
-    previous && Object.entries(previous).filter(([k]) => manualKeys.includes(k))
+    previous && Object.entries(previous).filter(([k]) => manualKeys.has(k))
 
   // create new route & restore manual keys
   const newRoute: Route = {

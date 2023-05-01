@@ -13,9 +13,9 @@ export const setPlace = (place: Place) => {
   const previous = getPlace(place.uniqueId)
 
   // save any manual keys
-  const manualKeys = previous?.manualKeys ?? []
+  const manualKeys = new Set([...(previous?.manualKeys ?? []), "manualKeys"])
   const manualEntries =
-    previous && Object.entries(previous).filter(([k]) => manualKeys.includes(k))
+    previous && Object.entries(previous).filter(([k]) => manualKeys.has(k))
 
   // create new place & restore manual keys
   const newPlace: Place = {
