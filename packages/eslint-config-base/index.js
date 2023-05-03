@@ -83,6 +83,10 @@ module.exports = {
     // allow console.error and console.warn
     "no-console": ["error", { allow: ["error", "warn", "info"] }],
 
+    // prefer more concise syntaxes
+    "react/jsx-boolean-value": ["error", "never"],
+    "object-shorthand": ["error", "always"],
+
     // disable rules that typescript fully handles
     "react/jsx-props-no-spreading": "off",
     "react/no-unknown-property": "off",
