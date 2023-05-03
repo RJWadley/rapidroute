@@ -1,4 +1,4 @@
-export interface Aliases {
+export interface LegacyAliases {
   actualProvider: string
   displayProvider: string
   start: string
@@ -7,7 +7,7 @@ export interface Aliases {
 export interface LegacyRoute {
   from: string
   to: string
-  mode: Mode
+  mode: LegacyMode
   provider?: string
   number?: string
   displayBy?: string
@@ -17,8 +17,8 @@ export interface LegacyRoute {
 
 export interface LegacyPlace {
   id: string
-  world: World
-  type: PlaceType
+  world: LegacyWorld
+  type: LegacyPlaceType
   shortName?: string
   longName?: string
   displayName?: string
@@ -34,8 +34,8 @@ export interface LegacyProvider {
   prefix?: string
 }
 
-export type Mode = "flight" | "seaplane" | "heli" | "MRT"
+export type LegacyMode = "flight" | "seaplane" | "heli" | "MRT"
 
-export type PlaceType = "MRT" | "airport" | "town"
+export type LegacyPlaceType = "MRT" | "airport" | "town"
 
-export type World = "New" | "Old"
+export type LegacyWorld = "New" | "Old"

@@ -29,7 +29,7 @@ async function runImport() {
 
   const initialDatabase = stupidDeepCopy(await setupDatabase())
 
-  /* ----------------- PROVIDERS ----------------- */
+  /* ----------------- UPDATE PROVIDERS ----------------- */
 
   console.info("STARTING PROVIDERS")
 
@@ -42,7 +42,7 @@ async function runImport() {
 
   console.info("SAVED ALL PROVIDERS")
 
-  /* ----------------- LOCATIONS ----------------- */
+  /* ----------------- UPDATE LOCATIONS ----------------- */
 
   console.info("STARTING LOCATIONS")
 
@@ -57,7 +57,7 @@ async function runImport() {
 
   console.info("SAVED ALL LOCATIONS")
 
-  /* ----------------- ROUTES ----------------- */
+  /* ----------------- UPDATE ROUTES ----------------- */
 
   console.info("STARTING ROUTES")
 

@@ -9,16 +9,16 @@
 // fetch for node.js
 import fetch from "node-fetch"
 
-import { isMRTLine, Markers } from "../types/dynmapTypes"
 import { SheetResponse } from "../types/googleSheetsTypes"
 import {
-  Aliases,
+  LegacyAliases,
+  LegacyMode,
   LegacyPlace,
   LegacyProvider,
   LegacyRoute,
-  Mode,
-  World,
+  LegacyWorld,
 } from "../types/legacyTypes"
+import { isMRTLine, Markers } from "../types/markersType"
 
 const DATA_SHEET_ID = "13t7mHiW9HZjbx9eFP2uTAO5tLyAelt5_iITqym2Ejn8" // 3 calls
 const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps" // 1 call
@@ -76,7 +76,7 @@ let providers: LegacyProvider[] = []
 let codeshares: Record<string, Record<string, string>> = {}
 let spawnWarps: string[] = ["C1", "C33", "C61", "C89"]
 
-const aliases: Aliases[] = []
+const aliases: LegacyAliases[] = []
 
 async function getTransitSheet(): Promise<SheetResponse> {
   return new Promise(resolve => {
@@ -200,7 +200,7 @@ function getTowns() {
 }
 
 function parseRawFlightData(
-  mode: Mode,
+  mode: LegacyMode,
   placesRaw: string[][],
   providersRaw: string[],
   routesRawer: string[][]
@@ -335,7 +335,7 @@ function processAirportMetadata(rawAirportData: string[][]) {
     if (id === "") id = rawAirport[0]
 
     const rawWorld = rawAirport[2]
-    const world: World =
+    const world: LegacyWorld =
       rawWorld !== "New" && rawWorld !== "Old" ? "New" : rawWorld
 
     const newPlace: LegacyPlace = {
