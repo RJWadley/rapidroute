@@ -161,6 +161,7 @@ const Search = styled.input`
 const Icon = styled.div`
   /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
   position: absolute;
   right: 20px;
   bottom: 40px;

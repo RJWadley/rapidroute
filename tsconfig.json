@@ -11,7 +11,8 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "composite": true,
-    "incremental": true
+    "incremental": true,
+    "noErrorTruncation": true
   },
   "references": [
     {

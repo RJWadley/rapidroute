@@ -15,7 +15,8 @@ import {
   beforeRouteUpdate,
   updateRoute,
 } from "./database/updateRoute"
-import getConvertedData from "./sheets/getConvertedData"
+import getAllData from "./getData"
+// import getConvertedData from "./legacy/sheets/getConvertedData"
 
 function stupidDeepCopy<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj)) as T
@@ -24,62 +25,66 @@ function stupidDeepCopy<T>(obj: T): T {
 async function runImport() {
   await versionCheck()
 
-  const { routes, providers, locations } = await getConvertedData()
-  const promises: Promise<unknown>[] = []
+  await getAllData()
 
-  const initialDatabase = stupidDeepCopy(await setupDatabase())
+  // return
 
-  /* ----------------- UPDATE PROVIDERS ----------------- */
+  // const { routes, providers, locations } = await getConvertedData()
+  // const promises: Promise<unknown>[] = []
 
-  console.info("STARTING PROVIDERS")
+  // const initialDatabase = stupidDeepCopy(await setupDatabase())
 
-  beforeProviderUpdate()
+  // /* ----------------- UPDATE PROVIDERS ----------------- */
 
-  const providersToSave = [...providers]
-  providersToSave.forEach(provider => updateProvider(provider))
+  // console.info("STARTING PROVIDERS")
 
-  afterProviderUpdate()
+  // beforeProviderUpdate()
 
-  console.info("SAVED ALL PROVIDERS")
+  // const providersToSave = [...providers]
+  // providersToSave.forEach(provider => updateProvider(provider))
 
-  /* ----------------- UPDATE LOCATIONS ----------------- */
+  // afterProviderUpdate()
 
-  console.info("STARTING LOCATIONS")
+  // console.info("SAVED ALL PROVIDERS")
 
-  beforeLocationUpdate()
+  // /* ----------------- UPDATE LOCATIONS ----------------- */
 
-  const locationsToSave = [...locations]
+  // console.info("STARTING LOCATIONS")
 
-  locationsToSave.forEach(location => updatePlace(location))
+  // beforeLocationUpdate()
 
-  await Promise.allSettled(promises)
-  afterLocationUpdate()
+  // const locationsToSave = [...locations]
 
-  console.info("SAVED ALL LOCATIONS")
+  // locationsToSave.forEach(location => updatePlace(location))
 
-  /* ----------------- UPDATE ROUTES ----------------- */
+  // await Promise.allSettled(promises)
+  // afterLocationUpdate()
 
-  console.info("STARTING ROUTES")
+  // console.info("SAVED ALL LOCATIONS")
 
-  beforeRouteUpdate()
+  // /* ----------------- UPDATE ROUTES ----------------- */
 
-  const routesToSave = [...routes]
+  // console.info("STARTING ROUTES")
 
-  routesToSave.forEach(route => updateRoute(route))
+  // beforeRouteUpdate()
 
-  await Promise.all(promises)
+  // const routesToSave = [...routes]
 
-  afterRouteUpdate()
+  // routesToSave.forEach(route => updateRoute(route))
 
-  console.info("SAVED ALL ROUTES")
+  // await Promise.all(promises)
 
-  updateHashes(initialDatabase)
+  // afterRouteUpdate()
 
-  console.info("UPDATED HASHES")
+  // console.info("SAVED ALL ROUTES")
 
-  await saveDatabase()
+  // updateHashes(initialDatabase)
 
-  console.info("ALL DONE!")
+  // console.info("UPDATED HASHES")
+
+  // await saveDatabase()
+
+  // console.info("ALL DONE!")
 }
 
 runImport()

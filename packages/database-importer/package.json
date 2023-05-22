@@ -14,12 +14,13 @@
   "main": "dist/index.js",
   "dependencies": {
     "@rapidroute/database-utils": "^1.0.0",
-    "@types/node": "^18.15.13",
-    "@types/node-fetch": "^2.6.3",
+    "color2k": "^2.0.2",
     "dotenv": "^16.0.3",
     "firebase-admin": "^11.7.0"
   },
   "devDependencies": {
+    "@types/node": "^18.15.13",
+    "@types/node-fetch": "^2.6.3",
     "typescript": "^5.0.4"
   },
   "browserslist": [

@@ -66,7 +66,7 @@ export const placeSchema = z.object({
   /**
    * can we warp directly to this place from spawn?
    */
-  isSpawnWarp: z.boolean(),
+  isSpawnWarp: z.boolean().optional(),
   /**
    * what route ids, if any, are available at this place?
    */

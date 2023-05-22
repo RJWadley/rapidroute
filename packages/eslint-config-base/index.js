@@ -73,6 +73,15 @@ module.exports = {
     // ban bad types
     "@typescript-eslint/no-explicit-any": "error",
 
+    // allow unused vars if they start with an underscore
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+      },
+    ],
+
     // disallow shadowing
     "@typescript-eslint/no-shadow": "error",
 
