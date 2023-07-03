@@ -8,7 +8,8 @@
     "format": "eslint . --fix",
     "lint:css": "npx stylelint './src/**/*.{js,jsx,ts,tsx}' --fix || exit 0",
     "start": "next start",
-    "typegen": "npx supabase gen types typescript --linked --schema public > app/types/supabase.ts"
+    "typegen": "npx supabase gen types typescript --linked --schema public > app/types/supabase.ts",
+    "test": "vitest"
   },
   "dependencies": {
     "@linaria/babel-preset": "^4.4.5",
@@ -33,7 +34,8 @@
     "eslint-config-next": "^13.4.7",
     "eslint-config-reform-collective": "github:reformcollective/eslint-config-reform",
     "stylelint-config-reform-collective": "github:reformcollective/stylelint-config-reform",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vitest": "^0.32.4"
   },
   "ct3aMetadata": {
     "initVersion": "7.13.1"

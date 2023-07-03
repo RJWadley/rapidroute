@@ -15,5 +15,6 @@ export default function mergeData<
     ...oldData,
     ...newData,
     ...Object.fromEntries(manualValues),
+    manual_keys: manualKeys,
   }
 }
