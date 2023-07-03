@@ -4,10 +4,7 @@
     {
       "label": "Dev Server",
       "type": "shell",
-      "command": "npm i && npm start",
-      "windows": {
-        "command": "npm i && npm start"
-      },
+      "command": "pnpm i && pnpm dev",
       "presentation": {
         "panel": "new",
         "echo": false,
@@ -22,7 +19,7 @@
     {
       "type": "shell",
       "label": "Lint Project",
-      "command": "npm run lint || exit 0",
+      "command": "pnpm run lint || exit 0",
       "problemMatcher": ["$eslint-stylish"],
       "icon": {
         "id": "notebook",
@@ -36,7 +33,7 @@
     {
       "type": "shell",
       "label": "Lint CSS",
-      "command": "npm run lint:css -w packages/rapidroute || exit 0",
+      "command": "pnpm run lint:css -w packages/rapidroute || exit 0",
       "problemMatcher": [
         {
           "owner": "stylelint",

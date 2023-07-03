@@ -1,7 +1,6 @@
 {
-  "name": "legwork",
+  "name": "rapidroute",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -15,25 +14,25 @@
     "@linaria/babel-preset": "^4.4.5",
     "@linaria/core": "^4.2.10",
     "@linaria/react": "^4.3.8",
-    "@supabase/auth-helpers-nextjs": "^0.7.1",
-    "@supabase/supabase-js": "^2.24.0",
-    "@t3-oss/env-nextjs": "^0.4.0",
-    "next": "^13.4.4",
-    "next-with-linaria": "^0.5.0",
+    "@supabase/auth-helpers-nextjs": "^0.7.2",
+    "@supabase/supabase-js": "^2.26.0",
+    "@t3-oss/env-nextjs": "^0.6.0",
+    "next": "^13.4.7",
+    "next-with-linaria": "^0.5.1",
     "postcss": "^8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@types/node": "^20.2.5",
-    "@types/react": "^18.2.8",
-    "@types/react-dom": "^18.2.4",
-    "eslint": "^8.41.0",
-    "eslint-config-next": "^13.4.4",
+    "@types/node": "^20.3.3",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "eslint": "^8.44.0",
+    "eslint-config-next": "^13.4.7",
     "eslint-config-reform-collective": "github:reformcollective/eslint-config-reform",
     "stylelint-config-reform-collective": "github:reformcollective/stylelint-config-reform",
-    "typescript": "^5.1.3"
+    "typescript": "^5.1.6"
   },
   "ct3aMetadata": {
     "initVersion": "7.13.1"
