@@ -8,7 +8,7 @@
     "format": "eslint . --fix",
     "lint:css": "npx stylelint './src/**/*.{js,jsx,ts,tsx}' --fix || exit 0",
     "start": "next start",
-    "typegen": "npx supabase gen types typescript --project-id \"$PROJECT_REF\" --schema public > types/supabase.ts"
+    "typegen": "npx supabase gen types typescript --linked --schema public > app/types/supabase.ts"
   },
   "dependencies": {
     "@linaria/babel-preset": "^4.4.5",
