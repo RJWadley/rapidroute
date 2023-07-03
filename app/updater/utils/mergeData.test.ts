@@ -28,3 +28,21 @@ test("mergeData preserves keys from old data", () => {
 
   expect(result).toEqual({ a: 1, b: 2, manual_keys: ["a"] })
 })
+
+test("mergeData doesn't overwrite a value with null", () => {
+  const old = { a: 1, b: 1, manual_keys: [] }
+  const nu = { a: null, b: 2, manual_keys: [] }
+
+  const result = mergeData(old, nu)
+
+  expect(result).toEqual({ a: 1, b: 2, manual_keys: [] })
+})
+
+test("nulls in new data are kept if they don't overwrite old data", () => {
+  const old = { a: 1, manual_keys: [] }
+  const nu = { a: 2, b: null, manual_keys: [] }
+
+  const result = mergeData(old, nu)
+
+  expect(result).toEqual({ a: 2, b: null, manual_keys: [] })
+})

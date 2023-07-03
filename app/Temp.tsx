@@ -1,7 +1,7 @@
 "use client"
 
-import { runImport } from "updater"
 import { useState } from "react"
+import { runImport } from "updater"
 
 export default function Temp() {
   const [status, setStatus] = useState("waiting")
@@ -10,9 +10,12 @@ export default function Temp() {
     ;(async () => {
       setStatus("importing")
 
-      await runImport()
-
-      setStatus("done!")
+      runImport()
+        .then((e) => {
+          console.log(e)
+          return setStatus("done!")
+        })
+        .catch(console.error)
     })().catch((error) => {
       setStatus("error")
       console.error(error)

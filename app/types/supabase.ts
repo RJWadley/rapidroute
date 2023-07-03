@@ -64,7 +64,7 @@ export interface Database {
           manual_keys: string[]
           name: string
           number_prefix: string | null
-          owners: string[] | null
+          operators: string[] | null
         }
         Insert: {
           color_dark?: string | null
@@ -75,7 +75,7 @@ export interface Database {
           manual_keys: string[]
           name: string
           number_prefix?: string | null
-          owners?: string[] | null
+          operators?: string[] | null
         }
         Update: {
           color_dark?: string | null
@@ -86,7 +86,7 @@ export interface Database {
           manual_keys?: string[]
           name?: string
           number_prefix?: string | null
-          owners?: string[] | null
+          operators?: string[] | null
         }
         Relationships: []
       }

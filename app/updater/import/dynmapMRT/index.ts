@@ -7,12 +7,6 @@ import { getCombinedLine } from "./getCombinedLine"
 import { getRoutes } from "./getRoutes"
 import { getStations } from "./getStations"
 
-//             // fix id mistakes
-//             if (currentId === "WN34 STATION") currentId = "WN34"
-//             if (currentId === "MS") currentId = "MH"
-//             if (currentId === "M0") currentId = "MW"
-//             if (currentId === "WH24") currentId = "WN24"
-
 const extractAllData = (
   lineName: string,
   set: MarkerSet
@@ -46,7 +40,7 @@ const extractAllData = (
     name: set.label,
     manual_keys: [],
     number_prefix: null,
-    owners: null,
+    operators: null,
   }
 
   return {

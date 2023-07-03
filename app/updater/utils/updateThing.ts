@@ -59,13 +59,13 @@ export async function updateRoutePlaces(newRoutePlace: BareRoutePlace) {
 
     await supabase.from("routes_places").update(newValue)
     console.log(
-      `Updated route place ${newRoutePlace.route} ${newRoutePlace.place}`
+      `Updated route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`
     )
   } else {
     await supabase.from("routes_places").insert(newRoutePlace)
 
     console.log(
-      `Created route place ${newRoutePlace.route} ${newRoutePlace.place}`
+      `Created route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`
     )
   }
 }
