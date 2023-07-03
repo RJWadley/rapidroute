@@ -1,0 +1,29 @@
+{
+  "name": "@rapidroute/database-importer",
+  "scripts": {
+    "build": "tsc",
+    "start": "(npx tsc || exit 0) && node dist/src/index.js",
+    "lint": "npx eslint --ext .js,.jsx,.ts,.tsx .",
+    "lint:fix": "npx eslint --ext .js,.jsx,.ts,.tsx . --fix",
+    "clean": "rm -rf dist",
+    "clear-database": "tsc && node dist/src/index.js --clearDatabase"
+  },
+  "engines": {
+    "node": "16"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "@rapidroute/database-utils": "^1.0.0",
+    "color2k": "^2.0.2",
+    "dotenv": "^16.0.3",
+    "firebase-admin": "^11.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.13",
+    "@types/node-fetch": "^2.6.3",
+    "typescript": "^5.0.4"
+  },
+  "browserslist": [
+    "node 18"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "apiKey": "AIzaSyCOeLWJWIYBOWsyTmnRc_JPlDaw21QbKVA",
+  "authDomain": "rapidroute-dev.firebaseapp.com",
+  "databaseURL": "https://rapidroute-dev-default-rtdb.firebaseio.com",
+  "projectId": "rapidroute-dev",
+  "storageBucket": "rapidroute-dev.appspot.com",
+  "messagingSenderId": "379522187252",
+  "appId": "1:379522187252:web:3ec2b88708783085fe83a1"
+}

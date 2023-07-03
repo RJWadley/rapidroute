@@ -1,0 +1,14 @@
+{
+  "schema": "packages/rapidroute/.cache/typegen/schema.graphql",
+  "documents": [
+    "packages/rapidroute/src/**/**.{ts,js,tsx,jsx}",
+    "packages/rapidroute/.cache/typegen/fragments.graphql"
+  ],
+  "extensions": {
+    "endpoints": {
+      "default": {
+        "url": "http://0.0.0.0:8000/___graphql"
+      }
+    }
+  }
+}

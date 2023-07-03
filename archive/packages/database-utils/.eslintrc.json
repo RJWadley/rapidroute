@@ -1,0 +1,3 @@
+{
+  "extends": ["@rapidroute/eslint-config-base"]
+}
