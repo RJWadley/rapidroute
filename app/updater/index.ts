@@ -1,6 +1,6 @@
 "use server"
 
-import importDynmapAirports from "./getData/dynmapAirports"
+import importDynmapAirports from "./import/dynmapAirports"
 
 const sleep = (ms: number) =>
   new Promise((resolve) => {

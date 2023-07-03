@@ -1,6 +1,6 @@
 "use client"
 
-import { runImport } from "importing"
+import { runImport } from "updater"
 import { useState } from "react"
 
 export default function Temp() {

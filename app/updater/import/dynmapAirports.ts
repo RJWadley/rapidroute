@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
+import mergeData from "updater/utils/mergeData"
 import { env } from "env.mjs"
-import mergeData from "importing/utils/mergeData"
 import { Place } from "types/aliases"
 import { MarkersResponse } from "types/dynmapMarkers"
 import { Database } from "types/supabase"
