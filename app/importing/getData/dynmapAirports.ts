@@ -20,35 +20,37 @@ export default async function importDynmapAirports() {
   const airports = Object.entries(markers.sets.airports.markers).map(
     ([key, { label, x, z }]) => {
       return {
-        short_name: key,
+        short_name: key.toUpperCase(),
         name: label,
         type: "Airport",
         enabled: true,
         world_name: "New",
         x,
         z,
-        IATA: key,
+        IATA: key.toUpperCase(),
         manual_keys: [],
       } satisfies Partial<Place>
     }
   )
 
-  for (const airport of airports) {
+  const promises = airports.map(async (newAirport) => {
     const { data: existingAirport } = await supabase
       .from("places")
       .select("*")
-      .eq("short_name", airport.short_name)
+      .eq("short_name", newAirport.short_name)
       .single()
 
     if (existingAirport) {
-      const newValue = mergeData(existingAirport, airport)
+      const newValue = mergeData(existingAirport, newAirport)
 
       await supabase.from("places").update(newValue)
-      console.log(`Updated airport ${airport.short_name}`)
+      console.log(`Updated airport ${newAirport.short_name}`)
     } else {
-      await supabase.from("places").insert(airport)
+      await supabase.from("places").insert(newAirport)
 
-      console.log(`Created airport ${airport.short_name}`)
+      console.log(`Created airport ${newAirport.short_name}`)
     }
-  }
+  })
+
+  return await Promise.all(promises)
 }
