@@ -11,11 +11,11 @@ export interface Database {
     Tables: {
       places: {
         Row: {
-          created_at: string | null
+          created_at: string
           description: string | null
           enabled: boolean
           IATA: string | null
-          id: number
+          id: string
           manual_keys: string[]
           name: string
           short_name: string
@@ -25,11 +25,11 @@ export interface Database {
           z: number | null
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           description?: string | null
           enabled: boolean
           IATA?: string | null
-          id?: number
+          id: string
           manual_keys: string[]
           name: string
           short_name: string
@@ -39,11 +39,11 @@ export interface Database {
           z?: number | null
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           description?: string | null
           enabled?: boolean
           IATA?: string | null
-          id?: number
+          id?: string
           manual_keys?: string[]
           name?: string
           short_name?: string
@@ -59,7 +59,7 @@ export interface Database {
           color_dark: string | null
           color_light: string | null
           created_at: string | null
-          id: number
+          id: string
           logo: string | null
           manual_keys: string[]
           name: string
@@ -70,7 +70,7 @@ export interface Database {
           color_dark?: string | null
           color_light?: string | null
           created_at?: string | null
-          id?: number
+          id: string
           logo?: string | null
           manual_keys: string[]
           name: string
@@ -81,7 +81,7 @@ export interface Database {
           color_dark?: string | null
           color_light?: string | null
           created_at?: string | null
-          id?: number
+          id?: string
           logo?: string | null
           manual_keys?: string[]
           name?: string
@@ -92,34 +92,34 @@ export interface Database {
       }
       routes: {
         Row: {
-          created_at: string | null
-          id: number
+          created_at: string
+          id: string
           manual_keys: string[]
           name: string | null
           num_gates: number | null
           number: string | null
-          provider: number
-          type: string | null
+          provider: string
+          type: string
         }
         Insert: {
-          created_at?: string | null
-          id?: number
+          created_at?: string
+          id: string
           manual_keys: string[]
           name?: string | null
           num_gates?: number | null
           number?: string | null
-          provider: number
-          type?: string | null
+          provider: string
+          type: string
         }
         Update: {
-          created_at?: string | null
-          id?: number
+          created_at?: string
+          id?: string
           manual_keys?: string[]
           name?: string | null
           num_gates?: number | null
           number?: string | null
-          provider?: number
-          type?: string | null
+          provider?: string
+          type?: string
         }
         Relationships: [
           {
@@ -130,34 +130,40 @@ export interface Database {
           }
         ]
       }
-      routes_providers: {
+      routes_places: {
         Row: {
-          created_at: string | null
+          created_at: string
+          gate: string | null
           id: number
-          place: number
-          route: number
+          manual_keys: string[]
+          place: string | null
+          route: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
+          gate?: string | null
           id?: number
-          place: number
-          route: number
+          manual_keys: string[]
+          place?: string | null
+          route: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
+          gate?: string | null
           id?: number
-          place?: number
-          route?: number
+          manual_keys?: string[]
+          place?: string | null
+          route?: string
         }
         Relationships: [
           {
-            foreignKeyName: "routes_providers_place_fkey"
+            foreignKeyName: "routes_places_place_fkey"
             columns: ["place"]
             referencedRelation: "places"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "routes_providers_route_fkey"
+            foreignKeyName: "routes_places_route_fkey"
             columns: ["route"]
             referencedRelation: "routes"
             referencedColumns: ["id"]

@@ -1,14 +1,6 @@
-import { createClient } from "@supabase/supabase-js"
-import mergeData from "updater/utils/mergeData"
-import { env } from "env.mjs"
-import { Place } from "types/aliases"
+import { BarePlace } from "types/aliases"
 import { MarkersResponse } from "types/dynmapMarkers"
-import { Database } from "types/supabase"
-
-const supabase = createClient<Database>(
-  env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_KEY
-)
+import { updateThing } from "updater/utils/updateThing"
 
 export default async function importDynmapAirports() {
   const markers = await fetch(
@@ -29,27 +21,14 @@ export default async function importDynmapAirports() {
         z,
         IATA: key.toUpperCase(),
         manual_keys: [],
-      } satisfies Partial<Place>
+        description: null,
+        id: key.toUpperCase(),
+      } satisfies BarePlace
     }
   )
 
   const promises = airports.map(async (newAirport) => {
-    const { data: existingAirport } = await supabase
-      .from("places")
-      .select("*")
-      .eq("short_name", newAirport.short_name)
-      .single()
-
-    if (existingAirport) {
-      const newValue = mergeData(existingAirport, newAirport)
-
-      await supabase.from("places").update(newValue)
-      console.log(`Updated airport ${newAirport.short_name}`)
-    } else {
-      await supabase.from("places").insert(newAirport)
-
-      console.log(`Created airport ${newAirport.short_name}`)
-    }
+    await updateThing("place", newAirport)
   })
 
   return await Promise.all(promises)
