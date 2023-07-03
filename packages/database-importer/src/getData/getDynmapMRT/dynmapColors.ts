@@ -5,8 +5,8 @@ export const getBothColors = (baseColor: string) => {
   const lightBackground = adjustContrast(baseColor, "#000000")
 
   return {
-    light: toHex(lightBackground),
-    dark: toHex(darkBackground),
+    light: lightBackground,
+    dark: darkBackground,
   }
 }
 
