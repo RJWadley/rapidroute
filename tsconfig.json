@@ -1,33 +1,36 @@
 {
   "compilerOptions": {
-    "target": "es2021",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "esModuleInterop": true,
+    "target": "es2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "checkJs": true,
     "skipLibCheck": true,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "composite": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
     "incremental": true,
-    "noErrorTruncation": true
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": "app",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "references": [
-    {
-      "path": "./packages/database-importer"
-    },
-    {
-      "path": "./packages/database-utils"
-    },
-    {
-      "path": "./packages/rapidroute"
-    },
-    {
-      "path": "./packages/wiki-scraper"
-    }
+  "include": [
+    ".eslintrc.cjs",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    ".next/types/**/*.ts"
   ],
-  "include": ["packages/**/*"],
-  "exclude": ["node_modules", "packages/**/node_modules", "packages/**/dist"]
+  "exclude": ["node_modules"]
 }
