@@ -33,7 +33,7 @@ const extractAllData = (
   const colors = getBothColors(baseColor)
 
   const provider: BareProvider = {
-    id: lineName,
+    id: lineName.trim(),
     color_dark: colors.dark,
     color_light: colors.light,
     logo: null,

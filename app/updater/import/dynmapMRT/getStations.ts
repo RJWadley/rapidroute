@@ -12,7 +12,7 @@ export const getStations = (set: MarkerSet) => {
     if (currentId === "WH24") currentId = "WN24"
 
     return {
-      id: currentId,
+      id: currentId.trim(),
       short_name: currentId,
       name: label,
       type: "MRT Station",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createClient } from "@supabase/supabase-js"
 import { env } from "env.mjs"
 import {
@@ -23,15 +24,45 @@ type ThingType<T> = T extends "place"
   ? BareRoute
   : never
 
+const MAX_CONCURRENT_REQUESTS = 100
+let currentRequests = 0
+const queue: VoidFunction[] = []
+const endRequest = () => {
+  currentRequests -= 1
+  const next = queue.shift()
+  next?.()
+}
+
+/**
+ * throttle database requests to avoid hitting the nodejs memory limit
+ */
+const startRequest = () => {
+  return new Promise<void>((resolve) => {
+    console.log("Waiting for request", queue.length, "in queue")
+    const onReady = () => {
+      currentRequests += 1
+      resolve()
+    }
+    if (currentRequests < MAX_CONCURRENT_REQUESTS) {
+      onReady()
+    } else {
+      queue.push(onReady)
+    }
+  })
+}
+
 export async function updateThing<T extends "place" | "provider" | "route">(
   type: T,
   newThing: ThingType<T>
 ) {
-  const { data: existingThing } = await supabase
-    .from("places")
+  await startRequest()
+  const { data, error } = await supabase
+    .from(type + "s")
     .select("*")
     .eq("id", newThing.id)
     .single()
+
+  const existingThing = data as ThingType<T> | null
 
   if (existingThing) {
     const newValue = mergeData(existingThing, newThing)
@@ -41,11 +72,13 @@ export async function updateThing<T extends "place" | "provider" | "route">(
   } else {
     await supabase.from(type + "s").insert(newThing)
 
-    console.log(`Created ${type} ${newThing.id}`)
+    console.log(`Created ${type} ${newThing.id} ${JSON.stringify(error)}\n\n`)
   }
+  endRequest()
 }
 
 export async function updateRoutePlaces(newRoutePlace: BareRoutePlace) {
+  await startRequest()
   // find the existing route place
   const { data: existingRoutePlace } = await supabase
     .from("routes_places")
@@ -68,4 +101,5 @@ export async function updateRoutePlaces(newRoutePlace: BareRoutePlace) {
       `Created route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`
     )
   }
+  endRequest()
 }

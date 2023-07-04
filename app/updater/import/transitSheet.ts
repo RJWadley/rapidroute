@@ -58,24 +58,24 @@ export async function importTransitSheet() {
 
   const transitSheet = dataResponse.valueRanges
 
-  return parseRawFlightData(
+  await parseRawFlightData(
     "flight",
     transitSheet[0]?.values,
     transitSheet[1]?.values[0],
     transitSheet[2]?.values
   )
-  //   parseRawFlightData(
-  //     "heli",
-  //     transitSheet[3]?.values,
-  //     transitSheet[4]?.values[0],
-  //     transitSheet[5]?.values
-  //   )
-  //   parseRawFlightData(
-  //     "seaplane",
-  //     transitSheet[6]?.values,
-  //     transitSheet[7]?.values[0],
-  //     transitSheet[8]?.values
-  //   )
+  await parseRawFlightData(
+    "heli",
+    transitSheet[3]?.values,
+    transitSheet[4]?.values[0],
+    transitSheet[5]?.values
+  )
+  await parseRawFlightData(
+    "seaplane",
+    transitSheet[6]?.values,
+    transitSheet[7]?.values[0],
+    transitSheet[8]?.values
+  )
 }
 
 async function parseRawFlightData(
@@ -92,12 +92,13 @@ async function parseRawFlightData(
   )
 
   const places = placesRaw.slice(0, indexOfLastRow).map((place) => {
+    if (place.length === 0) return null
     const shortName = place[1]
     const longName = place[0]
     const id = shortName?.length ? shortName : longName
     const world_name = place[2]
 
-    if (!id) throw new Error("No ID for place" + JSON.stringify(place))
+    if (!id) throw new Error("No ID for place " + JSON.stringify(place))
 
     return {
       description: null,
@@ -119,7 +120,7 @@ async function parseRawFlightData(
       ({
         color_dark: null,
         color_light: null,
-        id: provider,
+        id: encodeURIComponent(provider.trim()),
         logo: null,
         manual_keys: [],
         name: provider,
@@ -128,7 +129,9 @@ async function parseRawFlightData(
       } satisfies BareProvider)
   )
 
-  const placePromises = places.map((place) => updateThing("place", place))
+  const placePromises = places.map((place) => {
+    return place ? updateThing("place", place) : Promise.resolve()
+  })
   const providerPromises = providers.map((provider) =>
     updateThing("provider", provider)
   )
