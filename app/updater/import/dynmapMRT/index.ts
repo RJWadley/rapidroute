@@ -71,18 +71,18 @@ export default async function importDynmapMRT() {
   const providers = results.map((result) => result.provider)
 
   const placePromises = places.map(async (newPlace) => {
-    return updateThing("place", newPlace)
+    return updateThing({ type: "place", item: newPlace })
   })
 
   const providerPromises = providers.map(async (newProvider) => {
-    return updateThing("provider", newProvider)
+    return updateThing({ type: "provider", item: newProvider })
   })
 
   await Promise.all(placePromises)
   await Promise.all(providerPromises)
 
   const routePromises = routes.map(async (newRoute) => {
-    await updateThing("route", newRoute.route)
+    await updateThing({ type: "route", item: newRoute.route })
 
     const stopPromises = newRoute.places.map(async (newStop) => {
       await updateRoutePlaces(newStop)

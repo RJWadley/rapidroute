@@ -28,7 +28,7 @@ export default async function importDynmapAirports() {
   )
 
   const promises = airports.map(async (newAirport) => {
-    await updateThing("place", newAirport)
+    await updateThing({ type: "place", item: newAirport })
   })
 
   return await Promise.all(promises)

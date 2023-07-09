@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createClient } from "@supabase/supabase-js"
 import { env } from "env.mjs"
 import {
@@ -16,13 +15,19 @@ const supabase = createClient<Database>(
   env.SUPABASE_SERVICE_KEY,
 )
 
-type ThingType<T> = T extends "place"
-  ? BarePlace
-  : T extends "provider"
-  ? BareProvider
-  : T extends "route"
-  ? BareRoute
-  : never
+type ThingInput =
+  | {
+      type: "place"
+      item: BarePlace
+    }
+  | {
+      type: "provider"
+      item: BareProvider
+    }
+  | {
+      type: "route"
+      item: BareRoute
+    }
 
 const MAX_CONCURRENT_REQUESTS = 100
 let currentRequests = 0
@@ -51,34 +56,32 @@ const startRequest = () => {
   })
 }
 
-export async function updateThing<T extends "place" | "provider" | "route">(
-  type: T,
-  newThing: ThingType<T>,
-) {
+export async function updateThing({ item, type }: ThingInput) {
   await startRequest()
-  const { data, error } = await supabase
+
+  const { data: existingThing, error } = await supabase
     .from(`${type}s`)
     .select("*")
-    .eq("id", newThing.id)
+    .eq("id", item.id)
     .single()
 
-  const existingThing = data as ThingType<T> | null
-
   if (existingThing) {
-    const newValue = mergeData(existingThing, newThing)
-
+    const newValue = mergeData(existingThing, item)
     await supabase.from(`${type}s`).update(newValue)
-    console.log(`Updated ${type} ${newThing.id}`)
-  } else {
-    await supabase.from(`${type}s`).insert(newThing)
 
-    console.log(`Created ${type} ${newThing.id} ${JSON.stringify(error)}\n\n`)
+    console.log(`Updated ${type} ${item.id}`)
+  } else {
+    await supabase.from(`${type}s`).insert(item)
+
+    console.log(`Created ${type} ${item.id} ${JSON.stringify(error)}\n\n`)
   }
+
   endRequest()
 }
 
 export async function updateRoutePlaces(newRoutePlace: BareRoutePlace) {
   await startRequest()
+
   // find the existing route place
   const { data: existingRoutePlace } = await supabase
     .from("routes_places")
@@ -101,5 +104,6 @@ export async function updateRoutePlaces(newRoutePlace: BareRoutePlace) {
       `Created route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`,
     )
   }
+
   endRequest()
 }

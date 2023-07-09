@@ -126,10 +126,12 @@ async function parseRawFlightData(
   )
 
   const placePromises = places.map((place) => {
-    return place ? updateThing("place", place) : Promise.resolve()
+    return place
+      ? updateThing({ type: "place", item: place })
+      : Promise.resolve()
   })
   const providerPromises = providers.map((provider) =>
-    updateThing("provider", provider),
+    updateThing({ type: "provider", item: provider }),
   )
 
   await Promise.all([...placePromises, ...providerPromises])
@@ -153,7 +155,7 @@ async function parseRawFlightData(
             number: flightNumber,
             type: mode,
           } satisfies BareRoute
-          routePromises.push(updateThing("route", route))
+          routePromises.push(updateThing({ type: "route", item: route }))
 
           const stop = {
             gate: null,
