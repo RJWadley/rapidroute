@@ -8,6 +8,18 @@ await import("./app/env.mjs")
 
 /** @type {import("next").NextConfig} */
 const config = {
+  /**
+   * @param {import("webpack").Configuration} webpackConfig
+   * @returns {import("webpack").Configuration}
+   */
+  webpack(webpackConfig) {
+    webpackConfig.module?.rules?.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    })
+
+    return webpackConfig
+  },
   reactStrictMode: true,
   experimental: {
     serverActions: true,

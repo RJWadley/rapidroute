@@ -1,4 +1,7 @@
+import "the-new-css-reset/css/reset.css"
+
 import { styled } from "@linaria/react"
+import Header from "components/Header"
 import invertLightness from "utils/colors/invertLightness"
 import css from "utils/css"
 import media from "utils/media"
@@ -15,7 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <Document lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </Document>
   )
 }

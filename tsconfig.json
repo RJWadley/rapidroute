@@ -26,12 +26,12 @@
   },
   "include": [
     ".eslintrc.cjs",
-    "next-env.d.ts",
+    "app/types/next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "aarchive"]
+  "exclude": ["node_modules", "aarchive", "next-env.d.ts"]
 }
