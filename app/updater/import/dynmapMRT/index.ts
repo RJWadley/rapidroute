@@ -9,7 +9,7 @@ import { getStations } from "./getStations"
 
 const extractAllData = (
   lineName: string,
-  set: MarkerSet
+  set: MarkerSet,
 ): {
   routes: ReturnType<typeof getRoutes>
   places: BarePlace[]
@@ -19,7 +19,7 @@ const extractAllData = (
   const { line, isLoop } = getCombinedLine(set)
 
   console.info(
-    `getting routes for ${lineName} (${isLoop ? "loop" : "not loop"})`
+    `getting routes for ${lineName} (${isLoop ? "loop" : "not loop"})`,
   )
 
   const routes = getRoutes({
@@ -52,7 +52,7 @@ const extractAllData = (
 
 export default async function importDynmapMRT() {
   const markers = await fetch(
-    "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
+    "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
   )
     .then((res) => res.json())
     .then((data: MarkersResponse) => data)

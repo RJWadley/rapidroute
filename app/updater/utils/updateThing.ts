@@ -13,7 +13,7 @@ import mergeData from "./mergeData"
 
 const supabase = createClient<Database>(
   env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_KEY
+  env.SUPABASE_SERVICE_KEY,
 )
 
 type ThingType<T> = T extends "place"
@@ -53,11 +53,11 @@ const startRequest = () => {
 
 export async function updateThing<T extends "place" | "provider" | "route">(
   type: T,
-  newThing: ThingType<T>
+  newThing: ThingType<T>,
 ) {
   await startRequest()
   const { data, error } = await supabase
-    .from(type + "s")
+    .from(`${type}s`)
     .select("*")
     .eq("id", newThing.id)
     .single()
@@ -67,10 +67,10 @@ export async function updateThing<T extends "place" | "provider" | "route">(
   if (existingThing) {
     const newValue = mergeData(existingThing, newThing)
 
-    await supabase.from(type + "s").update(newValue)
+    await supabase.from(`${type}s`).update(newValue)
     console.log(`Updated ${type} ${newThing.id}`)
   } else {
-    await supabase.from(type + "s").insert(newThing)
+    await supabase.from(`${type}s`).insert(newThing)
 
     console.log(`Created ${type} ${newThing.id} ${JSON.stringify(error)}\n\n`)
   }
@@ -92,13 +92,13 @@ export async function updateRoutePlaces(newRoutePlace: BareRoutePlace) {
 
     await supabase.from("routes_places").update(newValue)
     console.log(
-      `Updated route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`
+      `Updated route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`,
     )
   } else {
     await supabase.from("routes_places").insert(newRoutePlace)
 
     console.log(
-      `Created route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`
+      `Created route place ${newRoutePlace.route} ${newRoutePlace.place ?? ""}`,
     )
   }
   endRequest()

@@ -83,7 +83,6 @@ const Document = styled.html`
   --rapid-blue: #416788;
   --rapid-green: #46db5b;
   --rapid-yellow: #ffcb47;
-
   --extra-small: 16px;
   --small: 20px;
   --medium: 24px;
@@ -102,7 +101,6 @@ const Document = styled.html`
 
   @media (prefers-color-scheme: dark) {
     ${darkColors}
-
     &.light {
       ${lightColors}
     }
@@ -110,7 +108,6 @@ const Document = styled.html`
 
   @media (prefers-color-scheme: light) {
     ${lightColors}
-
     &.dark {
       ${darkColors}
     }

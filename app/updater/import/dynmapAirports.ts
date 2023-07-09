@@ -4,7 +4,7 @@ import { updateThing } from "updater/utils/updateThing"
 
 export default async function importDynmapAirports() {
   const markers = await fetch(
-    "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json"
+    "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
   )
     .then((res) => res.json())
     .then((data: MarkersResponse) => data)
@@ -24,7 +24,7 @@ export default async function importDynmapAirports() {
         description: null,
         id: key.toUpperCase().trim(),
       } satisfies BarePlace
-    }
+    },
   )
 
   const promises = airports.map(async (newAirport) => {

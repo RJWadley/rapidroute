@@ -127,7 +127,7 @@ export interface Database {
             columns: ["provider"]
             referencedRelation: "providers"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       routes_places: {
@@ -167,7 +167,7 @@ export interface Database {
             columns: ["route"]
             referencedRelation: "routes"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }

@@ -46,7 +46,7 @@ export const getRoutes = ({
 
     // remove the stations we've already found from the list of stations to check
     allStations = allStations.filter(
-      (station) => !newStations.includes(station)
+      (station) => !newStations.includes(station),
     )
   })
 
