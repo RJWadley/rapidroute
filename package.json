@@ -5,8 +5,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "format": "eslint . --fix",
-    "lint:css": "npx stylelint './src/**/*.{js,jsx,ts,tsx}' --fix || exit 0",
+    "format": "pnpm run lint:css && eslint . --fix",
+    "lint:css": "npx stylelint './app/**/*.{js,jsx,ts,tsx}' --fix || exit 0",
     "start": "next start",
     "typegen": "npx supabase gen types typescript --linked --schema public > app/types/supabase.ts",
     "test": "vitest"
@@ -34,6 +34,7 @@
     "eslint-config-reform-collective": "github:reformcollective/eslint-config-reform",
     "eslint-plugin-chai-expect": "^3.0.0",
     "eslint-plugin-chai-friendly": "^0.7.2",
+    "stylelint": "^15.10.1",
     "stylelint-config-reform-collective": "github:reformcollective/stylelint-config-reform",
     "typescript": "^5.1.6",
     "vitest": "^0.32.4"

@@ -56,16 +56,19 @@ devDependencies:
     version: 13.4.7(eslint@8.44.0)(typescript@5.1.6)
   eslint-config-reform-collective:
     specifier: github:reformcollective/eslint-config-reform
-    version: github.com/reformcollective/eslint-config-reform/b239f89e75405f43354f298502cdf7f4cd6ed2ad
+    version: github.com/reformcollective/eslint-config-reform/7b4426f80b0f11bd97ff61f089d74cb6133305a1
   eslint-plugin-chai-expect:
     specifier: ^3.0.0
     version: 3.0.0(eslint@8.44.0)
   eslint-plugin-chai-friendly:
     specifier: ^0.7.2
     version: 0.7.2(eslint@8.44.0)
+  stylelint:
+    specifier: ^15.10.1
+    version: 15.10.1
   stylelint-config-reform-collective:
     specifier: github:reformcollective/stylelint-config-reform
-    version: github.com/reformcollective/stylelint-config-reform/61f8a8ac34487b5e57916cfb2cc9ce4ea0851466
+    version: github.com/reformcollective/stylelint-config-reform/58b181c5a2cd553619b21f496659088bbb5c30cc
   typescript:
     specifier: ^5.1.6
     version: 5.1.6
@@ -4276,7 +4279,7 @@ packages:
     dependencies:
       array-union: 2.1.0
       dir-glob: 3.0.1
-      fast-glob: 3.2.12
+      fast-glob: 3.3.0
       ignore: 5.2.4
       merge2: 1.4.1
       slash: 3.0.0
@@ -6798,8 +6801,8 @@ packages:
       stylelint: 15.10.1
     dev: true
 
-  github.com/reformcollective/eslint-config-reform/b239f89e75405f43354f298502cdf7f4cd6ed2ad:
-    resolution: {tarball: https://codeload.github.com/reformcollective/eslint-config-reform/tar.gz/b239f89e75405f43354f298502cdf7f4cd6ed2ad}
+  github.com/reformcollective/eslint-config-reform/7b4426f80b0f11bd97ff61f089d74cb6133305a1:
+    resolution: {tarball: https://codeload.github.com/reformcollective/eslint-config-reform/tar.gz/7b4426f80b0f11bd97ff61f089d74cb6133305a1}
     name: eslint-config-reform-collective
     version: 2.0.0-rc10
     dependencies:
@@ -6854,8 +6857,8 @@ packages:
       - vue-eslint-parser
     dev: true
 
-  github.com/reformcollective/stylelint-config-reform/61f8a8ac34487b5e57916cfb2cc9ce4ea0851466:
-    resolution: {tarball: https://codeload.github.com/reformcollective/stylelint-config-reform/tar.gz/61f8a8ac34487b5e57916cfb2cc9ce4ea0851466}
+  github.com/reformcollective/stylelint-config-reform/58b181c5a2cd553619b21f496659088bbb5c30cc:
+    resolution: {tarball: https://codeload.github.com/reformcollective/stylelint-config-reform/tar.gz/58b181c5a2cd553619b21f496659088bbb5c30cc}
     name: stylelint-config-reform-collective
     version: 1.0.0
     dependencies:
