@@ -1,11 +1,15 @@
-import {
+import type { PlaceType, RouteType } from "@prisma/client"
+
+import type {
+  PropertiesResponse,
+  SheetResponse,
+} from "../../types/googleSheets"
+import type {
+  BareCompany,
+  BareConnection,
   BarePlace,
-  BareProvider,
   BareRoute,
-  BareRoutePlace,
-} from "types/aliases"
-import { PropertiesResponse, SheetResponse } from "types/googleSheets"
-import { updateRoutePlaces, updateThing } from "updater/utils/updateThing"
+} from "./temporaryDatabase"
 
 const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"
 const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
@@ -54,33 +58,55 @@ export async function importTransitSheet() {
 
   const transitSheet = dataResponse.valueRanges
 
-  await parseRawFlightData(
-    "flight",
+  const planes = parseRawFlightData(
+    ["PlaneFlight", "Airport"],
     transitSheet[0]?.values,
     transitSheet[1]?.values[0],
     transitSheet[2]?.values,
   )
-  await parseRawFlightData(
-    "heli",
+  const helis = parseRawFlightData(
+    ["HelicopterFlight", "Airport"],
     transitSheet[3]?.values,
     transitSheet[4]?.values[0],
     transitSheet[5]?.values,
   )
-  await parseRawFlightData(
-    "seaplane",
+  const sea = parseRawFlightData(
+    ["SeaplaneFlight", "Airport"],
     transitSheet[6]?.values,
     transitSheet[7]?.values[0],
     transitSheet[8]?.values,
   )
+
+  return {
+    routes: [...planes.routes, ...helis.routes, ...sea.routes],
+    connections: [
+      ...planes.connections,
+      ...helis.connections,
+      ...sea.connections,
+    ],
+    places: [...planes.places, ...helis.places, ...sea.places],
+    companies: [...planes.companies, ...helis.companies, ...sea.companies],
+  } satisfies {
+    places: BarePlace[]
+    companies: BareCompany[]
+    routes: BareRoute[]
+    connections: BareConnection[]
+  }
 }
 
-async function parseRawFlightData(
-  mode: string,
+function parseRawFlightData(
+  [routeType, placeType]: [RouteType, PlaceType],
   placesRaw: string[][] | undefined,
   providersRaw: string[] | undefined,
   routesRaw: string[][] | undefined,
 ) {
-  if (!placesRaw || !providersRaw || !routesRaw) return
+  if (!placesRaw || !providersRaw || !routesRaw)
+    return {
+      places: [],
+      companies: [],
+      routes: [],
+      connections: [],
+    }
 
   // cut off the row that starts with "Total Flights" and any rows after that
   const indexOfLastRow = placesRaw.findIndex((row) =>
@@ -92,82 +118,59 @@ async function parseRawFlightData(
     const shortName = place[1]
     const longName = place[0]
     const id = shortName?.length ? shortName : longName
-    const world_name = place[2]
+    const world_name = place[2] === "New" ? "New" : "Old"
 
     if (!id) throw new Error(`No ID for place ${JSON.stringify(place)}`)
 
     return {
-      description: null,
-      enabled: true,
       IATA: shortName ?? id,
       id,
-      manual_keys: [],
       name: longName ?? id,
-      short_name: shortName ?? id,
-      type: mode,
-      world_name: world_name ?? "New",
-      x: null,
-      z: null,
+      shortName: shortName ?? id,
+      type: placeType,
+      worldName: world_name,
     } satisfies BarePlace
   })
 
-  const providers = providersRaw.map(
+  const companies = providersRaw.map(
     (provider) =>
       ({
         color_dark: null,
         color_light: null,
         id: encodeURIComponent(provider.trim()),
-        logo: null,
-        manual_keys: [],
         name: provider,
-        number_prefix: null,
-        operators: null,
-      }) satisfies BareProvider,
+      }) satisfies BareCompany,
   )
 
-  const placePromises = places.map((place) => {
-    return place
-      ? updateThing({ type: "place", item: place })
-      : Promise.resolve()
-  })
-  const providerPromises = providers.map((provider) =>
-    updateThing({ type: "provider", item: provider }),
-  )
-
-  await Promise.all([...placePromises, ...providerPromises])
-
-  const routePromises: Promise<void>[] = []
-  const stopPromises: Promise<void>[] = []
+  const routes: BareRoute[] = []
+  const connections: BareConnection[] = []
 
   for (const [rowNum, row] of routesRaw.slice(0, indexOfLastRow).entries()) {
     for (const [colNum, col] of row.entries()) {
-      const provider = providers[colNum]
+      const company = companies[colNum]
       const place = places[rowNum]
       const flightNumbers = col.split(",").map((s) => s.trim())
-      if (provider && place && col)
+      if (company && place && col)
         for (const flightNumber of flightNumbers) {
           const route = {
-            id: `${provider.id}-${flightNumber}`,
-            manual_keys: [],
-            name: `${provider.name} flight ${flightNumber}`,
-            provider: provider.id,
-            num_gates: null,
+            id: `${company.id}-${flightNumber}`,
+            name: `${company.name} flight ${flightNumber}`,
+            companyId: company.id,
             number: flightNumber,
-            type: mode,
+            type: routeType,
           } satisfies BareRoute
-          routePromises.push(updateThing({ type: "route", item: route }))
+          routes.push(route)
 
-          const stop = {
-            gate: null,
-            manual_keys: [],
-            place: place.id,
-            route: route.id,
-          } satisfies BareRoutePlace
-
-          stopPromises.push(updateRoutePlaces(stop))
+          const stop = {} satisfies BareConnection
+          connections.push(stop)
         }
     }
   }
 
-  await Promise.all([...routePromises, ...stopPromises])
+  return {
+    places: places.filter(Boolean),
+    companies,
+    routes,
+    connections,
+  }
 }

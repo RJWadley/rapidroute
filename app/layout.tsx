@@ -1,10 +1,11 @@
 import "the-new-css-reset/css/reset.css"
 
 import { styled } from "@linaria/react"
-import Header from "components/Header"
-import invertLightness from "utils/colors/invertLightness"
-import css from "utils/css"
-import media from "utils/media"
+
+import Header from "./components/Header"
+import invertLightness from "./utils/colors/invertLightness"
+import { css } from "./utils/css"
+import media from "./utils/media"
 
 export const metadata = {
   title: "MRT RapidRoute",

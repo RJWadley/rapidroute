@@ -12,54 +12,45 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@linaria/babel-preset": "^4.4.5",
-    "@linaria/react": "^4.3.8",
-    "@supabase/auth-helpers-nextjs": "^0.7.2",
-    "@supabase/supabase-js": "^2.26.0",
-    "@svgr/webpack": "^8.0.1",
-    "@t3-oss/env-nextjs": "^0.6.0",
-    "color2k": "^2.0.2",
-    "next": "^13.4.7",
-    "next-with-linaria": "^0.5.1",
-    "postcss": "^8.4.24",
+    "@linaria/babel-preset": "4.4.5",
+    "@linaria/react": "4.3.8",
+    "@prisma/client": "5.2.0",
+    "@svgr/webpack": "8.0.1",
+    "@t3-oss/env-nextjs": "0.6.0",
+    "color2k": "2.0.2",
+    "next": "13.4.7",
+    "next-with-linaria": "0.5.1",
+    "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "the-new-css-reset": "^1.9.0",
-    "webpack": "^5.88.1",
-    "zod": "^3.21.4"
+    "the-new-css-reset": "1.9.0",
+    "webpack": "5.88.1",
+    "zod": "3.21.4"
   },
   "devDependencies": {
-    "@types/node": "^20.3.3",
-    "@types/react": "^18.2.14",
-    "@types/react-dom": "^18.2.6",
-    "eslint": "^8.44.0",
-    "eslint-config-next": "^13.4.7",
+    "@total-typescript/ts-reset": "0.5.1",
+    "@types/node": "20.3.3",
+    "@types/react": "18.2.14",
+    "@types/react-dom": "18.2.6",
+    "eslint": "8.44.0",
+    "eslint-config-next": "13.4.7",
     "eslint-config-reform-collective": "github:reformcollective/eslint-config-reform",
-    "eslint-plugin-chai-expect": "^3.0.0",
-    "eslint-plugin-chai-friendly": "^0.7.2",
-    "stylelint": "^15.10.1",
+    "eslint-plugin-chai-expect": "3.0.0",
+    "eslint-plugin-chai-friendly": "0.7.2",
+    "prisma": "5.2.0",
+    "stylelint": "15.10.1",
     "stylelint-config-reform-collective": "github:reformcollective/stylelint-config-reform",
-    "typescript": "^5.1.6",
-    "vitest": "^0.32.4"
+    "typescript": "5.1.6",
+    "vitest": "0.32.4"
   },
   "ct3aMetadata": {
     "initVersion": "7.13.1"
   },
   "eslintConfig": {
     "extends": [
-      "next",
+      "plugin:@next/next/recommended",
       "reform-collective"
-    ],
-    "rules": {
-      "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "varsIgnorePattern": "^_",
-          "argsIgnorePattern": "^_"
-        }
-      ]
-    }
+    ]
   },
   "stylelint": {
     "extends": "stylelint-config-reform-collective"
@@ -70,7 +61,6 @@
     "last 99 Safari versions and last 1 year",
     "last 99 iOS versions and last 1 year",
     "last 99 firefox versions and last 1 year",
-    "last 99 FirefoxAndroid versions and last 1 year",
-    ">0.15% and last 1 year"
+    "last 99 FirefoxAndroid versions and last 1 year"
   ]
 }

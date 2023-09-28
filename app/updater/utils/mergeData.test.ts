@@ -46,3 +46,12 @@ test("nulls in new data are kept if they don't overwrite old data", () => {
 
   expect(result).toEqual({ a: 2, b: null, manual_keys: [] })
 })
+
+test("mergeData merges deeply", () => {
+  const old = { a: { b: 1 }, manual_keys: [] }
+  const nu = { a: { c: 2 }, manual_keys: [] }
+
+  const result = mergeData(old, nu)
+
+  expect(result).toEqual({ a: { b: 1, c: 2 }, manual_keys: [] })
+})

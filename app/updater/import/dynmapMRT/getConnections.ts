@@ -1,23 +1,23 @@
-import { BarePlace, BareRoute, BareRoutePlace } from "types/aliases"
-
-import { distance, Point, pointMatchesLine } from "./pointUtils"
+import type { BareConnection, BarePlace } from "../temporaryDatabase"
+import type { Point } from "./pointUtils"
+import { distance, pointMatchesLine } from "./pointUtils"
 
 const getCoords = (station: BarePlace) => {
-  const { x, z } = station
+  const { coordinate_x: x, coordinate_z: z } = station
   return x && z ? { x, z } : undefined
 }
 
-export const getRoutes = ({
+export const getConnections = ({
   allStations: allStationsIn,
   isLoop,
   line,
-  lineName,
+  routeId,
 }: {
   allStations: BarePlace[]
   line: Point[]
   isLoop: boolean
-  lineName: string
-}) => {
+  routeId: string
+}): BareConnection[] => {
   let allStations = allStationsIn
 
   // iterate over the line, converting it to a list of stations
@@ -56,36 +56,10 @@ export const getRoutes = ({
       const nextIndex = stations[i + 1]
       const nextStation = nextIndex ?? (isLoop ? stations[0] : null)
       if (!nextStation) return null
-
       return {
-        route: {
-          id: `${station.id}-${nextStation.id}`,
-          manual_keys: [],
-          name: `MRT ${capitalize(lineName)} line`,
-          num_gates: null,
-          number: null,
-          provider: lineName,
-          type: "MRT",
-        } satisfies BareRoute,
-        places: [
-          {
-            gate: null,
-            place: station.id,
-            route: `${station.id}-${nextStation.id}`,
-            manual_keys: [],
-          },
-          {
-            gate: null,
-            place: nextStation.id,
-            route: `${station.id}-${nextStation.id}`,
-            manual_keys: [],
-          },
-        ] satisfies BareRoutePlace[],
-      }
+        placeId: station.id,
+        routeId,
+      } satisfies BareConnection
     })
-    .flatMap((x) => (x ? [x] : []))
-}
-
-const capitalize = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+    .filter(Boolean)
 }

@@ -1,7 +1,8 @@
 import { styled } from "@linaria/react"
 import Logo from "assets/images/global/RapidRouteLogo.svg"
+
 // import UniversalLink from "utils/Loader/UniversalLink"
-import media from "utils/media"
+import media from "../utils/media"
 
 // TODO finish import
 // import Settings from "./Settings"

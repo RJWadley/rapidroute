@@ -1,35 +1,26 @@
-import { BarePlace } from "types/aliases"
-import { MarkersResponse } from "types/dynmapMarkers"
-import { updateThing } from "updater/utils/updateThing"
+import type { MarkersResponse } from "../../types/dynmapMarkers"
+import type { BarePlace } from "./temporaryDatabase"
 
-export default async function importDynmapAirports() {
+export default async function getDynmapAirports() {
   const markers = await fetch(
     "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
   )
     .then((res) => res.json())
-    .then((data: MarkersResponse) => data)
+    .then((data) => data as MarkersResponse)
 
-  const airports = Object.entries(markers.sets.airports.markers).map(
+  return Object.entries(markers.sets.airports.markers).map(
     ([key, { label, x, z }]) => {
       return {
-        short_name: key.toUpperCase().trim(),
+        shortName: key.toUpperCase().trim(),
+        IATA: key.toUpperCase().trim(),
+        id: key.toUpperCase().trim(),
+
         name: label,
         type: "Airport",
-        enabled: true,
-        world_name: "New",
-        x,
-        z,
-        IATA: key.toUpperCase().trim(),
-        manual_keys: [],
-        description: null,
-        id: key.toUpperCase().trim(),
+        worldName: "New",
+        coordinate_x: x,
+        coordinate_z: z,
       } satisfies BarePlace
     },
   )
-
-  const promises = airports.map(async (newAirport) => {
-    await updateThing({ type: "place", item: newAirport })
-  })
-
-  return await Promise.all(promises)
 }

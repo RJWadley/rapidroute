@@ -1,6 +1,6 @@
-import { MarkerSet } from "types/dynmapMarkers"
-
-import { Point, pointsMatch } from "./pointUtils"
+import type { MarkerSet } from "../../../types/dynmapMarkers"
+import type { Point } from "./pointUtils"
+import { pointsMatch } from "./pointUtils"
 
 export const getCombinedLine = (set: MarkerSet) => {
   // merge all the lines into one line. Do this by comparing the first

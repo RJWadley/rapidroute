@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A place, like a city, airport, or bus stop
+model Place {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name      String
+  shortName String
+  IATA      String?
+  type      PlaceType
+  worldName WorldName
+
+  coordinate_x Int?
+  coordinate_z Int?
+
+  connections RouteConnection[]
+}
+
+enum PlaceType {
+  Airport
+  City
+  MrtStation
+}
+
+enum WorldName {
+  New
+  Old
+  Space
+}
+
+// anybody that provides routes, like an airline or bus company
+model Company {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name         String
+  numberPrefix String?
+  color_dark   String?
+  color_light  String?
+  logo         String?
+
+  route Route[]
+}
+
+// metadata about a particular route, like a flight or rail line
+model Route {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name   String
+  type   RouteType
+  number String?
+
+  // the metadata for this specific route. if not present, we use the company's
+  color_dark  String?
+  color_light String?
+  logo        String?
+
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  connections RouteConnection[]
+}
+
+enum RouteType {
+  PlaneFlight
+  HelicopterFlight
+  SeaplaneFlight
+  MRT
+}
+
+// specific information about a stop on a route,
+// such as a flight's gate, or what stations connect to this one
+model RouteConnection {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  platformOrGate String?
+
+  place   Place?  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String?
+  route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  routeId String?
+
+  // each connection references one place, and links to connections at other places
+  leadsTo   RouteConnection[] @relation(name: "connections")
+  comesFrom RouteConnection[] @relation(name: "connections")
+
+  @@unique([placeId, routeId])
+}

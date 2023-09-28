@@ -1,19 +1,23 @@
-import { BarePlace, BareProvider } from "types/aliases"
-import { isMRTLine, MarkerSet, MarkersResponse } from "types/dynmapMarkers"
-import { updateRoutePlaces, updateThing } from "updater/utils/updateThing"
-
+import type { MarkerSet, MarkersResponse } from "../../../types/dynmapMarkers"
+import { isMRTLine } from "../../../types/dynmapMarkers"
+import type {
+  BareCompany,
+  BareConnection,
+  BarePlace,
+  BareRoute,
+} from "../temporaryDatabase"
 import { getBothColors } from "./adjustDynmapColors"
 import { getCombinedLine } from "./getCombinedLine"
-import { getRoutes } from "./getRoutes"
+import { getConnections } from "./getConnections"
 import { getStations } from "./getStations"
 
 const extractAllData = (
   lineName: string,
   set: MarkerSet,
 ): {
-  routes: ReturnType<typeof getRoutes>
+  route: BareRoute
   places: BarePlace[]
-  provider: BareProvider
+  connections: BareConnection[]
 } => {
   const allStations: BarePlace[] = getStations(set)
   const { line, isLoop } = getCombinedLine(set)
@@ -22,30 +26,29 @@ const extractAllData = (
     `getting routes for ${lineName} (${isLoop ? "loop" : "not loop"})`,
   )
 
-  const routes = getRoutes({
+  const route: BareRoute = {
+    id: `mrt-${lineName}`,
+    name: `MRT ${capitalize(lineName)} line`,
+    type: "MRT",
+    companyId: "mrt",
+  }
+
+  const connections: BareConnection[] = getConnections({
     allStations,
     isLoop,
     line,
-    lineName,
+    routeId: route.id,
   })
 
   const baseColor = Object.values(set.lines)[0]?.color ?? "#ff0000"
   const colors = getBothColors(baseColor)
 
-  const provider: BareProvider = {
-    id: lineName.trim(),
-    color_dark: colors.dark,
-    color_light: colors.light,
-    logo: null,
-    name: set.label,
-    manual_keys: [],
-    number_prefix: null,
-    operators: null,
-  }
+  route.color_dark = colors.dark
+  route.color_light = colors.light
 
   return {
-    provider,
-    routes,
+    route,
+    connections,
     places: allStations,
   }
 }
@@ -55,7 +58,7 @@ export default async function importDynmapMRT() {
     "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
   )
     .then((res) => res.json())
-    .then((data: MarkersResponse) => data)
+    .then((data) => data as MarkersResponse)
 
   const allKeys = Object.keys(markers.sets)
 
@@ -66,30 +69,22 @@ export default async function importDynmapMRT() {
     return []
   })
 
-  const routes = results.flatMap((result) => result.routes)
+  const routes = results.flatMap((result) => result.route)
+  const connections = results.flatMap((result) => result.connections)
   const places = results.flatMap((result) => result.places)
-  const providers = results.map((result) => result.provider)
 
-  const placePromises = places.map(async (newPlace) => {
-    return updateThing({ type: "place", item: newPlace })
-  })
+  const company: BareCompany = {
+    id: "mrt",
+    name: "MRT",
+  }
+  return {
+    routes,
+    connections,
+    places,
+    company,
+  }
+}
 
-  const providerPromises = providers.map(async (newProvider) => {
-    return updateThing({ type: "provider", item: newProvider })
-  })
-
-  await Promise.all(placePromises)
-  await Promise.all(providerPromises)
-
-  const routePromises = routes.map(async (newRoute) => {
-    await updateThing({ type: "route", item: newRoute.route })
-
-    const stopPromises = newRoute.places.map(async (newStop) => {
-      await updateRoutePlaces(newStop)
-    })
-
-    await Promise.all(stopPromises)
-  })
-
-  await Promise.all(routePromises)
+const capitalize = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }

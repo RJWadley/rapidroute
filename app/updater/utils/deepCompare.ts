@@ -1,4 +1,8 @@
-import { isRecord } from "./makeSafeForDatabase"
+export const isRecord = (
+  input: unknown,
+): input is Record<string | number | symbol, unknown> => {
+  return typeof input === "object" && input !== null && !Array.isArray(input)
+}
 
 /**
  * return true every entry in the object is a) undefined | null | [] | {} or b) an object that passes the same test recursively
@@ -8,7 +12,7 @@ const objectIsDeepUndefined = (
   obj: Record<string | number | symbol, unknown>,
 ): boolean => {
   return Object.values(obj).every(
-    value =>
+    (value) =>
       value === undefined ||
       value === null ||
       (Array.isArray(value) && value.length === 0) ||
@@ -44,8 +48,7 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
   if (isRecord(b) && objectIsDeepUndefined(b)) return deepCompare(a, undefined)
 
   // if one is null or undefined, but not both, they are not equal
-  if (a === null || a === undefined || b === null || b === undefined)
-    return false
+  if (a === null || a === undefined || b === undefined) return false
 
   // if they are not the same type, they are not equal
   if (typeof a !== typeof b) return false
@@ -75,7 +78,7 @@ export default function deepCompare(a: unknown, b: unknown): boolean {
     // compare each value
     const allKeys = new Set([...Object.keys(a), ...Object.keys(b)])
     let equal = true
-    ;[...allKeys].forEach(key => {
+    ;[...allKeys].forEach((key) => {
       if (!deepCompare(a[key], b[key])) equal = false
     })
 

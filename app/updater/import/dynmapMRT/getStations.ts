@@ -1,5 +1,5 @@
-import { BarePlace } from "types/aliases"
-import { MarkerSet } from "types/dynmapMarkers"
+import type { MarkerSet } from "../../../types/dynmapMarkers"
+import type { BarePlace } from "../temporaryDatabase"
 
 export const getStations = (set: MarkerSet) => {
   return Object.entries(set.markers).map(([key, { label, x, z }]) => {
@@ -13,16 +13,12 @@ export const getStations = (set: MarkerSet) => {
 
     return {
       id: currentId.trim(),
-      short_name: currentId,
+      shortName: currentId.trim(),
       name: label,
-      type: "MRT Station",
-      enabled: true,
-      world_name: "New",
-      x,
-      z,
-      IATA: null,
-      description: null,
-      manual_keys: [],
+      type: "MrtStation",
+      worldName: "New",
+      coordinate_x: x,
+      coordinate_z: z,
     } satisfies BarePlace
   })
 }
