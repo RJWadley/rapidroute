@@ -44,7 +44,7 @@ export const updateConnection = (connection: BareConnection) => {
 }
 
 export const setupDatabase = async () => {
-  // null
+  // no setup needed for now, but this is where we could load the existing data
 }
 
 export const writeDatabase = async () => {

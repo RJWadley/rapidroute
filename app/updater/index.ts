@@ -15,6 +15,8 @@ import { importTransitSheet } from "./import/transitSheet"
 export const runImport = async () => {
   console.log("Importing...")
 
+  const startTime = performance.now()
+
   await setupDatabase()
 
   // fetch all the data simultaneously, then apply it synchronously
@@ -46,5 +48,7 @@ export const runImport = async () => {
 
   await writeDatabase()
 
-  console.log("Imported!")
+  const endTime = performance.now()
+
+  console.log("Imported in", (endTime - startTime) / 1000, "seconds")
 }

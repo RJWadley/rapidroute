@@ -1,8 +1,0 @@
-reject: [
-    # linaria > 4.5.2 seems to break things
-    "@linaria/babel-preset",
-    "@linaria/core",
-    "@linaria/react",
-    # webpack > 8.0.1 seems to break things
-    "@svgr/webpack",
-  ]
