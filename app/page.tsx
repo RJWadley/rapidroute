@@ -1,22 +1,20 @@
 "use client"
 import { styled } from "@linaria/react"
-
-import { runImport } from "./updater"
 // TODO finish import
 // import Header from "components/Header"
 // import Layout from "components/Layout"
 // import Results from "components/Results"
-// import Selection from "components/Selection"
+import Selection from "components/Selection"
 // import Seo from "components/SEO"
 
 export default function Home() {
   return (
     <Content>
-      <Title onClick={() => runImport()}>
+      <Title>
         <Strong>MRT</Strong> Route Finder
       </Title>
-      {/* <Selection />
-      <Results /> */}
+      <Selection />
+      {/*  <Results /> */}
     </Content>
   )
 }
