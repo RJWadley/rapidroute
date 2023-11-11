@@ -1,6 +1,8 @@
 import "the-new-css-reset/css/reset.css"
 
 import { styled } from "@linaria/react"
+import Providers from "components/Providers"
+import { Inter } from "next/font/google"
 
 import Header from "./components/Header"
 import invertLightness from "./utils/colors/invertLightness"
@@ -12,47 +14,27 @@ export const metadata = {
   description: "A route finder for the Minecart Rapid Transit Server",
 }
 
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+})
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <Document lang="en">
-      <body>
-        <Header />
-        {children}
-      </body>
-    </Document>
+    <Providers>
+      <Document lang="en" className={inter.className}>
+        <body>
+          <Header />
+          {children}
+        </body>
+      </Document>
+    </Providers>
   )
 }
-
-const lightColors = css`
-  --default-card-background: #eee;
-  --mid-background: #ddd;
-  --dark-background: #ccc;
-  --page-background: #fff;
-  --low-contrast-text: #555;
-  --default-text: #333;
-  --button-green: #7cd48a;
-  --background-green: #cff4d5;
-  --button-red: #ffbcba;
-
-  /* invert versions */
-  --invert-default-card-background: ${invertLightness("#eee")};
-  --invert-mid-background: ${invertLightness("#ddd")};
-  --invert-dark-background: ${invertLightness("#ccc")};
-  --invert-low-contrast-text: ${invertLightness("#555")};
-  --invert-default-text: ${invertLightness("#333")};
-  --invert-button-green: ${invertLightness("#7cd48a")};
-  --invert-background-green: ${invertLightness("#cff4d5")};
-  --invert-button-red: ${invertLightness("#FFBCBA")};
-
-  /* glassy */
-  --glassy-default-card-background: #eeec;
-  --glassy-mid-background: #dddc;
-  --glassy-dark-background: #cccc;
-`
 
 const darkColors = css`
   --default-card-background: #333;
@@ -79,6 +61,33 @@ const darkColors = css`
   --glassy-default-card-background: #333c;
   --glassy-mid-background: #444c;
   --glassy-dark-background: #555c;
+`
+
+const lightColors = css`
+  --default-card-background: #eee;
+  --mid-background: #ddd;
+  --dark-background: #ccc;
+  --page-background: #fff;
+  --low-contrast-text: #555;
+  --default-text: #333;
+  --button-green: #7cd48a;
+  --background-green: #cff4d5;
+  --button-red: #ffbcba;
+
+  /* invert versions */
+  --invert-default-card-background: ${invertLightness("#eee")};
+  --invert-mid-background: ${invertLightness("#ddd")};
+  --invert-dark-background: ${invertLightness("#ccc")};
+  --invert-low-contrast-text: ${invertLightness("#555")};
+  --invert-default-text: ${invertLightness("#333")};
+  --invert-button-green: ${invertLightness("#7cd48a")};
+  --invert-background-green: ${invertLightness("#cff4d5")};
+  --invert-button-red: ${invertLightness("#FFBCBA")};
+
+  /* glassy */
+  --glassy-default-card-background: #eeec;
+  --glassy-mid-background: #dddc;
+  --glassy-dark-background: #cccc;
 `
 
 const Document = styled.html`

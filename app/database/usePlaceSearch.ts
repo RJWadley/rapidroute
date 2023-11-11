@@ -1,5 +1,6 @@
-import { getTextboxName, useSearch } from "data/search"
 import { useCallback, useEffect, useRef, useState } from "react"
+
+import { getTextboxName, useSearch } from "./search"
 
 /**
  * This list handles logic for search boxes, including:

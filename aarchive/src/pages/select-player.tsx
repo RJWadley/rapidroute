@@ -30,7 +30,7 @@ export default function SelectPlayer() {
 
   const playerResults = search
     ? searchForPlayer(search).filter(
-        player => !staticPlayers.includes(player.toString())
+        player => !staticPlayers.includes(player.toString()),
       )
     : undefined
   const resultHasSearch = playerResults
@@ -78,7 +78,7 @@ export default function SelectPlayer() {
           {staticPlayers
             .filter(
               player =>
-                !search || player.toLowerCase().includes(search.toLowerCase())
+                !search || player.toLowerCase().includes(search.toLowerCase()),
             )
             .map(player => (
               <PlayerSelect key={player} name={player} />
@@ -161,7 +161,11 @@ const Search = styled.input`
 const Icon = styled.div`
   /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
   font-family: "Material Symbols Outlined";
-  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 48;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 48;
   position: absolute;
   right: 20px;
   bottom: 40px;

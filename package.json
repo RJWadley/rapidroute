@@ -15,10 +15,13 @@
   "dependencies": {
     "@linaria/babel-preset": "5.0.4",
     "@linaria/react": "5.0.3",
+    "@material-symbols/svg-700": "0.14.0",
     "@prisma/client": "5.5.2",
     "@svgr/webpack": "8.1.0",
     "@t3-oss/env-nextjs": "0.7.1",
     "color2k": "2.0.2",
+    "flexsearch-ts": "0.7.35",
+    "gsap": "3.12.2",
     "next": "14.0.2",
     "next-with-linaria": "0.6.0",
     "postcss": "8.4.31",

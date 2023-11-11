@@ -1,4 +1,3 @@
-"use client"
 import { styled } from "@linaria/react"
 // TODO finish import
 // import Header from "components/Header"
