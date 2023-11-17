@@ -1,18 +1,18 @@
 import { styled } from "@linaria/react"
-import { getTextboxName } from "database/search"
+import type { PlaceSearchItem } from "database/usePlaceSearch"
 import { gsap } from "gsap"
 import { useEffect, useRef } from "react"
 
 export default function SearchResult({
-  id,
+  item,
   setItem,
   selected,
 }: {
-  id: string
-  setItem: (item: string) => void
+  item: PlaceSearchItem
+  setItem: (item: PlaceSearchItem) => void
   selected: boolean
 }) {
-  const displayName = getTextboxName(id)
+  const displayName = item.name
   const wrapperRef = useRef<HTMLButtonElement | null>(null)
 
   /**
@@ -42,7 +42,7 @@ export default function SearchResult({
   }, [selected])
 
   return (
-    <Wrapper ref={wrapperRef} onClick={() => setItem(id)} selected={selected}>
+    <Wrapper ref={wrapperRef} onClick={() => setItem(item)} selected={selected}>
       {displayName}
     </Wrapper>
   )

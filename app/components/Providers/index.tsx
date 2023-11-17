@@ -1,4 +1,4 @@
-"use client"
+import { prisma } from "database/client"
 import type { ReactNode } from "react"
 
 import { DarkModeProvider } from "./DarkMode"
@@ -10,9 +10,16 @@ interface ProvidersProps {
   children: ReactNode
 }
 
-export default function Providers({ children }: ProvidersProps) {
+export default async function Providers({ children }: ProvidersProps) {
+  const places = await prisma.place.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+
   return (
-    <RoutingProvider>
+    <RoutingProvider places={places}>
       <NavigationProvider>
         <MapSearchProvider>
           <DarkModeProvider>{children}</DarkModeProvider>

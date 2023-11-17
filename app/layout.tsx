@@ -128,4 +128,9 @@ const Document = styled.html`
       ${darkColors}
     }
   }
+
+  /* restore default focus states for elements that need them */
+  *:focus-visible {
+    outline: 2px solid #2f6fdb88;
+  }
 `

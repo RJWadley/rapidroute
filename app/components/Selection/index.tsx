@@ -1,16 +1,24 @@
 import { styled } from "@linaria/react"
+import { prisma } from "database/client"
 import media from "utils/media"
 
 import AllowedModes from "./AllowedModes"
 import SearchBox from "./SearchBox"
 import SwapButton from "./SwapButton"
 
-export default function Selection() {
+export default async function Selection() {
+  const places = await prisma.place.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+
   return (
     <div>
       <SearchContainer>
-        <SearchBox searchRole="from" />
-        <SearchBox searchRole="to" />
+        <SearchBox searchRole="from" places={places} />
+        <SearchBox searchRole="to" places={places} />
         <SwapButton />
       </SearchContainer>
       <AllowedModes />

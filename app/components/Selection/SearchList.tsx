@@ -1,11 +1,12 @@
 import { styled } from "@linaria/react"
 import SearchResult from "components/SearchResult"
+import type { PlaceSearchItem } from "database/usePlaceSearch"
 import media from "utils/media"
 
 interface SearchListProps {
-  items: string[] | undefined
-  focusedItem: string | undefined
-  selectItem: (index: string) => void
+  items: PlaceSearchItem[] | undefined
+  focusedItem: PlaceSearchItem | undefined
+  selectItem: (index: PlaceSearchItem) => void
 }
 
 export default function SearchList({
@@ -17,12 +18,12 @@ export default function SearchList({
     <>
       {items !== undefined && (
         <Wrapper>
-          {items.map((id) => (
+          {items.map((place) => (
             <SearchResult
-              id={id}
-              key={id}
+              item={place}
+              key={place.id}
               setItem={selectItem}
-              selected={focusedItem === id}
+              selected={focusedItem?.id === place.id}
             />
           ))}
           {items.length === 0 && <div>No Results</div>}

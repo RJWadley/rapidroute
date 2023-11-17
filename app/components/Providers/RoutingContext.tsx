@@ -1,10 +1,16 @@
+"use client"
+
 import type { RouteType } from "@prisma/client"
 import { allRouteTypes } from "database/helpers"
+import { useSearchResults } from "database/search"
+import type { PlaceSearchItem } from "database/usePlaceSearch"
 import type { ReactNode } from "react"
-import { createContext, useEffect, useMemo, useRef, useState } from "react"
-import { clearLocal, getLocal, setLocal } from "utils/localUtils"
+import { createContext, useMemo, useState } from "react"
+import { useParamState } from "utils/localUtils/useParamState"
 
-type LocationId = string
+interface LocationId {
+  id: string
+}
 
 const throwError = () => {
   throw new Error("no provider")
@@ -46,71 +52,43 @@ export const RoutingContext = createContext<{
 
 export function RoutingProvider({
   children,
+  places,
 }: {
   children: ReactNode
+  places: PlaceSearchItem[]
 }): JSX.Element {
-  const [from, setFrom] = useState<LocationId | null>(null)
-  const [to, setTo] = useState<LocationId | null>(null)
+  const [from, setFrom] = useParamState("from")
+  const [to, setTo] = useParamState("to")
   const [allowedModes, setAllowedModes] = useState<readonly RouteType[]>(
     // TODO fix this
     // allRouteTypes.filter((m) => m !== "spawnWarp"),
     allRouteTypes,
   )
 
+  const fromResult = useSearchResults(from, places, (p) => JSON.stringify(p))[0]
+  const toResult = useSearchResults(to, places, (p) => JSON.stringify(p))[0]
+
   const value = useMemo(() => {
+    const exactFrom = places.find((p) => p.id === from)
+    const exactTo = places.find((p) => p.id === to)
+
+    const externalSetFrom = (newFrom: LocationId | null) => {
+      setFrom(newFrom?.id ?? null)
+    }
+
+    const externalSetTo = (newTo: LocationId | null) => {
+      setTo(newTo?.id ?? null)
+    }
+
     return {
-      from,
-      to,
-      setFrom,
-      setTo,
+      from: exactFrom ?? (from ? fromResult : null) ?? null,
+      to: exactTo ?? (to ? toResult : null) ?? null,
+      setFrom: externalSetFrom,
+      setTo: externalSetTo,
       allowedModes,
       setAllowedModes,
     }
-  }, [from, to, allowedModes])
-
-  /**
-   * on load, read the state from the URL
-   */
-  useEffect(() => {
-    // todo fix
-    // const initFrom = getLocal("from")
-    // const initTo = getLocal("to")
-    // if (initFrom || initTo) {
-    //   getAll("searchIndex")
-    //     .then((index) => {
-    //       if (initFrom)
-    //         setFrom(
-    //           index[initFrom]?.uniqueId ??
-    //             search(initFrom).find((x) => x !== "Current Location") ??
-    //             initFrom,
-    //         )
-    //       if (initTo)
-    //         setTo(
-    //           index[initTo]?.uniqueId ??
-    //             search(initTo).find((x) => x !== "Current Location") ??
-    //             initTo,
-    //         )
-    //       return null
-    //     })
-    //     .catch(console.error)
-    // }
-  }, [])
-
-  /**
-   * store the current state in the URL
-   */
-  const firstRender = useRef(true)
-  useEffect(() => {
-    if (firstRender.current) {
-      // skip the first render to avoid clearing params from before
-      firstRender.current = false
-      return
-    }
-    if (from) setLocal("from", from)
-    else clearLocal("from")
-    if (to) setLocal("to", to)
-    else clearLocal("to")
-  }, [from, to, allowedModes])
+  }, [allowedModes, from, fromResult, places, setFrom, setTo, to, toResult])
 
   return (
     <RoutingContext.Provider value={value}>{children}</RoutingContext.Provider>

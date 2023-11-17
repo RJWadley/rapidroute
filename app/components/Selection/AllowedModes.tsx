@@ -32,7 +32,7 @@ export default function AllowedModes() {
 
     if (filtersRef.current?.children) {
       const t2 = gsap.to(filtersRef.current.children, {
-        opacity: showFilters ? 1 : 0,
+        autoAlpha: showFilters ? 1 : 0,
         y: showFilters ? 0 : 20,
         pointerEvents: showFilters ? "all" : "none",
         stagger: showFilters ? 0.1 : -0.1,

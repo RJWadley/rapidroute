@@ -1,12 +1,8 @@
+"use client"
+
 import type { ReactNode } from "react"
-import {
-  createContext,
-  startTransition,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react"
-import { getLocal, setLocal } from "utils/localUtils"
+import { createContext, useLayoutEffect } from "react"
+import { useLocalState } from "utils/localUtils/useLocalState"
 import useMedia from "utils/useMedia"
 
 export const darkModeContext = createContext<boolean | undefined>(undefined)
@@ -14,40 +10,23 @@ export const setDarkModeContext = createContext<
   ((value: "dark" | "light" | "system") => void) | undefined
 >(undefined)
 
-type Preference = "dark" | "light" | "system"
-const isPreference = (value?: string | null): value is Preference =>
-  ["dark", "light", "system"].includes(value ?? "")
-
 export function DarkModeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreference] = useState<Preference | undefined>()
-  const [isDark, setIsDark] = useState<boolean>()
+  /**
+   * the saved preference in settings
+   */
+  const [preference, setPreference] = useLocalState("darkMode")
+  /**
+   * the OS preference
+   */
   const systemIsDark = useMedia("(prefers-color-scheme: dark)")
 
-  /**
-   * pull the initial state from local storage
-   */
-  useEffect(() => {
-    const savedPreference = getLocal("darkMode")
-    if (isPreference(savedPreference)) {
-      setPreference(savedPreference)
-    } else setPreference("system")
-  }, [])
+  const isDark =
+    preference === "system" || !preference ? systemIsDark : Boolean(preference)
 
   /**
-   * update the local storage when the preference changes
+   * smoothly transition between dark and light mode
    */
-  useEffect(() => {
-    if (preference) {
-      setLocal("darkMode", preference)
-      startTransition(() => {
-        if (preference === "system") setIsDark(systemIsDark)
-        else setIsDark(preference === "dark")
-      })
-    }
-  }, [preference, systemIsDark])
-
   useLayoutEffect(() => {
-    if (isDark === undefined) return
     document.documentElement.classList.add("in-transition")
     const timeout = setTimeout(() => {
       document.documentElement.classList.remove("in-transition")

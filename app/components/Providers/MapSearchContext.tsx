@@ -1,6 +1,7 @@
+"use client"
+
 import type { ReactNode } from "react"
-import { createContext, useEffect, useMemo, useRef, useState } from "react"
-import { getLocal, setLocal } from "utils/localUtils"
+import { createContext, useEffect, useMemo, useState } from "react"
 
 export const MapSearchContext = createContext<{
   /**
@@ -50,14 +51,14 @@ export function MapSearchProvider({
   }, [])
 
   // sync to URL param
-  const firstRender = useRef(true)
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false
-      return
-    }
-    setLocal("name", activeItem)
-  }, [activeItem])
+  // const firstRender = useRef(true)
+  // useEffect(() => {
+  //   if (firstRender.current) {
+  //     firstRender.current = false
+  //     return
+  //   }
+  //   setLocal("name", activeItem)
+  // }, [activeItem])
 
   return (
     <MapSearchContext.Provider value={value}>

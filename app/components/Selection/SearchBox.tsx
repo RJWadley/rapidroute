@@ -1,7 +1,9 @@
+/* eslint-disable styled-components-a11y/label-has-associated-control */
 "use client"
 
 import { styled } from "@linaria/react"
 import { RoutingContext } from "components/Providers/RoutingContext"
+import type { PlaceSearchItem } from "database/usePlaceSearch"
 import usePlaceSearch from "database/usePlaceSearch"
 import { useContext, useState } from "react"
 import media from "utils/media"
@@ -11,25 +13,28 @@ import SearchList from "./SearchList"
 
 interface SearchBoxProps {
   searchRole: "from" | "to"
+  places: PlaceSearchItem[]
 }
 
-export default function SearchBox({ searchRole }: SearchBoxProps) {
+export default function SearchBox({ searchRole, places }: SearchBoxProps) {
   const [input, setInput] = useState<HTMLTextAreaElement | null>(null)
   const { to, from, setTo, setFrom } = useContext(RoutingContext)
 
-  const place = searchRole === "to" ? to : from
-  const setPlace = searchRole === "to" ? setTo : setFrom
+  const placeId = searchRole === "to" ? to : from
+  const setPlaceId = searchRole === "to" ? setTo : setFrom
+  const place = places.find((p) => p.id === placeId?.id)
 
   useAdaptiveTextareaHeight(input)
 
-  const { currentSearch, focusedItem, selectItem } = usePlaceSearch(input, [
-    place ?? "",
-    setPlace,
-  ])
+  const { currentSearch, focusedItem, selectItem } = usePlaceSearch(
+    input,
+    [place, setPlaceId],
+    places,
+  )
 
   return (
     <>
-      <Label htmlFor={searchRole}>
+      <Box htmlFor={searchRole}>
         <Text
           id={searchRole}
           name={searchRole}
@@ -45,7 +50,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
           data-gramm_editor="false"
           data-enable-grammarly="false"
         />
-      </Label>
+      </Box>
       <SearchList
         items={currentSearch}
         focusedItem={focusedItem}
@@ -55,7 +60,7 @@ export default function SearchBox({ searchRole }: SearchBoxProps) {
   )
 }
 
-const Label = styled.label`
+const Box = styled.label`
   display: grid;
   align-items: center;
   height: 100%;

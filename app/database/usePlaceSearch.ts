@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { getTextboxName, useSearch } from "./search"
+import { useSearchResults } from "./search"
+
+export interface PlaceSearchItem {
+  id: string
+  name: string
+}
+
+const location = { name: "Current Location", id: "Current Location" }
 
 /**
  * This list handles logic for search boxes, including:
@@ -12,7 +19,8 @@ import { getTextboxName, useSearch } from "./search"
  */
 export default function usePlaceSearch(
   inputElement: HTMLTextAreaElement | null,
-  state: [string, (item: string) => void],
+  state: [PlaceSearchItem | undefined, (item: PlaceSearchItem | null) => void],
+  places: PlaceSearchItem[],
 ) {
   /**
    * the currently selected item
@@ -21,7 +29,7 @@ export default function usePlaceSearch(
   /**
    * the item that is currently highlighted (via arrow keys)
    */
-  const [focusedItem, setFocusedItem] = useState<string>()
+  const [focusedItem, setFocusedItem] = useState<PlaceSearchItem>()
   /**
    * what the user has physically typed into the input
    */
@@ -29,15 +37,20 @@ export default function usePlaceSearch(
   /**
    * search results for what the user has typed
    */
-  const currentSearch = useSearch(userTyped)
+  const currentSearch = useSearchResults(
+    userTyped,
+    [...places, location],
+    (place) => JSON.stringify(place),
+  )
+
   /**
    * true when the active item is about to update and this hook caused it
    */
   const activeUpdateInternal = useRef(false)
 
   const setInputText = useCallback(
-    (item: string | undefined) => {
-      if (inputElement && item) inputElement.value = getTextboxName(item)
+    (item: PlaceSearchItem | undefined) => {
+      if (inputElement && item) inputElement.value = item.name
       else if (inputElement) inputElement.value = ""
     },
     [inputElement],
@@ -49,14 +62,14 @@ export default function usePlaceSearch(
    * @param closeMenu whether to close the menu
    */
   const updateItem = useCallback(
-    (item: string | undefined, closeMenu = false) => {
+    (item: PlaceSearchItem | undefined, closeMenu = false) => {
       if (closeMenu) {
         setUserTyped(undefined)
         setInputText(item)
         inputElement?.blur()
       }
       activeUpdateInternal.current = true
-      setActiveItem(item ?? "")
+      setActiveItem(item ?? null)
     },
     [inputElement, setActiveItem, setInputText],
   )
@@ -66,7 +79,7 @@ export default function usePlaceSearch(
    * e.g. when the user clicks on a list item
    * @param item the item to select
    */
-  const updateItemExternally = (item: string) => {
+  const updateItemExternally = (item: PlaceSearchItem) => {
     setInputText(item)
     setUserTyped(undefined)
     setActiveItem(item)
@@ -127,12 +140,12 @@ export default function usePlaceSearch(
 
     const nextItem = currentSearch[nextIndex]
     setFocusedItem(nextItem)
-    if (nextItem !== "Current Location") updateItem(nextItem)
+    if (nextItem?.id !== location.id) updateItem(nextItem)
 
     // if the value is -1, restore the user's typed value, otherwise use the name of the item
     if (inputElement) {
       inputElement.value =
-        nextIndex === -1 ? userTyped ?? "" : getTextboxName(nextItem)
+        nextIndex === -1 ? userTyped ?? "" : nextItem?.name ?? ""
     }
   }
 
@@ -164,13 +177,27 @@ export default function usePlaceSearch(
     }
   }
 
+  const handleBlur = () =>
+    setTimeout(
+      () =>
+        updateItem(
+          // prefer the item selected by keyboard
+          focusedItem ??
+            // then prefer the first search result
+            currentSearch[0] ??
+            // if neither are set, maintain/clear the current value
+            (inputElement && inputElement.value.length > 0
+              ? activeItem
+              : undefined),
+          true,
+        ),
+      100,
+    )
+
   /**
    * register event listeners for the events we need
    */
   useEffect(() => {
-    const handleBlur = () =>
-      setTimeout(() => updateItem(focusedItem ?? currentSearch[0], true), 100)
-
     inputElement?.addEventListener("input", handleInput)
     inputElement?.addEventListener("keydown", handleKeyDown)
     inputElement?.addEventListener("blur", handleBlur)

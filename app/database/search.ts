@@ -1,72 +1,62 @@
-import flexsearch from "flexsearch-ts"
-import { isBrowser } from "utils/isBrowser"
+import { Index } from "flexsearch-ts"
+import { encode } from "flexsearch-ts/dist/module/lang/latin/extra"
+import { useEffect, useMemo, useState } from "react"
 
-const { Index } = flexsearch
-
-const searchWorker = isBrowser
-  ? new Index({
-      tokenize: "reverse",
-      charset: "latin:simple",
-    })
-  : undefined
-
-const displayLookup: Record<string, string> = {}
-
-// TODO fix me!
-// prisma.place
-//   .findMany()
-//   .then((data) => {
-//     return data.forEach((place) => {
-//       searchWorker?.add(place.id, JSON.stringify(place))
-//       displayLookup[place.id] = place.name
-//     })
-//   })
-//   .catch(console.error)
-
-export function search(query: string) {
-  let results =
-    searchWorker?.search(query, {
-      suggest: true,
-      limit: 200,
-    }) ?? []
-
-  const strictMatches = results.filter((x) =>
-    x
-      .toString()
-      .toLowerCase()
-      .replace("_", " ")
-      .startsWith(query.toLowerCase()),
+export const useSearchResults = <T extends { id: string }>(
+  query: string | undefined | null,
+  items: T[],
+  itemToString: (arg0: T) => string,
+) => {
+  /**
+   * create our search indexes
+   */
+  const [fuzzyMatcher] = useState(
+    () =>
+      new Index({
+        tokenize: "full",
+        charset: "latin:simple",
+        encode,
+      }),
   )
-  strictMatches.sort((a, b) => a.toString().length - b.toString().length)
+  const [strictMatcher] = useState(
+    () =>
+      new Index({
+        tokenize: "full",
+        charset: "latin:simple",
+      }),
+  )
 
-  results = [...new Set([...strictMatches, ...results])]
+  /**
+   * add each item to the search index
+   */
+  useEffect(() => {
+    for (const item of items) {
+      if (!fuzzyMatcher.contain(item.id))
+        fuzzyMatcher.add(item.id, itemToString(item))
+      if (!strictMatcher.contain(item.id))
+        strictMatcher.add(item.id, itemToString(item))
+    }
+  }, [fuzzyMatcher, itemToString, items, strictMatcher])
 
-  if (results.length > 0 && "central city".startsWith(query.toLowerCase())) {
-    results = results.filter((x) => x !== "Spawn")
-    results = ["Spawn", ...results]
-  }
+  /**
+   * search for items based on the search term
+   */
+  return useMemo(() => {
+    if (!query) return []
 
-  if (/\d+[ ,]+\d+/g.test(query)) {
-    const [xCoord, yCoord] = query.match(/\d+/g) ?? [0, 0]
-    results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
-  }
-
-  if (
-    (query && query.length < 2) ||
-    /cur|loca/.test(query) ||
-    (results.length === 0 && query.length > 2)
-  ) {
-    results.unshift("Current Location")
-  }
-
-  return results.map((x) => (typeof x === "number" ? x.toString() : x))
-}
-
-export function getTextboxName(locationId: string | null | undefined) {
-  if (!locationId) return ""
-  return displayLookup[locationId] ?? locationId
-}
-
-export function useSearch(searchTerm: string | undefined) {
-  return searchTerm ? search(searchTerm) : []
+    try {
+      return [
+        ...new Set([
+          // filter out special characters bc flexsearch doesn't handle them well
+          ...strictMatcher.search(query.replaceAll(/[^\d A-Za-z]/g, " ")),
+          ...fuzzyMatcher.search(query.replaceAll(/[^\d A-Za-z]/g, " ")),
+        ]),
+      ]
+    } catch (error) {
+      console.error(error)
+      return []
+    }
+  }, [fuzzyMatcher, query, strictMatcher])
+    .map((id) => items.find((item) => item.id === id))
+    .filter(Boolean)
 }

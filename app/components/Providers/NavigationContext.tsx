@@ -1,3 +1,5 @@
+"use client"
+
 // import type { SegmentType } from "components/Segment/createSegments"
 import type { ReactNode } from "react"
 import { createContext, useMemo, useState } from "react"
