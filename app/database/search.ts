@@ -1,5 +1,5 @@
-import { Index } from "flexsearch-ts"
-import { encode } from "flexsearch-ts/dist/module/lang/latin/extra"
+import { Index } from "flexsearch"
+import { encode } from "flexsearch/dist/module/lang/latin/extra"
 import { useEffect, useMemo, useState } from "react"
 
 export const useSearchResults = <T extends { id: string }>(

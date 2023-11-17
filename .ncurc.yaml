@@ -1,0 +1,3 @@
+reject:
+  # this package is abandoned
+  - "flexsearch"

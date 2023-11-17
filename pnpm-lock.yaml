@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  flexsearch@0.7.21:
+    hash: 4otcfdgjjanfzw2qmiksh23bze
+    path: patches/flexsearch@0.7.21.patch
+
 dependencies:
   '@linaria/babel-preset':
     specifier: 5.0.4
@@ -23,12 +28,15 @@ dependencies:
   '@t3-oss/env-nextjs':
     specifier: 0.7.1
     version: 0.7.1(typescript@5.2.2)(zod@3.22.4)
+  '@types/flexsearch':
+    specifier: 0.7.6
+    version: 0.7.6
   color2k:
     specifier: 2.0.2
     version: 2.0.2
-  flexsearch-ts:
-    specifier: 0.7.35
-    version: 0.7.35
+  flexsearch:
+    specifier: 0.7.21
+    version: 0.7.21(patch_hash=4otcfdgjjanfzw2qmiksh23bze)
   gsap:
     specifier: 3.12.2
     version: 3.12.2
@@ -2236,6 +2244,10 @@ packages:
 
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
+
+  /@types/flexsearch@0.7.6:
+    resolution: {integrity: sha512-H5IXcRn96/gaDmo+rDl2aJuIJsob8dgOXDqf8K0t8rWZd1AFNaaspmRsElESiU+EWE33qfbFPgI0OC/B1g9FCA==}
+    dev: false
 
   /@types/fs-extra@11.0.1:
     resolution: {integrity: sha512-MxObHvNl4A69ofaTRU8DFqvgzzv8s9yRtaPPm5gud9HDNvpB3GPQFvNuTWAI59B9huVGV5jXYJwbCsmBsOGYWA==}
@@ -4521,9 +4533,10 @@ packages:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
     dev: true
 
-  /flexsearch-ts@0.7.35:
-    resolution: {integrity: sha512-u+9rKRd9lsoUXyesQcDJ/aFdfFAWInigK95DUnmifbeOLU5LvjGiwqq+Xr55rCUbJCOSG8KTY+BoWWqFx5gbwA==}
+  /flexsearch@0.7.21(patch_hash=4otcfdgjjanfzw2qmiksh23bze):
+    resolution: {integrity: sha512-W7cHV7Hrwjid6lWmy0IhsWDFQboWSng25U3VVywpHOTJnnAZNPScog67G+cVpeX9f7yDD21ih0WDrMMT+JoaYg==}
     dev: false
+    patched: true
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}

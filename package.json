@@ -19,8 +19,9 @@
     "@prisma/client": "5.5.2",
     "@svgr/webpack": "8.1.0",
     "@t3-oss/env-nextjs": "0.7.1",
+    "@types/flexsearch": "0.7.6",
     "color2k": "2.0.2",
-    "flexsearch-ts": "0.7.35",
+    "flexsearch": "0.7.21",
     "gsap": "3.12.2",
     "next": "14.0.2",
     "next-with-linaria": "0.6.0",
@@ -66,5 +67,10 @@
     "last 99 iOS versions and last 1 year",
     "last 99 firefox versions and last 1 year",
     "last 99 FirefoxAndroid versions and last 1 year"
-  ]
+  ],
+  "pnpm": {
+    "patchedDependencies": {
+      "flexsearch@0.7.21": "patches/flexsearch@0.7.21.patch"
+    }
+  }
 }
