@@ -22,7 +22,7 @@ export default function SelectPlayer() {
 
   const { data } = useQuery<WorldInfo>({
     queryKey: [
-      "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json",
+      "https://dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
     ],
     refetchInterval: 5000,
   })

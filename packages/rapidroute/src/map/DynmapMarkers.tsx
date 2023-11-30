@@ -10,7 +10,7 @@ import MRTStops, { ColoredMarker } from "./MRTStops"
 export default function DynmapMarkers() {
   const { data } = useQuery<MarkersResponse>({
     queryKey: [
-      "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
+      "https://dynmap.minecartrapidtransit.net/main/tiles/_markers_/marker_new.json",
     ],
   })
 
