@@ -5,12 +5,12 @@ import importDynmapMRT from "./import/dynmapMRT"
 import {
   setupDatabase,
   updateCompany,
-  updateConnection,
   updatePlace,
   updateRoute,
+  updateRouteLeg,
   writeDatabase,
 } from "./import/temporaryDatabase"
-import { importTransitSheet } from "./import/transitSheet"
+// import { importTransitSheet } from "./import/transitSheet"
 
 export const runImport = async () => {
   console.log("Importing...")
@@ -22,7 +22,7 @@ export const runImport = async () => {
   // fetch all the data simultaneously, then apply it synchronously
   const dynmapAirports = getDynmapAirports()
   const dynmapMrt = importDynmapMRT()
-  const transitSheet = importTransitSheet()
+  // const transitSheet = importTransitSheet()
 
   // apply everything in the temporary database
   {
@@ -30,19 +30,19 @@ export const runImport = async () => {
     airports.forEach(updatePlace)
   }
   {
-    const { company, places, routes, connections } = await dynmapMrt
+    const { company, places, routes, routeLegs } = await dynmapMrt
     updateCompany(company)
     places.forEach(updatePlace)
     routes.forEach(updateRoute)
-    connections.forEach(updateConnection)
+    routeLegs.forEach(updateRouteLeg)
   }
-  {
-    const { companies, places, routes, connections } = await transitSheet
-    companies.forEach(updateCompany)
-    places.forEach(updatePlace)
-    routes.forEach(updateRoute)
-    connections.forEach(updateConnection)
-  }
+  // {
+  //   const { companies, places, routes, connections } = await transitSheet
+  //   companies.forEach(updateCompany)
+  //   places.forEach(updatePlace)
+  //   routes.forEach(updateRoute)
+  //   connections.forEach(updateConnection)
+  // }
 
   console.log("done applying data")
 

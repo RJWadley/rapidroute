@@ -3,7 +3,7 @@ import type { BarePlace } from "./temporaryDatabase"
 
 export default async function getDynmapAirports() {
   const markers = await fetch(
-    "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
+    "https://dynmap.minecartrapidtransit.net/main/tiles/_markers_/marker_new.json",
   )
     .then((res) => res.json())
     .then((data) => data as MarkersResponse)

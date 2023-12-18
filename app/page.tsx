@@ -2,7 +2,7 @@ import { styled } from "@linaria/react"
 // TODO finish import
 // import Header from "components/Header"
 // import Layout from "components/Layout"
-// import Results from "components/Results"
+import Results from "components/Results"
 import Selection from "components/Selection"
 // import Seo from "components/SEO"
 
@@ -13,7 +13,7 @@ export default function Home() {
         <Strong>MRT</Strong> Route Finder
       </Title>
       <Selection />
-      {/*  <Results /> */}
+      <Results />
     </Content>
   )
 }

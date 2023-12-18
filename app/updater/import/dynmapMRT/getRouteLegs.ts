@@ -1,4 +1,4 @@
-import type { BareConnection, BarePlace } from "../temporaryDatabase"
+import type { BarePlace, BareRouteLeg } from "../temporaryDatabase"
 import type { Point } from "./pointUtils"
 import { distance, pointMatchesLine } from "./pointUtils"
 
@@ -17,7 +17,7 @@ export const getConnections = ({
   line: Point[]
   isLoop: boolean
   routeId: string
-}): BareConnection[] => {
+}): BareRouteLeg[] => {
   let allStations = allStationsIn
 
   // iterate over the line, converting it to a list of stations
@@ -55,11 +55,13 @@ export const getConnections = ({
     .map((station, i) => {
       const nextIndex = stations[i + 1]
       const nextStation = nextIndex ?? (isLoop ? stations[0] : null)
-      if (!nextStation) return null
+      const previousIndex = stations[i - 1]
+      const previousStation = previousIndex ?? (isLoop ? stations.at(-1) : null)
       return {
-        placeId: station.id,
+        fromPlaceId: station.id,
+        toPlaceId: nextStation?.id ?? previousStation?.id ?? "",
         routeId,
-      } satisfies BareConnection
+      } satisfies BareRouteLeg
     })
     .filter(Boolean)
 }

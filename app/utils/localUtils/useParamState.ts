@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from "react"
-import { useClientOnly } from "utils/ClientOnly"
 import TypedEventEmitter from "utils/TypedEventEmitter"
 
-const events = new TypedEventEmitter<{
-  sync: []
-}>()
-
+/**
+ * all the valid keys that could go into the URL
+ */
 export type ParamKeys = "from" | "to"
+
+const events = new TypedEventEmitter<{
+  sync: [key: string, newValue: string | null]
+}>()
 
 /**
  * useState that syncs with URL params
@@ -16,15 +18,18 @@ export type ParamKeys = "from" | "to"
 export const useParamState = <K extends ParamKeys>(key: K) => {
   const [value, setValue] = useState<string | null>()
 
+  // listen to changes on this tab
   useEffect(() => {
-    const onSync = () => {
-      const params = new URLSearchParams(window.location.search)
-      const newValue = params.get(key)
-      setValue(newValue)
+    // sync the state from the URL on mount
+    const queryParams = new URLSearchParams(window.location.search)
+    const initialValue = queryParams.get(key)
+    setValue(initialValue)
+
+    const onSync = (syncKey: string, newValue: string | null) => {
+      if (syncKey === key) setValue(newValue)
     }
 
-    onSync()
-
+    // listen for changes on other instances of this hook
     events.addEventListener("sync", onSync)
     return () => {
       events.removeEventListener("sync", onSync)
@@ -33,20 +38,20 @@ export const useParamState = <K extends ParamKeys>(key: K) => {
 
   const externalSetValue = useCallback(
     (newValue: string | null) => {
-      const params = new URLSearchParams(window.location.search)
-      if (newValue === null) {
-        params.delete(key)
-      } else {
-        params.set(key, newValue)
-      }
+      const queryParams = new URLSearchParams(window.location.search)
 
-      const newUrl = `${window.location.pathname}?${params.toString()}`
+      // Set or update the specified key with the provided value
+      if (newValue === null) queryParams.delete(key)
+      else queryParams.set(key, newValue)
+
+      // Replace the current URL with the updated parameters
+      const newUrl = `${window.location.pathname}?${queryParams.toString()}`
       window.history.replaceState({}, "", newUrl)
 
-      events.dispatchEvent("sync")
+      events.dispatchEvent("sync", key, newValue)
     },
     [key],
   )
 
-  return [useClientOnly(value), externalSetValue] as const
+  return [value, externalSetValue] as const
 }

@@ -1,27 +1,28 @@
 import { prisma } from "../../database/client"
 import mergeData from "../utils/mergeData"
 
-type CreateArgs<T extends keyof typeof prisma> = (typeof prisma)[T] extends {
-  createMany: (args: { data: (infer U)[] }) => unknown
-}
-  ? U
-  : never
+type CreateManyArgs<T extends keyof typeof prisma> =
+  (typeof prisma)[T] extends {
+    createMany: (args: { data: (infer U)[] }) => unknown
+  }
+    ? U
+    : never
 
-export type BarePlace = CreateArgs<"place"> & { id: string }
-export type BareCompany = CreateArgs<"company"> & { id: string }
-export type BareRoute = CreateArgs<"route"> & { id: string }
-export type BareConnection = CreateArgs<"routeConnection">
+export type BarePlace = CreateManyArgs<"place"> & { id: string }
+export type BareCompany = CreateManyArgs<"company"> & { id: string }
+export type BareRoute = CreateManyArgs<"route"> & { id: string }
+export type BareRouteLeg = CreateManyArgs<"routeLeg">
 
 const database: {
   place: Record<string, BarePlace>
   company: Record<string, BareCompany>
   route: Record<string, BareRoute>
-  connection: BareConnection[]
+  routeLeg: BareRouteLeg[]
 } = {
   place: {},
   company: {},
   route: {},
-  connection: [],
+  routeLeg: [],
 }
 
 export const updateRoute = (route: BareRoute) => {
@@ -39,8 +40,19 @@ export const updateCompany = (company: BareCompany) => {
   database.company[company.id] = mergeData(previousCompany, company)
 }
 
-export const updateConnection = (connection: BareConnection) => {
-  database.connection.push(connection)
+export const updateRouteLeg = (connection: BareRouteLeg) => {
+  // find connection where fromPlaceId and toPlaceId match
+  const previousConnection = database.routeLeg.find(
+    (conn) =>
+      conn.fromPlaceId === connection.fromPlaceId &&
+      conn.toPlaceId === connection.toPlaceId,
+  )
+  if (previousConnection) {
+    const index = database.routeLeg.indexOf(previousConnection)
+    database.routeLeg[index] = mergeData(previousConnection, connection)
+  } else {
+    database.routeLeg.push(connection)
+  }
 }
 
 export const setupDatabase = async () => {
@@ -75,12 +87,12 @@ export const writeDatabase = async () => {
       })
       console.log("saved", routes.length, "routes")
 
-      console.log("starting connections")
-      await tx.routeConnection.deleteMany()
-      await tx.routeConnection.createMany({
-        data: database.connection,
+      console.log("starting route leg")
+      await tx.routeLeg.deleteMany()
+      await tx.routeLeg.createMany({
+        data: database.routeLeg,
       })
-      console.log("saved", database.connection.length, "connections")
+      console.log("saved", database.routeLeg.length, "route legs")
     },
     {
       maxWait: 5 * 60 * 1000,

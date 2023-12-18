@@ -1,8 +1,12 @@
+"use client"
+
 import { styled } from "@linaria/react"
 import Logo from "assets/images/global/RapidRouteLogo.svg"
+import { runImport } from "updater"
 
 // import UniversalLink from "utils/Loader/UniversalLink"
 import media from "../utils/media"
+import UniversalLink from "./UniversalLink"
 
 // TODO finish import
 // import Settings from "./Settings"
@@ -23,6 +27,14 @@ export default function Header() {
             <div />
           </Colors>
         </Text>
+        <UniversalLink
+          type="button"
+          onClick={() => {
+            runImport().catch(console.error)
+          }}
+        >
+          import
+        </UniversalLink>
       </LogoWrapper>
       {/* <Settings /> */}
     </Wrapper>

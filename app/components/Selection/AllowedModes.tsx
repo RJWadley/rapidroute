@@ -11,6 +11,7 @@ export default function AllowedModes() {
   const { allowedModes, setAllowedModes } = useContext(RoutingContext)
   const [showFilters, setShowFilters] = useState(false)
   const filtersRef = useRef<HTMLDivElement>(null)
+  const { to, from } = useContext(RoutingContext)
 
   const toggleMode = (mode: RouteType) => {
     if (allowedModes.includes(mode)) {
@@ -51,6 +52,9 @@ export default function AllowedModes() {
 
   return (
     <Wrapper>
+      from: {from?.id}
+      <br />
+      to: {to?.id}
       <FilterButton onClick={() => setShowFilters(!showFilters)}>
         Filter Search
       </FilterButton>
@@ -83,12 +87,11 @@ const getModeDisplayName = (mode: RouteType) => {
     case "SeaplaneFlight":
       return "Seaplane"
 
-    // TODO fix
-    // case "spawnWarp":
-    //   return "Warps"
+    case "SpawnWarp":
+      return "Warps"
 
-    // case "walk":
-    //   return "Walk"
+    case "Walk":
+      return "Walk"
 
     default:
       mode satisfies never

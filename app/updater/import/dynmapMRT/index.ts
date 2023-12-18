@@ -2,13 +2,13 @@ import type { MarkerSet, MarkersResponse } from "../../../types/dynmapMarkers"
 import { isMRTLine } from "../../../types/dynmapMarkers"
 import type {
   BareCompany,
-  BareConnection,
   BarePlace,
   BareRoute,
+  BareRouteLeg,
 } from "../temporaryDatabase"
 import { getBothColors } from "./adjustDynmapColors"
 import { getCombinedLine } from "./getCombinedLine"
-import { getConnections } from "./getConnections"
+import { getConnections as getRouteLegs } from "./getRouteLegs"
 import { getStations } from "./getStations"
 
 const extractAllData = (
@@ -17,7 +17,7 @@ const extractAllData = (
 ): {
   route: BareRoute
   places: BarePlace[]
-  connections: BareConnection[]
+  routeLegs: BareRouteLeg[]
 } => {
   const allStations: BarePlace[] = getStations(set)
   const { line, isLoop } = getCombinedLine(set)
@@ -33,7 +33,7 @@ const extractAllData = (
     companyId: "mrt",
   }
 
-  const connections: BareConnection[] = getConnections({
+  const routeLegs: BareRouteLeg[] = getRouteLegs({
     allStations,
     isLoop,
     line,
@@ -46,16 +46,18 @@ const extractAllData = (
   route.color_dark = colors.dark
   route.color_light = colors.light
 
+  if (lineName === "circle") console.log(JSON.stringify(routeLegs))
+
   return {
     route,
-    connections,
+    routeLegs,
     places: allStations,
   }
 }
 
 export default async function importDynmapMRT() {
   const markers = await fetch(
-    "https://dynmap.minecartrapidtransit.net/tiles/_markers_/marker_new.json",
+    "https://dynmap.minecartrapidtransit.net/main/tiles/_markers_/marker_new.json",
   )
     .then((res) => res.json())
     .then((data) => data as MarkersResponse)
@@ -70,16 +72,17 @@ export default async function importDynmapMRT() {
   })
 
   const routes = results.flatMap((result) => result.route)
-  const connections = results.flatMap((result) => result.connections)
+  const routeLegs = results.flatMap((result) => result.routeLegs)
   const places = results.flatMap((result) => result.places)
 
   const company: BareCompany = {
     id: "mrt",
     name: "MRT",
   }
+
   return {
     routes,
-    connections,
+    routeLegs,
     places,
     company,
   }

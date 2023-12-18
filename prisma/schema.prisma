@@ -21,8 +21,8 @@ model Place {
 
   coordinate_x Int?
   coordinate_z Int?
-
-  connections RouteConnection[]
+  routeFroms   RouteLeg[] @relation(name: "fromPlace")
+  routeTos     RouteLeg[] @relation(name: "toPlace")
 }
 
 enum PlaceType {
@@ -67,9 +67,9 @@ model Route {
   color_light String?
   logo        String?
 
-  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId   String
-  connections RouteConnection[]
+  connections RouteLeg[]
 }
 
 enum RouteType {
@@ -77,24 +77,25 @@ enum RouteType {
   HelicopterFlight
   SeaplaneFlight
   MRT
+
+  // Not Used in the DB, but still valid
+  Walk
+  SpawnWarp
 }
 
-// specific information about a stop on a route,
-// such as a flight's gate, or what stations connect to this one
-model RouteConnection {
-  id             String   @id @default(cuid())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  platformOrGate String?
+// for linear routes, like a minecart track or a road
+model RouteLeg {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  place   Place?  @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  placeId String?
   route   Route?  @relation(fields: [routeId], references: [id], onDelete: Cascade)
   routeId String?
 
-  // each connection references one place, and links to connections at other places
-  leadsTo   RouteConnection[] @relation(name: "connections")
-  comesFrom RouteConnection[] @relation(name: "connections")
-
-  @@unique([placeId, routeId])
+  fromPlace   Place?  @relation(name: "fromPlace", fields: [fromPlaceId], references: [id])
+  fromPlaceId String?
+  fromGate    String?
+  toPlace     Place?  @relation(name: "toPlace", fields: [toPlaceId], references: [id])
+  toPlaceId   String?
+  toGate      String?
 }

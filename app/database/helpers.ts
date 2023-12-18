@@ -6,6 +6,8 @@ export const allRouteTypes = [
   "MRT",
   "PlaneFlight",
   "SeaplaneFlight",
+  "Walk",
+  "SpawnWarp",
 ] as const satisfies readonly RouteType[]
 
 /**

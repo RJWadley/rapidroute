@@ -8,7 +8,7 @@ import type { ReactNode } from "react"
 import { createContext, useMemo, useState } from "react"
 import { useParamState } from "utils/localUtils/useParamState"
 
-interface LocationId {
+interface Place {
   id: string
 }
 
@@ -20,19 +20,19 @@ export const RoutingContext = createContext<{
   /**
    * unique id of the origin location
    */
-  from: LocationId | null
+  from: Place | null
   /**
    * unique id of the destination location
    */
-  to: LocationId | null
+  to: Place | null
   /**
    * update the origin location
    */
-  setFrom: (from: LocationId | null) => void
+  setFrom: (from: Place | null) => void
   /**
    * update the destination location
    */
-  setTo: (to: LocationId | null) => void
+  setTo: (to: Place | null) => void
   /**
    * list of modes to use for routing
    */
@@ -72,11 +72,11 @@ export function RoutingProvider({
     const exactFrom = places.find((p) => p.id === from)
     const exactTo = places.find((p) => p.id === to)
 
-    const externalSetFrom = (newFrom: LocationId | null) => {
+    const externalSetFrom = (newFrom: Place | null) => {
       setFrom(newFrom?.id ?? null)
     }
 
-    const externalSetTo = (newTo: LocationId | null) => {
+    const externalSetTo = (newTo: Place | null) => {
       setTo(newTo?.id ?? null)
     }
 
