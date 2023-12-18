@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
+import { isBrowser } from "utils/isBrowser"
 import TypedEventEmitter from "utils/TypedEventEmitter"
 
 /**
@@ -9,6 +10,19 @@ export type ParamKeys = "from" | "to"
 const events = new TypedEventEmitter<{
   sync: [key: string, newValue: string | null]
 }>()
+
+const currentParams = new URLSearchParams(
+  // eslint-disable-next-line ssr-friendly/no-dom-globals-in-module-scope
+  isBrowser ? window.location.search : "",
+)
+
+/**
+ * sync the URL params with the current state once per second
+ */
+setInterval(() => {
+  const newParams = new URLSearchParams(currentParams.toString())
+  if (isBrowser) window.history.replaceState({}, "", `?${newParams.toString()}`)
+}, 1000)
 
 /**
  * useState that syncs with URL params
@@ -21,8 +35,7 @@ export const useParamState = <K extends ParamKeys>(key: K) => {
   // listen to changes on this tab
   useEffect(() => {
     // sync the state from the URL on mount
-    const queryParams = new URLSearchParams(window.location.search)
-    const initialValue = queryParams.get(key)
+    const initialValue = currentParams.get(key)
     setValue(initialValue)
 
     const onSync = (syncKey: string, newValue: string | null) => {
@@ -38,15 +51,9 @@ export const useParamState = <K extends ParamKeys>(key: K) => {
 
   const externalSetValue = useCallback(
     (newValue: string | null) => {
-      const queryParams = new URLSearchParams(window.location.search)
-
       // Set or update the specified key with the provided value
-      if (newValue === null) queryParams.delete(key)
-      else queryParams.set(key, newValue)
-
-      // Replace the current URL with the updated parameters
-      const newUrl = `${window.location.pathname}?${queryParams.toString()}`
-      window.history.replaceState({}, "", newUrl)
+      if (newValue === null) currentParams.delete(key)
+      else currentParams.set(key, newValue)
 
       events.dispatchEvent("sync", key, newValue)
     },
