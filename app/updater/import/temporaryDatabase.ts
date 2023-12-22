@@ -12,17 +12,20 @@ export type BarePlace = CreateManyArgs<"place"> & { id: string }
 export type BareCompany = CreateManyArgs<"company"> & { id: string }
 export type BareRoute = CreateManyArgs<"route"> & { id: string }
 export type BareRouteLeg = CreateManyArgs<"routeLeg">
+export type BareSpoke = CreateManyArgs<"routeSpoke">
 
 const database: {
   place: Record<string, BarePlace>
   company: Record<string, BareCompany>
   route: Record<string, BareRoute>
   routeLeg: BareRouteLeg[]
+  routeSpoke: BareSpoke[]
 } = {
   place: {},
   company: {},
   route: {},
   routeLeg: [],
+  routeSpoke: [],
 }
 
 export const updateRoute = (route: BareRoute) => {
@@ -40,18 +43,33 @@ export const updateCompany = (company: BareCompany) => {
   database.company[company.id] = mergeData(previousCompany, company)
 }
 
-export const updateRouteLeg = (connection: BareRouteLeg) => {
+export const updateRouteLeg = (leg: BareRouteLeg) => {
   // find connection where fromPlaceId and toPlaceId match
   const previousConnection = database.routeLeg.find(
-    (conn) =>
-      conn.fromPlaceId === connection.fromPlaceId &&
-      conn.toPlaceId === connection.toPlaceId,
+    (otherLeg) =>
+      otherLeg.fromPlaceId === leg.fromPlaceId &&
+      otherLeg.toPlaceId === leg.toPlaceId,
   )
   if (previousConnection) {
     const index = database.routeLeg.indexOf(previousConnection)
-    database.routeLeg[index] = mergeData(previousConnection, connection)
+    database.routeLeg[index] = mergeData(previousConnection, leg)
   } else {
-    database.routeLeg.push(connection)
+    database.routeLeg.push(leg)
+  }
+}
+
+export const updateRouteSpoke = (spoke: BareSpoke) => {
+  // find connection where place and route match
+  const previousConnection = database.routeSpoke.find(
+    (otherSpoke) =>
+      otherSpoke.placeId === spoke.placeId &&
+      otherSpoke.routeId === spoke.routeId,
+  )
+  if (previousConnection) {
+    const index = database.routeSpoke.indexOf(previousConnection)
+    database.routeSpoke[index] = mergeData(previousConnection, spoke)
+  } else {
+    database.routeSpoke.push(spoke)
   }
 }
 
@@ -93,6 +111,13 @@ export const writeDatabase = async () => {
         data: database.routeLeg,
       })
       console.log("saved", database.routeLeg.length, "route legs")
+
+      console.log("starting route spoke")
+      await tx.routeSpoke.deleteMany()
+      await tx.routeSpoke.createMany({
+        data: database.routeSpoke,
+      })
+      console.log("saved", database.routeSpoke.length, "route spokes")
     },
     {
       maxWait: 5 * 60 * 1000,

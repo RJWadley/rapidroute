@@ -1,3 +1,4 @@
+import { useEventListener } from "ahooks"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { useSearchResults } from "./search"
@@ -197,17 +198,9 @@ export default function usePlaceSearch(
   /**
    * register event listeners for the events we need
    */
-  useEffect(() => {
-    inputElement?.addEventListener("input", handleInput)
-    inputElement?.addEventListener("keydown", handleKeyDown)
-    inputElement?.addEventListener("blur", handleBlur)
-
-    return () => {
-      inputElement?.removeEventListener("input", handleInput)
-      inputElement?.removeEventListener("keydown", handleKeyDown)
-      inputElement?.removeEventListener("blur", handleBlur)
-    }
-  })
+  useEventListener("input", handleInput, { target: inputElement })
+  useEventListener("keydown", handleKeyDown, { target: inputElement })
+  useEventListener("blur", handleBlur, { target: inputElement })
 
   return {
     focusedItem,

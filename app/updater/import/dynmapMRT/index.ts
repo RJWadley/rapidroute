@@ -46,8 +46,6 @@ const extractAllData = (
   route.color_dark = colors.dark
   route.color_light = colors.light
 
-  if (lineName === "circle") console.log(JSON.stringify(routeLegs))
-
   return {
     route,
     routeLegs,

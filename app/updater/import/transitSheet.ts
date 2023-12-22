@@ -1,177 +1,162 @@
-// import type { PlaceType, RouteType } from "@prisma/client"
+import type { RouteType, WorldName } from "@prisma/client"
+import { env } from "env.mjs"
+import type { GoogleSpreadsheetWorksheet } from "google-spreadsheet"
+import { GoogleSpreadsheet } from "google-spreadsheet"
 
-// import type {
-//   PropertiesResponse,
-//   SheetResponse,
-// } from "../../types/googleSheets"
-// import type {
-//   BareCompany,
-//   BarePlace,
-//   BareRoute,
-//   BareRouteLeg,
-// } from "./temporaryDatabase"
+import type {
+  BareCompany,
+  BarePlace,
+  BareRoute,
+  BareSpoke,
+} from "./temporaryDatabase"
 
-// const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"
-// const API_KEY = "AIzaSyCrrcWTs3OKgyc8PVXAKeYaotdMiRqaNO8"
+const TRANSIT_SHEET_ID = "1wzvmXHQZ7ee7roIvIrJhkP6oCegnB8-nefWpd8ckqps"
 
-// export async function importTransitSheet() {
-//   // get the grid properties of the "Airline Class Distribution", "Seaplane Class Distribution", and "Helicopters" sheets
-//   const response = (await fetch(
-//     `https://sheets.googleapis.com/v4/spreadsheets/${TRANSIT_SHEET_ID}?key=${API_KEY}&fields=sheets.properties(title,gridProperties)`,
-//   ).then((r) => r.json())) as PropertiesResponse
+const doc = new GoogleSpreadsheet(TRANSIT_SHEET_ID, {
+  apiKey: env.GOOGLE_SHEETS_API_KEY,
+})
 
-//   const airlineSheet = response.sheets.find(
-//     (sheet) => sheet.properties.title === "Airline Class Distribution",
-//   )
-//   const airlineWidth = airlineSheet?.properties.gridProperties
+const processWorldName = (rowText: string): WorldName => {
+  if (rowText.toLowerCase().includes("new")) return "New"
+  if (rowText.toLowerCase().includes("old")) return "Old"
+  if (rowText.toLowerCase().includes("space")) return "Space"
+  return "New"
+}
 
-//   const seaplaneSheet = response.sheets.find(
-//     (sheet) => sheet.properties.title === "Seaplane Class Distribution",
-//   )
-//   const seaplaneWidth = seaplaneSheet?.properties.gridProperties
+const parseCellValue = (cell: unknown) =>
+  typeof cell === "string" ? cell : undefined
 
-//   const helicopterSheet = response.sheets.find(
-//     (sheet) => sheet.properties.title === "Helicopters",
-//   )
-//   const helicopterWidth = helicopterSheet?.properties.gridProperties
+const isLastRow = (rowText: string) =>
+  rowText.toLowerCase().includes("total flights")
 
-//   if (!airlineWidth || !seaplaneWidth || !helicopterWidth) {
-//     throw new Error("Couldn't find sheets")
-//   }
+const processSheet = async (
+  sheet: GoogleSpreadsheetWorksheet | undefined,
+  {
+    airlineNameRowIndex,
+    firstColumnIndex,
+  }: { airlineNameRowIndex: number; firstColumnIndex: number },
+  type: RouteType,
+) => {
+  console.log("starting", type)
+  if (!sheet) throw new Error("Couldn't find sheet")
+  const rows = await sheet.getRows()
 
-//   const dataResponse = await fetch(
-//     `https://sheets.googleapis.com/v4/spreadsheets/${TRANSIT_SHEET_ID}/values:batchGet?` +
-//       // rows[0] is the last row and cols[0] is last column
-//       `ranges='Airline Class Distribution'!A3:C${airlineWidth.rowCount}` + // airports
-//       `&ranges='Airline Class Distribution'!E2:${airlineWidth.columnCount}2` + // company names
-//       `&ranges='Airline Class Distribution'!E3:${airlineWidth.columnCount}${airlineWidth.rowCount}` + // actual flight numbers
-//       // same scheme here
-//       `&ranges='Helicopters'!A2:C${helicopterWidth.rowCount}` + // heliports
-//       `&ranges='Helicopters'!E1:${helicopterWidth.columnCount}1` + // companynames
-//       `&ranges='Helicopters'!E2:${helicopterWidth.columnCount}${helicopterWidth.rowCount}` + // actual flight numbers
-//       // and seaplanes
-//       `&ranges='Seaplane Class Distribution'!A3:C${seaplaneWidth.rowCount}` + // heliports
-//       `&ranges='Seaplane Class Distribution'!D2:${seaplaneWidth.columnCount}2` + // companynames
-//       `&ranges='Seaplane Class Distribution'!D3:${seaplaneWidth.columnCount}${seaplaneWidth.rowCount}` + // actual flight numbers
-//       `&key=${API_KEY}`,
-//   ).then((r) => r.json() as Promise<SheetResponse>)
+  const places: BarePlace[] = []
 
-//   const transitSheet = dataResponse.valueRanges
+  // routes[airlineName][routeNumber] = [placeId]
+  const routeData: Record<string, Record<string, string[]>> = {}
 
-//   const planes = parseRawFlightData(
-//     ["PlaneFlight", "Airport"],
-//     transitSheet[0]?.values,
-//     transitSheet[1]?.values[0],
-//     transitSheet[2]?.values,
-//   )
-//   const helis = parseRawFlightData(
-//     ["HelicopterFlight", "Airport"],
-//     transitSheet[3]?.values,
-//     transitSheet[4]?.values[0],
-//     transitSheet[5]?.values,
-//   )
-//   const sea = parseRawFlightData(
-//     ["SeaplaneFlight", "Airport"],
-//     transitSheet[6]?.values,
-//     transitSheet[7]?.values[0],
-//     transitSheet[8]?.values,
-//   )
+  // load the whole sheet
+  await sheet.loadCells(
+    `A${airlineNameRowIndex + 1}:${sheet.lastColumnLetter}${sheet.rowCount}`,
+  )
 
-//   return {
-//     routes: [...planes.routes, ...helis.routes, ...sea.routes],
-//     connections: [
-//       ...planes.connections,
-//       ...helis.connections,
-//       ...sea.connections,
-//     ],
-//     places: [...planes.places, ...helis.places, ...sea.places],
-//     companies: [...planes.companies, ...helis.companies, ...sea.companies],
-//   } satisfies {
-//     places: BarePlace[]
-//     companies: BareCompany[]
-//     routes: BareRoute[]
-//     connections: BareConnection[]
-//   }
-// }
+  const airlineNames: string[] = []
+  for (let i = firstColumnIndex; i < sheet.columnCount; i++) {
+    const cell = sheet.getCell(airlineNameRowIndex, i)
+    const value = parseCellValue(cell.value)
+    airlineNames.push(value ?? "")
+  }
 
-// function parseRawFlightData(
-//   [routeType, placeType]: [RouteType, PlaceType],
-//   placesRaw: string[][] | undefined,
-//   providersRaw: string[] | undefined,
-//   routesRaw: string[][] | undefined,
-// ) {
-//   if (!placesRaw || !providersRaw || !routesRaw)
-//     return {
-//       places: [],
-//       companies: [],
-//       routes: [],
-//       connections: [],
-//     }
+  for (const row of rows) {
+    const name = parseCellValue(row.get("Airport Name"))
+    const code = parseCellValue(row.get("Code"))
+    const world = parseCellValue(row.get("World"))
+    if (name && isLastRow(name)) break
 
-//   // cut off the row that starts with "Total Flights" and any rows after that
-//   const indexOfLastRow = placesRaw.findIndex((row) =>
-//     row.some((cell) => cell.startsWith("Total Flights")),
-//   )
+    // iterate through the columns and save routes
+    for (let i = firstColumnIndex; i < sheet.columnCount; i++) {
+      const cell = sheet.getCell(row.rowNumber - 1, i)
+      const value = parseCellValue(cell.value)
+      const flights = value?.split(",").map((s) => s.trim()) ?? []
+      const airlineName = airlineNames[i]
 
-//   const places = placesRaw.slice(0, indexOfLastRow).map((place) => {
-//     if (place.length === 0) return null
-//     const shortName = place[1]
-//     const longName = place[0]
-//     const id = shortName?.length ? shortName : longName
-//     const world_name = place[2] === "New" ? "New" : "Old"
+      if (!airlineName || !name) continue
 
-//     if (!id) throw new Error(`No ID for place ${JSON.stringify(place)}`)
+      for (const flightNumber of flights) {
+        routeData[airlineName] = {
+          ...routeData[airlineName],
+          [flightNumber]: [
+            ...(routeData[airlineName]?.[flightNumber] ?? []),
+            code ?? name,
+          ],
+        }
+      }
+    }
 
-//     return {
-//       IATA: shortName ?? id,
-//       id,
-//       name: longName ?? id,
-//       shortName: shortName ?? id,
-//       type: placeType,
-//       worldName: world_name,
-//     } satisfies BarePlace
-//   })
+    if (name)
+      places.push({
+        name,
+        id: code ?? name,
+        type: "Airport",
+        IATA: code,
+        worldName: processWorldName(world ?? ""),
+      })
+  }
 
-//   const companies = providersRaw.map(
-//     (provider) =>
-//       ({
-//         color_dark: null,
-//         color_light: null,
-//         id: encodeURIComponent(provider.trim()),
-//         name: provider,
-//       }) satisfies BareCompany,
-//   )
+  const spokes: BareSpoke[] = []
+  const routes: BareRoute[] = []
+  const companies: BareCompany[] = []
 
-//   const routes: BareRoute[] = []
-//   const connections: BareConnection[] = []
+  for (const [company, routeInfo] of Object.entries(routeData)) {
+    companies.push({
+      id: encodeURIComponent(company),
+      name: company,
+    })
 
-//   for (const [rowNum, row] of routesRaw.slice(0, indexOfLastRow).entries()) {
-//     for (const [colNum, col] of row.entries()) {
-//       const company = companies[colNum]
-//       const place = places[rowNum]
-//       const flightNumbers = col.split(",").map((s) => s.trim())
-//       if (company && place && col)
-//         for (const flightNumber of flightNumbers) {
-//           const route = {
-//             id: `${company.id}-${flightNumber}`,
-//             name: `${company.name} flight ${flightNumber}`,
-//             companyId: company.id,
-//             number: flightNumber,
-//             type: routeType,
-//           } satisfies BareRoute
-//           routes.push(route)
+    for (const [routeNumber, routeDestinations] of Object.entries(routeInfo)) {
+      routes.push({
+        id: `${encodeURIComponent(company)}-${routeNumber}`,
+        companyId: encodeURIComponent(company),
+        number: routeNumber,
+        type,
+      })
 
-//           const stop = {} satisfies BareConnection
-//           connections.push(stop)
-//         }
-//     }
-//   }
+      for (const destination of routeDestinations) {
+        spokes.push({
+          placeId: destination,
+          routeId: `${encodeURIComponent(company)}-${routeNumber}`,
+        })
+      }
+    }
+  }
 
-//   return {
-//     places: places.filter(Boolean),
-//     companies,
-//     routes,
-//     connections,
-//   }
-// }
-export {}
+  console.log("finished", type)
+  return { places, spokes, routes, companies }
+}
+
+export const getTransitSheetData = async () => {
+  await doc.loadInfo()
+  const airlines = doc.sheetsByTitle["Airline Class Distribution"]
+  const helis = doc.sheetsByTitle.Helicopters
+  const seaplanes = doc.sheetsByTitle["Seaplane Class Distribution"]
+
+  const [airlinesRows, helisRows, seaplanesRows] = await Promise.all([
+    processSheet(
+      airlines,
+      {
+        airlineNameRowIndex: 1,
+        firstColumnIndex: 4,
+      },
+      "PlaneFlight",
+    ),
+    processSheet(
+      helis,
+      {
+        airlineNameRowIndex: 0,
+        firstColumnIndex: 4,
+      },
+      "HelicopterFlight",
+    ),
+    processSheet(
+      seaplanes,
+      {
+        airlineNameRowIndex: 1,
+        firstColumnIndex: 3,
+      },
+      "SeaplaneFlight",
+    ),
+  ])
+
+  return [airlinesRows, helisRows, seaplanesRows]
+}

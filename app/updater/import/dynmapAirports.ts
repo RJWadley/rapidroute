@@ -11,7 +11,6 @@ export default async function getDynmapAirports() {
   return Object.entries(markers.sets.airports.markers).map(
     ([key, { label, x, z }]) => {
       return {
-        shortName: key.toUpperCase().trim(),
         IATA: key.toUpperCase().trim(),
         id: key.toUpperCase().trim(),
 

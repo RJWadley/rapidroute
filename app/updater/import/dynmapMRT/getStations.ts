@@ -13,7 +13,6 @@ export const getStations = (set: MarkerSet) => {
 
     return {
       id: currentId.trim(),
-      shortName: currentId.trim(),
       name: label,
       type: "MrtStation",
       worldName: "New",
