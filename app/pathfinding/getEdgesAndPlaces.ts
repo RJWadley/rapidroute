@@ -21,6 +21,7 @@ export interface GraphPlace {
 }
 
 export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
+  // create leg edges
   const legs = await prisma.routeLeg.findMany({
     include: {
       route: {
@@ -102,6 +103,52 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
     },
   })
 
+  // create spoke edges
+  const spokes = await prisma.routeSpoke.findMany({
+    include: {
+      route: {
+        select: {
+          type: true,
+          id: true,
+        },
+      },
+      place: {
+        select: {
+          id: true,
+          coordinate_x: true,
+          coordinate_z: true,
+        },
+      },
+    },
+  })
+
+  // each spoke edge goes to all other spoke edges on the same route
+  const spokeEdges = spokes.flatMap((spoke) => {
+    const fromX = spoke.place.coordinate_x ?? Infinity
+    const fromZ = spoke.place.coordinate_z ?? Infinity
+    const type = spoke.route?.type
+    const routeId = spoke.route?.id
+
+    if (!type || !routeId) return []
+
+    return spokes
+      .filter((otherSpoke) => otherSpoke.routeId === spoke.routeId)
+      .map((otherSpoke) => {
+        const toX = otherSpoke.place.coordinate_x ?? Infinity
+        const toZ = otherSpoke.place.coordinate_z ?? Infinity
+        const distance = getDistance(fromX, fromZ, toX, toZ)
+        const weight = getRouteTime(distance, type)
+
+        return {
+          from: spoke.place.id,
+          to: otherSpoke.place.id,
+          type,
+          weight,
+          route: routeId,
+        } satisfies GraphEdge
+      })
+  })
+
   // for each node, generate 5 walking edges to the closest nodes
   const walkingEdges: GraphEdge[] = allPlaces.flatMap((from) => {
     const x1 = from.coordinate_x
@@ -152,7 +199,7 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
   // todo add spawn warp edges & coordinate edges
 
   return {
-    edges: [...edges, ...walkingEdges].filter((edge) =>
+    edges: [...edges, ...spokeEdges, ...walkingEdges].filter((edge) =>
       allowedMode.includes(edge.type),
     ),
     places: allPlaces,
