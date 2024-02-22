@@ -1,0 +1,4 @@
+- port search results w/o animations
+- port map view
+- port navigation
+- overhaul changelog
