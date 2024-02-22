@@ -1,14 +1,15 @@
 "use server"
 
-import type { RouteType } from "@prisma/client"
+import type { Place, Route, RouteType } from "@prisma/client"
 
 import { getEdgesAndPlaces } from "./getEdgesAndPlaces"
 import { getRoutes } from "./getRoutes"
+import { getPrettyEdge } from "./getPrettyEdge"
 
 export const findPath = async (
   from: string,
   to: string,
-  allowedModes: RouteType[],
+  allowedModes: RouteType[]
 ) => {
   const { edges, places } = await getEdgesAndPlaces(allowedModes)
 
@@ -19,15 +20,32 @@ export const findPath = async (
 
   console.log("finding path from", from, "to", to)
   try {
-    return getRoutes({
+    const basicRoutes = getRoutes({
       edges,
       from: fromEdge,
       to: toEdge,
       preventReverse: false,
       places,
-    }).map(
-      (route) =>
-        `${route.path.map((j) => j.id).join(" -> ")} (${route.totalCost})`,
+    })
+
+    // for each route, get the actual information
+    const fullRoutes = basicRoutes.map((route) => ({
+      cost: route.totalCost,
+      path: route.path
+        .map((thisPlace, index) => {
+          const nextPlace = route.path[index + 1]
+
+          return nextPlace ? getPrettyEdge(thisPlace.id, nextPlace.id) : null
+        })
+        .filter(Boolean),
+    }))
+
+    // unwrap the promises
+    return await Promise.all(
+      fullRoutes.map(async (route) => ({
+        cost: route.cost,
+        path: await Promise.all(route.path),
+      }))
     )
   } finally {
     console.log("finished finding path from", from, "to", to)

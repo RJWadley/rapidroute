@@ -72,7 +72,7 @@ model Route {
   company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId   String
   connections RouteLeg[]
-  RouteSpoke  RouteSpoke[]
+  routeSpoke  RouteSpoke[]
 
   // each company can only have one route with a given name
   @@unique([companyId, name])

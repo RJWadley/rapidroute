@@ -7,7 +7,7 @@ import { findPath } from "./findPath"
 export const usePath = (
   from: { id: string } | null | undefined,
   to: { id: string } | null | undefined,
-  allowedModes: RouteType[],
+  allowedModes: RouteType[]
 ) => {
   const [results, setResults] = useState<Awaited<ReturnType<typeof findPath>>>()
   const [isRouting, setIsRouting] = useState(false)

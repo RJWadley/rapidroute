@@ -61,13 +61,13 @@ export function getRoutes({
       console.log(
         "checking routes out of",
         current.id,
-        edges.filter((edge) => edge.from === current.id && edge.to === "WN43"),
+        edges.filter((edge) => edge.from === current.id && edge.to === "WN43")
       )
 
     edges
       .filter((edge) => edge.from === current.id)
       .filter(
-        (edge) => (costSoFar.get(current) ?? Infinity) + edge.weight < maxCost,
+        (edge) => (costSoFar.get(current) ?? Infinity) + edge.weight < maxCost
       )
       .forEach((edge) => {
         const newCost = (costSoFar.get(current) ?? Infinity) + edge.weight
@@ -123,23 +123,23 @@ export function getRoutes({
 function getSortingCost(
   edges: GraphEdge[],
   from: GraphPlace,
-  to: GraphPlace | undefined,
+  to: GraphPlace | undefined
 ) {
   if (!to) return Infinity
 
   const allEdges = edges.filter(
-    (edge) => edge.from === from.id && edge.to === to.id,
+    (edge) => edge.from === from.id && edge.to === to.id
   )
   return Math.min(
     ...allEdges.map((edge) => edge.sortWeight ?? edge.weight),
-    Infinity,
+    Infinity
   )
 }
 
 function reconstructPaths(
   edges: GraphEdge[],
   from: GraphPlace,
-  to: GraphPlace,
+  to: GraphPlace
 ): ResultType[] {
   const pathsInProgress: ResultType[] = [{ path: [to], totalCost: 0 }]
   const results: ResultType[] = []
@@ -179,13 +179,13 @@ function reconstructPaths(
 function updateMaxCost(
   currentNode: GraphPlace,
   destinationNode: GraphPlace,
-  thisCostSoFar: number,
+  thisCostSoFar: number
 ) {
   const distanceToTo = getDistance(
     currentNode.coordinate_x ?? Infinity,
     currentNode.coordinate_z ?? Infinity,
     destinationNode.coordinate_x ?? Infinity,
-    destinationNode.coordinate_z ?? Infinity,
+    destinationNode.coordinate_z ?? Infinity
   )
   const timeToTo = getRouteTime(distanceToTo, "Walk")
   const newMaxCost = thisCostSoFar + timeToTo + 100
