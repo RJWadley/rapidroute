@@ -13,7 +13,7 @@ export const getPrettyEdge = async (fromId: string, toId: string) => {
     where: {
       OR: [
         {
-          RouteSpoke: {
+          routeSpoke: {
             some: {
               OR: [{ place: { id: fromId } }, { place: { id: toId } }],
             },

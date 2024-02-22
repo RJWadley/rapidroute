@@ -19,6 +19,7 @@
     "@prisma/client": "5.5.2",
     "@svgr/webpack": "8.1.0",
     "@t3-oss/env-nextjs": "0.7.1",
+    "@tanstack/react-query": "5.17.19",
     "@types/flexsearch": "0.7.6",
     "ahooks": "3.7.8",
     "color2k": "2.0.2",

@@ -1,4 +1,4 @@
-<img src="./public/base_graphic.svg">
+<img src="./app/assets/readme.svg">
 
 # MRT RapidRoute
 

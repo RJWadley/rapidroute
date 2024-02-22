@@ -28,6 +28,9 @@ dependencies:
   '@t3-oss/env-nextjs':
     specifier: 0.7.1
     version: 0.7.1(typescript@5.2.2)(zod@3.22.4)
+  '@tanstack/react-query':
+    specifier: 5.17.19
+    version: 5.17.19(react@18.2.0)
   '@types/flexsearch':
     specifier: 0.7.6
     version: 0.7.6
@@ -2243,6 +2246,19 @@ packages:
       '@t3-oss/env-core': 0.7.1(typescript@5.2.2)(zod@3.22.4)
       typescript: 5.2.2
       zod: 3.22.4
+    dev: false
+
+  /@tanstack/query-core@5.17.19:
+    resolution: {integrity: sha512-Lzw8FUtnLCc9Jwz0sw9xOjZB+/mCCmJev38v2wHMUl/ioXNIhnNWeMxu0NKUjIhAd62IRB3eAtvxAGDJ55UkyA==}
+    dev: false
+
+  /@tanstack/react-query@5.17.19(react@18.2.0):
+    resolution: {integrity: sha512-qaQENB6/03Gj3dFZGvdmUoqeUGlGm7P1p0RmaR04Bf1Ib1T9lLGimcC9T3oCFbrx0b2ZF21ngjFZNjj9uPJMcg==}
+    peerDependencies:
+      react: ^18.0.0
+    dependencies:
+      '@tanstack/query-core': 5.17.19
+      react: 18.2.0
     dev: false
 
   /@total-typescript/ts-reset@0.5.1:
