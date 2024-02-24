@@ -1,17 +1,15 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { prisma } from "database/client"
 import type { ReactNode } from "react"
 
 import { DarkModeProvider } from "./DarkMode"
 import { MapSearchProvider } from "./MapSearchContext"
 import { NavigationProvider } from "./NavigationContext"
+import QueryProvider from "./QueryProvider"
 import { RoutingProvider } from "./RoutingContext"
 
 interface ProvidersProps {
   children: ReactNode
 }
-
-const queryClient = new QueryClient()
 
 export default async function Providers({ children }: ProvidersProps) {
   const places = await prisma.place.findMany({
@@ -22,7 +20,7 @@ export default async function Providers({ children }: ProvidersProps) {
   })
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <RoutingProvider places={places}>
         <NavigationProvider>
           <MapSearchProvider>
@@ -30,6 +28,6 @@ export default async function Providers({ children }: ProvidersProps) {
           </MapSearchProvider>
         </NavigationProvider>
       </RoutingProvider>
-    </QueryClientProvider>
+    </QueryProvider>
   )
 }

@@ -1,7 +1,16 @@
-import { Place, Route } from "@prisma/client"
+import type { Place, Route } from "@prisma/client"
 import { prisma } from "database/client"
 
-export const getPrettyEdge = async (fromId: string, toId: string) => {
+export interface PrettyEdge {
+  from: Place
+  to: Place
+  routes: Route[]
+}
+
+export const getPrettyEdge = async (
+  fromId: string,
+  toId: string,
+): Promise<PrettyEdge> => {
   const fromPlace = await prisma.place.findUniqueOrThrow({
     where: { id: fromId },
   })

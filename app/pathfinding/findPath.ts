@@ -1,15 +1,18 @@
 "use server"
 
-import type { Place, Route, RouteType } from "@prisma/client"
+import type { RouteType } from "@prisma/client"
 
 import { getEdgesAndPlaces } from "./getEdgesAndPlaces"
-import { getRoutes } from "./getRoutes"
 import { getPrettyEdge } from "./getPrettyEdge"
+import { getRoutes } from "./getRoutes"
+import { combineMRT } from "./postProcessing/combineMRT"
+import { describeDiff, getResultDiff } from "./postProcessing/diff"
+import removeExtras from "./postProcessing/removeExtra"
 
 export const findPath = async (
   from: string,
   to: string,
-  allowedModes: RouteType[]
+  allowedModes: RouteType[],
 ) => {
   const { edges, places } = await getEdgesAndPlaces(allowedModes)
 
@@ -20,32 +23,40 @@ export const findPath = async (
 
   console.log("finding path from", from, "to", to)
   try {
-    const basicRoutes = getRoutes({
-      edges,
-      from: fromEdge,
-      to: toEdge,
-      preventReverse: false,
-      places,
-    })
+    const basicRoutes = removeExtras(
+      getRoutes({
+        edges,
+        from: fromEdge,
+        to: toEdge,
+        preventReverse: false,
+        places,
+      }),
+    )
+
+    const allDiffs = getResultDiff(
+      basicRoutes.map((route) => route.path.map((place) => place.id)),
+    )
 
     // for each route, get the actual information
-    const fullRoutes = basicRoutes.map((route) => ({
+    const fullRoutePromises = basicRoutes.map((route, routeIndex) => ({
       cost: route.totalCost,
       path: route.path
-        .map((thisPlace, index) => {
-          const nextPlace = route.path[index + 1]
+        .map((thisPlace, placeIndex) => {
+          const nextPlace = route.path[placeIndex + 1]
 
           return nextPlace ? getPrettyEdge(thisPlace.id, nextPlace.id) : null
         })
         .filter(Boolean),
+      diff: describeDiff(allDiffs[routeIndex] ?? []),
     }))
 
     // unwrap the promises
     return await Promise.all(
-      fullRoutes.map(async (route) => ({
+      fullRoutePromises.map(async (route) => ({
         cost: route.cost,
-        path: await Promise.all(route.path),
-      }))
+        path: combineMRT(await Promise.all(route.path)),
+        diff: await route.diff,
+      })),
     )
   } finally {
     console.log("finished finding path from", from, "to", to)
