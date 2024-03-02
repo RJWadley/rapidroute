@@ -50,7 +50,21 @@ export const setupDatabase = async () => {
   if (!isWholeDatabase(data)) throw new Error("Database is not valid")
 
   Object.assign(database, data)
-  return database
+  const tempOut: typeof data = {
+    hashes: {
+      locations: "",
+      providers: "",
+      pathfinding: "",
+      routes: "",
+      searchIndex: "",
+    },
+    routes: {},
+    locations: {},
+    pathfinding: {},
+    providers: {},
+    searchIndex: {},
+  }
+  return tempOut
 }
 
 export const saveDatabase = async () => {
