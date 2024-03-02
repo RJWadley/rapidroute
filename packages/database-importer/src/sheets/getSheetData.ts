@@ -4320,14 +4320,6 @@ function combineData() {
  * most of this code comes straight from the old site
  */
 export default async function getLegacyData() {
-  routes = []
-  places = []
-  providers = []
-  codeshares = {}
-  spawnWarps = ["C1", "C33", "C61", "C89"]
-  lightColors = {}
-  darkColors = {}
-
   const transitSheetProm = getTransitSheet()
   const dataSheetProm = getDataSheet()
   const markers = generateMrtFromMarkers()
