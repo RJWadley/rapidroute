@@ -81,7 +81,7 @@ async function runImport() {
 
   console.log("SAVED ALL ROUTES")
 
-  updateHashes(initialDatabase)
+  updateHashes(initialDatabase as any)
 
   console.log("UPDATED HASHES")
 

@@ -27,24 +27,24 @@ export default function updateHashes(
 
   Object.keys(databaseBeforeUpdate).forEach(key => {
     if (key in keysToIgnore) return
-    if (
-      key in databaseBeforeUpdate &&
-      key in upcastDatabase &&
-      isObject(database.hashes) &&
-      key in database.hashes
-    ) {
-      if (!deepCompare(databaseBeforeUpdate[key], upcastDatabase[key])) {
-        // need a new hash if the data has changed
-        newHashes[key] = newHash
-        console.log("new hash for", key)
-      } else {
-        console.log("no change for", key)
-      }
-    } else {
-      // need a new hash if the key is new
-      newHashes[key] = newHash
-      console.log("new hash for", key)
-    }
+    // if (
+    //   key in databaseBeforeUpdate &&
+    //   key in upcastDatabase &&
+    //   isObject(database.hashes) &&
+    //   key in database.hashes
+    // ) {
+    //   if (!deepCompare(databaseBeforeUpdate[key], upcastDatabase[key])) {
+    //     // need a new hash if the data has changed
+    //     newHashes[key] = newHash
+    //     console.log("new hash for", key)
+    //   } else {
+    //     console.log("no change for", key)
+    //   }
+    // } else {
+    // need a new hash if the key is new
+    newHashes[key] = newHash
+    console.log("new hash for", key)
+    // }
   })
 
   database.hashes = { ...database.hashes, ...newHashes }
