@@ -19,8 +19,7 @@ import getLegacyData from "./getSheetData"
  * @returns
  */
 const makeKeySafe = (str: string) => {
-
-  if (str === "") return '__BLANK_KEY__'
+  if (!str) return "__BLANK_KEY__"
 
   return str
     .replace(/_/g, "__")
