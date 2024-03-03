@@ -21,7 +21,12 @@ const currentParams = new URLSearchParams(
  */
 setInterval(() => {
   const newParams = new URLSearchParams(currentParams.toString())
-  if (isBrowser) window.history.replaceState({}, "", `?${newParams.toString()}`)
+  if (isBrowser)
+    window.history.replaceState(
+      {},
+      "",
+      `${newParams.toString() === "" ? "" : "?"}${newParams.toString()}`,
+    )
 }, 1000)
 
 /**
