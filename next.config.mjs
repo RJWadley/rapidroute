@@ -20,7 +20,10 @@ const config = {
 
     return webpackConfig
   },
-  reactStrictMode: true,
+  /**
+   * react strict mode breaks pixi stuff :(
+   */
+  reactStrictMode: false,
   experimental: {
     typedRoutes: true,
   },

@@ -3,8 +3,12 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "components/Providers/QueryProvider"
 import { useEffect } from "react"
 
+import Demo from "./Demo"
+import { PixiViewport } from "./PixiViewport"
+import Satellite from "./Satellite/Satellite"
+
 export default function Map() {
-  const width = 500
+  const width = 1000
   const height = 500
 
   /**
@@ -25,7 +29,12 @@ export default function Map() {
   return (
     <div>
       <Stage width={width} height={height}>
-        <QueryClientProvider client={queryClient} />
+        <QueryClientProvider client={queryClient}>
+          <PixiViewport width={width} height={height}>
+            <Satellite />
+            <Demo />
+          </PixiViewport>
+        </QueryClientProvider>
       </Stage>
     </div>
   )
