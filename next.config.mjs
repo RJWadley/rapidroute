@@ -17,10 +17,6 @@ const config = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     })
-    webpackConfig.module?.rules?.push({
-      test: /\.node$/,
-      use: "ignore-loader",
-    })
 
     return webpackConfig
   },

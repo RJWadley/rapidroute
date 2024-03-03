@@ -1,9 +1,9 @@
 "use client"
 
 import type { RouteType } from "@prisma/client"
-import { allRouteTypes } from "database/helpers"
-import { useSearchResults } from "database/search"
-import type { PlaceSearchItem } from "database/usePlaceSearch"
+import { allRouteTypes } from "data/helpers"
+import { useSearchResults } from "data/search"
+import type { PlaceSearchItem } from "data/usePlaceSearch"
 import type { ReactNode } from "react"
 import { createContext, useMemo, useState } from "react"
 import { useParamState } from "utils/localUtils/useParamState"
@@ -22,7 +22,8 @@ export const RoutingContext = createContext<{
    */
   from: Place | null
   /**
-   * unique id of the destination location
+   * the destination location
+   * this is also the active location on the map, if in map view
    */
   to: Place | null
   /**
@@ -31,6 +32,7 @@ export const RoutingContext = createContext<{
   setFrom: (from: Place | null) => void
   /**
    * update the destination location
+   * this is also the active location on the map
    */
   setTo: (to: Place | null) => void
   /**
@@ -62,7 +64,7 @@ export function RoutingProvider({
   const [allowedModes, setAllowedModes] = useState<readonly RouteType[]>(
     // TODO fix this
     // allRouteTypes.filter((m) => m !== "spawnWarp"),
-    allRouteTypes,
+    allRouteTypes
   )
 
   const fromResult = useSearchResults(from, places, (p) => JSON.stringify(p))[0]

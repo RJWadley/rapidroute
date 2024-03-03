@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-array-reduce */
 
-import { prisma } from "database/client"
+import { prisma } from "data/client"
 
 /**
  * group the array of strings by their common letters, ignoring numbers
@@ -114,6 +114,6 @@ export async function describeDiff(diff: string[]) {
 
   const places = await Promise.all(placeNamePromises)
   return listify(
-    places.map((place) => place?.IATA ?? place?.name ?? "Unknown Place"),
+    places.map((place) => place?.IATA ?? place?.name ?? "Unknown Place")
   )
 }

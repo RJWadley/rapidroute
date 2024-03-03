@@ -3,7 +3,7 @@
 import { styled } from "@linaria/react"
 import type { RouteType } from "@prisma/client"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import { allRouteTypes } from "database/helpers"
+import { allRouteTypes } from "data/helpers"
 import gsap from "gsap"
 import { useContext, useEffect, useRef, useState } from "react"
 
@@ -122,9 +122,7 @@ const Selection = styled.button`
   padding: 20px 30px 20px 60px;
   border-radius: 20px;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease-in-out,
-    font-weight 0.2s ease-in-out,
+  transition: background-color 0.2s ease-in-out, font-weight 0.2s ease-in-out,
     letter-spacing 0.2s ease-in-out;
   letter-spacing: 0.025em;
   position: relative;

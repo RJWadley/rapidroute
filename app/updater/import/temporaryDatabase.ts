@@ -1,4 +1,4 @@
-import { prisma } from "../../database/client"
+import { prisma } from "../../data/client"
 import mergeData from "../utils/mergeData"
 
 type CreateManyArgs<T extends keyof typeof prisma> =
@@ -48,7 +48,7 @@ export const updateRouteLeg = (leg: BareRouteLeg) => {
   const previousConnection = database.routeLeg.find(
     (otherLeg) =>
       otherLeg.fromPlaceId === leg.fromPlaceId &&
-      otherLeg.toPlaceId === leg.toPlaceId,
+      otherLeg.toPlaceId === leg.toPlaceId
   )
   if (previousConnection) {
     const index = database.routeLeg.indexOf(previousConnection)
@@ -63,7 +63,7 @@ export const updateRouteSpoke = (spoke: BareSpoke) => {
   const previousConnection = database.routeSpoke.find(
     (otherSpoke) =>
       otherSpoke.placeId === spoke.placeId &&
-      otherSpoke.routeId === spoke.routeId,
+      otherSpoke.routeId === spoke.routeId
   )
   if (previousConnection) {
     const index = database.routeSpoke.indexOf(previousConnection)
@@ -122,6 +122,6 @@ export const writeDatabase = async () => {
     {
       maxWait: 5 * 60 * 1000,
       timeout: 5 * 60 * 1000,
-    },
+    }
   )
 }

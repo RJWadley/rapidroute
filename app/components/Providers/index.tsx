@@ -1,9 +1,7 @@
-import { prisma } from "database/client"
+import { prisma } from "data/client"
 import type { ReactNode } from "react"
 
 import { DarkModeProvider } from "./DarkMode"
-import { MapSearchProvider } from "./MapSearchContext"
-import { NavigationProvider } from "./NavigationContext"
 import QueryProvider from "./QueryProvider"
 import { RoutingProvider } from "./RoutingContext"
 
@@ -22,11 +20,7 @@ export default async function Providers({ children }: ProvidersProps) {
   return (
     <QueryProvider>
       <RoutingProvider places={places}>
-        <NavigationProvider>
-          <MapSearchProvider>
-            <DarkModeProvider>{children}</DarkModeProvider>
-          </MapSearchProvider>
-        </NavigationProvider>
+        <DarkModeProvider>{children}</DarkModeProvider>
       </RoutingProvider>
     </QueryProvider>
   )

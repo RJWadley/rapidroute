@@ -1,5 +1,5 @@
 import type { PlaceType, RouteType } from "@prisma/client"
-import { prisma } from "database/client"
+import { prisma } from "data/client"
 
 import { getDistance } from "./distance"
 import getRouteTime from "./getRouteTime"
@@ -72,7 +72,7 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
           sortWeight: getRouteTime(
             getDistance(fromX, fromZ, toX, toZ),
             type,
-            numberOfGates,
+            numberOfGates
           ),
           route: routeId,
         },
@@ -84,7 +84,7 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
           sortWeight: getRouteTime(
             getDistance(fromX, fromZ, toX, toZ),
             type,
-            numberOfGates,
+            numberOfGates
           ),
           route: routeId,
         },
@@ -183,7 +183,7 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
               from.coordinate_x ?? Infinity,
               from.coordinate_z ?? Infinity,
               to.coordinate_x ?? Infinity,
-              to.coordinate_z ?? Infinity,
+              to.coordinate_z ?? Infinity
             ) < 200
               ? "MRT"
               : "Walk"
@@ -200,7 +200,7 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 
   return {
     edges: [...edges, ...spokeEdges, ...walkingEdges].filter((edge) =>
-      allowedMode.includes(edge.type),
+      allowedMode.includes(edge.type)
     ),
     places: allPlaces,
   }

@@ -3,8 +3,8 @@
 
 import { styled } from "@linaria/react"
 import { RoutingContext } from "components/Providers/RoutingContext"
-import type { PlaceSearchItem } from "database/usePlaceSearch"
-import usePlaceSearch from "database/usePlaceSearch"
+import type { PlaceSearchItem } from "data/usePlaceSearch"
+import usePlaceSearch from "data/usePlaceSearch"
 import { useContext, useState } from "react"
 import media from "utils/media"
 import useAdaptiveTextareaHeight from "utils/useAdaptiveTextareaHeight"
@@ -29,7 +29,7 @@ export default function SearchBox({ searchRole, places }: SearchBoxProps) {
   const { currentSearch, focusedItem, selectItem } = usePlaceSearch(
     input,
     [place, setPlaceId],
-    places,
+    places
   )
 
   return (

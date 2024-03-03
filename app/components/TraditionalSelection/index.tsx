@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react"
-import { prisma } from "database/client"
+import { prisma } from "data/client"
 import media from "utils/media"
 
 import AllowedModes from "./AllowedModes"
