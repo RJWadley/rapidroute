@@ -54,11 +54,11 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     let isMounted = true
     Assets.load(url)
       .then(async () =>
-        // give low zoom tiles a chance to load first
+        // give lower zoom tiles a chance to load first
         zoomLevel === 0
           ? null
           : new Promise((resolve) => {
-              setTimeout(resolve, 8)
+              setTimeout(resolve, zoomLevel)
             }),
       )
       .then(() => {

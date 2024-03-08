@@ -48,7 +48,7 @@ export default function Map({
       .finally(() => {
         gsap.to("canvas", {
           opacity: 1,
-          duration: 2,
+          duration: 1,
           ease: "power2.out",
         })
       })
@@ -74,7 +74,7 @@ export default function Map({
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 100lvh;
+  height: 100dvh;
 
   canvas {
     position: absolute;
