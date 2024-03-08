@@ -68,6 +68,8 @@ export default function useHideOverlapping({
   const viewport = useViewport()
 
   useEffect(() => {
+    updateNeeded = true
+
     if (skipCheck) {
       return
     }
@@ -99,8 +101,6 @@ export default function useHideOverlapping({
     } else {
       objects.splice(indexToInsert, 0, objectToInsert)
     }
-
-    updateNeeded = true
 
     return () => {
       const indexToRemove = objects.indexOf(objectToInsert)

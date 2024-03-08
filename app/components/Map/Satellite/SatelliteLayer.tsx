@@ -22,11 +22,11 @@ export default function SatelliteLayer({
 }: SatelliteProps) {
   const viewport = useViewport()
   const halfSize = worldSize / 2
-  const [world, setWorld] = useState<WorldValues>({
-    width: dynamic ? 100 : worldSize,
-    height: dynamic ? 100 : worldSize,
-    x: dynamic ? 0 : -halfSize,
-    y: dynamic ? 0 : -halfSize,
+  const [viewportBounds, setViewportBounds] = useState<WorldValues>({
+    width: dynamic ? 200 : worldSize,
+    height: dynamic ? 200 : worldSize,
+    x: dynamic ? -100 : -halfSize,
+    y: dynamic ? -100 : -halfSize,
   })
 
   /**
@@ -40,7 +40,7 @@ export default function SatelliteLayer({
       cooldown.current = true
       startTransition(() => {
         if (isMounted.current)
-          setWorld({
+          setViewportBounds({
             width: viewport.screenWidthInWorldPixels,
             height: viewport.screenHeightInWorldPixels,
             x: viewport.left,
@@ -62,11 +62,11 @@ export default function SatelliteLayer({
   useViewportMoved(onChanged)
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
-  const tilesVertical = Math.ceil(world.height / tileWidth) + 1
-  const tilesHorizontal = Math.ceil(world.width / tileWidth) + 1
+  const tilesVertical = Math.ceil(viewportBounds.height / tileWidth) + 1
+  const tilesHorizontal = Math.ceil(viewportBounds.width / tileWidth) + 1
 
-  const startingX = Math.floor(world.x / tileWidth)
-  const startingY = Math.floor(world.y / tileWidth)
+  const startingX = Math.floor(viewportBounds.x / tileWidth)
+  const startingY = Math.floor(viewportBounds.y / tileWidth)
 
   const tiles = useMemo(
     () =>

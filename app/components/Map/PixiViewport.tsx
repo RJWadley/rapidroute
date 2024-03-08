@@ -40,6 +40,30 @@ const DisplayViewport = PixiComponent("Viewport", {
     })
     viewport.drag().pinch().wheel().decelerate()
 
+    const check = () => {
+      if (viewport.screenHeight) {
+        viewport
+          .moveCenter(0, 0)
+          .setZoom(0.5)
+          .clampZoom({
+            maxHeight: worldSize * 2,
+            maxWidth: worldSize * 2,
+            minHeight: 100,
+            minWidth: 100,
+          })
+          .clamp({
+            top: -worldSize,
+            left: -worldSize,
+            bottom: worldSize,
+            right: worldSize,
+            underflow: "none",
+          })
+        app.ticker.remove(check)
+      }
+    }
+
+    app.ticker.add(check)
+
     setViewport(viewport)
     return viewport
   },
@@ -126,32 +150,6 @@ export function PixiViewport({
   height: number
 }) {
   const [viewport, setViewport] = useState<Viewport | null>(null)
-
-  /**
-   * on initial mount, move the center of the viewport to 0, 0
-   */
-  useEffect(() => {
-    if (viewport) {
-      setTimeout(() => {
-        viewport
-          .moveCenter(0, 0)
-          .setZoom(0.5)
-          .clampZoom({
-            maxHeight: worldSize * 2,
-            maxWidth: worldSize * 2,
-            minHeight: 100,
-            minWidth: 100,
-          })
-          .clamp({
-            top: -worldSize,
-            left: -worldSize,
-            bottom: worldSize,
-            right: worldSize,
-            underflow: "none",
-          })
-      }, 100)
-    }
-  }, [viewport])
 
   return (
     <ViewportContext.Provider value={viewport}>

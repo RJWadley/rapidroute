@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "components/Providers/QueryProvider"
 import type { City } from "data/useCities"
 import gsap from "gsap"
+import { Assets } from "pixi.js"
 import { useEffect } from "react"
 import useMeasure from "react-use-measure"
 import type { MarkersResponse } from "types/dynmapMarkers"
@@ -41,12 +42,17 @@ export default function Map({
   }, [])
 
   useEffect(() => {
-    setTimeout(() => {
-      gsap.to("canvas", {
-        opacity: 1,
-        duration: 2,
+    Assets.load(
+      "https://dynmap.minecartrapidtransit.net/main/tiles/new/flat/0_0/zzzzzzzz_0_0.png",
+    )
+      .finally(() => {
+        gsap.to("canvas", {
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+        })
       })
-    }, 100)
+      .catch(console.error)
   }, [])
 
   return (
@@ -68,8 +74,7 @@ export default function Map({
 const Wrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 800px;
+  height: 100lvh;
 
   canvas {
     position: absolute;

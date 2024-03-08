@@ -5,6 +5,7 @@ import { useRef, useState } from "react"
 
 import { useViewport, useViewportMoved } from "../PixiViewport"
 import { regular } from "../textStyles"
+import useHideOverlapping from "../useHideOverlapping"
 import { zoomToPoint } from "../zoomCamera"
 import MulticolorDot from "./MulticolorDot"
 
@@ -67,6 +68,13 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
   //     name.includes(`${activeItem} `))
 
   // const verticalSpacing = name.includes("\n") ? 2 : 3
+
+  useHideOverlapping({
+    item: textRef,
+    skipCheck: !hover,
+    name,
+    priority: "hover",
+  })
 
   return (
     <Container

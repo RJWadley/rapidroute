@@ -53,6 +53,14 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     if (skipThisTile) return
     let isMounted = true
     Assets.load(url)
+      .then(async () =>
+        // give low zoom tiles a chance to load first
+        zoomLevel === 0
+          ? null
+          : new Promise((resolve) => {
+              setTimeout(resolve, 8)
+            }),
+      )
       .then(() => {
         if (!isMounted) return null
         const newTexture = Texture.from(url)
@@ -68,7 +76,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     return () => {
       isMounted = false
     }
-  }, [skipThisTile, url])
+  }, [skipThisTile, url, zoomLevel])
 
   /**
    * animate in
@@ -79,18 +87,21 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     else gsap.set(spriteRef.current, { alpha: 1 })
   }, [texture, skipThisTile, needsAnimation])
 
-  if (!texture) return null
+  const textureToRender = textureCache[url] ?? texture
+
+  if (!textureToRender) return null
   if (skipThisTile) return null
+
   return (
     <Sprite
       key={url}
-      texture={texture}
+      texture={textureToRender}
       x={x}
       y={y + VERTICAL_OFFSET}
       width={tileWidth}
       height={tileWidth}
       ref={spriteRef}
-      alpha={0}
+      alpha={zoomLevel === 0 ? 1 : 0}
     />
   )
 }

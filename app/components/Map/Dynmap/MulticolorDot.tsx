@@ -1,7 +1,6 @@
-/* eslint-disable no-param-reassign */
-import { PixiComponent } from "@pixi/react"
+import { Sprite } from "@pixi/react"
 import type { IRenderer, Texture } from "pixi.js"
-import { Graphics, Sprite } from "pixi.js"
+import { Graphics } from "pixi.js"
 
 interface LineProps {
   /**
@@ -18,39 +17,27 @@ const textures: Record<string, Texture> = {}
 const BASE_WIDTH = 20
 const LAYER_WIDTH = 16
 
-const TYPE = "MulticolorDot"
-export default PixiComponent(TYPE, {
-  create: () => new Sprite(),
-  applyProps(
-    instance: Sprite,
-    previousProps: Partial<LineProps>,
-    { point, colors, visible, renderer }: LineProps,
-  ) {
-    const pointChanged =
-      previousProps.point?.x !== point.x || previousProps.point.z !== point.z
-    const colorsChanged =
-      previousProps.colors?.length !== colors.length ||
-      previousProps.colors.some((color, index) => color !== colors[index])
-    const visibleChanged = previousProps.visible !== visible
-
-    if (visibleChanged) {
-      instance.visible = visible ?? true
-    }
-    if (pointChanged || colorsChanged) {
-      // create a renderTexture, draw the graphics object to it, and then use that for the sprite texture
-      const key = colors.join(",")
-      let texture = textures[key]
-      if (!texture) texture = generateTexture(colors, renderer)
-      instance.texture = texture
-      instance.x = point.x
-      instance.y = point.z
-      instance.anchor.set(0.5, 0.5)
-      const width = BASE_WIDTH + (colors.length - 1) * LAYER_WIDTH
-      instance.width = width
-      instance.height = width
-    }
-  },
-})
+export default function MulticolorDot({
+  point,
+  colors,
+  visible = true,
+  renderer,
+}: LineProps) {
+  const key = colors.join(",")
+  const texture = textures[key] ?? generateTexture(colors, renderer)
+  const width = BASE_WIDTH + (colors.length - 1) * LAYER_WIDTH
+  return (
+    <Sprite
+      texture={texture}
+      x={point.x}
+      y={point.z}
+      width={width}
+      height={width}
+      visible={visible}
+      anchor={[0.5, 0.5]}
+    />
+  )
+}
 
 function generateTexture(colors: string[], renderer: IRenderer) {
   const graphics = new Graphics()

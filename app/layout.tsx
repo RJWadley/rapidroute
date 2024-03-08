@@ -4,7 +4,6 @@ import { styled } from "@linaria/react"
 import Providers from "components/Providers"
 import { Inter } from "next/font/google"
 
-import Header from "./components/Header"
 import invertLightness from "./utils/colors/invertLightness"
 import { css } from "./utils/css"
 import media from "./utils/media"
@@ -27,10 +26,7 @@ export default function RootLayout({
   return (
     <Providers>
       <Document lang="en" className={inter.className}>
-        <body>
-          <Header />
-          {children}
-        </body>
+        <body>{children}</body>
       </Document>
     </Providers>
   )
