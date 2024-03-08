@@ -3,15 +3,25 @@ import { styled } from "@linaria/react"
 import { Stage } from "@pixi/react"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClient } from "components/Providers/QueryProvider"
+import type { City } from "data/useCities"
+import gsap from "gsap"
 import { useEffect } from "react"
 import useMeasure from "react-use-measure"
+import type { MarkersResponse } from "types/dynmapMarkers"
 
-import Demo from "./Demo"
+import AllCities from "./Cities"
 import DynmapMarkers from "./Dynmap/DynmapMarkers"
+import PixiHooks from "./PixiHooks"
 import { PixiViewport } from "./PixiViewport"
 import Satellite from "./Satellite"
 
-export default function Map() {
+export default function Map({
+  initialMarkers,
+  initialCities,
+}: {
+  initialMarkers: MarkersResponse
+  initialCities: City[]
+}) {
   const [ref, bounds] = useMeasure()
   const { width, height } = bounds
 
@@ -30,14 +40,24 @@ export default function Map() {
     }
   }, [])
 
+  useEffect(() => {
+    setTimeout(() => {
+      gsap.to("canvas", {
+        opacity: 1,
+        duration: 2,
+      })
+    }, 100)
+  }, [])
+
   return (
     <Wrapper ref={ref}>
       <Stage width={width} height={height}>
         <QueryClientProvider client={queryClient}>
           <PixiViewport width={width} height={height}>
             <Satellite />
-            <DynmapMarkers />
-            <Demo />
+            <DynmapMarkers initialMarkers={initialMarkers} />
+            <AllCities initialCities={initialCities} />
+            <PixiHooks />
           </PixiViewport>
         </QueryClientProvider>
       </Stage>
@@ -54,5 +74,6 @@ const Wrapper = styled.div`
   canvas {
     position: absolute;
     inset: 0;
+    opacity: 0;
   }
 `

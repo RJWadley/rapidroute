@@ -32,7 +32,10 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
   const pointerIn = () => {
     setHover(true)
-    setTimeout(updateSize)
+    setTimeout(() => {
+      updateSize()
+      if (textRef.current) textRef.current.alpha = 1
+    })
     window.addEventListener("wheel", updateSize)
   }
   const pointerOut = () => {
@@ -91,6 +94,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
           ref={textRef}
           // anchor={isActiveItem ? [0.5, verticalSpacing] : [0.5, 1.5]}
           anchor={[0.5, 1.5]}
+          alpha={0}
         />
       )}
     </Container>

@@ -1,12 +1,12 @@
 import type { RouteType } from "@prisma/client"
+import { useQuery } from "@tanstack/react-query"
 
 import { findPath } from "./findPath"
-import { useQuery } from "@tanstack/react-query"
 
 export const usePath = (
   from: { id: string } | null | undefined,
   to: { id: string } | null | undefined,
-  allowedModes: RouteType[]
+  allowedModes: RouteType[],
 ) => {
   const { data, isLoading } = useQuery({
     queryKey: ["path", from, to, ...allowedModes],

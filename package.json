@@ -13,6 +13,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@koale/useworker": "4.0.2",
     "@linaria/babel-preset": "5.0.4",
     "@linaria/react": "6.1.0",
     "@material-symbols/svg-700": "0.16.0",

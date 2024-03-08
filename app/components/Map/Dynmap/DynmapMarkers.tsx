@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query"
 import { isMRTLine, type MarkersResponse } from "types/dynmapMarkers"
 import invertLightness from "utils/colors/invertLightness"
 
@@ -6,17 +5,12 @@ import MarkerLines from "./MarkerLines"
 import type { ColoredMarker } from "./MRTStops"
 import MRTStops from "./MRTStops"
 
-export default function DynmapMarkers() {
-  const { data } = useQuery<MarkersResponse>({
-    queryKey: [
-      "https://dynmap.minecartrapidtransit.net/main/tiles/_markers_/marker_new.json",
-    ],
-  })
-
-  console.log(data)
-
-  const markerSets = data?.sets
-  if (!markerSets) return null
+export default function DynmapMarkers({
+  initialMarkers,
+}: {
+  initialMarkers: MarkersResponse
+}) {
+  const markerSets = initialMarkers.sets
 
   const allStops: ColoredMarker[] = Object.keys(markerSets).flatMap((name) => {
     if (isMRTLine(name)) {
