@@ -1,8 +1,8 @@
-import { Sprite } from "@pixi/react"
-import { gsap } from "gsap"
+import { Sprite } from "@pixi/react-animated"
 import type { Sprite as PixiSprite } from "pixi.js"
 import { Assets, SCALE_MODES, Texture } from "pixi.js"
 import { useEffect, useRef, useState } from "react"
+import { Spring } from "react-spring"
 
 import { worldSize } from "../PixiViewport"
 import getTileUrl from "./getTileURL"
@@ -22,7 +22,6 @@ const textureCache: Record<string, Texture> = {}
 
 export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
   const [texture, setTexture] = useState<Texture>()
-  const [needsAnimation, setNeedsAnimation] = useState(true)
   const spriteRef = useRef<PixiSprite>(null)
 
   const tileWidth = 2 ** (8 - zoomLevel) * 32
@@ -46,7 +45,6 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
   useEffect(() => {
     if (textureCache[url]) {
       setTexture(textureCache[url])
-      setNeedsAnimation(false)
       return
     }
 
@@ -78,30 +76,25 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
     }
   }, [skipThisTile, url, zoomLevel])
 
-  /**
-   * animate in
-   */
-  useEffect(() => {
-    if (!texture || skipThisTile) return
-    if (needsAnimation) gsap.to(spriteRef.current, { alpha: 1 })
-    else gsap.set(spriteRef.current, { alpha: 1 })
-  }, [texture, skipThisTile, needsAnimation])
-
   const textureToRender = textureCache[url] ?? texture
 
   if (!textureToRender) return null
   if (skipThisTile) return null
 
   return (
-    <Sprite
-      key={url}
-      texture={textureToRender}
-      x={x}
-      y={y + VERTICAL_OFFSET}
-      width={tileWidth}
-      height={tileWidth}
-      ref={spriteRef}
-      alpha={zoomLevel === 0 ? 1 : 0}
-    />
+    <Spring from={{ alpha: zoomLevel === 0 ? 1 : 0 }} to={{ alpha: 1 }}>
+      {(props) => (
+        <Sprite
+          key={url}
+          texture={textureToRender}
+          x={x}
+          y={y + VERTICAL_OFFSET}
+          width={tileWidth}
+          height={tileWidth}
+          ref={spriteRef}
+          {...props}
+        />
+      )}
+    </Spring>
   )
 }
