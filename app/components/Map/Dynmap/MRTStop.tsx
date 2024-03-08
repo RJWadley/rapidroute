@@ -51,6 +51,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 
   const updateOpacityWhenClose = () => {
     if (viewport && containerRef.current) {
+      updateSize()
       const zoom = viewport.scale.x
 
       const opacity = Math.max(0, Math.min(1, 1 - (zoom - 2.75)))
@@ -80,13 +81,9 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
     <Container
       eventMode="static"
       onpointerenter={pointerIn}
-      onpointerout={pointerOut}
+      onmouseleave={pointerOut}
+      ontouchend={() => setTimeout(pointerOut, 3000)}
       onclick={onClick}
-      ontouchstart={pointerIn}
-      ontouchend={() => {
-        pointerOut()
-        onClick()
-      }}
       cursor="pointer"
       visible={visible}
       ref={containerRef}
