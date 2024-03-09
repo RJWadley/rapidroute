@@ -52,6 +52,9 @@ dependencies:
   comlink:
     specifier: 4.4.1
     version: 4.4.1
+  emulate-tab:
+    specifier: 1.2.1
+    version: 1.2.1
   flexsearch:
     specifier: 0.7.21
     version: 0.7.21(patch_hash=4otcfdgjjanfzw2qmiksh23bze)
@@ -61,6 +64,9 @@ dependencies:
   gsap:
     specifier: 3.12.5
     version: 3.12.5
+  minisearch:
+    specifier: 6.3.0
+    version: 6.3.0
   next:
     specifier: 14.1.1
     version: 14.1.1(@babel/core@7.23.5)(react-dom@18.2.0)(react@18.2.0)
@@ -5646,6 +5652,10 @@ packages:
     resolution: {integrity: sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==}
     dev: true
 
+  /emulate-tab@1.2.1:
+    resolution: {integrity: sha512-msvZDjWv3hTSpq/j0hqudE+Zthulpo1AuSAHcMqCgv2PmJbIXjWXDTx4sLrY3adMiHT4IXDT4cS9LMbwSlzScw==}
+    dev: false
+
   /encodeurl@1.0.2:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
     engines: {node: '>= 0.8'}
@@ -8624,6 +8634,10 @@ packages:
     resolution: {integrity: sha512-jYofLM5Dam9279rdkWzqHozUo4ybjdZmCsDHePy5V/PbBcVMiSZR97gmAy45aqi8CK1lG2ECd356FU86avfwUQ==}
     engines: {node: '>=16 || 14 >=14.17'}
     dev: true
+
+  /minisearch@6.3.0:
+    resolution: {integrity: sha512-ihFnidEeU8iXzcVHy74dhkxh/dn8Dc08ERl0xwoMMGqp4+LvRSCgicb+zGqWthVokQKvCSxITlh3P08OzdTYCQ==}
+    dev: false
 
   /mkdirp@0.5.6:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}

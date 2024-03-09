@@ -3,7 +3,7 @@
 import type { RouteType } from "@prisma/client"
 import { allRouteTypes } from "data/helpers"
 import { useSearchResults } from "data/search"
-import type { PlaceSearchItem } from "data/usePlaceSearch"
+import type { PlaceSearchItem } from "components/TraditionalSelection/usePlaceSearch"
 import type { ReactNode } from "react"
 import { createContext, useMemo, useState } from "react"
 import { useParamState } from "utils/localUtils/useParamState"
@@ -64,11 +64,11 @@ export function RoutingProvider({
   const [allowedModes, setAllowedModes] = useState<readonly RouteType[]>(
     // TODO fix this
     // allRouteTypes.filter((m) => m !== "spawnWarp"),
-    allRouteTypes
+    allRouteTypes,
   )
 
-  const fromResult = useSearchResults(from, places, (p) => JSON.stringify(p))[0]
-  const toResult = useSearchResults(to, places, (p) => JSON.stringify(p))[0]
+  const fromResult = useSearchResults(from, places)[0]
+  const toResult = useSearchResults(to, places)[0]
 
   const value = useMemo(() => {
     const exactFrom = places.find((p) => p.id === from)

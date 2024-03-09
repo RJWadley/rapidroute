@@ -1,5 +1,5 @@
 import { styled } from "@linaria/react"
-import type { PlaceSearchItem } from "data/usePlaceSearch"
+import type { PlaceSearchItem } from "components/TraditionalSelection/usePlaceSearch"
 import { gsap } from "gsap"
 import { useEffect, useRef } from "react"
 

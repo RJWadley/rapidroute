@@ -1,6 +1,6 @@
 import { styled } from "@linaria/react"
 import SearchResult from "components/SearchResult"
-import type { PlaceSearchItem } from "data/usePlaceSearch"
+import type { PlaceSearchItem } from "components/TraditionalSelection/usePlaceSearch"
 import media from "utils/media"
 
 interface SearchListProps {

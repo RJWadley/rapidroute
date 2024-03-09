@@ -37,6 +37,7 @@ const DisplayViewport = PixiComponent("Viewport", {
       worldHeight: halfSize,
       worldWidth: halfSize,
       events: app.renderer.events,
+      allowPreserveDragOutside: true,
     })
     viewport.drag().pinch().wheel().decelerate()
 

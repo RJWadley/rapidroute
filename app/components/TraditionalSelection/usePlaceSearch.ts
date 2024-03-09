@@ -1,7 +1,7 @@
 import { useEventListener } from "ahooks"
 import { useCallback, useEffect, useRef, useState } from "react"
 
-import { useSearchResults } from "./search"
+import { useSearchResults } from "../../data/search"
 
 export interface PlaceSearchItem {
   id: string
@@ -38,11 +38,7 @@ export default function usePlaceSearch(
   /**
    * search results for what the user has typed
    */
-  const currentSearch = useSearchResults(
-    userTyped,
-    [...places, location],
-    (place) => JSON.stringify(place),
-  )
+  const currentSearch = useSearchResults(userTyped, [...places, location])
 
   /**
    * true when the active item is about to update and this hook caused it

@@ -14,6 +14,7 @@ export const getStations = (set: MarkerSet) => {
     return {
       id: currentId.trim(),
       name: label,
+      placeCode: currentId.trim(),
       type: "MrtStation",
       worldName: "New",
       coordinate_x: x,

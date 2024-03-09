@@ -11,8 +11,11 @@ export default function useAdaptiveTextareaHeight(
     const updateSize = () => {
       if (textarea) {
         // calculate the height of the input box
+        const initialValue = textarea.value
+        textarea.value = initialValue.trim()
         textarea.style.height = ""
         textarea.style.height = `${textarea.scrollHeight}px`
+        textarea.value = initialValue
       }
     }
 
