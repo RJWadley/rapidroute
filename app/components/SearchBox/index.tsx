@@ -4,7 +4,8 @@ import { styled } from "@linaria/react"
 import HistorySVG from "@material-symbols/svg-700/sharp/history.svg"
 import SearchSVG from "@material-symbols/svg-700/sharp/search.svg"
 import type { Place } from "@prisma/client"
-import { useEffect, useState } from "react"
+import { useClickAway } from "ahooks"
+import { useEffect, useRef, useState } from "react"
 import { colors, sizes } from "style"
 import { runImport } from "updater"
 import useAdaptiveTextareaHeight from "utils/useAdaptiveTextareaHeight"
@@ -29,17 +30,19 @@ export default function SearchBox({
   initialPlaces: Place[]
 }) {
   const [input, setInput] = useState<HTMLTextAreaElement | null>(null)
+  const wrapper = useRef<HTMLDivElement>(null)
 
-  const { inputProps, searchResults } = useSearchBox({
+  const { inputProps, searchResults, onFocusLost } = useSearchBox({
     initialPlaces,
     initiallySelectedPlace: undefined,
     onItemSelected: (item) => console.log(item),
   })
 
   useAdaptiveTextareaHeight(input)
+  useClickAway(onFocusLost, wrapper)
 
   return (
-    <PositionAnchor>
+    <PositionAnchor ref={wrapper}>
       <Wrapper>
         <Input
           autoFocus

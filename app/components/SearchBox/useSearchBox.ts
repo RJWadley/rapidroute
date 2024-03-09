@@ -40,6 +40,10 @@ export default function useSearchBox({
    * props to be passed to the text area for event handling
    */
   inputProps: Partial<ComponentProps<"textarea">>
+  /**
+   * a function for the parent, to call an ancestor loses focus
+   */
+  onFocusLost: VoidFunction
 } {
   /**
    * the currently selected item in the list
@@ -81,6 +85,9 @@ export default function useSearchBox({
     currentIndex === -1 ? userTyped : getTextboxName(selectedPlace)
 
   return {
+    onFocusLost: () => {
+      if (document.hasFocus()) setIsOpen(false)
+    },
     searchResults: isOpen
       ? currentSearch.map((item) => ({
           ...item,
@@ -98,14 +105,6 @@ export default function useSearchBox({
           : getTextboxName(selectedPlace),
       onFocus: () => {
         setIsOpen(true)
-      },
-      onBlur: () => {
-        setTimeout(() => {
-          // is the page focused at all?
-          if (document.hasFocus()) {
-            setIsOpen(false)
-          }
-        }, 100)
       },
       onInput: (e) => {
         const newValue = e.currentTarget.value
