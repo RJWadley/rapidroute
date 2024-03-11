@@ -74,3 +74,5 @@ yarn-error.log
 
 #firebase
 serviceAccountKey.json
+.archive
+.next
