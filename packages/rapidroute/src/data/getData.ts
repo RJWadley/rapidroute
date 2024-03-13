@@ -145,9 +145,10 @@ export async function getPath<T extends DatabaseDataKeys>(
   }
 
   // some things are not in the database, so we need to check for that
-  if (type === "locations" && isCoordinate(itemName)) {
-    const xCoord = parseInt(itemName.split(", ")[0].split(": ")[1], 10)
-    const zCoord = parseInt(itemName.split(", ")[1], 10)
+  const coordData = isCoordinate(itemName)
+  if (type === "locations" && coordData) {
+    const xCoord = coordData.x
+    const zCoord = coordData.z
     const out: Location = {
       uniqueId: itemName,
       name: itemName,

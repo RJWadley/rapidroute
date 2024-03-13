@@ -51,11 +51,9 @@ export async function generateAllCoordinateEdges(
 ): Promise<GraphEdge[]> {
   const edges: GraphEdge[] = []
   // create coordinate edges if needed
-  if (isCoordinate(from)) {
-    const [x, z] = from
-      .replace("Coordinate:", "")
-      .split(",")
-      .map(n => Number(n))
+  const coordData = isCoordinate(from)
+  if (coordData) {
+    const { x, z } = coordData
     const coordinateEdges = await createCoordinateEdges(from, x, z, nodes)
     edges.push(...coordinateEdges)
 

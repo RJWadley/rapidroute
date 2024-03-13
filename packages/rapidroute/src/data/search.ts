@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { Index } from "flexsearch-ts"
 
 import { getAll } from "./getData"
+import isCoordinate from "./isCoordinate"
 
 const searchWorker =
   Index &&
@@ -42,9 +43,10 @@ export function search(query: string) {
     results = ["Spawn", ...results]
   }
 
-  if (/\d+[, ]+\d+/g.test(query)) {
-    const [xCoord, yCoord] = query.match(/\d+/g) || [0, 0]
-    results.unshift(`Coordinate: ${xCoord}, ${yCoord}`)
+  const coordData = isCoordinate(query)
+  if (coordData) {
+    const { x, z } = coordData
+    results.unshift(`Coordinate: ${x}, ${z}`)
   }
 
   if (
