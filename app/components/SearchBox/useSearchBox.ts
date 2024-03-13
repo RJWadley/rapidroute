@@ -7,12 +7,20 @@ import { useCallback, useEffect, useRef, useState } from "react"
 
 import { getTextboxName } from "./getTextboxName"
 
+const tryTab = () => {
+  try {
+    emulateTab()
+  } catch (error) {
+    if (document.activeElement instanceof HTMLElement) document.activeElement?.blur()
+  }
+}
+
 /**
  * This list will handle up and down arrow keys to navigate a list of items,
  * for example, you have a list of results and want the user to be able to
  * navigate the list with the arrow keys.
  */
-export default function useSearchBox({
+export default function useSearchBox<T extends Partial<Place>>({
   initialPlaces,
   initiallySelectedPlace,
   onItemSelected,
@@ -20,21 +28,21 @@ export default function useSearchBox({
   /**
    * the initial list of all places to search through
    */
-  initialPlaces: Place[]
+  initialPlaces: T[]
   /**
    * which place is initially selected (via search params)?
    */
-  initiallySelectedPlace?: Place
+  initiallySelectedPlace?: T
   /**
    * a callback when the selected place changes
    */
-  onItemSelected: (item: Place | undefined) => void
+  onItemSelected?: (item: T | undefined) => void
 }): {
   /**
    * the current search results, or undefined if the suggestions dropdown is not visible
    */
   searchResults:
-    | (Place & { selectItem: VoidFunction; highlighted: boolean })[]
+    | (T & { selectItem: VoidFunction; highlighted: boolean })[]
     | undefined
   /**
    * props to be passed to the text area for event handling
@@ -49,8 +57,8 @@ export default function useSearchBox({
    * the currently selected item in the list
    * (or undefined if no item selected)
    */
-  const [selectedPlace, setSelectedPlace] = useState<Place | undefined>(
-    initiallySelectedPlace,
+  const [selectedPlace, setSelectedPlace] = useState<T | undefined>(
+    initiallySelectedPlace
   )
   /**
    * what the user has physically typed into the input
@@ -64,10 +72,14 @@ export default function useSearchBox({
    * track if the dropdown should be open or closed
    */
   const [isOpen, setIsOpen] = useState(false)
+  /**
+   * the first time the component is focused, we don't want to show suggestions immediately
+   */
+  const isFirstRender = useRef(true)
 
-  const selectPlace = (place: Place | undefined) => {
+  const selectPlace = (place: T | undefined) => {
     setSelectedPlace(place)
-    onItemSelected(place)
+    onItemSelected?.(place)
   }
 
   const currentIndex = selectedPlace ? currentSearch.indexOf(selectedPlace) : -1
@@ -104,7 +116,11 @@ export default function useSearchBox({
           ? boxText?.trim()
           : getTextboxName(selectedPlace),
       onFocus: () => {
-        setIsOpen(true)
+        if (isFirstRender.current) {
+          isFirstRender.current = false
+        } else {
+          setIsOpen(true)
+        }
       },
       onInput: (e) => {
         const newValue = e.currentTarget.value
@@ -118,7 +134,7 @@ export default function useSearchBox({
           const newActiveItem = selectedPlace ?? currentSearch[0]
           selectPlace(newActiveItem)
           setIsOpen(false)
-          emulateTab()
+          tryTab()
         }
       },
       onKeyDown: (e) => {
@@ -142,7 +158,7 @@ export default function useSearchBox({
           case "Escape":
             e.preventDefault()
             setIsOpen(false)
-            emulateTab()
+            tryTab()
 
             break
         }
