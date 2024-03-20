@@ -11,9 +11,9 @@ export const useSearchResults = <T extends Partial<Place>>(
   const results = useMemo(
     () =>
       query
-        ? searcher.go(query, initialPlaces, {
+        ? searcher.go(query, initialPlaces.toReversed(), {
             keys: ["name", "IATA", "type", "worldName"],
-            limit: 20,
+            limit: 30,
           })
         : null,
     [query, initialPlaces]
