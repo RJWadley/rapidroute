@@ -58,6 +58,9 @@ dependencies:
   flexsearch:
     specifier: 0.7.21
     version: 0.7.21(patch_hash=4otcfdgjjanfzw2qmiksh23bze)
+  fuzzysort:
+    specifier: 2.0.4
+    version: 2.0.4
   google-spreadsheet:
     specifier: 4.1.1
     version: 4.1.1
@@ -6794,6 +6797,10 @@ packages:
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
     dev: true
+
+  /fuzzysort@2.0.4:
+    resolution: {integrity: sha512-Api1mJL+Ad7W7vnDZnWq5pGaXJjyencT+iKGia2PlHUcSsSzWwIQ3S1isiMpwpavjYtGd2FzhUIhnnhOULZgDw==}
+    dev: false
 
   /gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}

@@ -28,6 +28,7 @@
     "comlink": "4.4.1",
     "emulate-tab": "1.2.1",
     "flexsearch": "0.7.21",
+    "fuzzysort": "2.0.4",
     "google-spreadsheet": "4.1.1",
     "gsap": "3.12.5",
     "minisearch": "6.3.0",
