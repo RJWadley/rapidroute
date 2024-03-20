@@ -131,12 +131,14 @@ export default function useSearchBox<T extends Partial<Place>>({
         
         if (/^\s+$/.test(newValue)) {
           selectPlace(undefined)
-        } else if (newValue.includes("\n")) {
+        } else if (newValue.includes("\n") && currentSearch.length > 0) {
           const newActiveItem = selectedPlace ?? currentSearch[0]
           selectPlace(newActiveItem)
           setIsOpen(false)
           setUserTyped(newValue.trim())
           tryTab()
+        } else if (newValue.includes("\n")) {
+          setUserTyped(newValue.trim())
         }
       },
       onKeyDown: (e) => {

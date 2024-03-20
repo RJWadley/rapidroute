@@ -62,12 +62,12 @@ afterEach(() => {
 
 test("not focused without autoFocus prop", () => {
   runHook({ autoFocus: false })
-  expect(document.activeElement).not.toBe(getInput())
+  expect(document.activeElement === getInput()).toBeFalse()
 })
 
 test("autofocus works", async () => {
   runHook()
-  expect(document.activeElement).toBe(getInput())
+  expect(document.activeElement === getInput()).toBeTrue()
 })
 
 test("basic search works", async () => {
@@ -88,7 +88,7 @@ test("no search results shown before first keypress", async () => {
   const result = runHook()
 
   // expect focused
-  expect(document.activeElement).toBe(getInput())
+  expect(document.activeElement === getInput()).toBeTrue()
 
   // expect no results
   expect(result.current.searchResults).toBeUndefined()
@@ -117,14 +117,14 @@ test("typing then pressing tab moves on without selecting or changing input valu
   })
 
   await user.keyboard("a")
-  expect(document.activeElement).toBe(getInput())
+  expect(document.activeElement === getInput()).toBeTrue()
   expect(getInput().value).toBe("a")
   expect(selected).toBeUndefined()
 
   await user.keyboard("{tab}")
   result.current.onFocusLost()
 
-  expect(document.activeElement).not.toBe(getInput())
+  expect(document.activeElement === getInput()).toBeFalse()
   expect(selected).toBeUndefined()
   expect(result.current.searchResults).toBeUndefined()
   expect(getInput().value).toBe("a")
@@ -140,14 +140,14 @@ test("typing then pressing enter selects the first result", async () => {
   })
 
   await user.keyboard("a")
-  expect(document.activeElement).toBe(getInput())
+  expect(document.activeElement === getInput()).toBeTrue()
   expect(getInput().value).toBe("a")
   expect(selected).toBeUndefined()
 
   await user.keyboard("{Enter}")
   result.current.onFocusLost()
 
-  expect(document.activeElement).not.toBe(getInput())
+  expect(document.activeElement === getInput()).toBeFalse()
   expect(selected).toBe("a")
   expect(result.current.inputProps.value).toBe("thing a")
 })
@@ -207,7 +207,7 @@ test("results remain open when the whole document loses focus", async () => {
     .querySelectorAll("*")
     .forEach((el) => el instanceof HTMLElement && el.blur())
 
-  expect(document.activeElement).not.toBe(getInput())
+  expect(document.activeElement === getInput()).toBeFalse()
   expect(result.current.searchResults?.length).not.toBe(0)
   expect(result.current.searchResults?.length).not.toBeUndefined()
 })
@@ -224,26 +224,26 @@ test("up and down arrow keys move through results and update input value", async
   // first result exists
   expect(result.current.searchResults?.at(0)?.id).toBe("a")
   // first result not highlighted
-  expect(result.current.searchResults?.at(0)?.highlighted).toBe(false)
+  expect(result.current.searchResults?.at(0)?.highlighted).toBeFalse()
 
   await user.keyboard("{arrowdown}")
   // textbox correct
   expect(result.current.inputProps.value).toBe("thing a")
   // first result highlighted
-  expect(result.current.searchResults?.at(0)?.highlighted).toBe(true)
+  expect(result.current.searchResults?.at(0)?.highlighted).toBeTrue()
 
   await user.keyboard("{arrowdown}")
   expect(result.current.inputProps.value).toBe("thing b")
-  expect(result.current.searchResults?.at(1)?.highlighted).toBe(true)
+  expect(result.current.searchResults?.at(1)?.highlighted).toBeTrue()
 
   // and back up
   await user.keyboard("{arrowup}")
   expect(result.current.inputProps.value).toBe("thing a")
-  expect(result.current.searchResults?.at(0)?.highlighted).toBe(true)
+  expect(result.current.searchResults?.at(0)?.highlighted).toBeTrue()
 
   await user.keyboard("{arrowup}")
   expect(result.current.inputProps.value).toBe("t")
-  expect(result.current.searchResults?.at(0)?.highlighted).toBe(false)
+  expect(result.current.searchResults?.at(0)?.highlighted).toBeFalse()
 })
 
 test("before typing, arrow keys do nothing", async () => {
@@ -318,7 +318,7 @@ test("escape closes the dropdown and does not select", async () => {
   expect(selected).toBeUndefined()
 
   // and not focused
-  expect(document.activeElement).not.toBe(getInput())
+  expect(document.activeElement === getInput()).toBeFalse()
 })
 
 test("arrow keys, then escape closes the dropdown, leaves text in input, and selects", async () => {
@@ -441,10 +441,10 @@ test("pressing escape immediately after load blurs the input and keeps the dropd
   const user = userEvent.setup()
   const result = runHook()
 
-  expect(document.activeElement).toBe(getInput())
+  expect(document.activeElement === getInput()).toBeTrue()
   expect(result.current.searchResults).toBeUndefined()
   await user.keyboard("{Escape}")
-  expect(document.activeElement).not.toBe(getInput())
+  expect(document.activeElement === getInput()).toBeFalse()
   expect(result.current.searchResults).toBeUndefined()
 })
 
@@ -491,3 +491,19 @@ test("after selecting with new line, value does not maintain new line", async ()
   await user.keyboard("{arrowdown}{arrowup}{arrowup}")
   expect(result.current.inputProps.value).toBe("t")
 })
+
+test("when no results, pressing enter doesn't leave a new line, keeps input open, and input remains focused", async () => {
+  const user = userEvent.setup()
+  const result = runHook()
+
+  await user.keyboard("blah blah blah")
+  expect(result.current.searchResults?.length).toBe(0)
+
+  await user.keyboard("{Enter}")
+
+  expect(document.activeElement === getInput()).toBeTrue()
+  expect(result.current.searchResults?.length).toBe(0)
+  expect(result.current.inputProps.value).toBe("blah blah blah")
+})
+
+// test("exiting and entering multiple times leaves selected")

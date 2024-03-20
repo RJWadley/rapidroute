@@ -4,18 +4,17 @@ import { useEffect } from "react"
  * automatically update the size of the input box to fit the text
  */
 export default function useAdaptiveTextareaHeight(
-  textareaElement: HTMLTextAreaElement | null,
+  textareaElement: HTMLTextAreaElement | null
 ) {
   const textarea = textareaElement
   useEffect(() => {
     const updateSize = () => {
       if (textarea) {
-        // calculate the height of the input box
-        const initialValue = textarea.value
-        textarea.value = initialValue.replaceAll("\n", " ")
+        if (document.activeElement !== textarea)
+          textarea.value = textarea.value.replaceAll("\n", "").trim()
+        // measure height
         textarea.style.height = ""
         textarea.style.height = `${textarea.scrollHeight}px`
-        textarea.value = initialValue
       }
     }
 
