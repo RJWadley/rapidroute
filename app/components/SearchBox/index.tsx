@@ -4,7 +4,7 @@ import { styled } from "@linaria/react"
 import HistorySVG from "@material-symbols/svg-700/sharp/history.svg"
 import SearchSVG from "@material-symbols/svg-700/sharp/search.svg"
 import type { Place } from "@prisma/client"
-import { useClickAway } from "ahooks"
+import { useClickAway, useKeyPress } from "ahooks"
 import { useEffect, useRef, useState } from "react"
 import { colors, sizes } from "style"
 import { runImport } from "updater"
@@ -40,6 +40,8 @@ export default function SearchBox({
 
   useAdaptiveTextareaHeight(input)
   useClickAway(onFocusLost, wrapper)
+  useKeyPress("ctrl.k", () => input?.focus())
+  useKeyPress("meta.k", () => input?.focus())
 
   return (
     <PositionAnchor ref={wrapper}>
@@ -48,14 +50,6 @@ export default function SearchBox({
           autoFocus
           ref={setInput}
           placeholder="Search the MRT"
-          // disable spellcheck, autocorrect, and autocapitalize, grammarly, etc.
-          spellCheck={false}
-          autoCorrect="off"
-          autoCapitalize="off"
-          autoComplete="off"
-          data-gramm="false"
-          data-gramm_editor="false"
-          data-enable-grammarly="false"
           {...inputProps}
         />
         <SearchIcon />
@@ -100,7 +94,6 @@ const Input = styled.textarea`
   place-self: center;
   width: 100%;
   height: 20px;
-  height: 0;
   overflow-wrap: break-word;
 
   &:focus {

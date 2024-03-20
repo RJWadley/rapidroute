@@ -48,7 +48,8 @@ export default function useSearchBox<T extends Partial<Place>>({
   /**
    * props to be passed to the text area for event handling
    */
-  inputProps: Partial<ComponentProps<"textarea">>
+  inputProps: Partial<ComponentProps<"textarea">> &
+    Record<`data-${string}`, boolean>
   /**
    * a function for the parent, to call when a common ancestor of the text area and the results loses focus
    * (it can't be the input itself, because then we'd lose focus when clicking on a result)
@@ -164,9 +165,21 @@ export default function useSearchBox<T extends Partial<Place>>({
             setIsOpen(false)
             tryTab()
 
+            // needed in some browsers as well (for initial interaction)
+            e.currentTarget.blur()
+
             break
         }
       },
+
+      // disable spellcheck, auto correct, and autocapitalize, grammarly, etc.
+      spellCheck: false,
+      autoCorrect: "off",
+      autoCapitalize: "off",
+      autoComplete: "off",
+      "data-gramm": false,
+      "data-gramm_editor": false,
+      "data-enable-grammarly": false,
     },
   }
 }

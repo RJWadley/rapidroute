@@ -433,3 +433,14 @@ test("spaces at end of input are preserved (not trimmed)", async () => {
   await user.keyboard("thing ")
   expect(result.current.inputProps.value).toBe("thing ")
 })
+
+test("pressing escape immediately after load blurs the input and keeps the dropdown closed", async () => {
+  const user = userEvent.setup()
+  const result = runHook()
+
+  expect(document.activeElement).toBe(getInput())
+  expect(result.current.searchResults).toBeUndefined()
+  await user.keyboard("{Escape}")
+  expect(document.activeElement).not.toBe(getInput())
+  expect(result.current.searchResults).toBeUndefined()
+})
