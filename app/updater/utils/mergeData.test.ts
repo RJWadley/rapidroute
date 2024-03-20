@@ -2,6 +2,8 @@ import { expect, test } from "bun:test"
 
 import mergeData from "./mergeData"
 
+type WithKeys = Record<string, unknown> & { manual_keys: string[] }
+
 test("mergeData combines two objects", () => {
   const old = { a: 1, b: 2, manual_keys: [] }
   const nu = { b: 3, c: 4, manual_keys: [] }
@@ -21,8 +23,8 @@ test("mergeData does not change manual_keys", () => {
 })
 
 test("mergeData preserves keys from old data", () => {
-  const old = { a: 1, b: 1, manual_keys: ["a"] }
-  const nu = { a: 2, b: 2, manual_keys: [] }
+  const old: WithKeys = { a: 1, b: 1, manual_keys: ["a"] }
+  const nu: WithKeys = { a: 2, b: 2, manual_keys: [] }
 
   const result = mergeData(old, nu)
 
@@ -30,8 +32,8 @@ test("mergeData preserves keys from old data", () => {
 })
 
 test("mergeData doesn't overwrite a value with null", () => {
-  const old = { a: 1, b: 1, manual_keys: [] }
-  const nu = { a: null, b: 2, manual_keys: [] }
+  const old: WithKeys = { a: 1, b: 1, manual_keys: [] }
+  const nu: WithKeys = { a: null, b: 2, manual_keys: [] }
 
   const result = mergeData(old, nu)
 

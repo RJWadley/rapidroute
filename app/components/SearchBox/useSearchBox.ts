@@ -11,7 +11,8 @@ const tryTab = () => {
   try {
     emulateTab()
   } catch (error) {
-    if (document.activeElement instanceof HTMLElement) document.activeElement?.blur()
+    if (document.activeElement instanceof HTMLElement)
+      document.activeElement?.blur()
   }
 }
 
@@ -49,7 +50,8 @@ export default function useSearchBox<T extends Partial<Place>>({
    */
   inputProps: Partial<ComponentProps<"textarea">>
   /**
-   * a function for the parent, to call an ancestor loses focus
+   * a function for the parent, to call when a common ancestor of the text area and the results loses focus
+   * (it can't be the input itself, because then we'd lose focus when clicking on a result)
    */
   onFocusLost: VoidFunction
 } {
@@ -85,16 +87,21 @@ export default function useSearchBox<T extends Partial<Place>>({
   const currentIndex = selectedPlace ? currentSearch.indexOf(selectedPlace) : -1
 
   const move = (direction: "up" | "down") => {
+    // if not open, skip
+    if (!isOpen) return
+
     let nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1
 
+    // if we're before the first item, go to the end
     if (nextIndex < -1) nextIndex = currentSearch.length - 1
+    // if we're after the last item, go to the start
     if (nextIndex >= currentSearch.length) nextIndex = -1
     const nextItem = currentSearch[nextIndex]
     selectPlace(nextItem)
   }
 
   const boxText =
-    currentIndex === -1 ? userTyped : getTextboxName(selectedPlace)
+    currentIndex === -1 ? userTyped : getTextboxName(selectedPlace).trim()
 
   return {
     onFocusLost: () => {
@@ -111,10 +118,7 @@ export default function useSearchBox<T extends Partial<Place>>({
         }))
       : undefined,
     inputProps: {
-      value:
-        isOpen || !selectedPlace
-          ? boxText?.trim()
-          : getTextboxName(selectedPlace),
+      value: isOpen || !selectedPlace ? boxText : getTextboxName(selectedPlace),
       onFocus: () => {
         if (isFirstRender.current) {
           isFirstRender.current = false

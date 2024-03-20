@@ -101,6 +101,7 @@ const Input = styled.textarea`
   width: 100%;
   height: 20px;
   height: 0;
+  overflow-wrap: break-word;
 
   &:focus {
     outline: none;
