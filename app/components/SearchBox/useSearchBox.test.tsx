@@ -384,7 +384,10 @@ test("clicking a result then typing uses the new text value from that result", a
   expect(selected).toBe("b")
   expect(result.current.inputProps.value).toBe("thing b")
 
-  getInput().focus()
+  act(() => {
+    getInput().focus()
+  })
+
   await user.keyboard("a")
   expect(result.current.inputProps.value).toBe("thing ba")
 })
@@ -443,4 +446,48 @@ test("pressing escape immediately after load blurs the input and keeps the dropd
   await user.keyboard("{Escape}")
   expect(document.activeElement).not.toBe(getInput())
   expect(result.current.searchResults).toBeUndefined()
+})
+
+test("after selecting with new line and refocusing, dropdown should be visible", async () => {
+  const user = userEvent.setup()
+  const result = runHook()
+
+  await user.keyboard("t")
+  await user.keyboard("\n")
+  expect(result.current.inputProps.value).toBe("thing a")
+  expect(result.current.searchResults).toBeUndefined()
+
+  act(() => {
+    getInput().focus()
+  })
+
+  expect(result.current.searchResults).not.toBeUndefined()
+})
+
+test("when clicked, dropdown should open even if already focused (in case of autofocus)", async () => {
+  const user = userEvent.setup()
+  const result = runHook()
+  expect(result.current.searchResults).toBeUndefined()
+
+  act(() => {
+    getInput().click()
+  })
+
+  expect(result.current.searchResults).not.toBeUndefined()
+})
+
+test("after selecting with new line, value does not maintain new line", async () => {
+  const user = userEvent.setup()
+  const result = runHook()
+
+  await user.keyboard(" t ")
+  await user.keyboard("\n")
+  expect(result.current.inputProps.value).toBe("thing a")
+
+  act(() => {
+    getInput().focus()
+  })
+
+  await user.keyboard("{arrowdown}{arrowup}{arrowup}")
+  expect(result.current.inputProps.value).toBe("t")
 })

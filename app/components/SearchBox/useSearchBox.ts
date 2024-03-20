@@ -75,10 +75,6 @@ export default function useSearchBox<T extends Partial<Place>>({
    * track if the dropdown should be open or closed
    */
   const [isOpen, setIsOpen] = useState(false)
-  /**
-   * the first time the component is focused, we don't want to show suggestions immediately
-   */
-  const isFirstRender = useRef(true)
 
   const selectPlace = (place: T | undefined) => {
     setSelectedPlace(place)
@@ -121,24 +117,25 @@ export default function useSearchBox<T extends Partial<Place>>({
     inputProps: {
       value: isOpen || !selectedPlace ? boxText : getTextboxName(selectedPlace),
       onFocus: () => {
-        if (isFirstRender.current) {
-          isFirstRender.current = false
-        } else {
-          setIsOpen(true)
-        }
+        // this doesn't fire on autofocus btw, which is what we want
+        setIsOpen(true)
+      },
+      onClick: () => {
+        setIsOpen(true)
       },
       onInput: (e) => {
         const newValue = e.currentTarget.value
         setUserTyped(newValue)
         setSelectedPlace(undefined)
         setIsOpen(true)
-
+        
         if (/^\s+$/.test(newValue)) {
           selectPlace(undefined)
         } else if (newValue.includes("\n")) {
           const newActiveItem = selectedPlace ?? currentSearch[0]
           selectPlace(newActiveItem)
           setIsOpen(false)
+          setUserTyped(newValue.trim())
           tryTab()
         }
       },
