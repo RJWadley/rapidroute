@@ -120,7 +120,8 @@ export default function useSearchBox<T extends Partial<Place>>({
         // this doesn't fire on autofocus btw, which is what we want
         setIsOpen(true)
       },
-      onClick: () => {
+      onClick: (e) => {
+        e.currentTarget.select()
         setIsOpen(true)
       },
       onInput: (e) => {
