@@ -1,13 +1,13 @@
-import type { RouteType } from "@prisma/client"
 import type { Equal, Expect } from "(temp)/utils/type-tests"
+import type { RouteType } from "@prisma/client"
 
 export const allRouteTypes = [
-  "HelicopterFlight",
-  "MRT",
-  "PlaneFlight",
-  "SeaplaneFlight",
-  "Walk",
-  "SpawnWarp",
+	"HelicopterFlight",
+	"MRT",
+	"PlaneFlight",
+	"SeaplaneFlight",
+	"Walk",
+	"SpawnWarp",
 ] as const satisfies readonly RouteType[]
 
 /**

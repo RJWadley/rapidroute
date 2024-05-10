@@ -1,32 +1,28 @@
 import withLinaria from "next-with-linaria"
-
-/**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
- * for Docker builds.
- */
-await import("./app/env.mjs")
+import { withYak } from "next-yak/withYak"
 
 /** @type {import("next").NextConfig} */
 const config = {
-  /**
-   * @param {import("webpack").Configuration} webpackConfig
-   * @returns {import("webpack").Configuration}
-   */
-  webpack(webpackConfig) {
-    webpackConfig.module?.rules?.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-    })
+	/**
+	 * @param {import("webpack").Configuration} webpackConfig
+	 * @returns {import("webpack").Configuration}
+	 */
+	webpack(webpackConfig) {
+		webpackConfig.module?.rules?.push({
+			test: /\.svg$/,
+			use: ["@svgr/webpack"],
+		})
 
-    return webpackConfig
-  },
-  /**
-   * react strict mode breaks pixi stuff :(
-   */
-  reactStrictMode: false,
-  experimental: {
-    typedRoutes: true,
-  },
+		return webpackConfig
+	},
+
+	/**
+	 * react strict mode breaks pixi stuff :(
+	 */
+	reactStrictMode: false,
+	experimental: {
+		typedRoutes: true,
+	},
 }
 
-export default withLinaria(config)
+export default withYak(withLinaria(config))

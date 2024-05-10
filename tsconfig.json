@@ -1,40 +1,40 @@
 {
-  "compilerOptions": {
-    /* Base Options: */
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es2022",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    /* Strictness */
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    /* If transpiling with TypeScript: */
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
-    "outDir": "dist",
-    "sourceMap": true,
-    /* If your code runs in the DOM: */
-    "lib": ["es2022", "dom", "dom.iterable"],
-    /* added by me */
-    "baseUrl": "app",
-    /* Added by Next.js */
-    "noEmit": true,
-    "incremental": true,
-    "jsx": "preserve",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
-  },
-  "include": [
-    "app/(temp)/types/next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": ["node_modules", "next-env.d.ts"]
+	"compilerOptions": {
+		/* Base Options: */
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "es2022",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		/* Strictness */
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		/* If transpiling with TypeScript: */
+		"moduleResolution": "Bundler",
+		"module": "ESNext",
+		"outDir": "dist",
+		"sourceMap": true,
+		/* If your code runs in the DOM: */
+		"lib": ["es2022", "dom", "dom.iterable"],
+		/* added by me */
+		"baseUrl": "app",
+		/* Added by Next.js */
+		"noEmit": true,
+		"incremental": true,
+		"jsx": "preserve",
+		"plugins": [
+			{
+				"name": "next"
+			}
+		]
+	},
+	"include": [
+		"app/(temp)/types/next-env.d.ts",
+		".next/types/**/*.ts",
+		"**/*.ts",
+		"**/*.tsx"
+	],
+	"exclude": ["node_modules", "next-env.d.ts"]
 }

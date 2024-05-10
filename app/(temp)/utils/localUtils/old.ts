@@ -241,4 +241,4 @@
 
 // if (isBrowser) initLocals()
 
-export {}
+export type {}

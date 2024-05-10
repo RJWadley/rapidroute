@@ -1,13 +1,12 @@
 "use client"
 
-import type { Place } from "@prisma/client"
 import SearchBox from "(temp)/components/SearchBox"
-import { useState } from "react"
+import type { Place } from "@prisma/client"
 
 export default function SearchPane({
-  initialPlaces,
+	initialPlaces,
 }: {
-  initialPlaces: Place[]
+	initialPlaces: Place[]
 }) {
-  return <SearchBox initialPlaces={initialPlaces} />
+	return <SearchBox initialPlaces={initialPlaces} />
 }

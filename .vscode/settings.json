@@ -4,12 +4,6 @@
     /* recommended extension config */
     "template-string-converter.addBracketsToProps": true,
     "template-string-converter.autoRemoveTemplateString": true,
-    "stylelint.validate": [
-        "css",
-        "scss",
-        "javascriptreact",
-        "typescriptreact"
-    ],
     "cSpell.words": [
         "arrowdown",
         "arrowup",
@@ -17,6 +11,7 @@
         "gramm",
         "grammarly",
         "linaria",
+        "svgr",
         "Textbox"
     ],
     "cSpell.ignorePaths": [
@@ -33,7 +28,8 @@
     "typescript.tsdk": "./node_modules/typescript/lib",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "workbench.editor.customLabels.patterns": {
-        "**/index.tsx": "${dirname} / index.tsx"
+        "**/index.tsx": "${dirname} / index.tsx",
+        "**/page.tsx": "${dirname} / page.tsx"
     },
     "editor.linkedEditing": true,
     /* unsorted settings */
