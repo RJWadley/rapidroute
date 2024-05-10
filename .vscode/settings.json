@@ -1,0 +1,40 @@
+{
+    /* formatting */
+    "editor.defaultFormatter": "biomejs.biome",
+    /* recommended extension config */
+    "template-string-converter.addBracketsToProps": true,
+    "template-string-converter.autoRemoveTemplateString": true,
+    "stylelint.validate": [
+        "css",
+        "scss",
+        "javascriptreact",
+        "typescriptreact"
+    ],
+    "cSpell.words": [
+        "arrowdown",
+        "arrowup",
+        "gramm",
+        "grammarly",
+        "linaria",
+        "Textbox"
+    ],
+    "cSpell.ignorePaths": [
+        "package.json",
+        "package-lock.json",
+        "node_modules",
+        "vscode-extension",
+        ".git/objects",
+        ".vscode",
+        ".vscode-insiders",
+        "pnpm-lock.yaml"
+    ],
+    /* workbench settings */
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "workbench.editor.customLabels.patterns": {
+        "**/index.tsx": "${dirname} / index.tsx"
+    },
+    "editor.linkedEditing": true,
+    /* unsorted settings */
+    "": ""
+}
