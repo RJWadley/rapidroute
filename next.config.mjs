@@ -1,8 +1,18 @@
-import withLinaria from "next-with-linaria"
 import { withYak } from "next-yak/withYak"
 
 /** @type {import("next").NextConfig} */
 const config = {
+	// experimental: {
+	// 	turbo: {
+	// 		rules: {
+	// 			"*.svg": {
+	// 				loaders: ["@svgr/webpack"],
+	// 				as: "*.js",
+	// 			},
+	// 		},
+	// 	},
+	// },
+
 	/**
 	 * @param {import("webpack").Configuration} webpackConfig
 	 * @returns {import("webpack").Configuration}
@@ -20,9 +30,6 @@ const config = {
 	 * react strict mode breaks pixi stuff :(
 	 */
 	reactStrictMode: false,
-	experimental: {
-		typedRoutes: true,
-	},
 }
 
-export default withYak(withLinaria(config))
+export default withYak(config)
