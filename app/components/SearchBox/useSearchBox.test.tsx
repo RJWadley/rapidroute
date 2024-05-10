@@ -5,12 +5,12 @@ import {
   renderHook,
   screen,
 } from "@testing-library/react"
-
-import { test, expect, afterEach } from "bun:test"
 import userEvent from "@testing-library/user-event"
-import useSearchBox from "./useSearchBox"
+import { sleep } from "bun"
+import { afterEach, expect, test } from "bun:test"
 import { useEffect } from "react"
-import { userInfo } from "os"
+
+import useSearchBox from "./useSearchBox"
 
 const placesShim = [
   { id: "a", name: "thing a" },
@@ -27,7 +27,7 @@ function runHook(options?: Options) {
     options ?? {}
 
   const { rerender } = render(
-    <textarea autoFocus={autoFocus ?? true} placeholder="placeholder" />
+    <textarea autoFocus={autoFocus ?? true} placeholder="placeholder" />,
   )
 
   const { result } = renderHook(() => {
@@ -43,7 +43,7 @@ function runHook(options?: Options) {
           autoFocus={autoFocus ?? true}
           {...out.inputProps}
           placeholder="placeholder"
-        />
+        />,
       )
     }, [out])
 
@@ -53,8 +53,7 @@ function runHook(options?: Options) {
   return result
 }
 
-const getInput = () =>
-  screen.getByPlaceholderText("placeholder") as HTMLTextAreaElement
+const getInput = () => screen.getByPlaceholderText("placeholder") as HTMLTextAreaElement 
 
 afterEach(() => {
   cleanup()
@@ -437,6 +436,7 @@ test("spaces at end of input are preserved (not trimmed)", async () => {
   expect(result.current.inputProps.value).toBe("thing ")
 })
 
+// TODO test broken
 test("pressing escape immediately after load blurs the input and keeps the dropdown closed", async () => {
   const user = userEvent.setup()
   const result = runHook()
@@ -444,6 +444,12 @@ test("pressing escape immediately after load blurs the input and keeps the dropd
   expect(document.activeElement === getInput()).toBeTrue()
   expect(result.current.searchResults).toBeUndefined()
   await user.keyboard("{Escape}")
+
+  act(() => {
+    /* happy dom doesn't fire this event, but real browsers do */
+    result.current.inputProps.onFocus()
+  })
+
   expect(document.activeElement === getInput()).toBeFalse()
   expect(result.current.searchResults).toBeUndefined()
 })

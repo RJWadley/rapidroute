@@ -2,7 +2,7 @@
 import type { Place } from "@prisma/client"
 import { useSearchResults } from "data/search"
 import { emulateTab } from "emulate-tab"
-import type { ComponentProps, RefObject } from "react"
+import type { ComponentProps, FocusEvent, RefObject } from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 import { getTextboxName } from "./getTextboxName"
@@ -12,7 +12,7 @@ const tryTab = () => {
     emulateTab()
   } catch (error) {
     if (document.activeElement instanceof HTMLElement)
-      document.activeElement?.blur()
+      document.activeElement.blur()
   }
 }
 
@@ -38,30 +38,13 @@ export default function useSearchBox<T extends Partial<Place>>({
    * a callback when the selected place changes
    */
   onItemSelected?: (item: T | undefined) => void
-}): {
-  /**
-   * the current search results, or undefined if the suggestions dropdown is not visible
-   */
-  searchResults:
-    | (T & { selectItem: VoidFunction; highlighted: boolean })[]
-    | undefined
-  /**
-   * props to be passed to the text area for event handling
-   */
-  inputProps: Partial<ComponentProps<"textarea">> &
-    Record<`data-${string}`, boolean>
-  /**
-   * a function for the parent, to call when a common ancestor of the text area and the results loses focus
-   * (it can't be the input itself, because then we'd lose focus when clicking on a result)
-   */
-  onFocusLost: VoidFunction
-} {
+}) {
   /**
    * the currently selected item in the list
    * (or undefined if no item selected)
    */
   const [selectedPlace, setSelectedPlace] = useState<T | undefined>(
-    initiallySelectedPlace
+    initiallySelectedPlace,
   )
   /**
    * what the user has physically typed into the input
@@ -100,6 +83,14 @@ export default function useSearchBox<T extends Partial<Place>>({
   const boxText =
     currentIndex === -1 ? userTyped : getTextboxName(selectedPlace).trim()
 
+  /**
+   * if autofocus is true, browsers will fire focus then blur
+   * so we need to account for that
+   */
+  const firstFocus = useRef(
+    true
+  )
+
   return {
     onFocusLost: () => {
       if (document.hasFocus()) setIsOpen(false)
@@ -116,8 +107,15 @@ export default function useSearchBox<T extends Partial<Place>>({
       : undefined,
     inputProps: {
       value: isOpen || !selectedPlace ? boxText : getTextboxName(selectedPlace),
-      onFocus: () => {
-        // this doesn't fire on autofocus btw, which is what we want
+      onFocus: (e?: FocusEvent<HTMLTextAreaElement> 
+      ) => {
+        const input = e?.currentTarget
+        if (!input) return
+
+        if (input.autofocus && 
+          firstFocus.current)
+          {firstFocus.current = false
+          return}
         setIsOpen(true)
       },
       onClick: (e) => {
@@ -129,7 +127,7 @@ export default function useSearchBox<T extends Partial<Place>>({
         setUserTyped(newValue)
         setSelectedPlace(undefined)
         setIsOpen(true)
-        
+
         if (/^\s+$/.test(newValue)) {
           selectPlace(undefined)
         } else if (newValue.includes("\n") && currentSearch.length > 0) {
@@ -181,5 +179,22 @@ export default function useSearchBox<T extends Partial<Place>>({
       "data-gramm_editor": false,
       "data-enable-grammarly": false,
     },
+  } satisfies {
+    /**
+     * the current search results, or undefined if the suggestions dropdown is not visible
+     */
+    searchResults:
+      | (T & { selectItem: VoidFunction; highlighted: boolean })[]
+      | undefined
+    /**
+     * props to be passed to the text area for event handling
+     */
+    inputProps: Partial<ComponentProps<"textarea">> &
+      Record<`data-${string}`, boolean>
+    /**
+     * a function for the parent, to call when a common ancestor of the text area and the results loses focus
+     * (it can't be the input itself, because then we'd lose focus when clicking on a result)
+     */
+    onFocusLost: VoidFunction
   }
 }
