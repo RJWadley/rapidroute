@@ -7,11 +7,16 @@
     "template-string-converter.addBracketsToProps": true,
     "template-string-converter.autoRemoveTemplateString": true,
     "cSpell.words": [
+        "ahooks",
         "Dynmap",
+        "fuzzysort",
+        "gramm",
+        "grammarly",
         "helis",
         "lakeshore",
         "markerset",
         "nextjs",
+        "Textbox",
         "worldborder"
     ],
     "cSpell.ignorePaths": [

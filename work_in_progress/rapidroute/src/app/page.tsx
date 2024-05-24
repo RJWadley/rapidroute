@@ -1,19 +1,15 @@
-"use client"
+import styles from "./index.module.css"
+import SearchBox from "~/components/SearchBox"
+import { db } from "~/server/db"
 
-import { runImport } from "~/server/updater"
+export default async function Home() {
+	const places = await db.place.findMany()
 
-export default function Home() {
 	return (
-		<main>
-			hello world
-			<button
-				type="button"
-				onClick={() => {
-					runImport().then(console.log)
-				}}
-			>
-				run import
-			</button>
+		<main className={styles.main}>
+			<div className={styles.sidebar}>
+				<SearchBox places={places} />
+			</div>
 		</main>
 	)
 }

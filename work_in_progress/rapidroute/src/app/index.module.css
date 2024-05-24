@@ -1,0 +1,23 @@
+
+.main {
+    width: 100dvw;
+    height: 100dvh;
+    border: 1px solid red;
+    display: grid;
+    grid-template-areas: "sidebar results header" "sidebar results ."
+}
+
+.sidebar {
+    grid-area: sidebar;
+    border: 1px solid blue;
+}
+
+.results {
+    grid-area: results;
+    border: 1px solid green;
+}
+
+.header {
+    grid-area: header;
+    border: 1px solid orange;
+}
