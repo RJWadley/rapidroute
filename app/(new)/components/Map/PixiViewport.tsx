@@ -74,6 +74,7 @@ const DisplayViewport = PixiComponent("Viewport", {
 		}
 	},
 	willUnmount: (instance) => {
+		// biome-ignore lint/complexity/noForEach: <explanation>
 		instance.children.forEach((child) => {
 			child.destroy()
 		})
@@ -108,7 +109,8 @@ export const useViewportMoved = (callback: () => void) => {
 
 	// for the first five seconds, run the callback every 100ms
 	// this is to ensure that the viewport is fully initialized
-	useEffect(() => {
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+			useEffect(() => {
 		let isMounted = true
 		const onViewportMoved = () => {
 			if (isMounted && viewport && !viewport.destroyed) {
@@ -138,6 +140,7 @@ export const useViewportMoved = (callback: () => void) => {
  * trigger the movement callbacks manually
  */
 export const triggerMovementManually = () => {
+	// biome-ignore lint/complexity/noForEach: <explanation>
 	moveCallbacks.forEach((cb) => cb())
 }
 

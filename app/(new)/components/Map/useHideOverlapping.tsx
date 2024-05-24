@@ -67,6 +67,7 @@ export default function useHideOverlapping({
 	const [refreshSignal, setRefreshSignal] = useState(0)
 	const viewport = useViewport()
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		updateNeeded = true
 
@@ -185,6 +186,7 @@ export function useUpdateOverlapping() {
 			if (viewport.destroyed) return
 			const zoom = viewport.scale.x
 			viewport.dirty = false
+			// biome-ignore lint/complexity/noForEach: <explanation>
 			distances.forEach((distance) => {
 				const {
 					zoom: zoomLevelToCull,

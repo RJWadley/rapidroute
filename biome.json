@@ -18,7 +18,7 @@
 		}
 	},
 	"files": {
-		"ignore": ["pnpm-lock.yaml", ".vscode"]
+		"ignore": ["pnpm-lock.yaml", ".vscode", "app/temp"]
 	},
 	"vcs": {
 		"enabled": true,

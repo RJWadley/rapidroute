@@ -2,7 +2,7 @@
 import { queryClient } from "temp/components/Providers/QueryProvider"
 import type { City } from "temp/data/useCities"
 import type { MarkersResponse } from "temp/types/dynmapMarkers"
-import { styled } from "@linaria/react"
+import { styled } from "next-yak"
 import { Stage } from "@pixi/react"
 import { QueryClientProvider } from "@tanstack/react-query"
 import gsap from "gsap"
@@ -16,7 +16,7 @@ import PixiHooks from "./PixiHooks"
 import { PixiViewport } from "./PixiViewport"
 import Satellite from "./Satellite"
 
-export default function Map({
+export default function MapBase({
 	initialMarkers,
 	initialCities,
 }: {
@@ -72,11 +72,10 @@ export default function Map({
 }
 
 const Wrapper = styled.div`
-	position: relative;
 	width: 100%;
-	height: 100dvh;
+	height: 100%;
 
-	canvas {
+	& canvas {
 		position: absolute;
 		inset: 0;
 		opacity: 0;

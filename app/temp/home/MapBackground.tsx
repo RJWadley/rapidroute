@@ -1,4 +1,4 @@
-import Map from "temp/components/Map"
+import MinecraftMap from "(new)/components/Map"
 import UniversalImage from "temp/utils/UniversalImage"
 import { styled } from "@linaria/react"
 import BackgroundIMG from "components/Map/Placeholder.png"
@@ -12,7 +12,7 @@ export default function MapBackground() {
 			</BackgroundWrapper>
 			<MapWrapper>
 				<Suspense fallback={null}>
-					<Map />
+					<MinecraftMap />
 				</Suspense>
 			</MapWrapper>
 		</>

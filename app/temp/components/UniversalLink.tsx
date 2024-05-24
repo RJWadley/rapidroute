@@ -21,7 +21,7 @@ type NextLinkProps = ComponentProps<typeof Link>
 export type DynamicLinkMixin = "dynamicLinkMixin"
 
 type DynamicLinks =
-	`${__next_route_internal_types__.DynamicRoutes<DynamicLinkMixin>}${__next_route_internal_types__.Suffix}`
+	string
 
 type NextHREF = Exclude<NextLinkProps["href"], UrlObject>
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
