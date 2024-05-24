@@ -1,8 +1,8 @@
-import MinecraftMap from "(new)/components/Map"
-import UniversalImage from "temp/utils/UniversalImage"
-import { styled } from "@linaria/react"
-import BackgroundIMG from "components/Map/Placeholder.png"
-import { Suspense } from "react"
+import MinecraftMap from "(new)/components/Map";
+import UniversalImage from "temp/utils/UniversalImage";
+import { styled } from "@linaria/react";
+import BackgroundIMG from "components/Map/Placeholder.png";
+import { Suspense } from "react";
 
 export default function MapBackground() {
 	return (
@@ -16,7 +16,7 @@ export default function MapBackground() {
 				</Suspense>
 			</MapWrapper>
 		</>
-	)
+	);
 }
 
 const BackgroundWrapper = styled.div`
@@ -27,7 +27,7 @@ const BackgroundWrapper = styled.div`
 	height: 100dvh;
 	overflow: clip;
 	pointer-events: none;
-`
+`;
 
 const Background = styled(UniversalImage)`
 	width: auto;
@@ -41,7 +41,7 @@ const Background = styled(UniversalImage)`
 	transform: translate(-50%, -50%);
 	filter: blur(10px);
 	border-radius: 100px;
-`
+`;
 
 const MapWrapper = styled.div`
 	position: fixed;
@@ -49,4 +49,4 @@ const MapWrapper = styled.div`
 	left: 0;
 	width: 100%;
 	height: 100lvh;
-`
+`;

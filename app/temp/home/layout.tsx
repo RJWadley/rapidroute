@@ -1,27 +1,27 @@
-import "the-new-css-reset/css/reset.css"
+import "the-new-css-reset/css/reset.css";
 
-import Providers from "temp/components/Providers"
-import { styled } from "@linaria/react"
-import { Inter } from "next/font/google"
+import Providers from "temp/components/Providers";
+import { styled } from "@linaria/react";
+import { Inter } from "next/font/google";
 
-import invertLightness from "../utils/colors/invertLightness"
-import { css } from "../utils/css"
-import media from "../utils/media"
+import invertLightness from "../utils/colors/invertLightness";
+import { css } from "../utils/css";
+import media from "../utils/media";
 
 export const metadata = {
 	title: "MRT RapidRoute",
 	description: "A route finder for the Minecart Rapid Transit Server",
-}
+};
 
 const inter = Inter({
 	subsets: ["latin"],
 	display: "swap",
-})
+});
 
 export default function RootLayout({
 	children,
 }: {
-	children: React.ReactNode
+	children: React.ReactNode;
 }) {
 	return (
 		<Providers>
@@ -29,7 +29,7 @@ export default function RootLayout({
 				<body>{children}</body>
 			</Document>
 		</Providers>
-	)
+	);
 }
 
 const darkColors = css`
@@ -57,7 +57,7 @@ const darkColors = css`
 	--glassy-default-card-background: #333c;
 	--glassy-mid-background: #444c;
 	--glassy-dark-background: #555c;
-`
+`;
 
 const lightColors = css`
 	--default-card-background: #eee;
@@ -84,7 +84,7 @@ const lightColors = css`
 	--glassy-default-card-background: #eeec;
 	--glassy-mid-background: #dddc;
 	--glassy-dark-background: #cccc;
-`
+`;
 
 const Document = styled.html`
 	background-color: var(--page-background);
@@ -129,4 +129,4 @@ const Document = styled.html`
 	*:focus-visible {
 		outline: 2px solid #2f6fdb88;
 	}
-`
+`;

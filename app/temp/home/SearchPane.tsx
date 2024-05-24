@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import SearchBox from "temp/components/SearchBox"
-import type { Place } from "@prisma/client"
+import SearchBox from "(new)/components/SearchBox";
+import type { Place } from "@prisma/client";
 
 export default function SearchPane({
 	initialPlaces,
 }: {
-	initialPlaces: Place[]
+	initialPlaces: Place[];
 }) {
-	return <SearchBox initialPlaces={initialPlaces} />
+	return <SearchBox initialPlaces={initialPlaces} />;
 }

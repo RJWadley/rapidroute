@@ -1,6 +1,6 @@
-import type { ResultType } from "temp/pathfinding/getRoutes"
+import type { ResultType } from "temp/pathfinding/getRoutes";
 
-import { getResultDiff } from "./diff"
+import { getResultDiff } from "./diff";
 
 /**
  * if, when comparing a route to the one before and after it, there is only a single difference
@@ -13,43 +13,43 @@ import { getResultDiff } from "./diff"
 export default function removeExtras(results: ResultType[]) {
 	// compare each result to the next and previous
 
-	const indexesToRemove: number[] = []
+	const indexesToRemove: number[] = [];
 	for (let i = 1; i < results.length - 1; i += 1) {
-		const prev = results[i - 1]
-		const curr = results[i]
-		const next = results[i + 1]
-		if (!prev || !curr || !next) throw new Error("invalid results")
+		const prev = results[i - 1];
+		const curr = results[i];
+		const next = results[i + 1];
+		if (!prev || !curr || !next) throw new Error("invalid results");
 
 		const beforeDiff = getResultDiff([
 			prev.path.map((edge) => edge.id),
 			curr.path.map((edge) => edge.id),
-		])
+		]);
 		const afterDiff = getResultDiff([
 			curr.path.map((edge) => edge.id),
 			next.path.map((edge) => edge.id),
-		])
+		]);
 
 		const beforeIndex = curr.path.findIndex(
 			(edge) => edge.id === beforeDiff[1]?.[0],
-		)
+		);
 		const afterIndex = curr.path.findIndex(
 			(edge) => edge.id === afterDiff[0]?.[0],
-		)
+		);
 
 		// if the current result has a single difference
 		if (beforeDiff[1]?.length === 1 && afterDiff[0]?.length === 1) {
 			// and the index of that difference is i in the previous result and i+1 in the next result
 			if (beforeIndex + 1 === afterIndex) {
 				// then we can assume that the current result is a duplicate
-				indexesToRemove.push(i)
+				indexesToRemove.push(i);
 			}
 			// and also vice versa
 			if (beforeIndex === afterIndex + 1) {
-				indexesToRemove.push(i)
+				indexesToRemove.push(i);
 			}
 		}
 	}
 
 	// remove the duplicates
-	return results.filter((_, i) => !indexesToRemove.includes(i))
+	return results.filter((_, i) => !indexesToRemove.includes(i));
 }

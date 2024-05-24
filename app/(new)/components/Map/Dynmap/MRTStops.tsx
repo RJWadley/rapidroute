@@ -1,6 +1,6 @@
+import { useState } from "react"
 import { getDistance } from "temp/pathfinding/distance"
 import type { Marker } from "temp/types/dynmapMarkers"
-import { useState } from "react"
 import { useDeepCompareMemo } from "use-deep-compare"
 
 import { useViewport, useViewportMoved } from "../PixiViewport"

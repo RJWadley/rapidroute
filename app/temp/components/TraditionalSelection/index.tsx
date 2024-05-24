@@ -1,10 +1,10 @@
-import { prisma } from "temp/data/client"
-import media from "temp/utils/media"
-import { styled } from "@linaria/react"
+import { prisma } from "temp/data/client";
+import media from "temp/utils/media";
+import { styled } from "@linaria/react";
 
-import AllowedModes from "./AllowedModes"
-import SearchBox from "./SearchBox"
-import SwapButton from "./SwapButton"
+import AllowedModes from "./AllowedModes";
+import SearchBox from "./SearchBox";
+import SwapButton from "./SwapButton";
 
 export default async function Selection() {
 	const places = await prisma.place.findMany({
@@ -12,7 +12,7 @@ export default async function Selection() {
 			id: true,
 			name: true,
 		},
-	})
+	});
 
 	return (
 		<div>
@@ -23,7 +23,7 @@ export default async function Selection() {
 			</SearchContainer>
 			<AllowedModes />
 		</div>
-	)
+	);
 }
 
 const SearchContainer = styled.div`
@@ -67,4 +67,4 @@ const SearchContainer = styled.div`
 			text-align: left;
 		}
 	}
-`
+`;

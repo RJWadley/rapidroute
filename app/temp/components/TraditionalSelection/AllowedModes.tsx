@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { RoutingContext } from "temp/components/Providers/RoutingContext"
-import { allRouteTypes } from "temp/data/helpers"
-import { styled } from "@linaria/react"
-import type { RouteType } from "@prisma/client"
-import gsap from "gsap"
-import { useContext, useEffect, useRef, useState } from "react"
+import { RoutingContext } from "temp/components/Providers/RoutingContext";
+import { allRouteTypes } from "temp/data/helpers";
+import { styled } from "@linaria/react";
+import type { RouteType } from "@prisma/client";
+import gsap from "gsap";
+import { useContext, useEffect, useRef, useState } from "react";
 
 export default function AllowedModes() {
-	const { allowedModes, setAllowedModes } = useContext(RoutingContext)
-	const [showFilters, setShowFilters] = useState(false)
-	const filtersRef = useRef<HTMLDivElement>(null)
-	const { to, from } = useContext(RoutingContext)
+	const { allowedModes, setAllowedModes } = useContext(RoutingContext);
+	const [showFilters, setShowFilters] = useState(false);
+	const filtersRef = useRef<HTMLDivElement>(null);
+	const { to, from } = useContext(RoutingContext);
 
 	const toggleMode = (mode: RouteType) => {
 		if (allowedModes.includes(mode)) {
-			setAllowedModes(allowedModes.filter((m) => m !== mode))
+			setAllowedModes(allowedModes.filter((m) => m !== mode));
 		} else {
-			setAllowedModes([...allowedModes, mode])
+			setAllowedModes([...allowedModes, mode]);
 		}
-	}
+	};
 
 	/**
 	 * animate in and out the filters
@@ -29,7 +29,7 @@ export default function AllowedModes() {
 			height: showFilters ? "auto" : 0,
 			duration: showFilters ? 1 : 2,
 			ease: showFilters ? "power3.out" : "power3.inOut",
-		})
+		});
 
 		if (filtersRef.current?.children) {
 			const t2 = gsap.to(filtersRef.current.children, {
@@ -38,17 +38,17 @@ export default function AllowedModes() {
 				pointerEvents: showFilters ? "all" : "none",
 				stagger: showFilters ? 0.1 : -0.1,
 				ease: showFilters ? "power2.out" : "power2.in",
-			})
+			});
 
 			return () => {
-				t1.kill()
-				t2.kill()
-			}
+				t1.kill();
+				t2.kill();
+			};
 		}
 		return () => {
-			t1.kill()
-		}
-	}, [showFilters])
+			t1.kill();
+		};
+	}, [showFilters]);
 
 	return (
 		<Wrapper>
@@ -70,38 +70,38 @@ export default function AllowedModes() {
 				))}
 			</Filters>
 		</Wrapper>
-	)
+	);
 }
 
 const getModeDisplayName = (mode: RouteType) => {
 	switch (mode) {
 		case "MRT":
-			return "MRT"
+			return "MRT";
 
 		case "PlaneFlight":
-			return "Flight"
+			return "Flight";
 
 		case "HelicopterFlight":
-			return "Helicopter"
+			return "Helicopter";
 
 		case "SeaplaneFlight":
-			return "Seaplane"
+			return "Seaplane";
 
 		case "SpawnWarp":
-			return "Warps"
+			return "Warps";
 
 		case "Walk":
-			return "Walk"
+			return "Walk";
 
 		default:
-			mode satisfies never
+			mode satisfies never;
 	}
-}
+};
 
 const Wrapper = styled.div`
 	max-width: 1000px;
 	margin: 0 auto;
-`
+`;
 
 const FilterButton = styled.button`
 	margin: 10px 30px;
@@ -109,13 +109,13 @@ const FilterButton = styled.button`
 	font-weight: 300;
 	color: var(--low-contrast-text);
 	cursor: pointer;
-`
+`;
 
 const Filters = styled.div`
 	display: flex;
 	gap: 20px;
 	flex-wrap: wrap;
-`
+`;
 
 const Selection = styled.button`
 	background-color: var(--default-card-background);
@@ -176,4 +176,4 @@ const Selection = styled.button`
 			rotate: 45deg;
 		}
 	}
-`
+`;

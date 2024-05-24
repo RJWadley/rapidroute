@@ -1,10 +1,10 @@
-import { prisma } from "temp/data/client"
-import type { Place, Route } from "@prisma/client"
+import { prisma } from "temp/data/client";
+import type { Place, Route } from "@prisma/client";
 
 export interface PrettyEdge {
-	from: Place
-	to: Place
-	routes: Route[]
+	from: Place;
+	to: Place;
+	routes: Route[];
 }
 
 export const getPrettyEdge = async (
@@ -13,10 +13,10 @@ export const getPrettyEdge = async (
 ): Promise<PrettyEdge> => {
 	const fromPlace = await prisma.place.findUniqueOrThrow({
 		where: { id: fromId },
-	})
+	});
 	const toPlace = await prisma.place.findUniqueOrThrow({
 		where: { id: toId },
-	})
+	});
 
 	const relevantRoutes = await prisma.route.findMany({
 		where: {
@@ -37,11 +37,11 @@ export const getPrettyEdge = async (
 				},
 			],
 		},
-	})
+	});
 
 	return {
 		from: fromPlace,
 		to: toPlace,
 		routes: relevantRoutes,
-	}
-}
+	};
+};

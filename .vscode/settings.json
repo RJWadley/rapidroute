@@ -5,6 +5,7 @@
     "template-string-converter.addBracketsToProps": true,
     "template-string-converter.autoRemoveTemplateString": true,
     "cSpell.words": [
+        "ahooks",
         "arrowdown",
         "arrowup",
         "Dynmap",

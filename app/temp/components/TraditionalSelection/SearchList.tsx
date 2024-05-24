@@ -1,12 +1,12 @@
-import SearchResult from "temp/components/SearchResult"
-import type { PlaceSearchItem } from "temp/components/TraditionalSelection/usePlaceSearch"
-import media from "temp/utils/media"
-import { styled } from "@linaria/react"
+import SearchResult from "temp/components/SearchResult";
+import type { PlaceSearchItem } from "temp/components/TraditionalSelection/usePlaceSearch";
+import media from "temp/utils/media";
+import { styled } from "@linaria/react";
 
 interface SearchListProps {
-	items: PlaceSearchItem[] | undefined
-	focusedItem: PlaceSearchItem | undefined
-	selectItem: (index: PlaceSearchItem) => void
+	items: PlaceSearchItem[] | undefined;
+	focusedItem: PlaceSearchItem | undefined;
+	selectItem: (index: PlaceSearchItem) => void;
 }
 
 export default function SearchList({
@@ -30,7 +30,7 @@ export default function SearchList({
 				</Wrapper>
 			)}
 		</>
-	)
+	);
 }
 
 const Wrapper = styled.div`
@@ -54,4 +54,4 @@ const Wrapper = styled.div`
 		border-radius: 25px;
 		transform: translateY(-25px);
 	}
-`
+`;

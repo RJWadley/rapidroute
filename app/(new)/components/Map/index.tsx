@@ -1,10 +1,10 @@
-import { getCities } from "temp/data/useCities"
-import type { MarkersResponse } from "temp/types/dynmapMarkers"
+import { styled } from "next-yak"
 import dynamic from "next/dynamic"
 import { Suspense } from "react"
-import BackgroundIMG from "./Placeholder.png"
-import { styled } from "next-yak"
+import { getCities } from "temp/data/useCities"
+import type { MarkersResponse } from "temp/types/dynmapMarkers"
 import UniversalImage from "temp/utils/UniversalImage"
+import BackgroundIMG from "./Placeholder.png"
 
 const MapBase = dynamic(() => import("./MapBase").then((mod) => mod.default), {
 	ssr: false,
@@ -50,7 +50,9 @@ const Background = styled(UniversalImage)`
 
 const MapWrapper = styled.div`
 	overflow: clip;
-	position: relative;
-	width: 400px;
-	height: 400px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 `

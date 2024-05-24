@@ -1,10 +1,10 @@
-import type { UrlObject } from "node:url"
+import type { UrlObject } from "node:url";
 
-import type { RedirectType } from "next/dist/client/components/redirect"
-import Link from "next/link"
-import type { ComponentProps, ElementRef, MouseEventHandler } from "react"
+import type { RedirectType } from "next/dist/client/components/redirect";
+import Link from "next/link";
+import type { ComponentProps, ElementRef, MouseEventHandler } from "react";
 
-type NextLinkProps = ComponentProps<typeof Link>
+type NextLinkProps = ComponentProps<typeof Link>;
 
 /**
  * this makes working with dynamic routes a bit more ergonomic.
@@ -18,50 +18,49 @@ type NextLinkProps = ComponentProps<typeof Link>
  * while also allowing us to use it as a string. you may have
  * to cast into this type at times in API code
  */
-export type DynamicLinkMixin = "dynamicLinkMixin"
+export type DynamicLinkMixin = "dynamicLinkMixin";
 
-type DynamicLinks =
-	string
+type DynamicLinks = string;
 
-type NextHREF = Exclude<NextLinkProps["href"], UrlObject>
+type NextHREF = Exclude<NextLinkProps["href"], UrlObject>;
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-export type ValidLink = DynamicLinks | NextHREF | null
+export type ValidLink = DynamicLinks | NextHREF | null;
 
 type BaseLinkProps = Omit<NextLinkProps, "href" | "as"> &
-	ComponentProps<"button">
+	ComponentProps<"button">;
 
 interface ButtonProps extends BaseLinkProps {
 	/**
 	 * what should happen when the button is clicked?
 	 */
-	onClick?: MouseEventHandler
+	onClick?: MouseEventHandler;
 	/**
 	 * what type of button is this?
 	 */
-	type: "submit" | "button" | "reset"
+	type: "submit" | "button" | "reset";
 	/**
 	 * forward a ref to the button
 	 */
-	forwardRef?: React.RefObject<ElementRef<"button">>
-	href?: undefined
+	forwardRef?: React.RefObject<ElementRef<"button">>;
+	href?: undefined;
 }
 
 interface AnchorProps extends BaseLinkProps {
 	/**
 	 * where should the link navigate to?
 	 */
-	href: ValidLink
+	href: ValidLink;
 	/**
 	 * forward a ref to the link or anchor tag
 	 */
-	forwardRef?: React.RefObject<ElementRef<"a">>
-	onClick?: undefined
-	type?: undefined
+	forwardRef?: React.RefObject<ElementRef<"a">>;
+	onClick?: undefined;
+	type?: undefined;
 }
 
-export type UniversalLinkProps = ButtonProps | AnchorProps
+export type UniversalLinkProps = ButtonProps | AnchorProps;
 
-export type UniversalLinkRef = ElementRef<"a"> & ElementRef<"button">
+export type UniversalLinkRef = ElementRef<"a"> & ElementRef<"button">;
 
 /**
  * to prevent pollution of the DOM, we only want to pass certain props
@@ -76,7 +75,7 @@ const propsToPreserve = [
 	/^aria.*$/,
 	/^role$/,
 	/^data.*$/,
-]
+];
 
 export default function UniversalLink({
 	href,
@@ -90,7 +89,7 @@ export default function UniversalLink({
 		Object.entries(unfilteredProps).filter(([key]) =>
 			propsToPreserve.some((regex) => regex.test(key)),
 		),
-	)
+	);
 
 	if (type) {
 		return (
@@ -105,7 +104,7 @@ export default function UniversalLink({
 			>
 				{children}
 			</button>
-		)
+		);
 	}
 
 	return href ? (
@@ -116,7 +115,7 @@ export default function UniversalLink({
 		<a {...props} ref={forwardRef} style={style}>
 			{children}
 		</a>
-	)
+	);
 }
 
 // modify redirect function from 'next/navigation'
@@ -125,5 +124,5 @@ declare module "next/navigation" {
 	export function redirect(
 		url: NonNullable<ValidLink>,
 		type?: RedirectType,
-	): never
+	): never;
 }

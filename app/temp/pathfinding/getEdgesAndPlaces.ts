@@ -1,23 +1,23 @@
-import { prisma } from "temp/data/client"
-import type { PlaceType, RouteType } from "@prisma/client"
+import { prisma } from "temp/data/client";
+import type { PlaceType, RouteType } from "@prisma/client";
 
-import { getDistance } from "./distance"
-import getRouteTime from "./getRouteTime"
+import { getDistance } from "./distance";
+import getRouteTime from "./getRouteTime";
 
 export interface GraphEdge {
-	from: string
-	to: string
-	weight: number
-	route?: string
-	type: RouteType
-	sortWeight?: number
+	from: string;
+	to: string;
+	weight: number;
+	route?: string;
+	type: RouteType;
+	sortWeight?: number;
 }
 
 export interface GraphPlace {
-	type: PlaceType
-	id: string
-	coordinate_x: number | null
-	coordinate_z: number | null
+	type: PlaceType;
+	id: string;
+	coordinate_x: number | null;
+	coordinate_z: number | null;
 }
 
 export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
@@ -45,23 +45,23 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 				},
 			},
 		},
-	})
+	});
 
 	const edges = legs
 		.flatMap((leg) => {
-			if (!leg.fromPlace || !leg.toPlace) return []
-			const fromX = leg.fromPlace.coordinate_x ?? Number.POSITIVE_INFINITY
-			const fromZ = leg.fromPlace.coordinate_z ?? Number.POSITIVE_INFINITY
-			const toX = leg.toPlace.coordinate_x ?? Number.POSITIVE_INFINITY
-			const toZ = leg.toPlace.coordinate_z ?? Number.POSITIVE_INFINITY
-			const hasFromGate = Boolean(leg.fromGate)
-			const hasToGate = Boolean(leg.toGate)
-			const type = leg.route?.type
-			const routeId = leg.route?.id
+			if (!leg.fromPlace || !leg.toPlace) return [];
+			const fromX = leg.fromPlace.coordinate_x ?? Number.POSITIVE_INFINITY;
+			const fromZ = leg.fromPlace.coordinate_z ?? Number.POSITIVE_INFINITY;
+			const toX = leg.toPlace.coordinate_x ?? Number.POSITIVE_INFINITY;
+			const toZ = leg.toPlace.coordinate_z ?? Number.POSITIVE_INFINITY;
+			const hasFromGate = Boolean(leg.fromGate);
+			const hasToGate = Boolean(leg.toGate);
+			const type = leg.route?.type;
+			const routeId = leg.route?.id;
 
-			if (!type || !routeId) return []
+			if (!type || !routeId) return [];
 
-			const numberOfGates = Number(hasFromGate) + Number(hasToGate)
+			const numberOfGates = Number(hasFromGate) + Number(hasToGate);
 
 			return [
 				{
@@ -88,9 +88,9 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 					),
 					route: routeId,
 				},
-			] satisfies [GraphEdge, GraphEdge]
+			] satisfies [GraphEdge, GraphEdge];
 		})
-		.filter(Boolean)
+		.filter(Boolean);
 
 	// create walking edges
 	const allPlaces = await prisma.place.findMany({
@@ -101,7 +101,7 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 			id: true,
 			_count: { select: { routeFroms: true, routeTos: true } },
 		},
-	})
+	});
 
 	// create spoke edges
 	const spokes = await prisma.routeSpoke.findMany({
@@ -120,24 +120,24 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 				},
 			},
 		},
-	})
+	});
 
 	// each spoke edge goes to all other spoke edges on the same route
 	const spokeEdges = spokes.flatMap((spoke) => {
-		const fromX = spoke.place.coordinate_x ?? Number.POSITIVE_INFINITY
-		const fromZ = spoke.place.coordinate_z ?? Number.POSITIVE_INFINITY
-		const type = spoke.route?.type
-		const routeId = spoke.route?.id
+		const fromX = spoke.place.coordinate_x ?? Number.POSITIVE_INFINITY;
+		const fromZ = spoke.place.coordinate_z ?? Number.POSITIVE_INFINITY;
+		const type = spoke.route?.type;
+		const routeId = spoke.route?.id;
 
-		if (!type || !routeId) return []
+		if (!type || !routeId) return [];
 
 		return spokes
 			.filter((otherSpoke) => otherSpoke.routeId === spoke.routeId)
 			.map((otherSpoke) => {
-				const toX = otherSpoke.place.coordinate_x ?? Number.POSITIVE_INFINITY
-				const toZ = otherSpoke.place.coordinate_z ?? Number.POSITIVE_INFINITY
-				const distance = getDistance(fromX, fromZ, toX, toZ)
-				const weight = getRouteTime(distance, type)
+				const toX = otherSpoke.place.coordinate_x ?? Number.POSITIVE_INFINITY;
+				const toZ = otherSpoke.place.coordinate_z ?? Number.POSITIVE_INFINITY;
+				const distance = getDistance(fromX, fromZ, toX, toZ);
+				const weight = getRouteTime(distance, type);
 
 				return {
 					from: spoke.place.id,
@@ -145,38 +145,38 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 					type,
 					weight,
 					route: routeId,
-				} satisfies GraphEdge
-			})
-	})
+				} satisfies GraphEdge;
+			});
+	});
 
 	// for each node, generate 5 walking edges to the closest nodes
 	const walkingEdges: GraphEdge[] = allPlaces.flatMap((from) => {
-		const x1 = from.coordinate_x
-		const z1 = from.coordinate_z
+		const x1 = from.coordinate_x;
+		const z1 = from.coordinate_z;
 
 		return (
 			allPlaces
 				.filter((to) => to !== from)
 				.map((to) => {
-					const x2 = to.coordinate_x
-					const z2 = to.coordinate_z
+					const x2 = to.coordinate_x;
+					const z2 = to.coordinate_z;
 					const distance =
 						x1 && z1 && x2 && z2
 							? getDistance(x1, z1, x2, z2)
-							: Number.POSITIVE_INFINITY
-					return { to, distance }
+							: Number.POSITIVE_INFINITY;
+					return { to, distance };
 				})
 				.sort((a, b) => a.distance - b.distance)
 				// only include locations which have at least one route available at them
 				.filter(({ to }, i) => {
-					if (i === 0) return true // keep the closest location regardless
+					if (i === 0) return true; // keep the closest location regardless
 
-					const count = to._count.routeFroms + to._count.routeTos
-					return count > 0
+					const count = to._count.routeFroms + to._count.routeTos;
+					return count > 0;
 				})
 				.slice(0, 5)
 				.flatMap(({ to, distance }) => {
-					const weight = getRouteTime(distance, "Walk")
+					const weight = getRouteTime(distance, "Walk");
 
 					const type: RouteType =
 						from.type === "MrtStation" &&
@@ -188,15 +188,15 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 							to.coordinate_z ?? Number.POSITIVE_INFINITY,
 						) < 200
 							? "MRT"
-							: "Walk"
+							: "Walk";
 
 					return [
 						{ from: from.id, to: to.id, weight, type } satisfies GraphEdge,
 						{ to: from.id, from: to.id, weight, type } satisfies GraphEdge,
-					]
+					];
 				})
-		)
-	})
+		);
+	});
 
 	// todo add spawn warp edges & coordinate edges
 
@@ -205,5 +205,5 @@ export const getEdgesAndPlaces = async (allowedMode: RouteType[]) => {
 			allowedMode.includes(edge.type),
 		),
 		places: allPlaces,
-	}
-}
+	};
+};

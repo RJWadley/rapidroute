@@ -1,12 +1,12 @@
-import { prisma } from "temp/data/client"
-import type { ReactNode } from "react"
+import { prisma } from "temp/data/client";
+import type { ReactNode } from "react";
 
-import { DarkModeProvider } from "./DarkMode"
-import QueryProvider from "./QueryProvider"
-import { RoutingProvider } from "./RoutingContext"
+import { DarkModeProvider } from "./DarkMode";
+import QueryProvider from "./QueryProvider";
+import { RoutingProvider } from "./RoutingContext";
 
 interface ProvidersProps {
-	children: ReactNode
+	children: ReactNode;
 }
 
 export default async function Providers({ children }: ProvidersProps) {
@@ -15,7 +15,7 @@ export default async function Providers({ children }: ProvidersProps) {
 			id: true,
 			name: true,
 		},
-	})
+	});
 
 	return (
 		<QueryProvider>
@@ -23,5 +23,5 @@ export default async function Providers({ children }: ProvidersProps) {
 				<DarkModeProvider>{children}</DarkModeProvider>
 			</RoutingProvider>
 		</QueryProvider>
-	)
+	);
 }

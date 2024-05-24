@@ -1,7 +1,7 @@
-import type { LineType } from "temp/types/dynmapMarkers"
 import { Container } from "@pixi/react"
 import type { Container as PixiContainer } from "pixi.js"
 import { useRef } from "react"
+import type { LineType } from "temp/types/dynmapMarkers"
 
 import { useViewport, useViewportMoved } from "../PixiViewport"
 import { hideItem, showItem } from "../pixiUtils"

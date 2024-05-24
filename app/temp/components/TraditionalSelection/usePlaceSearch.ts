@@ -1,14 +1,14 @@
-import { useEventListener } from "ahooks"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEventListener } from "ahooks";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useSearchResults } from "../../data/search"
+import { useSearchResults } from "../../data/search";
 
 export interface PlaceSearchItem {
-	id: string
-	name: string
+	id: string;
+	name: string;
 }
 
-const location = { name: "Current Location", id: "Current Location" }
+const location = { name: "Current Location", id: "Current Location" };
 
 /**
  * This list handles logic for search boxes, including:
@@ -26,32 +26,32 @@ export default function usePlaceSearch(
 	/**
 	 * the currently selected item
 	 */
-	const [activeItem, setActiveItem] = state
+	const [activeItem, setActiveItem] = state;
 	/**
 	 * the item that is currently highlighted (via arrow keys)
 	 */
-	const [focusedItem, setFocusedItem] = useState<PlaceSearchItem>()
+	const [focusedItem, setFocusedItem] = useState<PlaceSearchItem>();
 	/**
 	 * what the user has physically typed into the input
 	 */
-	const [userTyped, setUserTyped] = useState<string>()
+	const [userTyped, setUserTyped] = useState<string>();
 	/**
 	 * search results for what the user has typed
 	 */
-	const currentSearch = useSearchResults(userTyped, [...places, location])
+	const currentSearch = useSearchResults(userTyped, [...places, location]);
 
 	/**
 	 * true when the active item is about to update and this hook caused it
 	 */
-	const activeUpdateInternal = useRef(false)
+	const activeUpdateInternal = useRef(false);
 
 	const setInputText = useCallback(
 		(item: PlaceSearchItem | undefined) => {
-			if (inputElement && item) inputElement.value = item.name
-			else if (inputElement) inputElement.value = ""
+			if (inputElement && item) inputElement.value = item.name;
+			else if (inputElement) inputElement.value = "";
 		},
 		[inputElement],
-	)
+	);
 
 	/**
 	 * select a new item internally
@@ -61,15 +61,15 @@ export default function usePlaceSearch(
 	const updateItem = useCallback(
 		(item: PlaceSearchItem | undefined, closeMenu = false) => {
 			if (closeMenu) {
-				setUserTyped(undefined)
-				setInputText(item)
-				inputElement?.blur()
+				setUserTyped(undefined);
+				setInputText(item);
+				inputElement?.blur();
 			}
-			activeUpdateInternal.current = true
-			setActiveItem(item ?? null)
+			activeUpdateInternal.current = true;
+			setActiveItem(item ?? null);
 		},
 		[inputElement, setActiveItem, setInputText],
-	)
+	);
 
 	/**
 	 * select a new item from outside this hook
@@ -77,10 +77,10 @@ export default function usePlaceSearch(
 	 * @param item the item to select
 	 */
 	const updateItemExternally = (item: PlaceSearchItem) => {
-		setInputText(item)
-		setUserTyped(undefined)
-		setActiveItem(item)
-	}
+		setInputText(item);
+		setUserTyped(undefined);
+		setActiveItem(item);
+	};
 
 	/**
 	 * when the active item changes from a source we don't control,
@@ -88,27 +88,27 @@ export default function usePlaceSearch(
 	 */
 	useEffect(() => {
 		if (activeUpdateInternal.current) {
-			activeUpdateInternal.current = false
+			activeUpdateInternal.current = false;
 		} else {
-			setInputText(activeItem)
+			setInputText(activeItem);
 		}
-	}, [activeItem, setInputText])
+	}, [activeItem, setInputText]);
 
 	/**
 	 * handle text input on the box
 	 */
 	const handleInput = (e: Event) => {
-		setUserTyped(inputElement?.value)
-		setFocusedItem(undefined)
+		setUserTyped(inputElement?.value);
+		setFocusedItem(undefined);
 
 		// if the box is empty, select nothing
 		// otherwise, check if the user has pressed enter
 		// mobile devices don't have enter, so we check for a newline instead
 		if (/^\s+$/.test(inputElement?.value ?? "")) {
-			updateItem(undefined, true)
+			updateItem(undefined, true);
 		} else if (inputElement?.value.includes("\n")) {
-			const newActiveItem = focusedItem ?? currentSearch[0]
-			updateItem(newActiveItem, true)
+			const newActiveItem = focusedItem ?? currentSearch[0];
+			updateItem(newActiveItem, true);
 		}
 
 		// scroll to top when typing
@@ -120,8 +120,8 @@ export default function usePlaceSearch(
 		)
 			window.scrollTo({
 				top: 0,
-			})
-	}
+			});
+	};
 
 	/**
 	 * move up or down the list of search results and highlight the next item
@@ -130,21 +130,21 @@ export default function usePlaceSearch(
 	 */
 	const move = (direction: "up" | "down") => {
 		// an index of -1 means no item is selected
-		const currentIndex = focusedItem ? currentSearch.indexOf(focusedItem) : -1
-		let nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1
-		if (nextIndex < -1) nextIndex = currentSearch.length - 1
-		if (nextIndex >= currentSearch.length) nextIndex = -1
+		const currentIndex = focusedItem ? currentSearch.indexOf(focusedItem) : -1;
+		let nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+		if (nextIndex < -1) nextIndex = currentSearch.length - 1;
+		if (nextIndex >= currentSearch.length) nextIndex = -1;
 
-		const nextItem = currentSearch[nextIndex]
-		setFocusedItem(nextItem)
-		if (nextItem?.id !== location.id) updateItem(nextItem)
+		const nextItem = currentSearch[nextIndex];
+		setFocusedItem(nextItem);
+		if (nextItem?.id !== location.id) updateItem(nextItem);
 
 		// if the value is -1, restore the user's typed value, otherwise use the name of the item
 		if (inputElement) {
 			inputElement.value =
-				nextIndex === -1 ? userTyped ?? "" : nextItem?.name ?? ""
+				nextIndex === -1 ? userTyped ?? "" : nextItem?.name ?? "";
 		}
-	}
+	};
 
 	/**
 	 * handle key presses, i.e. arrow keys and escape
@@ -154,25 +154,25 @@ export default function usePlaceSearch(
 	const handleKeyDown = (e: KeyboardEvent) => {
 		switch (e.key) {
 			case "ArrowUp":
-				e.preventDefault()
-				move("up")
+				e.preventDefault();
+				move("up");
 
-				break
+				break;
 
 			case "ArrowDown":
-				e.preventDefault()
-				move("down")
+				e.preventDefault();
+				move("down");
 
-				break
+				break;
 
 			case "Escape":
 			case "Tab":
-				inputElement?.blur()
-				updateItem(focusedItem ?? currentSearch[0], true)
+				inputElement?.blur();
+				updateItem(focusedItem ?? currentSearch[0], true);
 
-				break
+				break;
 		}
-	}
+	};
 
 	const handleBlur = () =>
 		setTimeout(
@@ -189,18 +189,18 @@ export default function usePlaceSearch(
 					true,
 				),
 			100,
-		)
+		);
 
 	/**
 	 * register event listeners for the events we need
 	 */
-	useEventListener("input", handleInput, { target: inputElement })
-	useEventListener("keydown", handleKeyDown, { target: inputElement })
-	useEventListener("blur", handleBlur, { target: inputElement })
+	useEventListener("input", handleInput, { target: inputElement });
+	useEventListener("keydown", handleKeyDown, { target: inputElement });
+	useEventListener("blur", handleBlur, { target: inputElement });
 
 	return {
 		focusedItem,
 		currentSearch: userTyped ? currentSearch : undefined,
 		selectItem: updateItemExternally,
-	}
+	};
 }

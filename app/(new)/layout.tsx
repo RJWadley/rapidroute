@@ -1,8 +1,6 @@
 import { Inter } from "next/font/google"
-import "the-new-css-reset/css/reset.css"
+import "./style/reset.css"
 import "./style/global.css"
-
-import { styled } from "next-yak"
 
 export const metadata = {
 	title: "Next.js",
@@ -21,15 +19,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body className={inter.className}>
-				<Window>{children}</Window>
-			</body>
+			<body className={inter.className}>{children}</body>
 		</html>
 	)
 }
-
-const Window = styled.div`
-	width: 100vw;
-	height: 100dvh;
-	border: 1px solid red;
-`

@@ -1,8 +1,5 @@
-import { colors, sizes } from "temp/style"
-import useAdaptiveTextareaHeight from "temp/utils/useAdaptiveTextareaHeight"
-/* eslint-disable jsx-a11y/no-autofocus */
-/* eslint-disable styled-components-a11y/no-autofocus */
-import { styled } from "@linaria/react"
+"use client"
+
 import HistorySVG from "@material-symbols/svg-700/sharp/history.svg"
 import SearchSVG from "@material-symbols/svg-700/sharp/search.svg"
 import type { Place } from "@prisma/client"
@@ -11,6 +8,8 @@ import { useRef, useState } from "react"
 
 import { getTextboxName } from "./getTextboxName"
 import useSearchBox from "./useSearchBox"
+import { styled } from "next-yak"
+import useAdaptiveTextareaHeight from "(new)/utils/useAdaptiveTextareaHeight"
 
 export interface SearchItem {
 	id: string
@@ -79,8 +78,6 @@ const PositionAnchor = styled.div`
 `
 
 const Wrapper = styled.label`
-	background: ${colors.defaultCardBackground};
-	border-radius: ${sizes.borderRadius};
 	padding: 20px 30px;
 	display: grid;
 	grid-template-columns: 1fr auto;
@@ -103,13 +100,12 @@ const Input = styled.textarea`
 const SearchIcon = styled(SearchSVG)`
 	width: 30px;
 	height: 30px;
-	fill: ${colors.defaultText};
 `
 
 const Suggestions = styled.div`
-	background: ${colors.darkBackground};
-	padding: calc(${sizes.borderRadius} + 20px) 20px 20px;
-	margin-top: -${sizes.borderRadius};
+	background: red;
+	padding: calc(20px) 20px 20px;
+	margin-top: -10px;
 `
 
 const Suggestion = styled.button`

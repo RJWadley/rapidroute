@@ -1,36 +1,36 @@
 /* eslint-disable styled-components-a11y/label-has-associated-control */
-"use client"
+"use client";
 
-import { RoutingContext } from "temp/components/Providers/RoutingContext"
-import type { PlaceSearchItem } from "temp/components/TraditionalSelection/usePlaceSearch"
-import usePlaceSearch from "temp/components/TraditionalSelection/usePlaceSearch"
-import media from "temp/utils/media"
-import useAdaptiveTextareaHeight from "temp/utils/useAdaptiveTextareaHeight"
-import { styled } from "@linaria/react"
-import { useContext, useState } from "react"
+import { RoutingContext } from "temp/components/Providers/RoutingContext";
+import type { PlaceSearchItem } from "temp/components/TraditionalSelection/usePlaceSearch";
+import usePlaceSearch from "temp/components/TraditionalSelection/usePlaceSearch";
+import media from "temp/utils/media";
+import useAdaptiveTextareaHeight from "(new)/utils/useAdaptiveTextareaHeight";
+import { styled } from "@linaria/react";
+import { useContext, useState } from "react";
 
-import SearchList from "./SearchList"
+import SearchList from "./SearchList";
 
 interface SearchBoxProps {
-	searchRole: "from" | "to"
-	places: PlaceSearchItem[]
+	searchRole: "from" | "to";
+	places: PlaceSearchItem[];
 }
 
 export default function SearchBox({ searchRole, places }: SearchBoxProps) {
-	const [input, setInput] = useState<HTMLTextAreaElement | null>(null)
-	const { to, from, setTo, setFrom } = useContext(RoutingContext)
+	const [input, setInput] = useState<HTMLTextAreaElement | null>(null);
+	const { to, from, setTo, setFrom } = useContext(RoutingContext);
 
-	const placeId = searchRole === "to" ? to : from
-	const setPlaceId = searchRole === "to" ? setTo : setFrom
-	const place = places.find((p) => p.id === placeId?.id)
+	const placeId = searchRole === "to" ? to : from;
+	const setPlaceId = searchRole === "to" ? setTo : setFrom;
+	const place = places.find((p) => p.id === placeId?.id);
 
-	useAdaptiveTextareaHeight(input)
+	useAdaptiveTextareaHeight(input);
 
 	const { currentSearch, focusedItem, selectItem } = usePlaceSearch(
 		input,
 		[place, setPlaceId],
 		places,
-	)
+	);
 
 	return (
 		<>
@@ -57,7 +57,7 @@ export default function SearchBox({ searchRole, places }: SearchBoxProps) {
 				selectItem={selectItem}
 			/>
 		</>
-	)
+	);
 }
 
 const Box = styled.label`
@@ -70,7 +70,7 @@ const Box = styled.label`
 	@media ${media.mobile} {
 		padding: 0 20px;
 	}
-`
+`;
 
 const Text = styled.textarea<{ isTo: boolean }>`
 	color: var(--default-text);
@@ -88,4 +88,4 @@ const Text = styled.textarea<{ isTo: boolean }>`
 		margin: 10px 0;
 		align-self: ${(props) => (props.isTo ? "start" : "end")};
 	}
-`
+`;

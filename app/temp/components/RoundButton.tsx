@@ -1,12 +1,12 @@
-import media from "temp/utils/media"
-import { styled } from "@linaria/react"
+import media from "temp/utils/media";
+import { styled } from "@linaria/react";
 
-import type { UniversalLinkProps } from "./UniversalLink"
-import UniversalLink from "./UniversalLink"
+import type { UniversalLinkProps } from "./UniversalLink";
+import UniversalLink from "./UniversalLink";
 
 type RoundButtonProps = UniversalLinkProps & {
-	flipped?: boolean
-}
+	flipped?: boolean;
+};
 
 export default function RoundButton({
 	children,
@@ -17,7 +17,7 @@ export default function RoundButton({
 		<StyledButton flipped={flipped} {...props}>
 			<div>{children}</div>
 		</StyledButton>
-	)
+	);
 }
 
 const StyledButton = styled(UniversalLink)<{ flipped: boolean }>`
@@ -47,4 +47,4 @@ const StyledButton = styled(UniversalLink)<{ flipped: boolean }>`
 		height: 50px;
 		border-radius: 15px;
 	}
-`
+`;

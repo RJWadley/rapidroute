@@ -1,4 +1,4 @@
-import type { PrettyEdge } from "temp/pathfinding/getPrettyEdge"
+import type { PrettyEdge } from "temp/pathfinding/getPrettyEdge";
 
 // import { Location, Route } from "@rapidroute/database-types"
 
@@ -51,10 +51,10 @@ import type { PrettyEdge } from "temp/pathfinding/getPrettyEdge"
 export function combineMRT(input: PrettyEdge[]): PrettyEdge[] {
 	// iterate through the results, and if two consecutive edges share a common route id, combine them
 
-	const [firstEdge, secondEdge, ...rest] = input
+	const [firstEdge, secondEdge, ...rest] = input;
 
-	if (!firstEdge) return []
-	if (!secondEdge) return [firstEdge]
+	if (!firstEdge) return [];
+	if (!secondEdge) return [firstEdge];
 
 	return firstEdge.routes.length === 1 &&
 		secondEdge.routes.length === 1 &&
@@ -66,5 +66,5 @@ export function combineMRT(input: PrettyEdge[]): PrettyEdge[] {
 				},
 				...rest,
 			])
-		: [firstEdge, ...combineMRT([secondEdge, ...rest])]
+		: [firstEdge, ...combineMRT([secondEdge, ...rest])];
 }

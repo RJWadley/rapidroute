@@ -19,7 +19,7 @@ export const colors = {
 	rapidGreen: "var(--rapid-green)",
 	rapidYellow: "var(--rapid-yellow)",
 	extraSmall: "var(--extra-small)",
-}
+};
 
 export const sizes = {
 	small: "var(--small)",
@@ -28,4 +28,4 @@ export const sizes = {
 	extraLarge: "var(--extra-large)",
 	symbol: "var(--symbol)",
 	borderRadius: "30px",
-}
+};

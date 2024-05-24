@@ -110,7 +110,7 @@ export const useViewportMoved = (callback: () => void) => {
 	// for the first five seconds, run the callback every 100ms
 	// this is to ensure that the viewport is fully initialized
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-			useEffect(() => {
+	useEffect(() => {
 		let isMounted = true
 		const onViewportMoved = () => {
 			if (isMounted && viewport && !viewport.destroyed) {

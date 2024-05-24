@@ -1,12 +1,12 @@
-import type { Place } from "@prisma/client"
-import searcher from "fuzzysort"
-import { useDeferredValue, useMemo } from "react"
+import type { Place } from "@prisma/client";
+import searcher from "fuzzysort";
+import { useDeferredValue, useMemo } from "react";
 
 export const useSearchResults = <T extends Partial<Place>>(
 	rawQuery: string | undefined | null,
 	initialPlaces: T[],
 ) => {
-	const query = useDeferredValue(rawQuery)
+	const query = useDeferredValue(rawQuery);
 
 	const results = useMemo(
 		() =>
@@ -17,7 +17,7 @@ export const useSearchResults = <T extends Partial<Place>>(
 					})
 				: null,
 		[query, initialPlaces],
-	)
+	);
 
-	return results ? results.map((r) => r.obj) : initialPlaces
-}
+	return results ? results.map((r) => r.obj) : initialPlaces;
+};
