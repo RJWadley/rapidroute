@@ -1,44 +1,37 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from "@t3-oss/env-nextjs"
+import { z } from "zod"
 
-export const env = createEnv({
-  /**
-   * Specify your server-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars.
-   */
-  server: {
-    DATABASE_URL: z.string().url(),
-    NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
-  },
+export const localEnv = createEnv({
+	/**
+	 * Server side Environment variables, not available on the client.
+	 * Will throw if you access these variables on the client.
+	 */
+	server: {
+		NODE_ENV: z.enum(["development", "test", "production"]),
+		DATABASE_URL: z.string().url(),
+		GOOGLE_SHEETS_API_KEY: z.string(),
+		TRANSIT_SHEET_ID: z.string(),
+	},
 
-  /**
-   * Specify your client-side environment variables schema here. This way you can ensure the app
-   * isn't built with invalid env vars. To expose them to the client, prefix them with
-   * `NEXT_PUBLIC_`.
-   */
-  client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
-  },
+	/**
+	 * Environment variables available on the client (and server).
+	 *
+	 * 💡 You'll get type errors if these are not prefixed with NEXT_PUBLIC_.
+	 */
+	client: {
+		// nothing here yet
+	},
 
-  /**
-   * You can't destruct `process.env` as a regular object in the Next.js edge runtimes (e.g.
-   * middlewares) or client-side so we need to destruct manually.
-   */
-  runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    NODE_ENV: process.env.NODE_ENV,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
-  },
-  /**
-   * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
-   * useful for Docker builds.
-   */
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-  /**
-   * Makes it so that empty strings are treated as undefined. `SOME_VAR: z.string()` and
-   * `SOME_VAR=''` will throw an error.
-   */
-  emptyStringAsUndefined: true,
-});
+	/**
+	 * Due to how Next.js bundles environment variables on Edge and Client,
+	 * we need to manually destructure them to make sure all are included in bundle.
+	 *
+	 * 💡 You'll get type errors if not all variables from `server` & `client` are included here.
+	 */
+	runtimeEnv: {
+		NODE_ENV: process.env.NODE_ENV,
+		DATABASE_URL: process.env.DATABASE_URL,
+		GOOGLE_SHEETS_API_KEY: process.env.GOOGLE_SHEETS_API_KEY,
+		TRANSIT_SHEET_ID: process.env.TRANSIT_SHEET_ID,
+	},
+})
