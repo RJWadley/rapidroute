@@ -1,7 +1,7 @@
+import type { MarkerSet } from "~/types/dynmapMarkers"
 import { getDistance } from "~/utils/distance"
 import type { Point } from "./pointUtils"
 import { pointsMatch } from "./pointUtils"
-import type { MarkerSet } from "~/types/dynmapMarkers"
 
 const pointsDistance = (a: Point | undefined, b: Point | undefined) => {
 	if (!a || !b) return Number.POSITIVE_INFINITY

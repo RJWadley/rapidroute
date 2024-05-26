@@ -3,8 +3,8 @@ import { emulateTab } from "emulate-tab"
 import type { ComponentProps, FocusEvent } from "react"
 import { useRef, useState } from "react"
 
-import { getTextboxName } from "./getTextboxName"
 import { useSearchResults } from "~/utils/search"
+import { getTextboxName } from "./getTextboxName"
 
 const tryTab = () => {
 	try {

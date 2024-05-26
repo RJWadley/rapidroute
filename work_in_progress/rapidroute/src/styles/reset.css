@@ -3,48 +3,52 @@
   https://www.joshwcomeau.com/css/custom-css-reset/
 */
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
+@layer reset, base, tokens, recipes, utilities;
 
-* {
-    margin: 0;
-}
+@layer reset {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
 
-body {
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-}
+    * {
+        margin: 0;
+    }
 
-img,
-picture,
-video,
-canvas,
-svg {
-    display: block;
-    max-width: 100%;
-}
+    body {
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+    }
 
-input,
-button,
-textarea,
-select {
-    font: inherit;
-}
+    img,
+    picture,
+    video,
+    canvas,
+    svg {
+        display: block;
+        max-width: 100%;
+    }
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    overflow-wrap: break-word;
-}
+    input,
+    button,
+    textarea,
+    select {
+        font: inherit;
+    }
 
-#root,
-#__next {
-    isolation: isolate;
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        overflow-wrap: break-word;
+    }
+
+    #root,
+    #__next {
+        isolation: isolate;
+    }
 }

@@ -1,12 +1,12 @@
-import type { MarkersResponse } from "~/types/dynmapMarkers";
-import type { BarePlace } from "./temporaryDatabase";
+import type { MarkersResponse } from "~/types/dynmapMarkers"
+import type { BarePlace } from "./temporaryDatabase"
 
 export default async function getDynmapAirports() {
 	const markers = await fetch(
 		"https://dynmap.minecartrapidtransit.net/main/tiles/_markers_/marker_new.json",
 	)
 		.then((res) => res.json())
-		.then((data) => data as MarkersResponse);
+		.then((data) => data as MarkersResponse)
 
 	return Object.entries(markers.sets.airports.markers).map(
 		([key, { label, x, z }]) => {
@@ -19,7 +19,7 @@ export default async function getDynmapAirports() {
 				worldName: "New",
 				coordinate_x: x,
 				coordinate_z: z,
-			} satisfies BarePlace;
+			} satisfies BarePlace
 		},
-	);
+	)
 }

@@ -1,11 +1,11 @@
 "use client"
 
 import type { Place } from "@prisma/client"
-import useSearchBox from "./useSearchBox"
-import { getTextboxName } from "./getTextboxName"
+import { useClickAway, useKeyPress } from "ahooks"
 import { useRef } from "react"
 import useAdaptiveTextareaHeight from "~/utils/useAdaptiveTextareaHeight"
-import { useClickAway, useKeyPress } from "ahooks"
+import { getTextboxName } from "./getTextboxName"
+import useSearchBox from "./useSearchBox"
 
 export default function SearchBox({ places }: { places: Place[] }) {
 	const wrapper = useRef<HTMLDivElement>(null)

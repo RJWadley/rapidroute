@@ -8,6 +8,8 @@
     "template-string-converter.autoRemoveTemplateString": true,
     "cSpell.words": [
         "ahooks",
+        "arrowdown",
+        "arrowup",
         "Dynmap",
         "fuzzysort",
         "gramm",
@@ -16,6 +18,8 @@
         "lakeshore",
         "markerset",
         "nextjs",
+        "outdir",
+        "pandacss",
         "Textbox",
         "worldborder"
     ],
