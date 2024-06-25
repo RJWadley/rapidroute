@@ -1,8 +1,6 @@
 import { styled } from "@pigment-css/react"
 
-export const metadata = {
-	title: "Hello!",
-}
+import "./data.ts"
 
 export default function Home() {
 	return (
