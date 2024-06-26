@@ -1,3 +1,29 @@
 {
-    "cSpell.enabled": false
+	/* formatting */
+	"editor.defaultFormatter": "biomejs.biome",
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[xml]": {
+		"editor.defaultFormatter": "redhat.vscode-xml"
+	},
+
+	/* recommended extension config */
+	"template-string-converter.addBracketsToProps": true,
+	"template-string-converter.autoRemoveTemplateString": true,
+	"stylelint.validate": ["css", "scss", "javascriptreact", "typescriptreact"],
+
+	/* workbench settings */
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"workbench.editor.customLabels.patterns": {
+		"**/index.tsx": "${dirname} / index.tsx"
+	},
+    "editor.linkedEditing": true,
+
+	/* unsorted settings */
+	"": "",
 }

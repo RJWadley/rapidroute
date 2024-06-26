@@ -1,16 +1,35 @@
-import { styled } from "@pigment-css/react"
+"use client"
 
-import "./data.ts"
+import { useState } from "react"
+import { findPath } from "./pathing"
+import { places } from "./data"
 
 export default function Home() {
+	const [startId, setStartId] = useState<string>()
+	const [finishId, setFinishId] = useState<string>()
+
+	if (startId && finishId) findPath(startId, finishId)
+
 	return (
-		<>
-			<Heading>hello world</Heading>
-			<Heading isError>hello world!</Heading>
-		</>
+		<div>
+			<p>starting location</p>
+			<select onChange={(e) => setStartId(e.currentTarget.value)}>
+				<option value="">Select a starting location</option>
+				{places.list.map((item) => (
+					<option key={item.id} value={item.id}>
+						{item.name || "Unnamed"}
+					</option>
+				))}
+			</select>
+			<p>ending location</p>
+			<select onChange={(e) => setFinishId(e.currentTarget.value)}>
+				<option value="">Select an ending location</option>
+				{places.list.map((item) => (
+					<option key={item.id} value={item.id}>
+						{item.name || "Unnamed"}
+					</option>
+				))}
+			</select>
+		</div>
 	)
 }
-
-const Heading = styled("h1")<{ isError?: boolean }>({
-	color: ({ isError }) => (isError ? "red" : "black"),
-})
