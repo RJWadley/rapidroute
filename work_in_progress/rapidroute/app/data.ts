@@ -19,13 +19,13 @@ const id = (
 		| "sea.stop"
 		| "bus.company"
 		| "bus.line"
-		| "bus.stop",
+		| "bus.stop"
+		| "town.town",
 ) => z.string()
 // verify that the id can be found in the corresponding data if desired
 // .refine((id) => {
 // 	const [upper, lower] = type.split(".")
 // 	return (
-// 		// @ts-expect-error typescript can't properly infer the type of RawData
 // 		upper && lower && typeof RawData?.[upper]?.[lower][id] !== "undefined"
 // 	)
 // })
@@ -36,9 +36,7 @@ const connections = z.record(
 		z.strictObject({
 			line: z.string(),
 			direction: z.strictObject({
-				forward_towards_code: z.strictObject({
-					id: z.string(),
-				}),
+				forward_towards_code: z.string(),
 				forward_direction_label: z.string(),
 				backward_direction_label: z.string(),
 				one_way: z.boolean(),
@@ -48,10 +46,13 @@ const connections = z.record(
 )
 
 const location = z.strictObject({
-	coordinates: z.tuple([z.number(), z.number()]).nullable(),
+	coordinates: z
+		// TODO denullify these numbers
+		.tuple([z.number().nullable(), z.number().nullable()])
+		.nullable(),
 	world: z.enum(["New", "Old"]).nullable(),
 	proximity: z.record(
-		z.enum(["railstation", "seastop", "airairport", "busstop"]),
+		z.enum(["railstation", "seastop", "airairport", "busstop", "town"]),
 		z.record(
 			z.string(),
 			z.strictObject({
@@ -162,6 +163,20 @@ const busStop = location.extend({
 })
 export type BusStop = z.infer<typeof busStop>
 
+const town = location.extend({
+	rank: z.enum([
+		"Premier",
+		"Governor",
+		"Senator",
+		"Mayor",
+		"Councillor",
+		"Community",
+		"Unranked",
+	]),
+	mayor: z.string().nullable(),
+	deputy_mayor: z.string().nullable(),
+})
+
 const schema = z
 	.strictObject({
 		air: z.strictObject({
@@ -185,8 +200,11 @@ const schema = z
 			line: z.record(id("bus.line"), busLine),
 			stop: z.record(id("bus.stop"), busStop),
 		}),
+		town: z.strictObject({
+			town: z.record(id("town.town"), town),
+		}),
 		timestamp: z.string(),
-		version: z.literal(1),
+		version: z.literal(2),
 	})
 	.readonly()
 
@@ -270,4 +288,50 @@ const flightsMap = new Map(flightsArray.map((flight) => [flight.id, flight]))
 export const flights = {
 	list: flightsArray,
 	map: flightsMap,
+}
+
+/**
+ * companies
+ */
+const companiesArray = [
+	...Object.entries(data.air.airline).map(
+		([id, airline]) =>
+			({
+				id,
+				type: "airline",
+				...airline,
+			}) as const,
+	),
+	...Object.entries(data.rail.company).map(
+		([id, company]) =>
+			({
+				id,
+				type: "railcompany",
+				...company,
+			}) as const,
+	),
+	...Object.entries(data.sea.company).map(
+		([id, company]) =>
+			({
+				id,
+				type: "seacompany",
+				...company,
+			}) as const,
+	),
+	...Object.entries(data.bus.company).map(
+		([id, company]) =>
+			({
+				id,
+				type: "buscompany",
+				...company,
+			}) as const,
+	),
+]
+
+const companiesMap = new Map(
+	companiesArray.map((company) => [company.id, company]),
+)
+export const companies = {
+	list: companiesArray,
+	map: companiesMap,
 }

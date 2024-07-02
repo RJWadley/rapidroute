@@ -1,11 +1,14 @@
 import { places, type Place } from "../data"
 import PriorityQueue from "../utils/PriorityQueue"
+import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
 import { getRouteTime } from "./getRouteTime"
 
-type RoutingResult = { path: Place[]; time: number }
+export type RoutingResult = { path: Place[]; time: number }
 
 export const findPath = (from: string, to: string) => {
+	const startTime = performance.now()
+
 	const start = places.map.get(from)
 	const end = places.map.get(to)
 	if (!start) return null
@@ -112,8 +115,11 @@ export const findPath = (from: string, to: string) => {
 		}
 	}
 
+	const endTime = performance.now()
+
 	console.log(
 		"completed paths",
+		`took ${endTime - startTime}ms`,
 		completedPaths.map((x) => ({
 			time: x.time,
 			path: x.path
@@ -121,4 +127,8 @@ export const findPath = (from: string, to: string) => {
 				.join(" -> "),
 		})),
 	)
+
+	return completedPaths
+		.map(convertToRoutes)
+		.map((x) => ({ ...x, id: Math.random() }))
 }

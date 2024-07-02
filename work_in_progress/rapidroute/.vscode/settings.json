@@ -20,7 +20,8 @@
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"typescript.enablePromptUseWorkspaceTsdk": true,
 	"workbench.editor.customLabels.patterns": {
-		"**/index.tsx": "${dirname} / index.tsx"
+		"**/index.tsx": "${dirname} / index.tsx",
+		"**/index.ts": "${dirname} / index.ts"
 	},
     "editor.linkedEditing": true,
 
