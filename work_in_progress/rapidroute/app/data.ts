@@ -46,10 +46,7 @@ const connections = z.record(
 )
 
 const location = z.strictObject({
-	coordinates: z
-		// TODO denullify these numbers
-		.tuple([z.number().nullable(), z.number().nullable()])
-		.nullable(),
+	coordinates: z.tuple([z.number(), z.number()]).nullable(),
 	world: z.enum(["New", "Old"]).nullable(),
 	proximity: z.record(
 		z.enum(["railstation", "seastop", "airairport", "busstop", "town"]),
