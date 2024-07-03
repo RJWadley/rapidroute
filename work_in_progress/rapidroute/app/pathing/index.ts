@@ -75,7 +75,6 @@ export const findPath = (from: string, to: string) => {
 	}
 
 	const totalTimeToDestination = timesSoFar.get(end.id)
-	console.log("total time to destination", totalTimeToDestination)
 
 	// if there is no totalTimeToDestination, there's no path to the destination
 	if (!totalTimeToDestination) return null

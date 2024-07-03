@@ -15,12 +15,16 @@ export const convertToRoutes = (result: RoutingResult) => {
 		id: Math.random(),
 		from,
 		to,
-		options: getRouteOptions(from, to).map((options) => ({
-			...options,
-			gates: options.gates
-				.map((gate) => gates.map.get(gate))
-				.filter((x) => x !== undefined),
-			airline: companies.map.get(options.airline),
+		options: getRouteOptions(from, to).map((option) => ({
+			...option,
+			gates:
+				"gates" in option
+					? option.gates
+							.map((gate) => gates.map.get(gate))
+							.filter((x) => x !== undefined)
+					: null,
+			airline: "airline" in option ? companies.map.get(option.airline) : null,
+			company: "company" in option ? companies.map.get(option.company) : null,
 		})),
 	}))
 

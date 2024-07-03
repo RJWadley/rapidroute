@@ -241,6 +241,14 @@ const placesArray = [
 				...stop,
 			}) as const,
 	),
+	...Object.entries(data.town.town).map(
+		([id, town]) =>
+			({
+				id,
+				type: "town",
+				...town,
+			}) as const,
+	),
 ]
 
 const placesMap = new Map(
@@ -331,4 +339,43 @@ const companiesMap = new Map(
 export const companies = {
 	list: companiesArray,
 	map: companiesMap,
+}
+
+/**
+ * non-air connections
+ */
+const connectionLinesArray = [
+	...Object.entries(data.rail.line).map(
+		([id, line]) =>
+			({
+				id,
+				type: "railline",
+				...line,
+			}) as const,
+	),
+	...Object.entries(data.sea.line).map(
+		([id, line]) =>
+			({
+				id,
+				type: "sealine",
+				...line,
+			}) as const,
+	),
+	...Object.entries(data.bus.line).map(
+		([id, line]) =>
+			({
+				id,
+				type: "busline",
+				...line,
+			}) as const,
+	),
+]
+
+const connectionLinesMap = new Map(
+	connectionLinesArray.map((line) => [line.id, line]),
+)
+
+export const connectionLines = {
+	list: connectionLinesArray,
+	map: connectionLinesMap,
 }

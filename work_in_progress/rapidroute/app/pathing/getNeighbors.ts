@@ -1,11 +1,27 @@
 import { flights, gates, places } from "../data"
 import { getRouteTime } from "./getRouteTime"
 
-export const getNeighbors = (
-	locationId: string,
-): { placeId: string; time: number }[] => {
+const WALKING_SPEED_METERS_PER_SECOND = 4
+
+export const getNeighbors = (locationId: string) => {
 	const location = places.map.get(locationId)
 	if (!location) return []
+
+	/**
+	 * walking neighbors
+	 */
+	const neighbors: { placeId: string; time: number }[] = [
+		...Object.entries({
+			...location.proximity.airairport,
+			...location.proximity.railstation,
+			...location.proximity.seastop,
+			...location.proximity.busstop,
+			...location.proximity.town,
+		}).map(([id, proximity]) => ({
+			placeId: id,
+			time: proximity.distance / WALKING_SPEED_METERS_PER_SECOND,
+		})),
+	]
 
 	/**
 	 * find neighbors via plane connections
@@ -27,11 +43,35 @@ export const getNeighbors = (
 			.filter((airport) => airport !== location)
 			.map((airport) => ({
 				placeId: airport.id,
+				type: "flight",
 				time: getRouteTime(airport, location),
 			}))
 
-		return allReachedAirports
+		neighbors.push(...allReachedAirports)
 	}
 
-	return []
+	/**
+	 * find neighbors via rail/sea/bus connections
+	 */
+	if ("connections" in location) {
+		const reachedPlaces = Object.entries(location.connections)
+			.filter(([, connection]) =>
+				connection.some(
+					(c) =>
+						// the route must be either
+						// bidirectional
+						c.direction.one_way === false ||
+						// or one-way, away from the current location
+						c.direction.forward_towards_code !== locationId,
+				),
+			)
+			.map(([placeId]) => ({
+				placeId,
+				time: 60 * 5,
+			}))
+
+		neighbors.push(...reachedPlaces)
+	}
+
+	return neighbors
 }

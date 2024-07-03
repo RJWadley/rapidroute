@@ -14,6 +14,7 @@
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
+		"noImplicitAny": true,
 
 		/* If transpiling with TypeScript: */
 		"outDir": "dist",
