@@ -65,9 +65,9 @@ export default function Home() {
 												`${option.type} with ${
 													option.airline?.name ??
 													option.company?.name ??
-													option.type === "walk"
+													(option.type === "walk"
 														? "your legs"
-														: "unknown company"
+														: "unknown company")
 												}`,
 										)
 										.join(", ")}

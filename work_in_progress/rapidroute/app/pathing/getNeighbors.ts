@@ -1,5 +1,4 @@
 import { flights, gates, places } from "../data"
-import { getRouteTime } from "./getRouteTime"
 
 const WALKING_SPEED_METERS_PER_SECOND = 4
 
@@ -44,7 +43,7 @@ export const getNeighbors = (locationId: string) => {
 			.map((airport) => ({
 				placeId: airport.id,
 				type: "flight",
-				time: getRouteTime(airport, location),
+				time: 60 * 5,
 			}))
 
 		neighbors.push(...allReachedAirports)

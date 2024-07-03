@@ -2,7 +2,6 @@ import { places, type Place } from "../data"
 import PriorityQueue from "../utils/PriorityQueue"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
-import { getRouteTime } from "./getRouteTime"
 
 export type RoutingResult = { path: Place[]; time: number }
 
@@ -18,6 +17,7 @@ export const findPath = (from: string, to: string) => {
 	const frontier = new PriorityQueue<string>()
 	const cameFrom = new Map<string, string[]>()
 	const timesSoFar = new Map<string, number>()
+	const timesCache: Record<string, number> = {}
 
 	frontier.enqueue(start.id, 0)
 	timesSoFar.set(start.id, 0)
@@ -34,6 +34,7 @@ export const findPath = (from: string, to: string) => {
 
 		for (const neighbor of neighbors) {
 			const { placeId, time } = neighbor
+			timesCache[`${currentId}${placeId}`] = time
 
 			// for each neighbor, we want to calculate the time (cost) to get there
 			// if we haven't visited the neighbor yet, we add it to the frontier
@@ -101,7 +102,10 @@ export const findPath = (from: string, to: string) => {
 			path: [places.map.get(placeId), ...nextPath.path].filter(
 				(x) => x !== undefined,
 			),
-			time: nextPath.time + getRouteTime(places.map.get(placeId), currentPlace),
+			time:
+				nextPath.time +
+				(timesCache[`${placeId}${currentPlace.id}`] ??
+					Number.POSITIVE_INFINITY),
 		}))
 
 		for (const newPath of newPaths) {
