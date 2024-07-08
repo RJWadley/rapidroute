@@ -1,8 +1,12 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { findPath } from "./pathing"
+import { useState } from "react"
 import { places, type Place } from "./data"
+import { findPathInWorker } from "./pathing/worker-front"
+import { useQuery } from "@tanstack/react-query"
+import { findRouteInServer } from "./pathing/server-back"
+
+const method: "worker" | "server" = "worker"
 
 const getPlaceDisplay = (place: Place) => {
 	const code = "code" in place ? place.code : null
@@ -14,10 +18,13 @@ export default function Home() {
 	const [startId, setStartId] = useState<string>()
 	const [finishId, setFinishId] = useState<string>()
 
-	const results = useMemo(
-		() => (startId && finishId ? findPath(startId, finishId) : null),
-		[startId, finishId],
-	)
+	const { isLoading, data: results } = useQuery({
+		queryKey: ["route", startId, finishId],
+		queryFn: () =>
+			method === "worker"
+				? findPathInWorker(startId, finishId)
+				: findRouteInServer(startId, finishId),
+	})
 
 	const sortedPlaces = places.list.sort((a, b) =>
 		getPlaceDisplay(a).localeCompare(getPlaceDisplay(b)),
@@ -42,6 +49,7 @@ export default function Home() {
 				{options}
 			</select>
 			<br />
+			{isLoading ? "loading..." : null}
 			{results && results?.length > 0
 				? results.map((result, index) => (
 						<div key={result.id}>
