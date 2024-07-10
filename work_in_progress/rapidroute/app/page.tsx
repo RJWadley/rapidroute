@@ -5,6 +5,7 @@ import { places, type Place } from "./data"
 import { findPathInWorker } from "./pathing/worker-front"
 import { useQuery } from "@tanstack/react-query"
 import { findRouteInServer } from "./pathing/server-back"
+import MapBase from "./components/Map/MapBase"
 
 const method: "worker" | "server" = "worker"
 
@@ -43,6 +44,7 @@ export default function Home() {
 
 	return (
 		<div>
+			<MapBase />
 			<p>starting location</p>
 			<select onChange={(e) => setStartId(e.currentTarget.value)}>
 				<option value="">Select a starting location</option>
