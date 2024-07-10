@@ -1,6 +1,5 @@
-import { flights, gates, places } from "../data"
-
-const WALKING_SPEED_METERS_PER_SECOND = 4
+import { connectionLines, flights, gates, places } from "../data"
+import { getRouteTime } from "./getRouteTime"
 
 export const getNeighbors = (locationId: string) => {
 	const location = places.map.get(locationId)
@@ -18,7 +17,7 @@ export const getNeighbors = (locationId: string) => {
 			...location.proximity.town,
 		}).map(([id, proximity]) => ({
 			placeId: id,
-			time: proximity.distance / WALKING_SPEED_METERS_PER_SECOND,
+			time: getRouteTime({ type: "walk", distance: proximity.distance }),
 		})),
 	]
 
@@ -43,7 +42,7 @@ export const getNeighbors = (locationId: string) => {
 			.map((airport) => ({
 				placeId: airport.id,
 				type: "flight",
-				time: 60 * 5,
+				time: getRouteTime({ type: "flight" }),
 			}))
 
 		neighbors.push(...allReachedAirports)
@@ -64,10 +63,14 @@ export const getNeighbors = (locationId: string) => {
 						c.direction.forward_towards_code !== locationId,
 				),
 			)
-			.map(([placeId]) => ({
-				placeId,
-				time: 60 * 5,
-			}))
+			.flatMap(([placeId, connections]) =>
+				connections.map((c) => ({
+					placeId,
+					time: getRouteTime({
+						type: connectionLines.map.get(c.line)?.type,
+					}),
+				})),
+			)
 
 		neighbors.push(...reachedPlaces)
 	}

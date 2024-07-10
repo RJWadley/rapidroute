@@ -1,5 +1,5 @@
 import type { RoutingResult } from "."
-import { companies, gates } from "../data"
+import { companies, gates, type Place } from "../data"
 import { getRouteOptions } from "./getRouteOptions"
 
 export const convertToRoutes = (result: RoutingResult) => {
@@ -12,9 +12,10 @@ export const convertToRoutes = (result: RoutingResult) => {
 		.filter((x) => x !== null)
 
 	const routes = allLocationPairs.map(([from, to]) => ({
-		id: Math.random(),
+		id: crypto.randomUUID(),
 		from,
 		to,
+		skipped: null as Place[] | null,
 		options: getRouteOptions(from, to).map((option) => ({
 			...option,
 			gates:

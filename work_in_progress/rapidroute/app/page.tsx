@@ -9,9 +9,14 @@ import { findRouteInServer } from "./pathing/server-back"
 const method: "worker" | "server" = "worker"
 
 const getPlaceDisplay = (place: Place) => {
-	const code = "code" in place ? place.code : null
+	const code =
+		"code" in place
+			? place.code
+			: "codes" in place
+				? place.codes.join(", ")
+				: null
 	const name = place.name || "Unnamed"
-	return code ? `${place.type} ${code} - ${name}` : `${place.type} ${name}`
+	return code ? `${code} - ${name} ${place.type}` : `${place.type} ${name}`
 }
 
 export default function Home() {
@@ -49,14 +54,15 @@ export default function Home() {
 				{options}
 			</select>
 			<br />
-			{isLoading ? "loading..." : null}
-			{results && results?.length > 0
-				? results.map((result, index) => (
-						<div key={result.id}>
-							<br />
-							result number {index + 1} ({Math.round(result.time)} seconds):
-							<br />
-							{/* {result.path
+			{isLoading
+				? "loading..."
+				: results && results?.length > 0
+					? results.map((result, index) => (
+							<div key={result.id}>
+								<br />
+								result number {index + 1} ({Math.round(result.time)} seconds):
+								<br />
+								{/* {result.path
 								.map((place) => `${place.type} ${place.name}`)
 								.flatMap((place, index) => (
 									<div key={place}>
@@ -64,26 +70,28 @@ export default function Home() {
 										<br />
 									</div>
 								))} */}
-							{result.path.map((leg) => (
-								<div key={leg.id}>
-									from {leg.from.name} to {leg.to.name} via <br />
-									{leg.options
-										.map(
-											(option) =>
-												`${option.type} with ${
-													option.airline?.name ??
-													option.company?.name ??
-													(option.type === "walk"
-														? "your legs"
-														: "unknown company")
-												}`,
-										)
-										.join(", ")}
-								</div>
-							))}
-						</div>
-					))
-				: "no results"}
+								{result.path.map((leg) => (
+									<div key={leg.id}>
+										from {getPlaceDisplay(leg.from)} to{" "}
+										{getPlaceDisplay(leg.to)} via <br />
+										{leg.options
+											.map(
+												(option) =>
+													`option: ${option.type} ${"code" in option ? option.code : ""} with ${
+														option.airline?.name ??
+														option.company?.name ??
+														(option.type === "walk"
+															? "your legs"
+															: "unknown company")
+													}`,
+											)
+											.join(", ")}
+										{leg.skipped ? ` (skips ${leg.skipped.length})` : null}
+									</div>
+								))}
+							</div>
+						))
+					: "no results"}
 		</div>
 	)
 }

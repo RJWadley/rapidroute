@@ -1,5 +1,6 @@
 import { places, type Place } from "../data"
 import PriorityQueue from "../utils/PriorityQueue"
+import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
 
@@ -133,5 +134,6 @@ export const findPath = (from: string, to: string) => {
 
 	return completedPaths
 		.map(convertToRoutes)
-		.map((x) => ({ ...x, id: Math.random() }))
+		.map(compressResult)
+		.map((x) => ({ ...x, id: crypto.randomUUID() }))
 }
