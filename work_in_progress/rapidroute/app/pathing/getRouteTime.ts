@@ -12,7 +12,7 @@ export const getRouteTime = (
 		case "flight":
 			return 60 * 4
 		case "walk":
-			return props.distance / 0.004
+			return props.distance / 4
 		case "railline":
 			return 30
 		case "sealine":
