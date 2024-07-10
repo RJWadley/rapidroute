@@ -1,3 +1,7 @@
+/**
+ * get the duration, in seconds, of a route
+ * based on its physical properties
+ */
 export const getRouteTime = (
 	props:
 		| { type: "flight" }

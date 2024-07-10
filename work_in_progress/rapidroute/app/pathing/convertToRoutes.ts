@@ -2,6 +2,12 @@ import type { RoutingResult } from "."
 import { companies, gates, type Place } from "../data"
 import { getRouteOptions } from "./getRouteOptions"
 
+/**
+ * takes a list of places (what the pather returns) and converts it
+ * into a list of routes between those locations (the info the user wants)
+ *
+ * @see {getRouteOptions}
+ */
 export const convertToRoutes = (result: RoutingResult) => {
 	const allLocationPairs = result.path
 		.map((_, index) => {
@@ -30,7 +36,7 @@ export const convertToRoutes = (result: RoutingResult) => {
 	}))
 
 	return {
-		time: result.time,
+		...result,
 		path: routes,
 	}
 }

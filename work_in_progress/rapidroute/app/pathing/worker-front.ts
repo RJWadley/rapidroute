@@ -1,5 +1,3 @@
-// create a web worker from ./worker-back.ts
-
 import type { findPath } from "."
 
 const worker =
@@ -17,6 +15,9 @@ type Output =
 			id: string
 	  }
 
+/**
+ * find a path between two locations in a web worker
+ */
 export const findPathInWorker = (
 	from: string | undefined,
 	to: string | undefined,

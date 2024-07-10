@@ -6,6 +6,10 @@ import { getNeighbors } from "./getNeighbors"
 
 export type RoutingResult = { path: Place[]; time: number }
 
+/**
+ * this is where the magic happens! we do some dijkstra's algorithm to find the shortest path
+ * between two locations
+ */
 export const findPath = (from: string, to: string) => {
 	const startTime = performance.now()
 
@@ -14,7 +18,6 @@ export const findPath = (from: string, to: string) => {
 	if (!start) return null
 	if (!end) return null
 
-	// djistra's algorithm
 	const frontier = new PriorityQueue<string>()
 	const cameFrom = new Map<string, string[]>()
 	const timesSoFar = new Map<string, number>()
@@ -83,7 +86,7 @@ export const findPath = (from: string, to: string) => {
 
 	// now that we have the path, lets reconstruct it
 	// some things to note:
-	// typically, we would only reconstruct a single path with djistra's algorithm
+	// typically, we would only reconstruct a single path with dijkstra's algorithm
 	// but I want all the possible paths within ALLOWABLE_TIME_DIFFERENCE
 	// so construct all possible paths and filter out the ones that are too slow
 

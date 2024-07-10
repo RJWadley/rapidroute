@@ -1,5 +1,8 @@
 import type { convertToRoutes } from "./convertToRoutes"
 
+/**
+ * get a unique identifier for a route (id if available, type otherwise)
+ */
 const identifyRoute = (
 	route: { type: string; id: string } | { type: "walk" },
 ) => ("id" in route ? route.id : route.type)
@@ -19,6 +22,7 @@ export function compressResult(result: ReturnType<typeof convertToRoutes>) {
 		...result.path,
 	]
 
+	// iterate through the path and squish legs together one by one
 	for (let i = 0; i < mutablePath.length; i++) {
 		// pull the leg from the compressed path if it exists (so that we can chain squished legs together)
 		const thisLeg = mutablePath[i]
@@ -27,6 +31,8 @@ export function compressResult(result: ReturnType<typeof convertToRoutes>) {
 		if (thisLeg && nextLeg) {
 			const firstRoute = thisLeg.options.map((o) => identifyRoute(o))
 			const secondRoute = nextLeg.options.map((o) => identifyRoute(o))
+
+			// if we can stay on the same route, let's get squishy!
 			const canSquish = firstRoute.some((routeId) =>
 				secondRoute.includes(routeId),
 			)
@@ -42,6 +48,8 @@ export function compressResult(result: ReturnType<typeof convertToRoutes>) {
 					skipped: [...(thisLeg.skipped ?? []), nextLeg.from],
 				}
 
+				// to keep indexes in sync, set to undefined instead of removing
+				// we'll filter them out at the end
 				mutablePath[i] = undefined
 				mutablePath[i + 1] = squishedLeg
 			}

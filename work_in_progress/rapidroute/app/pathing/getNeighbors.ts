@@ -1,6 +1,10 @@
 import { connectionLines, flights, gates, places } from "../data"
 import { getRouteTime } from "./getRouteTime"
 
+/**
+ * get all places that can be reached from a given location,
+ * as well as the time it takes to get there
+ */
 export const getNeighbors = (locationId: string) => {
 	const location = places.map.get(locationId)
 	if (!location) return []
@@ -33,15 +37,19 @@ export const getNeighbors = (locationId: string) => {
 			.filter((flight) => flight !== undefined)
 
 		const allReachedAirports = allFlights
+			// get all gates at this airport
 			.flatMap((flight) => flight.gates)
 			.map((gateId) => gates.map.get(gateId))
 			.filter((gate) => gate !== undefined)
+			// get all airports reachable from those gates
 			.map((gate) => places.map.get(gate?.airport))
 			.filter((airport) => airport !== undefined)
+			// remove the current location
 			.filter((airport) => airport !== location)
 			.map((airport) => ({
 				placeId: airport.id,
 				type: "flight",
+				// TODO factor in gate existance & airport size
 				time: getRouteTime({ type: "flight" }),
 			}))
 
@@ -66,6 +74,7 @@ export const getNeighbors = (locationId: string) => {
 			.flatMap(([placeId, connections]) =>
 				connections.map((c) => ({
 					placeId,
+					// TODO better factor in line type (MRT, boat, etc.) and station size (larger stations take longer to navigate, for e.g.)
 					time: getRouteTime({
 						type: connectionLines.map.get(c.line)?.type,
 					}),

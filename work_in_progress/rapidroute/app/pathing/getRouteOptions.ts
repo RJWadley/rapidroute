@@ -6,6 +6,10 @@ type Route =
 	| (typeof connectionLines.list)[number]
 	| { type: "walk"; distance: number }
 
+/**
+ * given two places, get all possible routes between them
+ * note that this is a bit expensive, so we only do this after pathing
+ */
 export const getRouteOptions = (from: Place, to: Place) => {
 	const options: { time: number; route: Route }[] = []
 
@@ -59,6 +63,6 @@ export const getRouteOptions = (from: Place, to: Place) => {
 
 	const fastestTime = Math.min(...options.map((o) => o.time))
 
-	// only keep options within 60s of the fastest time
+	// only keep options within 60s of the fastest time (to avoid showing stupid options)
 	return options.filter((o) => o.time <= fastestTime + 60).map((o) => o.route)
 }
