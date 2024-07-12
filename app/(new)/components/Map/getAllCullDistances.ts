@@ -71,7 +71,7 @@ const getAllCullDistances = (objectsToCheck: CullInput[]): CullInfo[] => {
 	const cullInfo: CullInfo[] = []
 
 	// now iterate through the objects and add them to the cullInfo array with zoom levels
-
+	
 	sortedObjects.forEach((object) => {
 		let zoomToShowAt = object.minZoom ?? 0
 		cullInfo.forEach((existingObject) => {
