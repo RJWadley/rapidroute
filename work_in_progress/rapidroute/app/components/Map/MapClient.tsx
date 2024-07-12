@@ -43,7 +43,7 @@ export default function MapClient({
 				onInit={() => setHasInit(true)}
 				resizeTo={wrapperRef}
 				background="#546461"
-				resolution={window.devicePixelRatio}
+				resolution={typeof window !== "undefined" ? window.devicePixelRatio : 1}
 			>
 				{hasInit && (
 					<PixiViewport>
