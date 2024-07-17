@@ -53,6 +53,7 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 	useEffect(updateSize, [hover])
 
 	const app = useApp()
+	if (!app) return
 
 	return (
 		<container

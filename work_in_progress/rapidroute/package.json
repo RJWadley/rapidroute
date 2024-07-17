@@ -11,7 +11,7 @@
   "dependencies": {
     "@pigment-css/nextjs-plugin": "^0.0.14",
     "@pigment-css/react": "^0.0.13",
-    "@pixi/react": "^8.0.0-dev.2cf4a08",
+    "@pixi/react": "^8.0.0-dev.6562a1e",
     "@tanstack/react-query": "^5.49.2",
     "ahooks": "^3.8.0",
     "next": "14.2.4",

@@ -3,6 +3,7 @@ import { Viewport } from "pixi-viewport"
 import type { PixiReactNode } from "@pixi/react"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import useIsMounted from "../../utils/useIsMounted"
+import { useEventListener } from "ahooks"
 
 extend({ Viewport })
 
@@ -105,12 +106,12 @@ export default function PixiViewport({
 			})
 	}, [viewport])
 
-	addEventListener("resize", () => {
-		setTimeout(() => {
+	useEventListener("resize", () => {
+		if (app)
 			viewport?.resize(app.screen.width, app.screen.height, halfSize, halfSize)
-		})
 	})
 
+	if (!app) return null
 	return (
 		<viewport
 			ref={setViewport}
