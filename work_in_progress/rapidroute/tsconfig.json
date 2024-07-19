@@ -9,6 +9,7 @@
 		"moduleDetection": "force",
 		"isolatedModules": true,
 		"verbatimModuleSyntax": true,
+		"downlevelIteration": true,
 
 		/* Strictness */
 		"strict": true,
@@ -24,6 +25,10 @@
 		"lib": ["es2022", "dom", "dom.iterable"],
 
 		/* Added by Next.js */
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["app/*"]
+		},
 		"noEmit": true,
 		"incremental": true,
 		"jsx": "preserve",

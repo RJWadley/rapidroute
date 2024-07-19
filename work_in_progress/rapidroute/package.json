@@ -14,11 +14,13 @@
     "@pixi/react": "^8.0.0-dev.6562a1e",
     "@tanstack/react-query": "^5.49.2",
     "ahooks": "^3.8.0",
-    "next": "14.2.4",
+    "color2k": "^2.0.3",
+    "next": "^14.2.5",
     "pixi-viewport": "^5.0.3",
     "pixi.js": "^8.2.1",
     "react": "^18",
     "react-dom": "^18",
+    "use-deep-compare": "^1.2.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

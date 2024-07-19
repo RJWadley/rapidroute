@@ -4,6 +4,7 @@ import type { PixiReactNode } from "@pixi/react"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import useIsMounted from "../../utils/useIsMounted"
 import { useEventListener } from "ahooks"
+import { useSearchParamState } from "@/utils/useSearchParamState"
 
 extend({ Viewport })
 
@@ -82,15 +83,30 @@ export default function PixiViewport({
 }) {
 	const app = useApp()
 	const [viewport, setViewport] = useState<Viewport | null>(null)
+	const [xRaw, setX] = useSearchParamState("x")
+	const [zRaw, setZ] = useSearchParamState("z")
+	const [zoomRaw, setZoom] = useSearchParamState("zoom")
+
+	const x = xRaw ? Number.parseFloat(xRaw) : 0
+	const z = zRaw ? Number.parseFloat(zRaw) : 0
+	const zoom = zoomRaw ? Number.parseFloat(zoomRaw) : 0.5
+	const hasInit = useRef(false)
 
 	useEffect(() => {
+		if (!viewport) return
+		if (hasInit.current) return
+		hasInit.current = true
+
 		viewport
-			?.drag()
+			.drag()
 			.pinch()
 			.wheel()
 			.decelerate()
-			.moveCenter(0, 0)
-			.setZoom(0.5)
+			.setZoom(zoom)
+			.moveCenter({
+				x,
+				y: z,
+			})
 			.clampZoom({
 				maxHeight: worldSize * 2,
 				maxWidth: worldSize * 2,
@@ -104,7 +120,12 @@ export default function PixiViewport({
 				right: worldSize,
 				underflow: "none",
 			})
-	}, [viewport])
+			.addEventListener("moved", () => {
+				setX(Number(viewport.center.x.toFixed(4)).toString())
+				setZ(Number(viewport.center.y.toFixed(4)).toString())
+				setZoom(Number(viewport.scale.x.toFixed(4)).toString())
+			})
+	}, [viewport, x, z, zoom, setX, setZ, setZoom])
 
 	useEventListener("resize", () => {
 		if (app)
