@@ -1,13 +1,13 @@
 "use client"
 
+import { styled } from "@pigment-css/react"
 import { Application, extend } from "@pixi/react"
 import { Container, Graphics } from "pixi.js"
 import { useEffect, useRef, useState } from "react"
-import PixiViewport from "./PixiViewport"
-import Satellite from "./Satellite"
-import { styled } from "@pigment-css/react"
 import DynmapMarkers from "./Dynmap/DynmapMarkers"
 import type { MarkersResponse } from "./Dynmap/dynmapType"
+import PixiViewport from "./PixiViewport"
+import Satellite from "./Satellite"
 
 extend({
 	Container,
@@ -57,7 +57,10 @@ export default function MapClient({
 }
 
 const Wrapper = styled.div`
-	width: calc(100vw - 20px);
-	height: calc(100vh - 20px);
-	border: 1px solid red;
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+z-index: 1;
+background: #546461;
 `

@@ -1,10 +1,10 @@
+import { useSearchParamState } from "@/utils/useSearchParamState"
 import { extend, useApp } from "@pixi/react"
-import { Viewport } from "pixi-viewport"
 import type { PixiReactNode } from "@pixi/react"
+import { useEventListener } from "ahooks"
+import { Viewport } from "pixi-viewport"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import useIsMounted from "../../utils/useIsMounted"
-import { useEventListener } from "ahooks"
-import { useSearchParamState } from "@/utils/useSearchParamState"
 
 extend({ Viewport })
 
@@ -92,6 +92,10 @@ export default function PixiViewport({
 	const zoom = zoomRaw ? Number.parseFloat(zoomRaw) : 0.5
 	const hasInit = useRef(false)
 
+	if (Number.isNaN(x)) setX("0")
+	if (Number.isNaN(z)) setZ("0")
+	if (Number.isNaN(zoom)) setZoom("0.5")
+
 	useEffect(() => {
 		if (!viewport) return
 		if (hasInit.current) return
@@ -121,8 +125,8 @@ export default function PixiViewport({
 				underflow: "none",
 			})
 			.addEventListener("moved", () => {
-				setX(Number(viewport.center.x.toFixed(4)).toString())
-				setZ(Number(viewport.center.y.toFixed(4)).toString())
+				setX(Math.round(viewport.center.x).toString())
+				setZ(Math.round(viewport.center.y).toString())
 				setZoom(Number(viewport.scale.x.toFixed(4)).toString())
 			})
 	}, [viewport, x, z, zoom, setX, setZ, setZoom])

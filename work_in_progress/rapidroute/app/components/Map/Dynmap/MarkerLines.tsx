@@ -1,11 +1,10 @@
+import { extend } from "@pixi/react"
+import { Container } from "pixi.js"
 import { useRef } from "react"
-
 import { useViewport, useViewportMoved } from "../PixiViewport"
+import { hideItem, showItem } from "../pixiUtils"
 import Line from "./Line"
 import type { LineType } from "./dynmapType"
-import { Container } from "pixi.js"
-import { hideItem, showItem } from "../pixiUtils"
-import { extend } from "@pixi/react"
 
 interface MarkerLinesProps {
 	lines: LineType[]

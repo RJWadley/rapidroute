@@ -1,5 +1,5 @@
 import type { RoutingResult } from "."
-import { companies, gates, type Place } from "../data"
+import { type Place, companies, gates } from "../data"
 import { getRouteOptions } from "./getRouteOptions"
 
 /**

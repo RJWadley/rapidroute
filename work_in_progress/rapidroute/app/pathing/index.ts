@@ -1,4 +1,6 @@
-import { places, type Place } from "../data"
+import { compressedPlaces } from "@/utils/compressedPlaces"
+import { findClosestPlace } from "@/utils/search"
+import { type Place, places } from "../data"
 import PriorityQueue from "../utils/PriorityQueue"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
@@ -10,11 +12,24 @@ export type RoutingResult = { path: Place[]; time: number }
  * this is where the magic happens! we do some dijkstra's algorithm to find the shortest path
  * between two locations
  */
-export const findPath = (from: string, to: string) => {
+export const findPath = (
+	from: string | null | undefined,
+	to: string | null | undefined,
+) => {
 	const startTime = performance.now()
 
-	const start = places.map.get(from)
-	const end = places.map.get(to)
+	if (!from || !to) return null
+	if (from === to) return null
+
+	const startID = findClosestPlace(from, compressedPlaces)?.id
+	const endID = findClosestPlace(to, compressedPlaces)?.id
+
+	if (!startID) return null
+	if (!endID) return null
+
+	const start = places.list.find((x) => x.pretty_id === startID)
+	const end = places.list.find((x) => x.pretty_id === endID)
+
 	if (!start) return null
 	if (!end) return null
 
@@ -82,7 +97,7 @@ export const findPath = (from: string, to: string) => {
 	const totalTimeToDestination = timesSoFar.get(end.id)
 
 	// if there is no totalTimeToDestination, there's no path to the destination
-	if (!totalTimeToDestination) return null
+	if (!totalTimeToDestination) return []
 
 	// now that we have the path, lets reconstruct it
 	// some things to note:
@@ -124,16 +139,9 @@ export const findPath = (from: string, to: string) => {
 
 	const endTime = performance.now()
 
-	console.log(
-		"completed paths",
-		`took ${endTime - startTime}ms`,
-		completedPaths.map((x) => ({
-			time: x.time,
-			path: x.path
-				.map((a) => (a.type === "airport" ? a.code : a.name))
-				.join(" -> "),
-		})),
-	)
+	// console.log(
+	// 	`${completedPaths.length} completed paths took ${endTime - startTime}ms`,
+	// )
 
 	return completedPaths
 		.map(convertToRoutes)

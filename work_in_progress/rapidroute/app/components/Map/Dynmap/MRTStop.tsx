@@ -1,9 +1,9 @@
+import { extend, useApp } from "@pixi/react"
 import { Container, Point, Text } from "pixi.js"
 import { useEffect, useRef, useState } from "react"
-import { regular } from "../textStyles"
 import { useViewport, useViewportMoved } from "../PixiViewport"
+import { regular } from "../textStyles"
 import MulticolorDot from "./MulticolorDot"
-import { extend, useApp } from "@pixi/react"
 
 interface MRTStopProps {
 	name: string

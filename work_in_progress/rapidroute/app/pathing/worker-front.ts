@@ -19,8 +19,8 @@ type Output =
  * find a path between two locations in a web worker
  */
 export const findPathInWorker = (
-	from: string | undefined,
-	to: string | undefined,
+	from: string | undefined | null,
+	to: string | undefined | null,
 ) => {
 	if (!from || !to) return null
 

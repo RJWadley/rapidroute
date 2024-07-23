@@ -1,9 +1,8 @@
 import { useState } from "react"
 import { useDeepCompareMemo } from "use-deep-compare"
-
+import { getDistance } from "../../../utils/getDistance"
 import { useViewport, useViewportMoved } from "../PixiViewport"
 import MRTStop from "./MRTStop"
-import { getDistance } from "../../../utils/getDistance"
 import type { Marker } from "./dynmapType"
 
 export interface ColoredMarker {

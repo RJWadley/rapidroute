@@ -206,7 +206,37 @@ const schema = z
 	.readonly()
 
 const data = schema.parse(RawData)
-console.log("data is valid!")
+
+const usedIds: Record<string, boolean> = {}
+const getPlaceId = (place: {
+	code?: string | null
+	codes?: string[] | null
+	name?: string | null
+	type?: string | null
+}) => {
+	const codes =
+		"code" in place && place.code
+			? [place.code]
+			: "codes" in place && place.codes
+				? place.codes
+				: undefined
+	const name = place.name
+
+	const id = codes ? codes.join(" ") : name || `Untitled ${place.type}`
+
+	if (usedIds[id]) {
+		let i = 1
+		while (usedIds[`${id} ${i}`]) {
+			i++
+		}
+
+		usedIds[`${id} ${i}`] = true
+		return `${id} ${i}`
+	}
+
+	usedIds[id] = true
+	return id
+}
 
 const placesArray = [
 	...Object.entries(data.air.airport).map(
@@ -249,7 +279,10 @@ const placesArray = [
 				...town,
 			}) as const,
 	),
-]
+].map((place) => ({
+	...place,
+	pretty_id: getPlaceId(place),
+}))
 
 const placesMap = new Map(
 	placesArray.map((location) => [location.id, location]),

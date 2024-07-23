@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { places, type Place } from "../data"
-import { findPathInWorker } from "../pathing/worker-front"
+import { findPathInServer } from "@/pathing/server-front"
 import { useQuery } from "@tanstack/react-query"
-import { findRouteInServer } from "../pathing/server-back"
+import { useState } from "react"
+import { type Place, places } from "../data"
+import { findPathInWorker } from "../pathing/worker-front"
 
 const method: "worker" | "server" = "worker"
 
@@ -28,7 +28,7 @@ export default function Home() {
 		queryFn: () =>
 			method === "worker"
 				? findPathInWorker(startId, finishId)
-				: findRouteInServer(startId, finishId),
+				: findPathInServer(startId, finishId),
 	})
 
 	const sortedPlaces = places.list.sort((a, b) =>

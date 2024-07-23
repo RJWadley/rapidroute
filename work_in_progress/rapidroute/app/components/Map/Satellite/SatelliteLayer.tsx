@@ -1,8 +1,7 @@
 import { startTransition, useMemo, useRef, useState } from "react"
-
+import useIsMounted from "../../../utils/useIsMounted"
 import { useViewport, useViewportMoved, worldSize } from "../PixiViewport"
 import ImageTile from "./ImageTile"
-import useIsMounted from "../../../utils/useIsMounted"
 
 interface SatelliteProps {
 	zoomLevel: number

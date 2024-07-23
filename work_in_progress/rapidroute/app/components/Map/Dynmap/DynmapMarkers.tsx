@@ -2,7 +2,7 @@ import invertLightness from "../../../utils/color"
 import type { ColoredMarker } from "./MRTStops"
 import MRTStops from "./MRTStops"
 import MarkerLines from "./MarkerLines"
-import { isMRTLine, type MarkersResponse } from "./dynmapType"
+import { type MarkersResponse, isMRTLine } from "./dynmapType"
 
 export default function DynmapMarkers({
 	initialMarkers,

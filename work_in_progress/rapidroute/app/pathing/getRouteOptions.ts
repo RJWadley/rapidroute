@@ -1,4 +1,4 @@
-import { connectionLines, flights, type Place } from "../data"
+import { type Place, connectionLines, flights } from "../data"
 import { getRouteTime } from "./getRouteTime"
 
 type Route =

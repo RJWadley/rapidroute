@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react"
-
-import getTileUrl from "./getTileURL"
-import { Assets, Sprite, Texture } from "pixi.js"
 import { extend } from "@pixi/react"
+import { Assets, Sprite, Texture } from "pixi.js"
+import { useEffect, useRef, useState } from "react"
 import { worldSize } from "../PixiViewport"
+import getTileUrl from "./getTileURL"
 
 interface ImageTileProps {
 	x: number
