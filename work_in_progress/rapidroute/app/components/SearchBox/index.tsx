@@ -6,6 +6,7 @@ import { useSearchParamState } from "@/utils/useSearchParamState"
 import { useClickAway } from "ahooks"
 import { useRef } from "react"
 import useSearchBox from "./useSearchBox"
+import WikiData from "../WikiData"
 
 export function SearchBox({ places }: { places: CompressedPlace[] }) {
 	const wrapper = useRef<HTMLDivElement>(null)
@@ -67,6 +68,7 @@ export function SearchBox({ places }: { places: CompressedPlace[] }) {
 						{result.highlighted ? "🔍" : ""}
 					</button>
 				))}
+				<WikiData />
 			</div>
 		</>
 	)

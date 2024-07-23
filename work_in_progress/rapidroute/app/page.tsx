@@ -7,8 +7,6 @@ import SelectedRoute from "./components/SelectedRoute"
 import { compressedPlaces } from "./utils/compressedPlaces"
 
 export default function Page() {
-	console.log("rendered page!")
-
 	return (
 		<Application>
 			<MinecraftMap />
