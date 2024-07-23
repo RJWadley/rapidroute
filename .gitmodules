@@ -1,0 +1,3 @@
+[submodule "gatelogue"]
+	path = gatelogue
+	url = https://github.com/MRT-Map/gatelogue.git
