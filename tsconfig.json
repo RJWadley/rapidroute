@@ -8,19 +8,27 @@
 		"resolveJsonModule": true,
 		"moduleDetection": "force",
 		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"downlevelIteration": true,
+
 		/* Strictness */
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitAny": true,
+
 		/* If transpiling with TypeScript: */
-		"moduleResolution": "Bundler",
-		"module": "ESNext",
 		"outDir": "dist",
 		"sourceMap": true,
+
 		/* If your code runs in the DOM: */
 		"lib": ["es2022", "dom", "dom.iterable"],
-		/* added by me */
-		"baseUrl": "app",
+
 		/* Added by Next.js */
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["app/*"]
+		},
 		"noEmit": true,
 		"incremental": true,
 		"jsx": "preserve",
@@ -28,13 +36,10 @@
 			{
 				"name": "next"
 			}
-		]
+		],
+		"module": "esnext",
+		"moduleResolution": "node"
 	},
-	"include": [
-		"app/temp/types/next-env.d.ts",
-		".next/types/**/*.ts",
-		"**/*.ts",
-		"**/*.tsx"
-	],
-	"exclude": ["node_modules", "next-env.d.ts"]
+	"include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules"]
 }

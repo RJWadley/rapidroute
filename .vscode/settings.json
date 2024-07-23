@@ -1,38 +1,31 @@
 {
-    /* formatting */
-    "editor.defaultFormatter": "biomejs.biome",
-    /* recommended extension config */
-    "template-string-converter.addBracketsToProps": true,
-    "template-string-converter.autoRemoveTemplateString": true,
-    "cSpell.words": [
-        "ahooks",
-        "arrowdown",
-        "arrowup",
-        "Dynmap",
-        "gramm",
-        "grammarly",
-        "linaria",
-        "svgr",
-        "Textbox"
-    ],
-    "cSpell.ignorePaths": [
-        "package.json",
-        "package-lock.json",
-        "node_modules",
-        "vscode-extension",
-        ".git/objects",
-        ".vscode",
-        ".vscode-insiders",
-        "pnpm-lock.yaml"
-    ],
-    /* workbench settings */
-    "typescript.tsdk": "./node_modules/typescript/lib",
-    "typescript.enablePromptUseWorkspaceTsdk": true,
-    "workbench.editor.customLabels.patterns": {
-        "**/index.tsx": "${dirname} / index.tsx",
+	/* formatting */
+	"editor.defaultFormatter": "biomejs.biome",
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[xml]": {
+		"editor.defaultFormatter": "redhat.vscode-xml"
+	},
+
+	/* recommended extension config */
+	"template-string-converter.addBracketsToProps": true,
+	"template-string-converter.autoRemoveTemplateString": true,
+	"stylelint.validate": ["css", "scss", "javascriptreact", "typescriptreact"],
+
+	/* workbench settings */
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"workbench.editor.customLabels.patterns": {
+		"**/index.tsx": "${dirname} / index.tsx",
+		"**/index.ts": "${dirname} / index.ts",
         "**/page.tsx": "${dirname} / page.tsx"
-    },
+	},
     "editor.linkedEditing": true,
-    /* unsorted settings */
-    "": ""
+
+	/* unsorted settings */
+	"": ""
 }
