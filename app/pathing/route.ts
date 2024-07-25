@@ -1,8 +1,6 @@
 import type { NextRequest } from "next/server"
 import { findPath } from "."
 
-export const runtime = "edge"
-
 /**
  * find a path between two locations on the server-side
  * includes from and to in request
