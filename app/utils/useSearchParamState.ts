@@ -1,15 +1,14 @@
-import { useCallback, useState } from "react"
-import TypedEventEmitter from "./TypedEventEmitter"
+import { useSafeState } from "ahooks"
+import { useCallback, useEffect } from "react"
 import { getSearchParams } from "./getSearchParams"
+import { isBrowser } from "./isBrowser"
 
-const updater = new TypedEventEmitter<{
-	update: [string, string | null]
-}>()
+// always the most up-to-date search params (browser only)
+// on the server its important to refetch search params every call
+const liveSearchParams = isBrowser ? getSearchParams() : null
+const updaters: Record<string, ((value: string | null) => void)[]> = {}
 
-// always the most up-to-date search params
-const liveSearchParams = getSearchParams()
-
-if (typeof window !== "undefined") {
+if (liveSearchParams) {
 	setInterval(() => {
 		// apply updates to the URL
 		const url = new URL(window.location.href)
@@ -19,20 +18,30 @@ if (typeof window !== "undefined") {
 }
 
 export function useSearchParamState(name: string) {
-	const initialParams = getSearchParams()
-	const [value, setValue] = useState(initialParams?.get(name) || null)
+	const [value, setValue] = useSafeState(
+		liveSearchParams?.get(name) || getSearchParams().get(name) || null,
+	)
 
-	updater.useEventListener("update", (updateName, value) => {
-		if (updateName === name) setValue(value || null)
-	})
+	useEffect(() => {
+		updaters[name] ||= []
+		updaters[name].push(setValue)
+
+		return () => {
+			updaters[name] =
+				updaters[name]?.filter((updater) => updater !== setValue) ?? []
+		}
+	}, [name, setValue])
 
 	const update = useCallback(
 		(newValue: string | null | undefined) => {
-			updater.dispatchEvent("update", name, newValue || null)
-
 			// save the param to the URL
 			if (newValue) liveSearchParams?.set(name, newValue)
 			else liveSearchParams?.delete(name)
+
+			const updatersForName = updaters[name] ?? []
+			for (const updater of updatersForName) {
+				updater(newValue || null)
+			}
 		},
 		[name],
 	)

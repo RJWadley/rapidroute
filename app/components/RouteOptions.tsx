@@ -1,14 +1,19 @@
 "use client"
 
-import { styled } from "@pigment-css/react"
+import { styled } from "@linaria/react"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 import { useRouting } from "./RoutingContext"
 
 export default function RouteOptions() {
 	const { routes, isLoading, setPreferredRoute } = useRouting()
+	const [from] = useSearchParamState("from")
+	const [to] = useSearchParamState("to")
 
-	if (!routes) return <Wrapper>no search yet</Wrapper>
 	if (isLoading) return <Wrapper>loading...</Wrapper>
+	if (!from || !to) return null
+	if (!routes) return null
 	if (routes?.length === 0) return <Wrapper>no routes found</Wrapper>
+
 	return (
 		<Wrapper>
 			the following options are available:

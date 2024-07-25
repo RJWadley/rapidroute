@@ -13,5 +13,10 @@ export const useSearchResults = <T extends Partial<CompressedPlace>>(
 		[query, initialPlaces],
 	)
 
-	return results ? results.map((r) => r.obj) : initialPlaces
+	const randomPlaces = useMemo(() => {
+		const shuffled = [...initialPlaces].sort(() => Math.random() - 0.5)
+		return shuffled.slice(0, 10)
+	}, [initialPlaces])
+
+	return results ? results.map((r) => r.obj) : randomPlaces
 }

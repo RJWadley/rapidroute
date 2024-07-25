@@ -1,45 +1,30 @@
 {
 	"compilerOptions": {
-		/* Base Options: */
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"target": "es2022",
+		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
-		"resolveJsonModule": true,
-		"moduleDetection": "force",
-		"isolatedModules": true,
-		"verbatimModuleSyntax": true,
-		"downlevelIteration": true,
-
-		/* Strictness */
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
-		"noImplicitOverride": true,
-		"noImplicitAny": true,
-
-		/* If transpiling with TypeScript: */
-		"outDir": "dist",
-		"sourceMap": true,
-
-		/* If your code runs in the DOM: */
-		"lib": ["es2022", "dom", "dom.iterable"],
-
-		/* Added by Next.js */
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["app/*"]
-		},
+		"skipLibCheck": true,
 		"noEmit": true,
-		"incremental": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
 		"jsx": "preserve",
+		"incremental": true,
+		"downlevelIteration": true,
 		"plugins": [
 			{
 				"name": "next"
 			}
 		],
-		"module": "esnext",
-		"moduleResolution": "node"
+		"baseUrl": ".",
+
+		/* Strictness */
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noImplicitAny": true
 	},
-	"include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules"]
 }

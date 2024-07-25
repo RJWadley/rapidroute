@@ -1,7 +1,7 @@
 "use client"
 
-import { findPathInServer } from "@/pathing/server-front"
 import { useQuery } from "@tanstack/react-query"
+import { findPathInServer } from "app/pathing/server-front"
 import { useState } from "react"
 import { type Place, places } from "../data"
 import { findPathInWorker } from "../pathing/worker-front"

@@ -1,6 +1,6 @@
 "use client"
 
-import { styled } from "@pigment-css/react"
+import { styled } from "@linaria/react"
 import { Application, extend } from "@pixi/react"
 import { Container, Graphics } from "pixi.js"
 import { useEffect, useRef, useState } from "react"

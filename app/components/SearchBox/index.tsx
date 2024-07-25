@@ -1,18 +1,28 @@
 "use client"
 
-import type { CompressedPlace } from "@/utils/compressedPlaces"
-import { findClosestPlace } from "@/utils/search"
-import { useSearchParamState } from "@/utils/useSearchParamState"
+import { styled } from "@linaria/react"
 import { useClickAway } from "ahooks"
-import { useRef } from "react"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
+import { findClosestPlace } from "app/utils/search"
+import { useSearchParamState } from "app/utils/useSearchParamState"
+import { type ReactNode, useRef, useState } from "react"
+import { getTextboxName } from "./getTextboxName"
 import useSearchBox from "./useSearchBox"
-import WikiData from "../WikiData"
 
-export function SearchBox({ places }: { places: CompressedPlace[] }) {
+export function SearchBox({
+	places,
+	children,
+}: {
+	places: CompressedPlace[]
+	children?: ReactNode
+}) {
 	const wrapper = useRef<HTMLDivElement>(null)
+	const navigateRef = useRef<HTMLButtonElement>(null)
+	const fromFieldRef = useRef<HTMLTextAreaElement>(null)
 
 	const [from, setFrom] = useSearchParamState("from")
 	const [to, setTo] = useSearchParamState("to")
+	const [navMode, setNavMode] = useState(Boolean(from))
 
 	const fromPlace = findClosestPlace(from, places)
 	const toPlace = findClosestPlace(to, places)
@@ -23,6 +33,7 @@ export function SearchBox({ places }: { places: CompressedPlace[] }) {
 		inputProps: fromProps,
 		onFocusLost: fromFocusLost,
 		searchResults: fromResults,
+		clear: clearFrom,
 	} = useSearchBox({
 		initialPlaces: places,
 		initiallySelectedPlace: fromPlace,
@@ -34,42 +45,83 @@ export function SearchBox({ places }: { places: CompressedPlace[] }) {
 		inputProps: toProps,
 		onFocusLost: toFocusLost,
 		searchResults: toResults,
+		clear: clearTo,
 	} = useSearchBox({
 		initialPlaces: places,
 		initiallySelectedPlace: toPlace,
 		onItemSelected: (item) => {
 			setTo(item?.id)
 		},
+		onBlur: () => {
+			setTimeout(() => {
+				navigateRef.current?.focus()
+				fromFieldRef.current?.focus()
+			})
+		},
 	})
 
 	useClickAway(fromFocusLost, wrapper)
 	useClickAway(toFocusLost, wrapper)
 
+	const hasRoutes = Boolean(from)
+	const hasSearch = Boolean(fromResults?.[0] || toResults?.[0])
+
 	return (
 		<>
-			<div ref={wrapper}>
-				<textarea
-					{...fromProps}
-					onFocus={(e) => {
-						toFocusLost()
-						fromProps.onFocus(e)
-					}}
-				/>
+			<Wrapper ref={wrapper}>
+				{navMode ? (
+					<>
+						<textarea
+							{...fromProps}
+							onFocus={(e) => {
+								toFocusLost()
+								fromProps.onFocus(e)
+							}}
+							placeholder="From"
+							ref={fromFieldRef}
+						/>
+						<button
+							type="button"
+							onClick={() => {
+								clearFrom()
+								setNavMode(false)
+							}}
+						>
+							Clear
+						</button>
+					</>
+				) : to ? (
+					<button
+						type="button"
+						onClick={() => setNavMode(true)}
+						ref={navigateRef}
+					>
+						Navigate
+					</button>
+				) : null}
+				<br />
 				<textarea
 					{...toProps}
 					onFocus={(e) => {
 						fromFocusLost()
 						toProps.onFocus(e)
 					}}
+					placeholder="to"
 				/>
+				<button type="button" onClick={clearTo}>
+					Clear
+				</button>
 				{(fromResults ?? toResults)?.map((result) => (
 					<button type="button" onClick={result.selectItem} key={result.id}>
-						{result.codes?.join(", ")} {result.name}{" "}
-						{result.highlighted ? "🔍" : ""}
+						{getTextboxName(result)} {result.highlighted ? "🔍" : ""}
 					</button>
 				))}
-				<WikiData />
-			</div>
+				{hasRoutes || hasSearch ? null : children}
+			</Wrapper>
 		</>
 	)
 }
+
+const Wrapper = styled.div`
+background: whitesmoke;
+`

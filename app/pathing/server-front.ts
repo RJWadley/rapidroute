@@ -7,8 +7,8 @@ export const findPathInServer = async (
 	from: string | undefined | null,
 	to: string | undefined | null,
 ) => {
-	console.log("fetching path from server")
 	if (typeof window === "undefined") return null
+	if (!from || !to) return null
 
 	const data = await fetch(`/pathing?from=${from}&to=${to}`, {
 		method: "GET",
@@ -17,7 +17,8 @@ export const findPathInServer = async (
 		},
 	}).then((res) => res.json())
 
-	console.log(data)
+	// TODO for testing only
+	await new Promise((resolve) => setTimeout(resolve, 1000))
 
 	return data as ReturnType<typeof findPath>
 }

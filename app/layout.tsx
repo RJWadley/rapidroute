@@ -1,10 +1,6 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { TanstackProvider } from "./QueryClient"
-import "@pigment-css/react/styles.css"
-import { RoutingProvider } from "./components/RoutingContext"
-import { findPath } from "./pathing"
-import { getSearchParams } from "./utils/getSearchParams"
+import { TanstackProvider } from "./TanstackProvider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -18,18 +14,10 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	const params = getSearchParams()
-	const initialRoute = findPath(params.get("from"), params.get("to"))
-	console.log("rendered layout!")
-
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<TanstackProvider>
-					<RoutingProvider initialRoute={initialRoute}>
-						{children}
-					</RoutingProvider>
-				</TanstackProvider>
+				<TanstackProvider>{children}</TanstackProvider>
 			</body>
 		</html>
 	)

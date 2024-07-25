@@ -1,9 +1,11 @@
-import type { CompressedPlace } from "@/utils/compressedPlaces"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
 
 export const getTextboxName = (
 	place: Partial<CompressedPlace> | undefined | null,
 ) => {
 	if (!place) return ""
+
+	if (place.type === "town") return `${place.rank} City - ${place.name}`
 
 	const code =
 		"code" in place

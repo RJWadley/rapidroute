@@ -1,7 +1,7 @@
 "use client"
 
-import type { Place } from "@/data"
-import { styled } from "@pigment-css/react"
+import { styled } from "@linaria/react"
+import type { Place } from "app/data"
 import { useRouting } from "./RoutingContext"
 
 const getPlaceDisplay = (place: Place) => {
@@ -16,7 +16,7 @@ const getPlaceDisplay = (place: Place) => {
 }
 
 export default function SelectedRoute() {
-	const { routes, preferredRoute } = useRouting()
+	const { routes, preferredRoute, isLoading } = useRouting()
 
 	const index = preferredRoute ?? 0
 

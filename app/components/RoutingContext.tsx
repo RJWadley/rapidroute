@@ -1,9 +1,9 @@
 "use client"
 
-import type { findPath } from "@/pathing"
-import { findPathInServer } from "@/pathing/server-front"
-import { useSearchParamState } from "@/utils/useSearchParamState"
 import { useQuery } from "@tanstack/react-query"
+import type { findPath } from "app/pathing"
+import { findPathInServer } from "app/pathing/server-front"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 import { createContext, useContext, useState } from "react"
 
 const routingContext = createContext<{
@@ -24,20 +24,16 @@ export const useRouting = () => {
 
 export function RoutingProvider({
 	children,
-	initialRoute,
 }: {
 	children: React.ReactNode
-	initialRoute?: ReturnType<typeof findPath>
 }) {
 	const [from] = useSearchParamState("from")
 	const [to] = useSearchParamState("to")
 	const [preferredRoute, setPreferredRoute] = useState<number>()
 
-	console.log("context")
 	const { isLoading, data } = useQuery({
-		queryKey: ["route", from, to],
+		queryKey: ["find-path", from, to],
 		queryFn: () => findPathInServer(from, to),
-		initialData: initialRoute,
 	})
 
 	return (

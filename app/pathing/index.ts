@@ -1,5 +1,5 @@
-import { compressedPlaces } from "@/utils/compressedPlaces"
-import { findClosestPlace } from "@/utils/search"
+import { compressedPlaces } from "app/utils/compressedPlaces"
+import { findClosestPlace } from "app/utils/search"
 import { type Place, places } from "../data"
 import PriorityQueue from "../utils/PriorityQueue"
 import { compressResult } from "./compressResult"

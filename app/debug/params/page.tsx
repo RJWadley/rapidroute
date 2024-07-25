@@ -1,6 +1,6 @@
 "use client"
 
-import { useSearchParamState } from "@/utils/useSearchParamState"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 export default function Application() {
 	const [a, setA] = useSearchParamState("a")

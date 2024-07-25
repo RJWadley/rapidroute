@@ -1,7 +1,7 @@
-import { useSearchParamState } from "@/utils/useSearchParamState"
 import { extend, useApp } from "@pixi/react"
 import type { PixiReactNode } from "@pixi/react"
 import { useEventListener } from "ahooks"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 import { Viewport } from "pixi-viewport"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import useIsMounted from "../../utils/useIsMounted"

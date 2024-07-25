@@ -1,4 +1,4 @@
-import { companies, places } from "@/data"
+import { companies, places } from "app/data"
 
 const getCompany = (id: string) => {
 	const company = companies.map.get(id)

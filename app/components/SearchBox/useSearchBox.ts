@@ -1,17 +1,12 @@
-import type { CompressedPlace } from "@/utils/compressedPlaces"
-import { useSearchResults } from "@/utils/useSearchResults"
-import { emulateTab } from "emulate-tab"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
+import { useSearchResults } from "app/utils/useSearchResults"
 import type { ComponentProps, FocusEvent } from "react"
 import { useRef, useState } from "react"
 import { getTextboxName } from "./getTextboxName"
 
-const tryTab = () => {
-	try {
-		emulateTab()
-	} catch (error) {
-		if (document.activeElement instanceof HTMLElement)
-			document.activeElement.blur()
-	}
+const blurActiveElement = () => {
+	if (document.activeElement instanceof HTMLElement)
+		document.activeElement.blur()
 }
 
 /**
@@ -23,6 +18,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	initialPlaces,
 	initiallySelectedPlace,
 	onItemSelected,
+	onBlur: blurCallback,
 }: {
 	/**
 	 * the initial list of all places to search through
@@ -36,6 +32,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * a callback when the selected place changes
 	 */
 	onItemSelected?: (item: T | undefined) => void
+	/**
+	 * called after an item is selected and the input is blurred
+	 */
+	onBlur?: () => void
 }) {
 	/**
 	 * the currently selected item in the list
@@ -131,7 +131,8 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 					selectPlace(newActiveItem)
 					setIsOpen(false)
 					setUserTyped(newValue.trim())
-					tryTab()
+					blurActiveElement()
+					blurCallback?.()
 				} else if (newValue.includes("\n")) {
 					setUserTyped(newValue.trim())
 				}
@@ -157,7 +158,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 					case "Escape":
 						e.preventDefault()
 						setIsOpen(false)
-						tryTab()
+						blurActiveElement()
 
 						// needed in some browsers as well (for initial interaction)
 						e.currentTarget.blur()
@@ -174,6 +175,12 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 			"data-gramm": false,
 			"data-gramm_editor": false,
 			"data-enable-grammarly": false,
+		},
+		clear: () => {
+			// reset all state
+			setUserTyped("")
+			setIsOpen(false)
+			selectPlace(undefined)
 		},
 	} satisfies {
 		/**
@@ -192,5 +199,9 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 * (it can't be the input itself, because then we'd lose focus when clicking on a result)
 		 */
 		onFocusLost: VoidFunction
+		/**
+		 * clear this search box
+		 */
+		clear: () => void
 	}
 }
