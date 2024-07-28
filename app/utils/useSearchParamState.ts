@@ -8,12 +8,17 @@ import { isBrowser } from "./isBrowser"
 const liveSearchParams = isBrowser ? getSearchParams() : null
 const updaters: Record<string, ((value: string | null) => void)[]> = {}
 
+let lastSavedURL: string | null = null
 if (liveSearchParams) {
 	setInterval(() => {
 		// apply updates to the URL
 		const url = new URL(window.location.href)
 		url.search = liveSearchParams.toString()
-		window.history.replaceState(null, "", url.toString())
+		const newURL = url.toString()
+		if (newURL !== lastSavedURL) {
+			window.history.replaceState({}, "", newURL)
+			lastSavedURL = newURL
+		}
 	}, 500)
 }
 

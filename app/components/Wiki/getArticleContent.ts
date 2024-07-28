@@ -1,9 +1,10 @@
 import type { SearchResponse } from "./types/PageSearch"
 import type { ParseResponse } from "./types/ParseQuery"
-
-const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
+import { getWikiURL, RAW_WIKI_URL } from "./url"
 
 export const getArticleContent = async (name: string) => {
+	const wikiURL = getWikiURL()
+
 	const specificParams = {
 		action: "query",
 		list: "search",
@@ -11,14 +12,14 @@ export const getArticleContent = async (name: string) => {
 		srsearch: name,
 		format: "json",
 	}
-	const specificUrl = `${WIKI_URL}api.php?${new URLSearchParams(
+	const specificUrl = `${wikiURL}api.php?${new URLSearchParams(
 		specificParams,
 	).toString()}`
 	const genericParams = {
 		...specificParams,
 		srwhat: "text",
 	}
-	const genericUrl = `${WIKI_URL}api.php?${new URLSearchParams(
+	const genericUrl = `${wikiURL}api.php?${new URLSearchParams(
 		genericParams,
 	).toString()}`
 
@@ -49,7 +50,7 @@ export const getArticleContent = async (name: string) => {
 		redirects: "true",
 		mobileformat: "true",
 	}
-	const url = `${WIKI_URL}api.php?${new URLSearchParams(pageParams).toString()}`
+	const url = `${wikiURL}api.php?${new URLSearchParams(pageParams).toString()}`
 	const content: ParseResponse = await fetch(url).then((res) => res.json())
 
 	return {
@@ -59,8 +60,8 @@ export const getArticleContent = async (name: string) => {
 				.replaceAll("{{{subtextcolor}}}", "var(--default-text)")
 				.replaceAll("#ccf", "#ddd")
 				// make sure URLs are valid
-				.replaceAll('src="/', `src="${WIKI_URL}`)
-				.replaceAll('href="/', `href="${WIKI_URL}`)
+				.replaceAll('src="/', `src="${RAW_WIKI_URL}`)
+				.replaceAll('href="/', `href="${RAW_WIKI_URL}`)
 				// split apart any srcset attributes, upgrade the src, and rejoin them
 				.replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
 					const srcset = p1
@@ -68,7 +69,7 @@ export const getArticleContent = async (name: string) => {
 						.map((src) => src.trim())
 						.map((src) => {
 							const [imageURL, size] = src.split(" ")
-							return `${WIKI_URL}${imageURL} ${size}
+							return `${RAW_WIKI_URL}${imageURL} ${size}
                 `
 						})
 						.join(",")
