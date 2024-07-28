@@ -13,9 +13,10 @@ const getCompany = (id: string) => {
 export const compressedPlaces = places.list.map((place) => ({
 	id: place.pretty_id,
 	name:
-		place.name || place.type === "railstation"
+		place.name ||
+		(place.type === "railstation"
 			? `${place.pretty_id} Station`
-			: `Untitled ${place.type}`,
+			: `Untitled ${place.type}`),
 	codes:
 		"code" in place && place.code
 			? [place.code]
