@@ -17,8 +17,5 @@ export const findPathInServer = async (
 		},
 	}).then((res) => res.json())
 
-	// TODO for testing only
-	await new Promise((resolve) => setTimeout(resolve, 1000))
-
 	return data as ReturnType<typeof findPath>
 }

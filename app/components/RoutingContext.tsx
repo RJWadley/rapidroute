@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query"
 import type { findPath } from "app/pathing"
 import { findPathInServer } from "app/pathing/server-front"
+import { findPathInWorker } from "app/pathing/worker-front"
+import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { createContext, useContext, useState } from "react"
 
@@ -33,7 +35,11 @@ export function RoutingProvider({
 
 	const { isLoading, data } = useQuery({
 		queryKey: ["find-path", from, to],
-		queryFn: () => findPathInServer(from, to),
+		queryFn: () =>
+			racePromisesWithLog([
+				{ promise: findPathInWorker(from, to), name: "worker" },
+				{ promise: findPathInServer(from, to), name: "server" },
+			]),
 	})
 
 	return (

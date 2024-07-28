@@ -8,6 +8,7 @@ import DynmapMarkers from "./Dynmap/DynmapMarkers"
 import type { MarkersResponse } from "./Dynmap/dynmapType"
 import PixiViewport from "./PixiViewport"
 import Satellite from "./Satellite"
+import { TanstackProvider } from "app/TanstackProvider"
 
 extend({
 	Container,
@@ -45,12 +46,14 @@ export default function MapClient({
 				background="#546461"
 				resolution={typeof window !== "undefined" ? window.devicePixelRatio : 1}
 			>
-				{hasInit && (
-					<PixiViewport>
-						<Satellite />
-						<DynmapMarkers initialMarkers={initialMarkers} />
-					</PixiViewport>
-				)}
+				<TanstackProvider>
+					{hasInit && (
+						<PixiViewport>
+							<Satellite />
+							<DynmapMarkers initialMarkers={initialMarkers} />
+						</PixiViewport>
+					)}
+				</TanstackProvider>
 			</Application>
 		</Wrapper>
 	)
