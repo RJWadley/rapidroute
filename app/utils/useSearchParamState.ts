@@ -1,11 +1,13 @@
 import { useSafeState } from "ahooks"
 import { useCallback, useEffect } from "react"
-import { getSearchParams } from "./getSearchParams"
 import { isBrowser } from "./isBrowser"
+import { useQuery } from "@tanstack/react-query"
 
 // always the most up-to-date search params (browser only)
 // on the server its important to refetch search params every call
-const liveSearchParams = isBrowser ? getSearchParams() : null
+const liveSearchParams = isBrowser
+	? new URLSearchParams(window.location.search)
+	: null
 const updaters: Record<string, ((value: string | null) => void)[]> = {}
 
 let lastSavedURL: string | null = null
@@ -23,8 +25,20 @@ if (liveSearchParams) {
 }
 
 export function useSearchParamState(name: string) {
+	const serverParams = useQuery<{
+		[key: string]: string | string[] | undefined
+	}>({
+		queryKey: ["search-params"],
+	})
+
+	const getValueFromServer = (key: string) => {
+		const value = serverParams.data?.[key]
+		if (Array.isArray(value)) return value[0]
+		return value
+	}
+
 	const [value, setValue] = useSafeState(
-		liveSearchParams?.get(name) || getSearchParams().get(name) || null,
+		liveSearchParams?.get(name) || getValueFromServer(name) || null,
 	)
 
 	useEffect(() => {
