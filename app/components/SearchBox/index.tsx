@@ -93,7 +93,12 @@ export function SearchBox({
 				) : to ? (
 					<button
 						type="button"
-						onClick={() => setNavMode(true)}
+						onClick={() => {
+							setNavMode(true)
+							setTimeout(() => {
+								fromFieldRef.current?.focus()
+							})
+						}}
 						ref={navigateRef}
 					>
 						Navigate
