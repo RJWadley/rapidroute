@@ -35,11 +35,14 @@ export function RoutingProvider({
 
 	const { isLoading, data } = useQuery({
 		queryKey: ["find-path", from, to],
-		queryFn: () =>
-			racePromisesWithLog([
+		queryFn: () => {
+			if (!from || !to) return null
+			if (from === to) return null
+			return racePromisesWithLog([
 				{ promise: findPathInWorker(from, to), name: "worker" },
 				{ promise: findPathInServer(from, to), name: "server" },
-			]),
+			])
+		},
 	})
 
 	return (
