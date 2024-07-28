@@ -222,7 +222,7 @@ const getPlaceId = (place: {
 				: undefined
 	const name = place.name
 
-	const id = codes ? codes.join(" ") : name || `Untitled ${place.type}`
+	const id = codes ? codes.join(", ") : name || `Untitled ${place.type}`
 
 	if (usedIds[id]) {
 		let i = 1
