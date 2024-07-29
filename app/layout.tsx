@@ -1,7 +1,8 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { TanstackProvider } from "./TanstackProvider"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { MovementProvider } from "./components/MapMovement"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,7 +20,9 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={inter.className}>
 				<SpeedInsights />
-				<TanstackProvider>{children}</TanstackProvider>
+				<TanstackProvider>
+					<MovementProvider>{children}</MovementProvider>
+				</TanstackProvider>
 			</body>
 		</html>
 	)

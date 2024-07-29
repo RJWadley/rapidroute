@@ -5,6 +5,7 @@ import { useSearchParamState } from "app/utils/useSearchParamState"
 import { Viewport } from "pixi-viewport"
 import { createContext, useContext, useEffect, useRef, useState } from "react"
 import useIsMounted from "../../utils/useIsMounted"
+import { MovementContext } from "../MapMovement"
 
 extend({ Viewport })
 
@@ -12,7 +13,7 @@ export const worldSize = 61_000
 const halfSize = worldSize / 2
 
 const ViewportContext = createContext<Viewport | null>(null)
-let moveCallbacks: (() => void)[] = []
+const moveCallbacks: Record<string, () => void> = {}
 
 /**
  * utility hook for getting the viewport
@@ -51,10 +52,11 @@ export const useViewportMoved = (callback: () => void) => {
 		}, 2000)
 
 		viewport?.addEventListener("moved", onViewportMoved)
-		moveCallbacks.push(onViewportMoved)
+		const randomId = crypto.randomUUID()
+		moveCallbacks[randomId] = onViewportMoved
 		return () => {
 			viewport?.removeEventListener("moved", onViewportMoved)
-			moveCallbacks = moveCallbacks.filter((cb) => cb !== onViewportMoved)
+			delete moveCallbacks[randomId]
 		}
 	}, [viewport, isMounted])
 }
@@ -63,7 +65,7 @@ export const useViewportMoved = (callback: () => void) => {
  * trigger the movement callbacks manually
  */
 export const triggerMovementManually = () => {
-	for (const cb of moveCallbacks) {
+	for (const cb of Object.values(moveCallbacks)) {
 		cb()
 	}
 }
@@ -74,6 +76,11 @@ declare global {
 			viewport: PixiReactNode<typeof Viewport>
 		}
 	}
+}
+
+export const CLAMP = {
+	maxZoom: 10,
+	minZoom: 0,
 }
 
 export default function PixiViewport({
@@ -129,17 +136,39 @@ export default function PixiViewport({
 				setZ(Math.round(viewport.center.y).toString())
 				setZoom(Number(viewport.scale.x.toFixed(4)).toString())
 			})
+
+		const currentZoom = viewport.scale.x
+		viewport.setZoom(9999, true)
+		CLAMP.maxZoom = viewport.scale.x
+		viewport.setZoom(0.000001, true)
+		CLAMP.minZoom = viewport.scale.x
+		viewport.setZoom(currentZoom, true)
+		console.log("CLAMP", CLAMP)
 	}, [viewport, x, z, zoom, setX, setZ, setZoom])
 
 	useEventListener("resize", () => {
-		if (app)
-			viewport?.resize(app.screen.width, app.screen.height, halfSize, halfSize)
+		if (!app) return
+		if (!viewport) return
+
+		viewport.resize(app.screen.width, app.screen.height, halfSize, halfSize)
+		const currentZoom = viewport.scale.x
+		viewport.setZoom(9999, true)
+		CLAMP.maxZoom = viewport.scale.x
+		viewport.setZoom(0.000001, true)
+		CLAMP.minZoom = viewport.scale.x
+		viewport.setZoom(currentZoom, true)
+		console.log("CLAMP", CLAMP)
 	})
+
+	const { setViewport: passViewportToContext } = useContext(MovementContext)
 
 	if (!app) return null
 	return (
 		<viewport
-			ref={setViewport}
+			ref={(v) => {
+				setViewport(v)
+				passViewportToContext(v)
+			}}
 			events={app.renderer.events}
 			worldHeight={halfSize}
 			worldWidth={halfSize}

@@ -1,6 +1,6 @@
 import type { SearchResponse } from "./types/PageSearch"
 import type { ParseResponse } from "./types/ParseQuery"
-import { getWikiURL, RAW_WIKI_URL } from "./url"
+import { RAW_WIKI_URL, getWikiURL } from "./url"
 
 export const getArticleContent = async (name: string) => {
 	const wikiURL = getWikiURL()

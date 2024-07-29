@@ -1,7 +1,7 @@
+import { useQuery } from "@tanstack/react-query"
 import { useSafeState } from "ahooks"
 import { useCallback, useEffect } from "react"
 import { isBrowser } from "./isBrowser"
-import { useQuery } from "@tanstack/react-query"
 
 // always the most up-to-date search params (browser only)
 // on the server its important to refetch search params every call
@@ -66,4 +66,12 @@ export function useSearchParamState(name: string) {
 	)
 
 	return [value || null, update] as const
+}
+
+/**
+ * manually set the value of a search param, without triggering any re-render
+ */
+export const setParamManually = (name: string, value: string | null) => {
+	if (value) liveSearchParams?.set(name, value)
+	else liveSearchParams?.delete(name)
 }

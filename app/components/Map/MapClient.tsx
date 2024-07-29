@@ -2,13 +2,14 @@
 
 import { styled } from "@linaria/react"
 import { Application, extend } from "@pixi/react"
+import { TanstackProvider } from "app/TanstackProvider"
 import { Container, Graphics } from "pixi.js"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
+import { MovementContext } from "../MapMovement"
 import DynmapMarkers from "./Dynmap/DynmapMarkers"
 import type { MarkersResponse } from "./Dynmap/dynmapType"
 import PixiViewport from "./PixiViewport"
 import Satellite from "./Satellite"
-import { TanstackProvider } from "app/TanstackProvider"
 
 extend({
 	Container,
@@ -20,6 +21,7 @@ export default function MapClient({
 }: { initialMarkers: MarkersResponse }) {
 	const [hasInit, setHasInit] = useState(false)
 	const wrapperRef = useRef<HTMLDivElement>(null)
+	const moveContextValue = useContext(MovementContext)
 
 	/**
 	 * prevent scroll events from bubbling up to the document
@@ -36,8 +38,22 @@ export default function MapClient({
 		}
 	}, [])
 
+	const touchStart = () => {
+		moveContextValue.lastUsedMethod.current = "touchStillActive"
+	}
+	const touchEnd = () => {
+		moveContextValue.lastUsedMethod.current = "touch"
+	}
+
 	return (
-		<Wrapper ref={wrapperRef}>
+		<Wrapper
+			ref={wrapperRef}
+			onTouchStart={touchStart}
+			onTouchEnd={touchEnd}
+			onPointerDown={touchStart}
+			onPointerUp={touchEnd}
+			onWheel={touchEnd}
+		>
 			<Application
 				antialias
 				autoDensity
@@ -46,14 +62,16 @@ export default function MapClient({
 				background="#546461"
 				resolution={typeof window !== "undefined" ? window.devicePixelRatio : 1}
 			>
-				<TanstackProvider>
-					{hasInit && (
-						<PixiViewport>
-							<Satellite />
-							<DynmapMarkers initialMarkers={initialMarkers} />
-						</PixiViewport>
-					)}
-				</TanstackProvider>
+				<MovementContext.Provider value={moveContextValue}>
+					<TanstackProvider>
+						{hasInit && (
+							<PixiViewport>
+								<Satellite />
+								<DynmapMarkers initialMarkers={initialMarkers} />
+							</PixiViewport>
+						)}
+					</TanstackProvider>
+				</MovementContext.Provider>
 			</Application>
 		</Wrapper>
 	)

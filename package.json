@@ -17,6 +17,7 @@
 		"@vercel/speed-insights": "^1.0.12",
 		"ahooks": "^3.8.0",
 		"color2k": "^2.0.3",
+		"framer-motion": "^11.3.19",
 		"fuzzysort": "^3.0.2",
 		"next": "14.2.5",
 		"next-with-linaria": "^0.7.0",
