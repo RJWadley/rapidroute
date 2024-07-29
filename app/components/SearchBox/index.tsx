@@ -6,6 +6,7 @@ import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { type ReactNode, useRef, useState } from "react"
+import { useCamera } from "../MapMovement"
 import { getTextboxName } from "./getTextboxName"
 import useSearchBox from "./useSearchBox"
 
@@ -19,6 +20,7 @@ export function SearchBox({
 	const wrapper = useRef<HTMLDivElement>(null)
 	const navigateRef = useRef<HTMLButtonElement>(null)
 	const fromFieldRef = useRef<HTMLTextAreaElement>(null)
+	const { moveCamera } = useCamera()
 
 	const [from, setFrom] = useSearchParamState("from")
 	const [to, setTo] = useSearchParamState("to")
@@ -49,8 +51,15 @@ export function SearchBox({
 	} = useSearchBox({
 		initialPlaces: places,
 		initiallySelectedPlace: toPlace,
-		onItemSelected: (item) => {
+		onItemSelected: (item, explicitly) => {
 			setTo(item?.id)
+
+			if (item?.coordinates && explicitly)
+				moveCamera({
+					x: item.coordinates[0] - 150,
+					z: item.coordinates[1],
+					worldScreenWidth: 1500,
+				})
 		},
 		onBlur: () => {
 			setTimeout(() => {

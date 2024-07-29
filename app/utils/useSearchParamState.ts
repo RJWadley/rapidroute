@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
-import { useSafeState } from "ahooks"
-import { useCallback, useEffect } from "react"
+import {
+	type Dispatch,
+	type SetStateAction,
+	useCallback,
+	useEffect,
+	useState,
+} from "react"
 import { isBrowser } from "./isBrowser"
 
 // always the most up-to-date search params (browser only)
@@ -8,7 +13,10 @@ import { isBrowser } from "./isBrowser"
 const liveSearchParams = isBrowser
 	? new URLSearchParams(window.location.search)
 	: null
-const updaters: Record<string, ((value: string | null) => void)[]> = {}
+const updateFunctions: Record<
+	string,
+	Record<string, Dispatch<SetStateAction<string | null>>>
+> = {}
 
 let lastSavedURL: string | null = null
 if (liveSearchParams) {
@@ -31,25 +39,28 @@ export function useSearchParamState(name: string) {
 		queryKey: ["search-params"],
 	})
 
-	const getValueFromServer = (key: string) => {
+	const getInitialValue = (key: string) => {
+		if (liveSearchParams) {
+			return liveSearchParams?.get(key)
+		}
+
 		const value = serverParams.data?.[key]
 		if (Array.isArray(value)) return value[0]
 		return value
 	}
 
-	const [value, setValue] = useSafeState(
-		liveSearchParams?.get(name) || getValueFromServer(name) || null,
-	)
+	const [value, setValue] = useState(() => getInitialValue(name) || null)
 
 	useEffect(() => {
-		updaters[name] ||= []
-		updaters[name].push(setValue)
+		const randomId = crypto.randomUUID()
+		updateFunctions[name] ||= {}
+		updateFunctions[name][randomId] = setValue
 
 		return () => {
-			updaters[name] =
-				updaters[name]?.filter((updater) => updater !== setValue) ?? []
+			updateFunctions[name] ||= {}
+			delete updateFunctions[name][randomId]
 		}
-	}, [name, setValue])
+	}, [name])
 
 	const update = useCallback(
 		(newValue: string | null | undefined) => {
@@ -57,7 +68,7 @@ export function useSearchParamState(name: string) {
 			if (newValue) liveSearchParams?.set(name, newValue)
 			else liveSearchParams?.delete(name)
 
-			const updatersForName = updaters[name] ?? []
+			const updatersForName = Object.values(updateFunctions[name] ?? {})
 			for (const updater of updatersForName) {
 				updater(newValue || null)
 			}
@@ -69,9 +80,14 @@ export function useSearchParamState(name: string) {
 }
 
 /**
- * manually set the value of a search param, without triggering any re-render
+ * set the value of a search param, without triggering a re-render
  */
 export const setParamManually = (name: string, value: string | null) => {
 	if (value) liveSearchParams?.set(name, value)
 	else liveSearchParams?.delete(name)
+
+	const updatersForName = Object.values(updateFunctions[name] ?? {})
+	for (const updater of updatersForName) {
+		updater(value || null)
+	}
 }

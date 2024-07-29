@@ -1,12 +1,12 @@
 "use client"
 
-import { useInterval } from "ahooks"
 import { setParamManually } from "app/utils/useSearchParamState"
 import { type SpringOptions, useSpring } from "framer-motion"
 import type { Viewport } from "pixi-viewport"
 import {
 	type MutableRefObject,
 	createContext,
+	useContext,
 	useEffect,
 	useRef,
 	useState,
@@ -40,6 +40,11 @@ export const MovementContext = createContext<{
 	setViewport: () => {},
 	lastUsedMethod: { current: "touch" },
 })
+
+export const useCamera = () => {
+	const { moveCamera } = useContext(MovementContext)
+	return { moveCamera }
+}
 
 export function MovementProvider({ children }: { children: React.ReactNode }) {
 	const [viewport, setViewport] = useState<Viewport | null>(null)
@@ -160,17 +165,6 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 			viewport.removeEventListener("moved", resetIfApplicable)
 		}
 	}, [viewport, xSpring, zSpring, worldScreenWidthSpring])
-
-	useInterval(
-		() => {
-			moveCamera({ x: -1000, z: -1000, zoom: 0.5 })
-			setTimeout(() => {
-				moveCamera({ x: 1000, z: 1000, worldScreenWidth: 2000 })
-			}, 2000)
-		},
-		4000,
-		{ immediate: true },
-	)
 
 	return (
 		<MovementContext.Provider

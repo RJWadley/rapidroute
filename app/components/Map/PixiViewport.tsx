@@ -90,7 +90,6 @@ const updateClamp = (viewport: Viewport) => {
 	viewport.setZoom(0.000001, true)
 	CLAMP.maxWorldScreenWidth = viewport.worldScreenWidth
 	viewport.setZoom(currentZoom, true)
-	console.log("CLAMP", CLAMP)
 }
 
 export default function PixiViewport({

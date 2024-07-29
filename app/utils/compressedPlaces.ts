@@ -29,6 +29,7 @@ export const compressedPlaces = places.list.map((place) => ({
 	rank: "rank" in place ? place.rank : undefined,
 	mayor: "mayor" in place ? place.mayor : undefined,
 	deputy_mayor: "deputy_mayor" in place ? place.deputy_mayor : undefined,
+	coordinates: place.coordinates,
 }))
 
 export type CompressedPlace = (typeof compressedPlaces)[number]

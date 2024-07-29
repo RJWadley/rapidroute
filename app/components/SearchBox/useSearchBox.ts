@@ -31,7 +31,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * a callback when the selected place changes
 	 */
-	onItemSelected?: (item: T | undefined) => void
+	onItemSelected?: (item: T | undefined, explicitly: boolean) => void
 	/**
 	 * called after an item is selected and the input is blurred
 	 */
@@ -57,9 +57,9 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 */
 	const [isOpen, setIsOpen] = useState(false)
 
-	const selectPlace = (place: T | undefined) => {
+	const selectPlace = (place: T | undefined, explicitly: boolean) => {
 		setSelectedPlace(place)
-		onItemSelected?.(place)
+		onItemSelected?.(place, explicitly)
 	}
 
 	const currentIndex = selectedPlace ? currentSearch.indexOf(selectedPlace) : -1
@@ -75,7 +75,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		// if we're after the last item, go to the start
 		if (nextIndex >= currentSearch.length) nextIndex = -1
 		const nextItem = currentSearch[nextIndex]
-		selectPlace(nextItem)
+		selectPlace(nextItem, false)
 	}
 
 	const boxText =
@@ -96,7 +96,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 					...item,
 					selectItem: () => {
 						setIsOpen(false)
-						selectPlace(item)
+						selectPlace(item, true)
 					},
 					highlighted: selectedPlace?.id === item.id,
 				}))
@@ -124,11 +124,11 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				setIsOpen(true)
 
 				if (newValue.trim() === "") {
-					selectPlace(undefined)
+					selectPlace(undefined, false)
 					setUserTyped("")
 				} else if (newValue.includes("\n") && currentSearch.length > 0) {
 					const newActiveItem = selectedPlace ?? currentSearch[0]
-					selectPlace(newActiveItem)
+					selectPlace(newActiveItem, true)
 					setIsOpen(false)
 					setUserTyped(newValue.trim())
 					blurActiveElement()
@@ -180,7 +180,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 			// reset all state
 			setUserTyped("")
 			setIsOpen(false)
-			selectPlace(undefined)
+			selectPlace(undefined, true)
 		},
 	} satisfies {
 		/**

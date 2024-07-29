@@ -1,7 +1,7 @@
 import searcher from "fuzzysort"
 import type { CompressedPlace } from "./compressedPlaces"
 
-const keys: Record<keyof CompressedPlace, boolean> = {
+const keys: Record<Exclude<keyof CompressedPlace, "coordinates">, boolean> = {
 	codes: true,
 	company: true,
 	deputy_mayor: true,
