@@ -79,8 +79,18 @@ declare global {
 }
 
 export const CLAMP = {
-	maxZoom: 10,
-	minZoom: 0,
+	maxWorldScreenWidth: 0,
+	minWorldScreenWidth: 0,
+}
+
+const updateClamp = (viewport: Viewport) => {
+	const currentZoom = viewport.scale.x
+	viewport.setZoom(9999, true)
+	CLAMP.minWorldScreenWidth = viewport.worldScreenWidth
+	viewport.setZoom(0.000001, true)
+	CLAMP.maxWorldScreenWidth = viewport.worldScreenWidth
+	viewport.setZoom(currentZoom, true)
+	console.log("CLAMP", CLAMP)
 }
 
 export default function PixiViewport({
@@ -137,13 +147,7 @@ export default function PixiViewport({
 				setZoom(Number(viewport.scale.x.toFixed(4)).toString())
 			})
 
-		const currentZoom = viewport.scale.x
-		viewport.setZoom(9999, true)
-		CLAMP.maxZoom = viewport.scale.x
-		viewport.setZoom(0.000001, true)
-		CLAMP.minZoom = viewport.scale.x
-		viewport.setZoom(currentZoom, true)
-		console.log("CLAMP", CLAMP)
+		updateClamp(viewport)
 	}, [viewport, x, z, zoom, setX, setZ, setZoom])
 
 	useEventListener("resize", () => {
@@ -151,13 +155,7 @@ export default function PixiViewport({
 		if (!viewport) return
 
 		viewport.resize(app.screen.width, app.screen.height, halfSize, halfSize)
-		const currentZoom = viewport.scale.x
-		viewport.setZoom(9999, true)
-		CLAMP.maxZoom = viewport.scale.x
-		viewport.setZoom(0.000001, true)
-		CLAMP.minZoom = viewport.scale.x
-		viewport.setZoom(currentZoom, true)
-		console.log("CLAMP", CLAMP)
+		updateClamp(viewport)
 	})
 
 	const { setViewport: passViewportToContext } = useContext(MovementContext)

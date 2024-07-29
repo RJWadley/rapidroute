@@ -13,11 +13,17 @@ import {
 } from "react"
 import { CLAMP, triggerMovementManually } from "./Map/PixiViewport"
 
-type Coordinate = {
-	x: number
-	z: number
-	zoom: number
-}
+type Coordinate =
+	| {
+			x: number
+			z: number
+			worldScreenWidth: number
+	  }
+	| {
+			x: number
+			z: number
+			zoom: number
+	  }
 
 export const MovementContext = createContext<{
 	moveCamera: (coordinate: Partial<Coordinate>) => void
@@ -48,7 +54,7 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 	}
 	const xSpring = useSpring(0, options)
 	const zSpring = useSpring(0, options)
-	const zoomSpring = useSpring(0, { bounce: 0, stiffness: 20 })
+	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 })
 
 	const moveCamera = (coordinate: Partial<Coordinate>) => {
 		if (lastUsedMethod.current === "touchStillActive") return
@@ -56,10 +62,27 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 
 		if (coordinate.x !== undefined) xSpring.set(coordinate.x)
 		if (coordinate.z !== undefined) zSpring.set(coordinate.z)
-		if (coordinate.zoom !== undefined)
-			zoomSpring.set(
-				Math.min(CLAMP.maxZoom, Math.max(CLAMP.minZoom, coordinate.zoom)),
+		if (
+			"worldScreenWidth" in coordinate &&
+			coordinate.worldScreenWidth !== undefined
+		)
+			worldScreenWidthSpring.set(
+				Math.min(
+					CLAMP.maxWorldScreenWidth,
+					Math.max(CLAMP.minWorldScreenWidth, coordinate.worldScreenWidth),
+				),
 			)
+		else if (
+			"zoom" in coordinate &&
+			coordinate.zoom !== undefined &&
+			viewport
+		) {
+			const currentZoom = viewport.scale.x
+			viewport.setZoom(coordinate.zoom, true)
+			const newWorldScreenWidth = viewport.worldScreenWidth
+			viewport.setZoom(currentZoom, true)
+			worldScreenWidthSpring.set(newWorldScreenWidth)
+		}
 	}
 
 	useEffect(() => {
@@ -67,19 +90,23 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 
 		xSpring.jump(viewport.center.x)
 		zSpring.jump(viewport.center.y)
-		zoomSpring.jump(viewport.scale.x)
+		worldScreenWidthSpring.jump(viewport.worldScreenWidth)
 
 		const resetIfApplicable = () => {
 			if (lastUsedMethod.current === "moveCamera") return
 
 			xSpring.jump(viewport.center.x)
 			zSpring.jump(viewport.center.y)
-			zoomSpring.jump(viewport.scale.x)
+			worldScreenWidthSpring.jump(viewport.worldScreenWidth)
 		}
 
 		let batchTimeout: ReturnType<typeof setTimeout> | null = null
 		let batchFrame: ReturnType<typeof requestAnimationFrame> | null = null
-		let nextValue: Partial<Coordinate> = {}
+		let nextValue: Partial<{
+			x: number
+			z: number
+			worldScreenWidth: number
+		}> = {}
 
 		const batchUpdate = () => {
 			if (batchTimeout) clearTimeout(batchTimeout)
@@ -90,7 +117,13 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 					nextValue.x ?? viewport.center.x,
 					nextValue.z ?? viewport.center.y,
 				)
-				viewport.setZoom(nextValue.zoom ?? viewport.scale.x, true)
+
+				const zoom = nextValue.worldScreenWidth
+					? viewport.findFitWidth(nextValue.worldScreenWidth)
+					: viewport.scale.x
+
+				viewport.setZoom(zoom, true)
+
 				if (batchFrame) cancelAnimationFrame(batchFrame)
 				batchFrame = requestAnimationFrame(triggerMovementManually)
 
@@ -110,10 +143,13 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 			nextValue.z = z
 			batchUpdate()
 		})
-		const unsubscribeZoom = zoomSpring.on("change", (zoom) => {
-			nextValue.zoom = zoom
-			batchUpdate()
-		})
+		const unsubscribeZoom = worldScreenWidthSpring.on(
+			"change",
+			(worldScreenWidth) => {
+				nextValue.worldScreenWidth = worldScreenWidth
+				batchUpdate()
+			},
+		)
 
 		viewport?.addEventListener("moved", resetIfApplicable)
 
@@ -123,13 +159,13 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 			unsubscribeZoom()
 			viewport.removeEventListener("moved", resetIfApplicable)
 		}
-	}, [viewport, xSpring, zSpring, zoomSpring])
+	}, [viewport, xSpring, zSpring, worldScreenWidthSpring])
 
 	useInterval(
 		() => {
 			moveCamera({ x: -1000, z: -1000, zoom: 0.5 })
 			setTimeout(() => {
-				moveCamera({ x: 1000, z: 1000, zoom: 15 })
+				moveCamera({ x: 1000, z: 1000, worldScreenWidth: 2000 })
 			}, 2000)
 		},
 		4000,
