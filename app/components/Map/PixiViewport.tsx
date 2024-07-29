@@ -140,13 +140,14 @@ export default function PixiViewport({
 				right: worldSize,
 				underflow: "none",
 			})
-			.addEventListener("moved", () => {
-				setX(Math.round(viewport.center.x).toString())
-				setZ(Math.round(viewport.center.y).toString())
-				setZoom(Number(viewport.scale.x.toFixed(4)).toString())
-			})
 
 		updateClamp(viewport)
+
+		viewport.addEventListener("moved", () => {
+			setX(Math.round(viewport.center.x).toString())
+			setZ(Math.round(viewport.center.y).toString())
+			setZoom(Number(viewport.scale.x.toFixed(4)).toString())
+		})
 	}, [viewport, x, z, zoom, setX, setZ, setZoom])
 
 	useEventListener("resize", () => {
@@ -154,7 +155,6 @@ export default function PixiViewport({
 		if (!viewport) return
 
 		viewport.resize(app.screen.width, app.screen.height, halfSize, halfSize)
-		updateClamp(viewport)
 	})
 
 	const { setViewport: passViewportToContext } = useContext(MovementContext)
