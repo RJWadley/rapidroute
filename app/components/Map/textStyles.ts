@@ -5,6 +5,8 @@ export const regular = new TextStyle({
 	stroke: {
 		width: 3,
 		color: "black",
+		miterLimit: 4,
+		cap: "round",
 	},
 	fontFamily: "Inter, Arial",
 	fontSize: 16,
