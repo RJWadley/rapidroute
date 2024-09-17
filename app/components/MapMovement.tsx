@@ -12,18 +12,15 @@ import {
 	useState,
 } from "react"
 import { CLAMP, triggerMovementManually } from "./Map/PixiViewport"
+import { getDistance } from "app/utils/getDistance"
 
-type Coordinate =
-	| {
-			x: number
-			z: number
-			worldScreenWidth: number
-	  }
-	| {
-			x: number
-			z: number
-			zoom: number
-	  }
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+type Coordinate = {
+	x: number
+	z: number
+	worldScreenWidth: number
+}
 
 export const MovementContext = createContext<{
 	moveCamera: (coordinate: Partial<Coordinate>) => void
@@ -62,32 +59,36 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 })
 
 	const moveCamera = (coordinate: Partial<Coordinate>) => {
-		if (lastUsedMethod.current === "touchStillActive") return
-		lastUsedMethod.current = "moveCamera"
+		;(async () => {
+			if (lastUsedMethod.current === "touchStillActive") return
+			lastUsedMethod.current = "moveCamera"
 
-		if (coordinate.x !== undefined) xSpring.set(coordinate.x)
-		if (coordinate.z !== undefined) zSpring.set(coordinate.z)
-		if (
-			"worldScreenWidth" in coordinate &&
-			coordinate.worldScreenWidth !== undefined
-		)
-			worldScreenWidthSpring.set(
-				Math.min(
-					CLAMP.maxWorldScreenWidth,
-					Math.max(CLAMP.minWorldScreenWidth, coordinate.worldScreenWidth),
-				),
+			const startX = xSpring.get()
+			const startZ = zSpring.get()
+			const startWidth = worldScreenWidthSpring.get()
+			const taxiDistance = getDistance(
+				startX,
+				startZ,
+				coordinate.x ?? startX,
+				coordinate.z ?? startZ,
 			)
-		else if (
-			"zoom" in coordinate &&
-			coordinate.zoom !== undefined &&
-			viewport
-		) {
-			const currentZoom = viewport.scale.x
-			viewport.setZoom(coordinate.zoom, true)
-			const newWorldScreenWidth = viewport.worldScreenWidth
-			viewport.setZoom(currentZoom, true)
-			worldScreenWidthSpring.set(newWorldScreenWidth)
-		}
+
+			if (typeof coordinate.worldScreenWidth !== "undefined")
+				worldScreenWidthSpring.set(Math.max(startWidth, taxiDistance * 2))
+
+			await sleep(200)
+			if (coordinate.x !== undefined) xSpring.set(coordinate.x)
+			if (coordinate.z !== undefined) zSpring.set(coordinate.z)
+
+			await sleep(200)
+			if (coordinate.worldScreenWidth !== undefined)
+				worldScreenWidthSpring.set(
+					Math.min(
+						CLAMP.maxWorldScreenWidth,
+						Math.max(CLAMP.minWorldScreenWidth, coordinate.worldScreenWidth),
+					),
+				)
+		})()
 	}
 
 	useEffect(() => {
