@@ -5,6 +5,7 @@ import PriorityQueue from "../utils/PriorityQueue"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
+import hash from "object-hash"
 
 export type RoutingResult = { path: Place[]; time: number }
 
@@ -146,5 +147,8 @@ export const findPath = (
 	return completedPaths
 		.map(convertToRoutes)
 		.map(compressResult)
-		.map((x) => ({ ...x, id: crypto.randomUUID() }))
+		.map((x) => ({
+			...x,
+			id: hash(x),
+		}))
 }

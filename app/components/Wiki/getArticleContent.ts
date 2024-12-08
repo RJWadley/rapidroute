@@ -23,11 +23,11 @@ export const getArticleContent = async (name: string) => {
 		genericParams,
 	).toString()}`
 
-	const specificResults: SearchResponse = await fetch(specificUrl).then((res) =>
-		res.json(),
+	const specificResults = await fetch(specificUrl).then(
+		(res) => res.json() as Promise<SearchResponse>,
 	)
-	const genericResults: SearchResponse = await fetch(genericUrl).then((res) =>
-		res.json(),
+	const genericResults = await fetch(genericUrl).then(
+		(res) => res.json() as Promise<SearchResponse>,
 	)
 
 	const genericResult = genericResults?.query.search[0]
@@ -51,7 +51,9 @@ export const getArticleContent = async (name: string) => {
 		mobileformat: "true",
 	}
 	const url = `${wikiURL}api.php?${new URLSearchParams(pageParams).toString()}`
-	const content: ParseResponse = await fetch(url).then((res) => res.json())
+	const content = await fetch(url).then(
+		(res) => res.json() as Promise<ParseResponse>,
+	)
 
 	return {
 		...result,
