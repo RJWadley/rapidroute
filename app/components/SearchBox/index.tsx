@@ -157,7 +157,7 @@ export function SearchBox({
 						</Results>
 					)}
 				</AnimatePresence>
-				<AnimatePresence mode="popLayout">
+				<AnimatePresence mode="popLayout" initial={false}>
 					{allowChildren ? (
 						<motion.div {...layout}>{children}</motion.div>
 					) : null}
