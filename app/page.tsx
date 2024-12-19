@@ -4,14 +4,11 @@ import {
 	QueryClient,
 	dehydrate,
 } from "@tanstack/react-query"
-import "./global.css"
+import AppGrid from "./AppGrid"
 import MinecraftMap from "./components/Map/MapServer"
-import RouteOptions from "./components/RouteOptions"
 import { RoutingProvider } from "./components/RoutingContext"
-import { SearchBox } from "./components/SearchBox"
-import SelectedRoute from "./components/SelectedRoute"
-import WikiArticle from "./components/Wiki/WikiArticle"
 import { getArticleContent } from "./components/Wiki/getArticleContent"
+import "./global.css"
 import { findPath } from "./pathing"
 import { compressedPlaces } from "./utils/compressedPlaces"
 import { findClosestPlace } from "./utils/search"
@@ -62,16 +59,7 @@ export default async function MainPage({
 			<RoutingProvider>
 				<Application>
 					<MinecraftMap />
-					<Column>
-						<SearchBox places={compressedPlaces}>
-							<br />
-							<WikiArticle places={compressedPlaces} />
-						</SearchBox>
-						<RouteOptions />
-					</Column>
-					<Column>
-						<SelectedRoute />
-					</Column>
+					<AppGrid />
 				</Application>
 			</RoutingProvider>
 		</HydrationBoundary>
@@ -85,16 +73,4 @@ const Application = styled.div`
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	place-items: start stretch;
-`
-
-const Column = styled.div`
-	position: relative;
-	z-index: 2;
-	height: 100dvh;
-	overflow: auto;
-	pointer-events: none;
-	
-	& > * {
-		pointer-events: auto;
-	}
 `

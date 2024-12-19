@@ -9,6 +9,7 @@ import { type ReactNode, useRef, useState } from "react"
 import { useCamera } from "../MapMovement"
 import { getTextboxName } from "./getTextboxName"
 import useSearchBox from "./useSearchBox"
+import { AnimatePresence, motion } from "motion/react"
 
 export function SearchBox({
 	places,
@@ -73,69 +74,117 @@ export function SearchBox({
 	useClickAway(toFocusLost, wrapper)
 
 	const hasRoutes = Boolean(from)
-	const hasSearch = Boolean(fromResults?.[0] || toResults?.[0])
+	const hasSearchResults = Boolean(fromResults?.[0] || toResults?.[0])
+	const allIsBlank = !from && !to && !hasSearchResults
+
+	const allowChildren = !hasRoutes && !hasSearchResults && !allIsBlank
+
+	const layout = {
+		layout: "position",
+		initial: { opacity: 0 },
+		animate: { opacity: 1 },
+		exit: { opacity: 0 },
+	} as const
 
 	return (
 		<>
-			<Wrapper ref={wrapper}>
-				{navMode ? (
-					<>
-						<textarea
-							{...fromProps}
-							onFocus={(e) => {
-								toFocusLost()
-								fromProps.onFocus(e)
-							}}
-							placeholder="From"
-							ref={fromFieldRef}
-						/>
-						<button
+			<Wrapper ref={wrapper} layout>
+				<AnimatePresence mode="popLayout" initial={false}>
+					{navMode ? (
+						<SecondarySearch {...layout} key="secondary">
+							<textarea
+								{...fromProps}
+								onFocus={(e) => {
+									toFocusLost()
+									fromProps.onFocus(e)
+								}}
+								placeholder="From"
+								ref={fromFieldRef}
+							/>
+							<button
+								type="button"
+								onClick={() => {
+									clearFrom()
+									setNavMode(false)
+								}}
+							>
+								Clear
+							</button>
+						</SecondarySearch>
+					) : to ? (
+						<NavigateTrigger
+							key="navigate"
 							type="button"
 							onClick={() => {
-								clearFrom()
-								setNavMode(false)
+								setNavMode(true)
+								setTimeout(() => {
+									fromFieldRef.current?.focus()
+								})
 							}}
+							ref={navigateRef}
+							{...layout}
 						>
-							Clear
-						</button>
-					</>
-				) : to ? (
-					<button
-						type="button"
-						onClick={() => {
-							setNavMode(true)
-							setTimeout(() => {
-								fromFieldRef.current?.focus()
-							})
+							Navigate
+						</NavigateTrigger>
+					) : null}
+				</AnimatePresence>
+				<PrimarySearch layout="position">
+					<textarea
+						{...toProps}
+						onFocus={(e) => {
+							fromFocusLost()
+							toProps.onFocus(e)
 						}}
-						ref={navigateRef}
-					>
-						Navigate
+						placeholder="to"
+					/>
+					<button type="button" onClick={clearTo}>
+						Clear
 					</button>
-				) : null}
-				<br />
-				<textarea
-					{...toProps}
-					onFocus={(e) => {
-						fromFocusLost()
-						toProps.onFocus(e)
-					}}
-					placeholder="to"
-				/>
-				<button type="button" onClick={clearTo}>
-					Clear
-				</button>
-				{(fromResults ?? toResults)?.map((result) => (
-					<button type="button" onClick={result.selectItem} key={result.id}>
-						{getTextboxName(result)} {result.highlighted ? "🔍" : ""}
-					</button>
-				))}
-				{hasRoutes || hasSearch ? null : children}
+				</PrimarySearch>
+
+				<AnimatePresence mode="popLayout">
+					{hasSearchResults && (
+						<Results {...layout}>
+							{(fromResults ?? toResults)?.map((result) => (
+								<Result
+									type="button"
+									onClick={result.selectItem}
+									key={result.id}
+								>
+									{getTextboxName(result)} {result.highlighted ? "🔍" : ""}
+								</Result>
+							))}
+						</Results>
+					)}
+				</AnimatePresence>
+				<AnimatePresence mode="popLayout">
+					{allowChildren ? (
+						<motion.div {...layout}>{children}</motion.div>
+					) : null}
+				</AnimatePresence>
 			</Wrapper>
 		</>
 	)
 }
 
-const Wrapper = styled.div`
-background: whitesmoke;
+const Wrapper = styled(motion.div)`
+	background: whitesmoke;
+	overflow: clip;
+	position:relative;
+`
+
+const PrimarySearch = styled(motion.div)`border:1px solid blue;`
+
+const Results = styled(motion.div)`
+	border: 1px solid orange;
+	`
+
+const Result = styled.button`display:block;`
+
+const SecondarySearch = styled(motion.div)`
+	border: 1px solid purple;
+`
+
+const NavigateTrigger = styled(motion.button)`
+	border: 1px solid red;
 `

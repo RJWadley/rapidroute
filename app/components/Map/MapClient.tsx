@@ -19,6 +19,7 @@ extend({
 export default function MapClient({
 	initialMarkers,
 }: { initialMarkers: MarkersResponse }) {
+	return null
 	const [hasInit, setHasInit] = useState(false)
 	const wrapperRef = useRef<HTMLDivElement>(null)
 	const moveContextValue = useContext(MovementContext)
