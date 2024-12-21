@@ -11,6 +11,7 @@ export const getArticleContent = async (name: string) => {
 		srwhat: "nearmatch",
 		srsearch: name,
 		format: "json",
+		srlimit: "1",
 	}
 	const specificUrl = `${wikiURL}api.php?${new URLSearchParams(
 		specificParams,
@@ -72,7 +73,7 @@ export const getArticleContent = async (name: string) => {
 						.map((src) => {
 							const [imageURL, size] = src.split(" ")
 							return `${RAW_WIKI_URL}${imageURL} ${size}
-                `
+		`
 						})
 						.join(",")
 					return `srcset="${srcset}"`

@@ -6,8 +6,16 @@ import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { getArticleContent } from "./getArticleContent"
+import { AnimatePresence, motion } from "motion/react"
 
-export default function WikiArtile({
+const layout = {
+	layout: "position",
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+} as const
+
+export default function WikiArticle({
 	places,
 }: {
 	places: CompressedPlace[]
@@ -25,24 +33,48 @@ export default function WikiArtile({
 		},
 	})
 
-	if (!name) return null
-	if (isLoading) return "loading..."
-	if (!data?.content) return "no articles found"
+	const state = !name
+		? "empty"
+		: isLoading
+			? "loading"
+			: !data?.content
+				? "404"
+				: "success"
 
 	return (
-		<>
-			{data.type === "generic" && (
-				<>
-					<h2>May be related to {data.title}</h2>
-				</>
-			)}
-			{data.type === "specific" && <h1>{data.title}</h1>}
-			<Wrapper
-				className="infobox-wrap"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-				dangerouslySetInnerHTML={{ __html: data.content ?? "no text" }}
-			/>
-		</>
+		<motion.div style={{ position: "relative" }}>
+			<AnimatePresence mode="popLayout" initial={false}>
+				{state === "loading" && (
+					<motion.h1 {...layout} key="loading">
+						loading...
+					</motion.h1>
+				)}
+				{state === "404" && (
+					<motion.h1 {...layout} key="404">
+						no article found for '{placeID}'
+					</motion.h1>
+				)}
+				{state === "success" && data?.type === "generic" && (
+					<motion.h2 {...layout} key="generic">
+						May be related to {data.title}
+					</motion.h2>
+				)}
+				{state === "success" && data?.type === "specific" && (
+					<motion.h1 {...layout} key="specific">
+						{data.title}
+					</motion.h1>
+				)}
+				{state === "success" && (
+					<motion.div key="content" {...layout}>
+						<Wrapper
+							className="infobox-wrap"
+							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+							dangerouslySetInnerHTML={{ __html: data?.content ?? "no text" }}
+						/>
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</motion.div>
 	)
 }
 

@@ -5,18 +5,19 @@ import { useClickAway } from "ahooks"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
 import { useSearchParamState } from "app/utils/useSearchParamState"
-import { type ReactNode, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { useCamera } from "../MapMovement"
 import { getTextboxName } from "./getTextboxName"
 import useSearchBox from "./useSearchBox"
 import { AnimatePresence, motion } from "motion/react"
+import { IoSearch } from "react-icons/io5"
+import { TextArea } from "../TextArea"
+import WikiArticle from "../Wiki/WikiArticle"
 
 export function SearchBox({
 	places,
-	children,
 }: {
 	places: CompressedPlace[]
-	children?: ReactNode
 }) {
 	const wrapper = useRef<HTMLDivElement>(null)
 	const navigateRef = useRef<HTMLButtonElement>(null)
@@ -92,16 +93,19 @@ export function SearchBox({
 				<AnimatePresence mode="popLayout" initial={false}>
 					{navMode ? (
 						<SecondarySearch {...layout} key="secondary">
-							<textarea
-								{...fromProps}
-								onFocus={(e) => {
-									toFocusLost()
-									fromProps.onFocus(e)
-								}}
-								placeholder="From"
-								ref={fromFieldRef}
-							/>
-							<button
+							<motion.div layout="position">
+								<TextArea
+									{...fromProps}
+									onFocus={(e) => {
+										toFocusLost()
+										fromProps.onFocus(e)
+									}}
+									placeholder="From"
+									ref={fromFieldRef}
+								/>
+							</motion.div>
+							<motion.button
+								layout="position"
 								type="button"
 								onClick={() => {
 									clearFrom()
@@ -109,7 +113,7 @@ export function SearchBox({
 								}}
 							>
 								Clear
-							</button>
+							</motion.button>
 						</SecondarySearch>
 					) : to ? (
 						<NavigateTrigger
@@ -128,18 +132,23 @@ export function SearchBox({
 						</NavigateTrigger>
 					) : null}
 				</AnimatePresence>
-				<PrimarySearch layout="position">
-					<textarea
-						{...toProps}
-						onFocus={(e) => {
-							fromFocusLost()
-							toProps.onFocus(e)
-						}}
-						placeholder="to"
-					/>
-					<button type="button" onClick={clearTo}>
+				<PrimarySearch layout>
+					<motion.div layout="position">
+						<SearchIcon />
+					</motion.div>
+					<motion.div layout="position">
+						<TextArea
+							{...toProps}
+							onFocus={(e) => {
+								fromFocusLost()
+								toProps.onFocus(e)
+							}}
+							placeholder="to"
+						/>
+					</motion.div>
+					<motion.button layout="position" type="button" onClick={clearTo}>
 						Clear
-					</button>
+					</motion.button>
 				</PrimarySearch>
 
 				<AnimatePresence mode="popLayout">
@@ -159,7 +168,9 @@ export function SearchBox({
 				</AnimatePresence>
 				<AnimatePresence mode="popLayout" initial={false}>
 					{allowChildren ? (
-						<motion.div {...layout}>{children}</motion.div>
+						<motion.div {...layout}>
+							<WikiArticle places={places} />
+						</motion.div>
 					) : null}
 				</AnimatePresence>
 			</Wrapper>
@@ -168,12 +179,23 @@ export function SearchBox({
 }
 
 const Wrapper = styled(motion.div)`
-	background: whitesmoke;
-	overflow: clip;
-	position:relative;
+position: relative;
 `
 
-const PrimarySearch = styled(motion.div)`border:1px solid blue;`
+const SearchIcon = styled(IoSearch)`
+	width: 24px;
+	height: 24px;
+	border: 1px solid blue;
+`
+
+const PrimarySearch = styled(motion.label)`
+display:block;
+border:1px solid blue;
+padding: 16px;
+display:grid;
+grid-template-columns: auto 1fr auto;
+place-items: center start;
+`
 
 const Results = styled(motion.div)`
 	border: 1px solid orange;
@@ -181,8 +203,13 @@ const Results = styled(motion.div)`
 
 const Result = styled.button`display:block;`
 
-const SecondarySearch = styled(motion.div)`
-	border: 1px solid purple;
+const SecondarySearch = styled(motion.label)`
+	display:block;
+	border:1px solid purple;
+	padding: 16px;
+	display:grid;
+	grid-template-columns: 1fr auto;
+	place-items: center start;
 `
 
 const NavigateTrigger = styled(motion.button)`
