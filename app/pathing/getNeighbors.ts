@@ -1,4 +1,4 @@
-import { connectionLines, flights, gates, places } from "../data"
+import { connectionLines, flights, gates, places } from "app/data"
 import { getRouteTime } from "./getRouteTime"
 
 /**
@@ -13,13 +13,7 @@ export const getNeighbors = (locationId: string) => {
 	 * walking neighbors
 	 */
 	const neighbors: { placeId: string; time: number }[] = [
-		...Object.entries({
-			...location.proximity.airairport,
-			...location.proximity.railstation,
-			...location.proximity.seastop,
-			...location.proximity.busstop,
-			...location.proximity.town,
-		}).map(([id, proximity]) => ({
+		...Object.entries(location.proximity).map(([id, proximity]) => ({
 			placeId: id,
 			time: getRouteTime({ type: "walk", distance: proximity.distance }),
 		})),
@@ -47,7 +41,7 @@ export const getNeighbors = (locationId: string) => {
 			// remove the current location
 			.filter((airport) => airport !== location)
 			.map((airport) => ({
-				placeId: airport.id,
+				placeId: airport.i,
 				type: "flight",
 				// TODO factor in gate existance & airport size
 				time: getRouteTime({ type: "flight" }),
@@ -68,7 +62,7 @@ export const getNeighbors = (locationId: string) => {
 						// bidirectional
 						c.direction.one_way === false ||
 						// or one-way, away from the current location
-						c.direction.forward_towards_code !== locationId,
+						c.direction.direction !== locationId,
 				),
 			)
 			.flatMap(([placeId, connections]) =>

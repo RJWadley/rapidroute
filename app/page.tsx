@@ -59,7 +59,7 @@ export default async function MainPage({
 			<RoutingProvider>
 				<Application>
 					<MinecraftMap />
-					<AppGrid />
+					<AppGrid places={compressedPlaces} />
 				</Application>
 			</RoutingProvider>
 		</HydrationBoundary>

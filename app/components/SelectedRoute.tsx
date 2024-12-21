@@ -9,7 +9,7 @@ const getPlaceDisplay = (place: Place) => {
 		"code" in place
 			? place.code
 			: "codes" in place
-				? place.codes.join(", ")
+				? place.codes?.join(", ")
 				: null
 	const name = place.name || "Unnamed"
 	return code ? `${code} - ${name} ${place.type}` : `${place.type} ${name}`

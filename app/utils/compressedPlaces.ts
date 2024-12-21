@@ -14,7 +14,7 @@ export const compressedPlaces = places.list.map((place) => ({
 	id: place.pretty_id,
 	name:
 		place.name ||
-		(place.type === "railstation"
+		(place.type === "RailStation"
 			? `${place.pretty_id} Station`
 			: `Untitled ${place.type}`),
 	codes:

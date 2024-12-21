@@ -1,6 +1,6 @@
 import { compressedPlaces } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
-import { type Place, places } from "../data"
+import { type Place, places } from "app/data"
 import PriorityQueue from "../utils/PriorityQueue"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
@@ -39,8 +39,8 @@ export const findPath = (
 	const timesSoFar = new Map<string, number>()
 	const timesCache: Record<string, number> = {}
 
-	frontier.enqueue(start.id, 0)
-	timesSoFar.set(start.id, 0)
+	frontier.enqueue(start.i, 0)
+	timesSoFar.set(start.i, 0)
 
 	// while there are nodes to visit
 	while (!frontier.isEmpty()) {
@@ -48,7 +48,7 @@ export const findPath = (
 		if (!currentId) break
 
 		// if we've reached the end, exit the loop (we've found the path)
-		if (currentId === end.id) break
+		if (currentId === end.i) break
 
 		const neighbors = getNeighbors(currentId)
 
@@ -95,7 +95,7 @@ export const findPath = (
 		}
 	}
 
-	const totalTimeToDestination = timesSoFar.get(end.id)
+	const totalTimeToDestination = timesSoFar.get(end.i)
 
 	// if there is no totalTimeToDestination, there's no path to the destination
 	if (!totalTimeToDestination) return []
@@ -116,7 +116,7 @@ export const findPath = (
 		const currentPlace = nextPath.path[0]
 		if (!currentPlace) continue
 
-		const currentCameFrom = cameFrom.get(currentPlace.id) ?? []
+		const currentCameFrom = cameFrom.get(currentPlace.i) ?? []
 
 		const newPaths: RoutingResult[] = currentCameFrom.map((placeId) => ({
 			path: [places.map.get(placeId), ...nextPath.path].filter(
@@ -124,13 +124,12 @@ export const findPath = (
 			),
 			time:
 				nextPath.time +
-				(timesCache[`${placeId}${currentPlace.id}`] ??
-					Number.POSITIVE_INFINITY),
+				(timesCache[`${placeId}${currentPlace.i}`] ?? Number.POSITIVE_INFINITY),
 		}))
 
 		for (const newPath of newPaths) {
 			if (newPath.time > totalTimeToDestination) continue
-			if (newPath.path[0]?.id === start.id) {
+			if (newPath.path[0]?.i === start.i) {
 				completedPaths.push(newPath)
 			} else {
 				pathsInProgress.push(newPath)

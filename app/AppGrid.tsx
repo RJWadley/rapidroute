@@ -4,12 +4,12 @@ import { styled } from "@linaria/react"
 import RouteOptions from "./components/RouteOptions"
 import { SearchBox } from "./components/SearchBox"
 import SelectedRoute from "./components/SelectedRoute"
-import { compressedPlaces } from "./utils/compressedPlaces"
 import { LayoutGroup, motion, MotionConfig } from "motion/react"
+import type { CompressedPlace } from "./utils/compressedPlaces"
 
 import "./global.css"
 
-export default function AppGrid() {
+export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 	return (
 		<MotionConfig reducedMotion="user">
 			<LayoutGroup>
@@ -17,7 +17,7 @@ export default function AppGrid() {
 					<Column layout>
 						<Box layout style={{ borderRadius: 28 }}>
 							<motion.div layout="position">pre</motion.div>
-							<SearchBox places={compressedPlaces} />
+							<SearchBox places={places} />
 							<motion.div layout="position">post</motion.div>
 						</Box>
 						<Box layout>

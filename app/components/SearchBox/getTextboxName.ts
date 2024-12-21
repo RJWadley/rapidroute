@@ -5,7 +5,7 @@ export const getTextboxName = (
 ) => {
 	if (!place) return ""
 
-	if (place.type === "town") return `${place.rank} City - ${place.name}`
+	if (place.type === "Town") return `${place.rank} City - ${place.name}`
 
 	const code =
 		"code" in place

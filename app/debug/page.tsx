@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { findPathInServer } from "app/pathing/server-front"
 import { useState } from "react"
-import { type Place, places } from "../data"
+import { type Place, places } from "app/data"
 import { findPathInWorker } from "../pathing/worker-front"
 
 const method: "worker" | "server" = "worker"
@@ -13,7 +13,7 @@ const getPlaceDisplay = (place: Place) => {
 		"code" in place
 			? place.code
 			: "codes" in place
-				? place.codes.join(", ")
+				? place.codes?.join(", ")
 				: null
 	const name = place.name || "Unnamed"
 	return code ? `${code} - ${name} ${place.type}` : `${place.type} ${name}`
@@ -36,7 +36,7 @@ export default function Home() {
 	)
 
 	const options = sortedPlaces.map((item) => (
-		<option key={item.id} value={item.id}>
+		<option key={item.i} value={item.i}>
 			{getPlaceDisplay(item)}
 		</option>
 	))

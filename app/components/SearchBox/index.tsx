@@ -93,7 +93,7 @@ export function SearchBox({
 				<AnimatePresence mode="popLayout" initial={false}>
 					{navMode ? (
 						<SecondarySearch {...layout} key="secondary">
-							<motion.div layout="position">
+							<motion.div layout="position" key="search">
 								<TextArea
 									{...fromProps}
 									onFocus={(e) => {
@@ -105,6 +105,7 @@ export function SearchBox({
 								/>
 							</motion.div>
 							<motion.button
+								key="clear"
 								layout="position"
 								type="button"
 								onClick={() => {
