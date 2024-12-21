@@ -65,7 +65,11 @@ export function SearchBox({
 		},
 		onBlur: () => {
 			setTimeout(() => {
+				// TODO fix broken ref
 				navigateRef.current?.focus()
+				document
+					.querySelector<HTMLButtonElement>("button#navigateButton")
+					?.focus()
 				fromFieldRef.current?.focus()
 			})
 		},
@@ -118,6 +122,7 @@ export function SearchBox({
 						</SecondarySearch>
 					) : to ? (
 						<NavigateTrigger
+							id="navigateButton"
 							key="navigate"
 							type="button"
 							onClick={() => {
