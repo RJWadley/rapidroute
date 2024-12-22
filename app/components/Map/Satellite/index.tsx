@@ -43,6 +43,9 @@ export default function Satellite() {
 	}
 	useViewportMoved(updateSatelliteBounds)
 
+	// TODO - post react 19 upgrade I want to go back and refactor initial load timing
+	// gonna move on for now though
+
 	return (
 		<>
 			{breakpoints.map(

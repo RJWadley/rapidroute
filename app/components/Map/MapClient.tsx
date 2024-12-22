@@ -18,7 +18,8 @@ extend({
 
 export default function MapClient({
 	initialMarkers,
-}: { initialMarkers: MarkersResponse }) {
+	previewImage,
+}: { initialMarkers: MarkersResponse; previewImage: string }) {
 	// return null
 	const [hasInit, setHasInit] = useState(false)
 	const wrapperRef = useRef<HTMLDivElement>(null)
@@ -55,12 +56,14 @@ export default function MapClient({
 			onPointerUp={touchEnd}
 			onWheel={touchEnd}
 		>
+			<Background />
+			<PreviewImage src={previewImage} loading="eager" id="mapPreview" />
 			<Application
 				antialias
 				autoDensity
 				onInit={() => setHasInit(true)}
 				resizeTo={wrapperRef}
-				background="#546461"
+				backgroundAlpha={0}
 				resolution={typeof window !== "undefined" ? window.devicePixelRatio : 1}
 			>
 				<MovementContext.Provider value={moveContextValue}>
@@ -79,10 +82,27 @@ export default function MapClient({
 }
 
 const Wrapper = styled.div`
-position: absolute;
-inset: 0;
-width: 100%;
-height: 100%;
-z-index: 1;
-background: #546461;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	overflow:clip;
+`
+
+const PreviewImage = styled.img`
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	aspect-ratio: 1;
+	z-index: -1;
+	pointer-events: none;
+`
+
+const Background = styled.div`
+	position: absolute;
+	inset:0;
+	z-index: -2;
+	background: #546461;
 `

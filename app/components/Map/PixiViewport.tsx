@@ -13,7 +13,12 @@ export const worldSize = 61_000
 const halfSize = worldSize / 2
 
 const ViewportContext = createContext<Viewport | null>(null)
-const moveCallbacks: Record<string, () => void> = {}
+const moveCallbacks: Record<string, () => void> = {
+	mapPreview: () => {
+		const image = document.querySelector<HTMLImageElement>("img#mapPreview")
+		if (image) image.style.display = "none"
+	},
+}
 
 /**
  * utility hook for getting the viewport
@@ -108,8 +113,6 @@ export default function PixiViewport({
 	const zoom = zoomRaw ? Number.parseFloat(zoomRaw) : 0.5
 	const hasInit = useRef(false)
 
-	console.log("initial viewport", x, z, zoom)
-
 	if (Number.isNaN(x)) setX("0")
 	if (Number.isNaN(z)) setZ("0")
 	if (Number.isNaN(zoom)) setZoom("0.5")
@@ -158,6 +161,7 @@ export default function PixiViewport({
 			setX(Math.round(viewport.center.x).toString())
 			setZ(Math.round(viewport.center.y).toString())
 			setZoom(Number(viewport.scale.x.toFixed(4)).toString())
+			moveCallbacks.mapPreview?.()
 		})
 	}, [viewport, x, z, zoom, setX, setZ, setZoom])
 

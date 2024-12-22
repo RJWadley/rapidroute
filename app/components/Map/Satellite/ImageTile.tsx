@@ -50,14 +50,6 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
 		if (skipThisTile) return
 		let isMounted = true
 		Assets.load(url)
-			.then(async () =>
-				// give lower zoom tiles a chance to load first
-				zoomLevel === 0
-					? null
-					: new Promise((resolve) => {
-							setTimeout(resolve, zoomLevel)
-						}),
-			)
 			.then(() => {
 				if (!isMounted) return null
 				const newTexture = Texture.from(url)
@@ -73,7 +65,7 @@ export default function ImageTile({ x, y, zoomLevel }: ImageTileProps) {
 		return () => {
 			isMounted = false
 		}
-	}, [skipThisTile, url, zoomLevel])
+	}, [skipThisTile, url])
 
 	const textureToRender = textureCache[url] ?? texture
 
