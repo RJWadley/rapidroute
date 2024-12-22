@@ -51,6 +51,14 @@ const Columns = styled(motion.div)`
 const Column = styled(motion.div)`
 	overflow: clip auto;
 
+	/* hide scrollbar */
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* firefox */
+	scrollbar-width: none;
+
     & > * {
         pointer-events: auto;
     }

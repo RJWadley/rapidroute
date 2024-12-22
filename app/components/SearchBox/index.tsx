@@ -165,6 +165,26 @@ export function SearchBox({
 									type="button"
 									onClick={result.selectItem}
 									key={result.id}
+									ref={
+										result.highlighted
+											? (el) => {
+													const bounds = el?.getBoundingClientRect()
+													if (!bounds) return
+
+													const isInView =
+														bounds.top >= 0 &&
+														bounds.bottom <=
+															(window.innerHeight ||
+																document.documentElement.clientHeight)
+													if (isInView) return
+
+													el?.scrollIntoView({
+														behavior: "smooth",
+														block: "nearest",
+													})
+												}
+											: null
+									}
 								>
 									{getTextboxName(result)} {result.highlighted ? "🔍" : ""}
 								</Result>
@@ -207,7 +227,8 @@ const Results = styled(motion.div)`
 	border: 1px solid orange;
 	`
 
-const Result = styled.button`display:block;`
+const Result = styled.button`display:block;  scroll-margin: 200px;
+`
 
 const SecondarySearch = styled(motion.label)`
 	display:block;
