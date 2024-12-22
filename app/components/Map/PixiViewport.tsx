@@ -108,6 +108,8 @@ export default function PixiViewport({
 	const zoom = zoomRaw ? Number.parseFloat(zoomRaw) : 0.5
 	const hasInit = useRef(false)
 
+	console.log("initial viewport", x, z, zoom)
+
 	if (Number.isNaN(x)) setX("0")
 	if (Number.isNaN(z)) setZ("0")
 	if (Number.isNaN(zoom)) setZoom("0.5")
@@ -140,6 +142,13 @@ export default function PixiViewport({
 				right: worldSize,
 				underflow: "none",
 			})
+
+		setTimeout(() => {
+			viewport.setZoom(zoom).moveCenter({
+				x,
+				y: z,
+			})
+		})
 
 		updateClamp(viewport)
 
