@@ -122,7 +122,9 @@ export default function PixiViewport({
 		viewport
 			.drag()
 			.pinch()
-			.wheel()
+			.wheel({
+				smooth: 10,
+			})
 			.decelerate()
 			.setZoom(zoom)
 			.moveCenter({
