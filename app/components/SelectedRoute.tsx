@@ -3,6 +3,7 @@
 import { styled } from "@linaria/react"
 import type { Place } from "app/data"
 import { useRouting } from "./RoutingContext"
+import Box from "./Box"
 
 const getPlaceDisplay = (place: Place) => {
 	const code =
@@ -22,42 +23,40 @@ export default function SelectedRoute() {
 
 	const result = routes?.[index]
 
-	if (!result) return null
-
 	return (
-		<Wrapper>
-			<br />
-			result number {index + 1} ({Math.round(result.time)} seconds):
-			<br />
-			{/* {result.path
+		<Box isVisible={!!result}>
+			{result && (
+				<>
+					<br />
+					result number {index + 1} ({Math.round(result.time)} seconds):
+					<br />
+					{/* {result.path
             .map((place) => `${place.type} ${place.name}`)
             .flatMap((place, index) => (
                 <div key={place}>
-                    {place} {index === result.path.length - 1 ? null : "->"}
-                    <br />
+				{place} {index === result.path.length - 1 ? null : "->"}
+				<br />
                 </div>
-            ))} */}
-			{result.path.map((leg) => (
-				<div key={leg.id}>
-					from {getPlaceDisplay(leg.from)} to {getPlaceDisplay(leg.to)} via{" "}
-					<br />
-					{leg.options
-						.map(
-							(option) =>
-								`option: ${option.type} ${"code" in option ? option.code : ""} with ${
-									option.airline?.name ??
-									option.company?.name ??
-									(option.type === "walk" ? "your legs" : "unknown company")
-								}`,
-						)
-						.join(", ")}
-					{leg.skipped ? ` (skips ${leg.skipped.length})` : null}
-				</div>
-			))}
-		</Wrapper>
+				))} */}
+					{result.path.map((leg) => (
+						<div key={leg.id}>
+							from {getPlaceDisplay(leg.from)} to {getPlaceDisplay(leg.to)} via{" "}
+							<br />
+							{leg.options
+								.map(
+									(option) =>
+										`option: ${option.type} ${"code" in option ? option.code : ""} with ${
+											option.airline?.name ??
+											option.company?.name ??
+											(option.type === "walk" ? "your legs" : "unknown company")
+										}`,
+								)
+								.join(", ")}
+							{leg.skipped ? ` (skips ${leg.skipped.length})` : null}
+						</div>
+					))}
+				</>
+			)}
+		</Box>
 	)
 }
-
-const Wrapper = styled.div`
-    background: white;
-`

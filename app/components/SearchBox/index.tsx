@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from "motion/react"
 import { IoSearch } from "react-icons/io5"
 import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
+import Box from "../Box"
 
 export function SearchBox({
 	places,
@@ -92,8 +93,8 @@ export function SearchBox({
 	} as const
 
 	return (
-		<>
-			<Wrapper ref={wrapper} layout>
+		<Box>
+			<div ref={wrapper}>
 				<AnimatePresence mode="popLayout" initial={false}>
 					{navMode ? (
 						<SecondarySearch {...layout} key="secondary">
@@ -199,14 +200,10 @@ export function SearchBox({
 						</motion.div>
 					) : null}
 				</AnimatePresence>
-			</Wrapper>
-		</>
+			</div>
+		</Box>
 	)
 }
-
-const Wrapper = styled(motion.div)`
-position: relative;
-`
 
 const SearchIcon = styled(IoSearch)`
 	width: 24px;

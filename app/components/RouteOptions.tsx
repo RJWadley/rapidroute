@@ -1,35 +1,61 @@
 "use client"
 
-import { styled } from "@linaria/react"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { useRouting } from "./RoutingContext"
+import Box from "./Box"
+import { AnimatePresence, motion } from "motion/react"
+
+const layout = {
+	layout: "position",
+	initial: { opacity: 0 },
+	animate: { opacity: 1 },
+	exit: { opacity: 0 },
+} as const
 
 export default function RouteOptions() {
 	const { routes, isLoading, setPreferredRoute } = useRouting()
 	const [from] = useSearchParamState("from")
 	const [to] = useSearchParamState("to")
 
-	if (isLoading) return <Wrapper>loading...</Wrapper>
-	if (!from || !to) return null
-	if (!routes) return null
-	if (routes?.length === 0) return <Wrapper>no routes found</Wrapper>
+	const state =
+		isLoading && from && to
+			? "loading"
+			: !from || !to
+				? "empty"
+				: !routes
+					? "empty"
+					: routes.length === 0
+						? "404"
+						: "success"
 
 	return (
-		<Wrapper>
-			the following options are available:
-			{routes.map((route, index) => (
-				<button
-					type="button"
-					key={route.id}
-					onClick={() => setPreferredRoute(index)}
-				>
-					route number {index + 1}
-				</button>
-			))}
-		</Wrapper>
+		<Box isVisible={state !== "empty"}>
+			<AnimatePresence mode="popLayout" initial={false}>
+				{state === "loading" && (
+					<motion.h1 {...layout} key="loading">
+						loading...
+					</motion.h1>
+				)}
+				{state === "404" && (
+					<motion.h1 {...layout} key="404">
+						no routes found
+					</motion.h1>
+				)}
+				{state === "success" && (
+					<motion.div {...layout} key={`${from}-${to}`}>
+						the following options are available:
+						{routes?.map((route, index) => (
+							<button
+								type="button"
+								key={route.id}
+								onClick={() => setPreferredRoute(index)}
+							>
+								route number {index + 1}
+							</button>
+						))}
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</Box>
 	)
 }
-
-const Wrapper = styled.div`
-background: white;
-`

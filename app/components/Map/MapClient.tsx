@@ -91,11 +91,13 @@ const Wrapper = styled.div`
 `
 
 const PreviewImage = styled.img`
-	width: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
+	min-width: 100%;
+	min-height: 100%;
 	aspect-ratio: 1;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -50%;
 	z-index: -1;
 	pointer-events: none;
 `

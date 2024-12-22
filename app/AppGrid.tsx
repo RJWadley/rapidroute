@@ -15,21 +15,11 @@ export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 			<LayoutGroup>
 				<Columns>
 					<Column layout>
-						<Box layout style={{ borderRadius: 28 }}>
-							<motion.div layout="position">pre</motion.div>
-							<SearchBox places={places} />
-							<motion.div layout="position">post</motion.div>
-						</Box>
-						<Box layout>
-							<RouteOptions />
-							route options
-						</Box>
+						<SearchBox places={places} />
+						<RouteOptions />
 					</Column>
 					<Column>
-						<Box layout>
-							<SelectedRoute />
-							selected route
-						</Box>
+						<SelectedRoute />
 					</Column>
 				</Columns>
 			</LayoutGroup>
@@ -45,7 +35,7 @@ const Columns = styled(motion.div)`
     overflow: clip;
     pointer-events: none;
     display: grid;
-    grid-template-columns: 400px 1fr;
+    grid-template-columns: 400px 400px 1fr;
 `
 
 const Column = styled(motion.div)`
@@ -62,10 +52,4 @@ const Column = styled(motion.div)`
     & > * {
         pointer-events: auto;
     }
-`
-
-const Box = styled(motion.div)`
-	margin: 5px;
-	background: whitesmoke;
-	overflow: clip;
 `
