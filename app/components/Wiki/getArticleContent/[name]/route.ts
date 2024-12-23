@@ -131,7 +131,7 @@ export const GET = async (
 			and a p with a overview paragraph
 			then, include the rest of the synopsis
 
-			this is for mobile devices, so avoid tables, floats, or other complex layouts.
+			this is for mobile devices, so do not use tables, floats, or other complex layouts.
 
 			ARTICLE:
 
