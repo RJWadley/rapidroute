@@ -68,7 +68,9 @@ export default function WikiArticle({
 				)}
 				{state === "success" && (
 					<motion.div key="content" {...layout}>
-						{data?.mainImage && <img src={data?.mainImage} alt={data?.title} />}
+						{data?.mainImage && (
+							<PreviewImage {...data.mainImage} alt={data?.title} />
+						)}
 						<Wrapper
 							suppressHydrationWarning
 							className="infobox-wrap"
@@ -85,9 +87,21 @@ export default function WikiArticle({
 const Wrapper = styled.div`
 	max-width: 100%;
 	overflow:clip;
+	padding: 12px;
 
-	/* hide navigation */
-	.toc {
+	img {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	h1:first-child {
 		display: none;
 	}
+`
+
+const PreviewImage = styled.img`
+	width: 100%;
+	height: auto;
+	display: block;
 `

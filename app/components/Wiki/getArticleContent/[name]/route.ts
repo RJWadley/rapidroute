@@ -5,6 +5,10 @@ import { generateObject } from "ai"
 import { google } from "@ai-sdk/google"
 import { z } from "zod"
 import dedent from "dedent"
+import {
+	loadImageDimensions,
+	updateImageDimensions,
+} from "./getImageDimensions"
 
 export const dynamic = "force-static"
 
@@ -32,7 +36,11 @@ const googleModel = google("gemini-1.5-flash", {
 export type WikiResult = {
 	content: string
 	title: string
-	mainImage: string | null
+	mainImage: {
+		width: number
+		height: number
+		src: string
+	} | null
 	type: "specific" | "generic"
 }
 
@@ -150,10 +158,12 @@ export const GET = async (
 
 	return new Response(
 		JSON.stringify({
-			content: synopsis.object.innerHTML,
+			content: await updateImageDimensions(synopsis.object.innerHTML),
 			title: result?.title ?? "Untitled",
 			type: result.type,
-			mainImage: synopsis.object.mainImage || null,
+			mainImage: synopsis.object.mainImage
+				? await loadImageDimensions(synopsis.object.mainImage)
+				: null,
 		} satisfies WikiResult),
 		{
 			headers: {
