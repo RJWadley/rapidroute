@@ -68,6 +68,7 @@ export default function WikiArticle({
 				)}
 				{state === "success" && (
 					<motion.div key="content" {...layout}>
+						{data?.mainImage && <img src={data?.mainImage} alt={data?.title} />}
 						<Wrapper
 							suppressHydrationWarning
 							className="infobox-wrap"

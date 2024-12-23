@@ -32,6 +32,7 @@ const googleModel = google("gemini-1.5-flash", {
 export type WikiResult = {
 	content: string
 	title: string
+	mainImage: string | null
 	type: "specific" | "generic"
 }
 
@@ -115,23 +116,22 @@ export const GET = async (
 			return `srcset="${srcset}"`
 		})
 
-	console.log("generating text for", name)
 	const synopsis = await generateObject({
 		model: googleModel,
 		prompt: dedent(`
-			Given a wiki article, create a synopsis for a map listing.
-			Use HTML tags to structure the synopsis.
+			Given a wiki article, create a place details synopsis for a online maps listing for that place.
 
+			Use HTML tags to structure the synopsis.
 			structure the synopsis as headings and paragraphs. each heading should be followed by one or two paragraphs.
 			you may use h3 and h4 tags for subheadings as needed.
 			
-			If there are images in the article include them using img tags if they are revelant.
-			Make sure to use display:block on the img tags.
+			If there are images in the article include them using img tags if they are revelant. include a caption for each image using <caption> tags.
 
 			start with a top level h1 of '${result.title || "Untitled"}'
-			and a h2 of 'Overview'
+			and a p with a overview paragraph
+			then, include the rest of the synopsis
 
-			this is for mobile devices, so avoid tables or other complex layouts.
+			this is for mobile devices, so avoid tables, floats, or other complex layouts.
 
 			ARTICLE:
 
@@ -147,13 +147,13 @@ export const GET = async (
 			innerHTML: z.string(),
 		}),
 	})
-	console.log("generated text for", name)
 
 	return new Response(
 		JSON.stringify({
 			content: synopsis.object.innerHTML,
 			title: result?.title ?? "Untitled",
 			type: result.type,
+			mainImage: synopsis.object.mainImage || null,
 		} satisfies WikiResult),
 		{
 			headers: {
