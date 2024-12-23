@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/google": "^1.0.12",
     "@linaria/babel-preset": "^5.0.4",
     "@linaria/core": "^6.2.0",
     "@linaria/react": "^6.2.1",
@@ -18,8 +19,10 @@
     "@types/object-hash": "^3.0.6",
     "@vercel/speed-insights": "^1.0.12",
     "ahooks": "^3.8.1",
+    "ai": "^4.0.22",
     "canvas": "^2.11.2",
     "color2k": "^2.0.3",
+    "dedent": "^1.5.3",
     "fuzzysort": "^3.0.2",
     "motion": "^11.15.0",
     "next": "14.2.11",

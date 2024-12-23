@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
 import { useSearchParamState } from "app/utils/useSearchParamState"
-import { getArticleContent } from "./getArticleContent"
 import { AnimatePresence, motion } from "motion/react"
+import type { WikiResult } from "./getArticleContent/[name]/route"
 
 const layout = {
 	layout: "position",
@@ -29,7 +29,9 @@ export default function WikiArticle({
 		enabled: !!name,
 		queryFn: async () => {
 			if (!name) throw new Error("no title")
-			return getArticleContent(name)
+			const content = await fetch(`/components/Wiki/getArticleContent/${name}`)
+			const result = await content.json()
+			return result as WikiResult
 		},
 	})
 
@@ -67,6 +69,7 @@ export default function WikiArticle({
 				{state === "success" && (
 					<motion.div key="content" {...layout}>
 						<Wrapper
+							suppressHydrationWarning
 							className="infobox-wrap"
 							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
 							dangerouslySetInnerHTML={{ __html: data?.content ?? "no text" }}
