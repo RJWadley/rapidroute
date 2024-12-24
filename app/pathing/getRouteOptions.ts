@@ -4,7 +4,7 @@ import { getRouteTime } from "./getRouteTime"
 type Route =
 	| (typeof flights.list)[number]
 	| (typeof connectionLines.list)[number]
-	| { type: "walk"; distance: number }
+	| { type: "Walk"; distance: number }
 
 /**
  * given two places, get all possible routes between them
@@ -51,8 +51,8 @@ export const getRouteOptions = (from: Place, to: Place) => {
 
 	if (walkOption)
 		options.push({
-			time: getRouteTime({ type: "walk", distance: walkOption.distance }),
-			route: { type: "walk", distance: walkOption.distance },
+			time: getRouteTime({ type: "Walk", distance: walkOption.distance }),
+			route: { type: "Walk", distance: walkOption.distance },
 		})
 
 	const fastestTime = Math.min(...options.map((o) => o.time))

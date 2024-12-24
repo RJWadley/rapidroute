@@ -1,19 +1,11 @@
+import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "."
+import type { WorkerInput, WorkerOutput } from "./worker-back"
 
 const worker =
 	typeof window === "undefined"
 		? null
 		: new Worker(new URL("./worker-back.ts", import.meta.url))
-
-type Output =
-	| {
-			result: ReturnType<typeof findPath>
-			id: string
-	  }
-	| {
-			error: unknown
-			id: string
-	  }
 
 /**
  * find a path between two locations in a web worker
@@ -21,6 +13,7 @@ type Output =
 export const findPathInWorker = (
 	from: string | undefined | null,
 	to: string | undefined | null,
+	excludedRoutes: ExcludedRoutes,
 ) => {
 	if (!from || !to) return null
 
@@ -30,11 +23,12 @@ export const findPathInWorker = (
 		from,
 		to,
 		id,
-	})
+		excludedRoutes,
+	} satisfies WorkerInput)
 
 	return new Promise<ReturnType<typeof findPath>>((resolve, reject) => {
 		worker?.addEventListener("message", (event) => {
-			const data = event.data as Output
+			const data = event.data as WorkerOutput
 			if (data.id !== id) return
 
 			if ("result" in data) {

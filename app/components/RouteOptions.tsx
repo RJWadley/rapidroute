@@ -13,12 +13,13 @@ const layout = {
 } as const
 
 export default function RouteOptions() {
-	const { routes, isLoading, setPreferredRoute } = useRouting()
+	const { routes, isLoading, isError, setPreferredRoute } = useRouting()
 	const [from] = useSearchParamState("from")
 	const [to] = useSearchParamState("to")
 
-	const state =
-		isLoading && from && to
+	const state = isError
+		? "error"
+		: isLoading && from && to
 			? "loading"
 			: !from || !to
 				? "empty"
@@ -34,6 +35,11 @@ export default function RouteOptions() {
 				{state === "loading" && (
 					<motion.h1 {...layout} key="loading">
 						loading...
+					</motion.h1>
+				)}
+				{state === "error" && (
+					<motion.h1 {...layout} key="error">
+						error!
 					</motion.h1>
 				)}
 				{state === "404" && (

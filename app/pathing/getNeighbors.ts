@@ -1,28 +1,43 @@
-import { connectionLines, flights, gates, places } from "app/data"
+import {
+	connectionLines,
+	type ExcludedRoutes,
+	flights,
+	gates,
+	places,
+	type RouteType,
+} from "app/data"
 import { getRouteTime } from "./getRouteTime"
 
 /**
  * get all places that can be reached from a given location,
  * as well as the time it takes to get there
  */
-export const getNeighbors = (locationId: string) => {
+export const getNeighbors = (
+	locationId: string,
+	excludeRoutes: ExcludedRoutes,
+) => {
 	const location = places.map.get(locationId)
 	if (!location) return []
 
 	/**
 	 * walking neighbors
 	 */
-	const neighbors: { placeId: string; time: number }[] = [
-		...Object.entries(location.proximity).map(([id, proximity]) => ({
-			placeId: id,
-			time: getRouteTime({ type: "walk", distance: proximity.distance }),
-		})),
-	]
+	const neighbors: {
+		placeId: string
+		time: number
+	}[] = excludeRoutes.Walk
+		? []
+		: [
+				...Object.entries(location.proximity).map(([id, proximity]) => ({
+					placeId: id,
+					time: getRouteTime({ type: "Walk", distance: proximity.distance }),
+				})),
+			]
 
 	/**
 	 * find neighbors via plane connections
 	 */
-	if ("gates" in location) {
+	if ("gates" in location && !excludeRoutes.AirFlight) {
 		const allGatesHere = location.gates.map((gateId) => gates.map.get(gateId))
 		const allFlights = allGatesHere
 			.flatMap((gate) =>
@@ -42,7 +57,6 @@ export const getNeighbors = (locationId: string) => {
 			.filter((airport) => airport !== location)
 			.map((airport) => ({
 				placeId: airport.i,
-				type: "flight",
 				// TODO factor in gate existance & airport size
 				time: getRouteTime({ type: "flight" }),
 			}))
@@ -66,13 +80,32 @@ export const getNeighbors = (locationId: string) => {
 				),
 			)
 			.flatMap(([placeId, connections]) =>
-				connections.map((c) => ({
-					placeId,
-					// TODO better factor in line type (MRT, boat, etc.) and station size (larger stations take longer to navigate, for e.g.)
-					time: getRouteTime({
-						type: connectionLines.map.get(c.line)?.type,
-					}),
-				})),
+				connections
+					.map((c) => ({
+						...c,
+						line: connectionLines.map.get(c.line),
+					}))
+					.filter((c) => {
+						// TODO - special handling for MRT lines (filter them separately)
+						const line = c.line
+						if (!line) return false
+
+						if (
+							"mode" in line &&
+							line.mode &&
+							excludeRoutes[`${line.mode}${line.type}` as keyof ExcludedRoutes]
+						)
+							return false
+
+						return !excludeRoutes[line.type]
+					})
+					.map((c) => ({
+						placeId,
+						// TODO better factor in line type (MRT, boat, etc.) and station size (larger stations take longer to navigate, for e.g.)
+						time: getRouteTime({
+							type: c.line?.type,
+						}),
+					})),
 			)
 
 		neighbors.push(...reachedPlaces)

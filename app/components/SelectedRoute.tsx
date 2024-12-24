@@ -1,9 +1,8 @@
 "use client"
 
-import { styled } from "@linaria/react"
 import type { Place } from "app/data"
-import { useRouting } from "./RoutingContext"
 import Box from "./Box"
+import { useRouting } from "./RoutingContext"
 
 const getPlaceDisplay = (place: Place) => {
 	const code =
@@ -42,17 +41,21 @@ export default function SelectedRoute() {
 						<div key={leg.id}>
 							from {getPlaceDisplay(leg.from)} to {getPlaceDisplay(leg.to)} via{" "}
 							<br />
+							<br />
 							{leg.options
 								.map(
 									(option) =>
 										`option: ${option.type} ${"code" in option ? option.code : ""} with ${
 											option.airline?.name ??
 											option.company?.name ??
-											(option.type === "walk" ? "your legs" : "unknown company")
+											(option.type === "Walk" ? "your legs" : "unknown company")
 										}`,
 								)
 								.join(", ")}
 							{leg.skipped ? ` (skips ${leg.skipped.length})` : null}
+							<br />
+							<br />
+							<br />
 						</div>
 					))}
 				</>

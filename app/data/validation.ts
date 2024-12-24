@@ -16,7 +16,7 @@ const RawData = JSON.parse(
 // and helps me to understand the data structure better and its relationships
 
 /**
- * as of dec 2024, removing nulls saves ~130KB
+ * as of dec 2024, removing nulls during serialization saves ~130KB
  */
 const optional = <T>(schema: z.ZodType<T>) =>
 	schema
@@ -53,7 +53,20 @@ const coordinates = optional(z.tuple([z.number(), z.number()]))
 /**
  * nearby nodes, with distances
  */
-const proximity = z.record(id, z.strictObject({ distance: z.number() }))
+const proximity = z.record(
+	id,
+	z.strictObject({
+		distance: z
+			.number()
+			.transform((v) =>
+				// no reason to keep decimals - save some bytes
+				Math.round(v),
+			)
+			// if two places are at the same spot, we could bounce between them with no penalty
+			// so proximity should be at least 1, event though it could be 0
+			.transform((v) => Math.min(v, 1)),
+	}),
+)
 
 /**
  * airports have unique codes

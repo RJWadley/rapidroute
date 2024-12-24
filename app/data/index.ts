@@ -130,3 +130,27 @@ export const connectionLines = {
 	map: new Map(connectionLinesArray.map((line) => [line.i, line])),
 }
 export type ConnectionLine = (typeof connectionLinesArray)[number]
+
+export type RouteType =
+	| "AirFlight"
+	| "RailLine"
+	| "SeaLine"
+	| "BusLine"
+	| "Walk"
+
+type Join<Type extends string, Mode> = Mode extends string
+	? `${Mode}${Type}`
+	: Type
+type ExtractMode<T extends (typeof allNodes)[number]> = T extends {
+	mode?: unknown
+}
+	? Join<T["type"], T["mode"]>
+	: T["type"]
+
+export type ExcludedRoutes = {
+	[K in RouteType as ExtractMode<
+		(typeof allNodes)[number] & { type: K }
+	>]: boolean
+} & {
+	Walk: boolean
+}

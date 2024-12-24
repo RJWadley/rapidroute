@@ -17,23 +17,27 @@ export const convertToRoutes = (result: RoutingResult) => {
 		})
 		.filter((x) => x !== null)
 
-	const routes = allLocationPairs.map(([from, to]) => ({
-		id: crypto.randomUUID(),
-		from,
-		to,
-		skipped: null as Place[] | null,
-		options: getRouteOptions(from, to).map((option) => ({
-			...option,
-			gates:
-				"gates" in option
-					? option.gates
-							.map((gate) => gates.map.get(gate))
-							.filter((x) => x !== undefined)
-					: null,
-			airline: "airline" in option ? companies.map.get(option.airline) : null,
-			company: "company" in option ? companies.map.get(option.company) : null,
-		})),
-	}))
+	const routes = allLocationPairs
+		.map(([from, to]) => ({
+			from,
+			to,
+			skipped: null as Place[] | null,
+			options: getRouteOptions(from, to).map((option) => ({
+				...option,
+				gates:
+					"gates" in option
+						? option.gates
+								.map((gate) => gates.map.get(gate))
+								.filter((x) => x !== undefined)
+						: null,
+				airline: "airline" in option ? companies.map.get(option.airline) : null,
+				company: "company" in option ? companies.map.get(option.company) : null,
+			})),
+		}))
+		.map((x, index) => ({
+			...x,
+			id: `route-${index}`,
+		}))
 
 	return {
 		...result,

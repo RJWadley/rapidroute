@@ -1,11 +1,12 @@
 import { compressedPlaces } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
-import { type Place, places } from "app/data"
+import { type ExcludedRoutes, type Place, places } from "app/data"
 import PriorityQueue from "../utils/PriorityQueue"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
 import hash from "object-hash"
+import { combineWalks } from "./combineWalks"
 
 export type RoutingResult = { path: Place[]; time: number }
 
@@ -16,9 +17,8 @@ export type RoutingResult = { path: Place[]; time: number }
 export const findPath = (
 	from: string | null | undefined,
 	to: string | null | undefined,
+	excludedRoutes: ExcludedRoutes,
 ) => {
-	const startTime = performance.now()
-
 	if (!from || !to) return null
 	if (from === to) return null
 
@@ -35,7 +35,7 @@ export const findPath = (
 	if (!end) return null
 
 	const frontier = new PriorityQueue<string>()
-	const cameFrom = new Map<string, string[]>()
+	const cameFrom = new Map<string, Set<string>>()
 	const timesSoFar = new Map<string, number>()
 	const timesCache: Record<string, number> = {}
 
@@ -50,7 +50,7 @@ export const findPath = (
 		// if we've reached the end, exit the loop (we've found the path)
 		if (currentId === end.i) break
 
-		const neighbors = getNeighbors(currentId)
+		const neighbors = getNeighbors(currentId, excludedRoutes)
 
 		for (const neighbor of neighbors) {
 			const { placeId, time } = neighbor
@@ -75,21 +75,19 @@ export const findPath = (
 			if (!oldTime) {
 				frontier.enqueue(placeId, newTime)
 				timesSoFar.set(placeId, newTime)
-				cameFrom.set(placeId, [currentId])
+				cameFrom.set(placeId, new Set([currentId]))
 			}
 			// otherwise, if we have visited the neighbor, check if the new path is faster and update accordingly (see above)
 			else {
 				if (newTime === oldTime) {
 					// add this location if it's not already in there
-					const list = cameFrom.get(placeId) ?? []
-					if (!list.includes(currentId)) {
-						list.push(currentId)
-						cameFrom.set(placeId, list)
-					}
+					const list = cameFrom.get(placeId) ?? new Set()
+					list.add(currentId)
+					cameFrom.set(placeId, list)
 				} else if (newTime < oldTime) {
 					frontier.enqueue(placeId, newTime)
 					timesSoFar.set(placeId, newTime)
-					cameFrom.set(placeId, [currentId])
+					cameFrom.set(placeId, new Set([currentId]))
 				}
 			}
 		}
@@ -103,8 +101,11 @@ export const findPath = (
 	// now that we have the path, lets reconstruct it
 	// some things to note:
 	// typically, we would only reconstruct a single path with dijkstra's algorithm
-	// but I want all the possible paths within ALLOWABLE_TIME_DIFFERENCE
-	// so construct all possible paths and filter out the ones that are too slow
+	// but I want all the viable paths
+	// so when pathfinding, use a more vague time for each step - this will allow us to find more paths
+	// because more paths will return the same time
+	// then, when sorting them for display, use a more precise time
+	// TODO sort paths based on gate presence and time
 
 	const pathsInProgress: RoutingResult[] = [{ path: [end], time: 0 }]
 	const completedPaths: RoutingResult[] = []
@@ -118,14 +119,25 @@ export const findPath = (
 
 		const currentCameFrom = cameFrom.get(currentPlace.i) ?? []
 
-		const newPaths: RoutingResult[] = currentCameFrom.map((placeId) => ({
-			path: [places.map.get(placeId), ...nextPath.path].filter(
-				(x) => x !== undefined,
-			),
-			time:
-				nextPath.time +
-				(timesCache[`${placeId}${currentPlace.i}`] ?? Number.POSITIVE_INFINITY),
-		}))
+		const newPaths: RoutingResult[] = Array.from(currentCameFrom)
+			.map((placeId) => ({
+				path: [places.map.get(placeId), ...nextPath.path].filter(
+					(x) => x !== undefined,
+				),
+				time:
+					nextPath.time +
+					(timesCache[`${placeId}${currentPlace.i}`] ??
+						Number.POSITIVE_INFINITY),
+			}))
+			// filter out invalid paths
+			.filter(({ path }) => {
+				// every place in the path must only be included once
+				// because it doesn't make sense to go from A to B and then back to A
+				// this shouldn't happen - but if it did we get an infinite loop
+				// so it's important to filter out
+				const uniquePlaces = new Set(path.map((x) => x.i))
+				return uniquePlaces.size === path.length
+			})
 
 		for (const newPath of newPaths) {
 			if (newPath.time > totalTimeToDestination) continue
@@ -137,17 +149,21 @@ export const findPath = (
 		}
 	}
 
-	const endTime = performance.now()
+	if (completedPaths.length === 0)
+		throw new Error(
+			`Reconstruction failed! Path was between ${start.pretty_id} and ${end.pretty_id}`,
+		)
 
-	// console.log(
-	// 	`${completedPaths.length} completed paths took ${endTime - startTime}ms`,
-	// )
-
-	return completedPaths
-		.map(convertToRoutes)
-		.map(compressResult)
-		.map((x) => ({
-			...x,
-			id: hash(x),
-		}))
+	return (
+		completedPaths
+			.map(convertToRoutes)
+			.map(combineWalks)
+			.map(compressResult)
+			.map((x) => ({
+				...x,
+				id: hash(x),
+			}))
+			// filter out duplicates - we can take advantage of the id being a hash
+			.filter((x, i, arr) => arr.findIndex((y) => x.id === y.id) === i)
+	)
 }

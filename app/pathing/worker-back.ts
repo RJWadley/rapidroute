@@ -1,17 +1,28 @@
-import { z } from "zod"
+import type { ExcludedRoutes } from "app/data"
 import { findPath } from "."
 
-const messageSchema = z.object({
-	from: z.string(),
-	to: z.string(),
-	id: z.string(),
-})
+export type WorkerInput = {
+	from: string
+	to: string
+	id: string
+	excludedRoutes: ExcludedRoutes
+}
+
+export type WorkerOutput =
+	| {
+			id: string
+			result: ReturnType<typeof findPath>
+	  }
+	| {
+			id: string
+			error: unknown
+	  }
 
 self.addEventListener("message", (event) => {
 	try {
-		const { from, to, id } = messageSchema.parse(event.data)
+		const { from, to, id, excludedRoutes } = event.data as WorkerInput
 
-		const result = findPath(from, to)
+		const result = findPath(from, to, excludedRoutes)
 
 		self.postMessage({
 			id,

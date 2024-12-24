@@ -4,7 +4,7 @@ import type { convertToRoutes } from "./convertToRoutes"
  * get a unique identifier for a route (id if available, type otherwise)
  */
 const identifyRoute = (
-	route: { type: string; i: string } | { type: "walk" },
+	route: { type: string; i: string } | { type: "Walk" },
 ) => ("i" in route ? route.i : route.type)
 
 /**

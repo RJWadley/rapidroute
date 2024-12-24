@@ -8,7 +8,6 @@ import AppGrid from "./AppGrid"
 import MinecraftMap from "./components/Map/MapServer"
 import { RoutingProvider } from "./components/RoutingContext"
 import "./global.css"
-import { findPath } from "./pathing"
 import { compressedPlaces } from "./utils/compressedPlaces"
 import { findClosestPlace } from "./utils/search"
 
@@ -56,12 +55,13 @@ export default async function MainPage({
 	}
 
 	// prefetch route
-	promises.push(
-		queryClient.prefetchQuery({
-			queryKey: ["find-path", fromID, toID],
-			queryFn: () => findPath(fromID, toID),
-		}),
-	)
+	// TODO - reenable prefetch
+	// promises.push(
+	// 	queryClient.prefetchQuery({
+	// 		queryKey: ["find-path", fromID, toID],
+	// 		queryFn: () => findPath(fromID, toID),
+	// 	}),
+	// )
 
 	// prefetch search params
 	promises.push(

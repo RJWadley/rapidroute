@@ -1,3 +1,4 @@
+import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "."
 
 /**
@@ -6,16 +7,28 @@ import type { findPath } from "."
 export const findPathInServer = async (
 	from: string | undefined | null,
 	to: string | undefined | null,
+	excludedRoutes: ExcludedRoutes,
 ) => {
 	if (typeof window === "undefined") return null
 	if (!from || !to) return null
 
-	const data = await fetch(`/pathing?from=${from}&to=${to}`, {
-		method: "GET",
-		headers: {
-			"content-type": "application/json",
+	const options = {
+		from,
+		to,
+		excludedRoutes: JSON.stringify(excludedRoutes),
+	}
+
+	const data = await fetch(
+		`/pathing?${Object.entries(options)
+			.map(([key, value]) => `${key}=${value}`)
+			.join("&")}`,
+		{
+			method: "GET",
+			headers: {
+				"content-type": "application/json",
+			},
 		},
-	}).then((res) => res.json())
+	).then((res) => res.json())
 
 	return data as ReturnType<typeof findPath>
 }

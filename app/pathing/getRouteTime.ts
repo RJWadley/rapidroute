@@ -5,20 +5,20 @@
 export const getRouteTime = (
 	props:
 		| { type: "flight" }
-		| { type: "walk"; distance: number }
+		| { type: "Walk"; distance: number }
 		| { type: "RailLine" | "SeaLine" | "BusLine" | undefined; mode?: "cart" },
 ) => {
 	switch (props.type) {
 		case "flight":
 			return 60 * 4
-		case "walk":
+		case "Walk":
 			return props.distance / 4
 		case "RailLine":
-			return 30
+			return 60 * 3
 		case "SeaLine":
-			return 60
+			return 60 * 3
 		case "BusLine":
-			return 30
+			return 60 * 3
 		default:
 			props.type satisfies undefined
 			return Number.POSITIVE_INFINITY

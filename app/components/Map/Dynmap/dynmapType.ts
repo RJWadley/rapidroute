@@ -5,32 +5,15 @@ export interface MarkersResponse {
 	timestamp: number
 }
 
-export interface Sets {
-	southern: MarkerSet
-	forest: MarkerSet
-	arctic: MarkerSet
-	northern: MarkerSet
-	zephyr: MarkerSet
-	mesa: MarkerSet
-	plains: MarkerSet
+export type Sets = {
+	[line in MRTLines]: MarkerSet
+} & {
 	"worldborder.markerset": MarkerSet
-	expo: MarkerSet
-	eastern: MarkerSet
 	cities: MarkerSet
-	island: MarkerSet
-	taiga: MarkerSet
 	old: MarkerSet
-	savannah: MarkerSet
 	airports: MarkerSet
 	"roads.a": MarkerSet
 	"roads.b": MarkerSet
-	lakeshore: MarkerSet
-	valley: MarkerSet
-	western: MarkerSet
-	jungle: MarkerSet
-	desert: MarkerSet
-	circle: MarkerSet
-	union: MarkerSet
 	markers: MarkerSet
 }
 
@@ -91,46 +74,74 @@ export enum Dim {
 }
 
 type MRTLines =
-	| "southern"
-	| "forest"
+	// [A] MRT Arctic Line
 	| "arctic"
-	| "northern"
-	| "zephyr"
-	| "mesa"
-	| "plains"
-	| "expo"
-	| "eastern"
-	| "island"
-	| "taiga"
-	| "savannah"
-	| "lakeshore"
-	| "valley"
-	| "western"
-	| "jungle"
-	| "desert"
+	// [B] MRT Beach Line
+	| "beach"
+	// [C] MRT Circle Line
 	| "circle"
+	// [D] MRT Desert Line
+	| "desert"
+	// [E] MRT Eastern Line
+	| "eastern"
+	// [F] MRT Forest Line
+	| "forest"
+	// [H] MRT Savannah Line
+	| "savannah"
+	// [I] MRT Island Line
+	| "island"
+	// [J] MRT Jungle Line
+	| "jungle"
+	// [L] MRT Lakeshore Line
+	| "lakeshore"
+	// [M] MRT Mesa Line
+	| "mesa"
+	// [N] MRT Northern Line
+	| "northern"
+	// [O] MRT Oasis Line
+	| "oasis"
+	// [P] MRT Plains Line
+	| "plains"
+	// [R] MRT Rose Line
+	| "rose"
+	// [S] MRT Southern Line
+	| "southern"
+	// [T] MRT Taiga Line
+	| "taiga"
+	// [U] MRT Union Line
 	| "union"
+	// [V] MRT Valley Line
+	| "valley"
+	// [W] MRT Western Line
+	| "western"
+	// [X] MRT Expo Line
+	| "expo"
+	// [Z] MRT Zephyr Line
+	| "zephyr"
 
 export const isMRTLine = (line: string): line is MRTLines => {
 	return (
-		line === "southern" ||
-		line === "forest" ||
 		line === "arctic" ||
-		line === "northern" ||
-		line === "zephyr" ||
-		line === "mesa" ||
-		line === "plains" ||
-		line === "expo" ||
+		line === "beach" ||
+		line === "circle" ||
+		line === "desert" ||
 		line === "eastern" ||
-		line === "island" ||
-		line === "taiga" ||
+		line === "forest" ||
 		line === "savannah" ||
+		line === "island" ||
+		line === "jungle" ||
 		line === "lakeshore" ||
+		line === "mesa" ||
+		line === "northern" ||
+		line === "oasis" ||
+		line === "plains" ||
+		line === "rose" ||
+		line === "southern" ||
+		line === "taiga" ||
+		line === "union" ||
 		line === "valley" ||
 		line === "western" ||
-		line === "jungle" ||
-		line === "desert" ||
-		line === "circle" ||
-		line === "union"
+		line === "expo" ||
+		line === "zephyr"
 	)
 }
