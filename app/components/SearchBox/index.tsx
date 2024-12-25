@@ -80,6 +80,7 @@ export function SearchBox({
 	useClickAway(toFocusLost, wrapper)
 
 	const hasRoutes = Boolean(from)
+	const hasFromResults = Boolean(fromResults?.[0])
 	const hasSearchResults = Boolean(fromResults?.[0] || toResults?.[0])
 	const allIsBlank = !from && !to && !hasSearchResults
 
@@ -160,7 +161,7 @@ export function SearchBox({
 
 				<AnimatePresence mode="popLayout">
 					{hasSearchResults && (
-						<Results {...layout}>
+						<Results {...layout} key={hasFromResults ? "from" : "to"}>
 							{(fromResults ?? toResults)?.map((result) => (
 								<Result
 									type="button"

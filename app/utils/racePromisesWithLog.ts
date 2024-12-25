@@ -21,6 +21,6 @@ export const racePromisesWithLog = async <T>(
 		}),
 	)
 
-	const winner = await Promise.race(loggablePromises)
+	const winner = await Promise.any(loggablePromises)
 	return winner ?? null
 }
