@@ -4,7 +4,6 @@ import {
 	flights,
 	gates,
 	places,
-	type RouteType,
 } from "app/data"
 import { getRouteTime } from "./getRouteTime"
 

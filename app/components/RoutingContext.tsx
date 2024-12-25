@@ -46,6 +46,9 @@ export function RoutingProvider({
 		Walk: false,
 		ferrySeaLine: false,
 		warpRailLine: false,
+		helicopterAirFlight: false,
+		seaplaneAirFlight: false,
+		warpPlaneAirFlight: false,
 	}
 
 	const { isLoading, data, isError } = useQuery({

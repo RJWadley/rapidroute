@@ -8,8 +8,11 @@ if (!isServer && !isWorker) {
 }
 
 const RawData = JSON.parse(
-	// gotta save those bytes
-	JSON.stringify(BritishData).replaceAll("colour", "color"),
+	JSON.stringify(BritishData)
+		// gotta save those bytes
+		.replaceAll("colour", "color")
+		// easier to work with
+		.replaceAll("warp plane", "warpPlane"),
 )
 
 // all this schema is primarily to verify the data is of the type I'm expecting,
@@ -35,11 +38,15 @@ const id = z
 	// because object keys serialize to strings, I'm going with strings always
 	.transform((v) => (typeof v === "number" ? v.toString() : v))
 
+const requiredString = z.string().min(1)
+const optionalString = optional(
+	z.string().transform((v) => (v === "" ? null : v)),
+)
+
 /**
  * data sources, in order
  */
-const source = z
-	.string()
+const source = requiredString
 	.array()
 	.min(1)
 	// we don't consume these sources
@@ -58,6 +65,9 @@ const proximity = z.record(
 	z.strictObject({
 		distance: z
 			.number()
+			.nullable()
+			// TODO - distance should be required if specified
+			.transform((v) => v ?? 0)
 			.transform((v) =>
 				// no reason to keep decimals - save some bytes
 				Math.round(v),
@@ -71,7 +81,7 @@ const proximity = z.record(
 /**
  * airports have unique codes
  */
-const uniqueCode = z.string().refine((v) =>
+const uniqueCode = requiredString.refine((v) =>
 	// code must be unique
 	{
 		const matches =
@@ -85,11 +95,7 @@ const uniqueCode = z.string().refine((v) =>
 	},
 )
 
-const world =
-	// TODO: PMA is not a valid world
-	optional(
-		z.enum(["New", "Old", "PMA"]).transform((v) => (v === "PMA" ? "New" : v)),
-	)
+const world = optional(z.enum(["New", "Old", "Space"]))
 
 const connections = z.record(
 	id,
@@ -98,8 +104,8 @@ const connections = z.record(
 			line: id,
 			direction: z.strictObject({
 				direction: id,
-				forward_label: z.string(),
-				backward_label: z.string(),
+				forward_label: requiredString,
+				backward_label: requiredString,
 				one_way: z.boolean(),
 			}),
 		})
@@ -107,12 +113,6 @@ const connections = z.record(
 )
 
 const shared_facility = id.array()
-
-const emptyStringOLD = z.literal("")
-const requiredString = z.string().min(1)
-const optionalString = optional(
-	z.string().transform((v) => (v === "" ? null : v)),
-)
 
 const schema = z
 	.strictObject({
@@ -140,7 +140,7 @@ const schema = z
 					name: optionalString,
 					link: optionalString,
 					modes: optional(
-						z.enum(["seaplane", "helicopter", "plane"]).array().min(1),
+						z.enum(["seaplane", "helicopter", "warpPlane"]).array().min(1),
 					),
 					gates: id.array(),
 				}),
@@ -159,8 +159,7 @@ const schema = z
 					i: id,
 					source,
 					codes: requiredString.array().min(1),
-					// TODO: should mode be defined?
-					mode: optional(z.null()),
+					mode: optional(z.enum(["seaplane", "helicopter", "warpPlane"])),
 					gates: id.array().min(1),
 					airline: id,
 				}),
@@ -281,15 +280,24 @@ const schema = z
 						"Councillor",
 						"Community",
 						"Unranked",
-						// TODO - what is this?
-						"nan",
 					]),
 					mayor: requiredString,
 					deputy_mayor: optionalString,
 				}),
+				z.strictObject({
+					type: z.literal("SpawnWarp"),
+					i: id,
+					source,
+					coordinates,
+					world,
+					proximity,
+					shared_facility,
+					name: requiredString,
+					warp_type: z.enum(["portal", "premier", "terminus", "misc"]),
+				}),
 			]),
 		),
-		timestamp: z.string(),
+		timestamp: requiredString,
 		version: z.number(),
 	})
 	.readonly()
