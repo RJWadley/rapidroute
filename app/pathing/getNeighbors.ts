@@ -27,10 +27,19 @@ export const getNeighbors = (
 	}[] = excludeRoutes.Walk
 		? []
 		: [
-				...Object.entries(location.proximity).map(([id, proximity]) => ({
-					placeId: id,
-					time: getRouteTime({ type: "Walk", distance: proximity.distance }),
-				})),
+				...Object.entries(location.proximity).flatMap(([id, proximity]) =>
+					proximity.distance
+						? [
+								{
+									placeId: id,
+									time: getRouteTime({
+										type: "Walk",
+										distance: proximity.distance,
+									}),
+								},
+							]
+						: [],
+				),
 			]
 
 	/**

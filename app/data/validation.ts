@@ -4,6 +4,7 @@ import { isServer, isWorker } from "app/utils/isBrowser"
 
 // validate that we are either on the server OR in a web worker
 if (!isServer && !isWorker) {
+	// TODO - only server should be allowed
 	throw new Error("raw gatelogue data was imported in a non-worker environment")
 }
 
@@ -63,18 +64,18 @@ const coordinates = optional(z.tuple([z.number(), z.number()]))
 const proximity = z.record(
 	id,
 	z.strictObject({
-		distance: z
-			.number()
-			.nullable()
-			// TODO - distance should be required if specified
-			.transform((v) => v ?? 0)
-			.transform((v) =>
-				// no reason to keep decimals - save some bytes
-				Math.round(v),
-			)
-			// if two places are at the same spot, we could bounce between them with no penalty
-			// so proximity should be at least 1, event though it could be 0
-			.transform((v) => Math.min(v, 1)),
+		distance: optional(
+			z
+				.number()
+				.transform((v) => v)
+				.transform((v) =>
+					// no reason to keep decimals - save some bytes
+					Math.round(v),
+				)
+				// if two places are at the same spot, we could bounce between them with no penalty
+				// so proximity should be at least 1, event though it could be 0
+				.transform((v) => Math.max(v, 1)),
+		),
 	}),
 )
 
@@ -308,6 +309,7 @@ const schema = z
 // const dataWithNull = schema.parse(RawData)
 // globalThis.allowNull = false
 const data = schema.parse(RawData)
+Object.freeze(data)
 
 // console.info("data is valid")
 

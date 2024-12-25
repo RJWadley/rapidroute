@@ -49,7 +49,7 @@ export const getRouteOptions = (from: Place, to: Place) => {
 	/* walking */
 	const walkOption = from.proximity[to.i]
 
-	if (walkOption)
+	if (walkOption?.distance)
 		options.push({
 			time: getRouteTime({ type: "Walk", distance: walkOption.distance }),
 			route: { type: "Walk", distance: walkOption.distance },
