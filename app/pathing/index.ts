@@ -136,11 +136,20 @@ export const findPath = (
 				// this shouldn't happen - but if it did we get an infinite loop
 				// so it's important to filter out
 				const uniquePlaces = new Set(path.map((x) => x.i))
+				if (uniquePlaces.size !== path.length)
+					console.warn(
+						`infinite loop detected in path from ${startID} to ${endID}`,
+					)
 				return uniquePlaces.size === path.length
 			})
 
 		for (const newPath of newPaths) {
-			if (newPath.time > totalTimeToDestination) continue
+			if (newPath.time > totalTimeToDestination) {
+				// TODO http://localhost:3000/?to=IntraBus-New+Beginnings+North+MCR+Station&from=IntraBus-Snowtopic+IntraRail%2FRaiLinQ+stations
+				console.warn(
+					`reconstructed path from ${startID} to ${endID} was too long! ${newPath.time} > ${totalTimeToDestination}`,
+				)
+			}
 			if (newPath.path[0]?.i === start.i) {
 				completedPaths.push(newPath)
 			} else {
