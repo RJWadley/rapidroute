@@ -66,7 +66,7 @@ export function SearchBox({
 		},
 		onBlur: () => {
 			setTimeout(() => {
-				// TODO fix broken ref
+				// TODO react 19 fix broken ref
 				navigateRef.current?.focus()
 				document
 					.querySelector<HTMLButtonElement>("button#navigateButton")

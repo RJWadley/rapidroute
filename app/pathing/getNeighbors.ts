@@ -89,7 +89,7 @@ export const getNeighbors = (
 			.filter((airport) => airport !== location)
 			.map((airport) => ({
 				placeId: airport.i,
-				// TODO factor in gate existance & airport size
+				// TODO factor in gate existance & airport size (not in this file though)
 				time: getRouteTime({ type: "AirFlight" }),
 			}))
 
@@ -133,7 +133,7 @@ export const getNeighbors = (
 					})
 					.map((c) => ({
 						placeId,
-						// TODO better factor in line type (MRT, boat, etc.) and station size (larger stations take longer to navigate, for e.g.)
+						// TODO better factor in line type (MRT, boat, etc.) and station size (larger stations take longer to navigate, for e.g.) (not in this file though)
 						time: getRouteTime({
 							type: c.line?.type,
 						}),

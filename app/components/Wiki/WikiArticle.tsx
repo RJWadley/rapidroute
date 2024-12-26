@@ -121,7 +121,9 @@ export default function WikiArticle({
 													width={figure.width}
 													height={figure.height}
 												/>
-												<figcaption>{figure.caption}</figcaption>
+												<figcaption>
+													{figure.caption.replaceAll(/\.$/g, "")}
+												</figcaption>
 											</>
 										)}
 									</Component>
