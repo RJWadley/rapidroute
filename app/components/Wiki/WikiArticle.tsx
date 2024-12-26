@@ -7,6 +7,7 @@ import { findClosestPlace } from "app/utils/search"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { AnimatePresence, motion } from "motion/react"
 import type { WikiResult } from "./getArticleContent/[name]/route"
+import { Fragment } from "react"
 
 const layout = {
 	layout: "position",
@@ -14,6 +15,20 @@ const layout = {
 	animate: { opacity: 1 },
 	exit: { opacity: 0 },
 } as const
+
+const components = {
+	h1: styled.h1``,
+	h2: styled.h2``,
+	h3: styled.h3``,
+	h4: styled.h4``,
+	h5: styled.h5``,
+	h6: styled.h6``,
+	p: styled.p``,
+	figure: styled.figure``,
+	ol: styled.ol``,
+	ul: styled.ul``,
+	li: styled.li``,
+}
 
 export default function WikiArticle({
 	places,
@@ -39,9 +54,11 @@ export default function WikiArticle({
 		? "empty"
 		: isLoading
 			? "loading"
-			: !data?.content
-				? "404"
-				: "success"
+			: data?.type
+				? "success"
+				: "404"
+
+	// TODO - allow wiki articles to manually specify content instead of using the generated summary
 
 	return (
 		<motion.div style={{ position: "relative" }}>
@@ -69,14 +86,59 @@ export default function WikiArticle({
 				{state === "success" && (
 					<motion.div key="content" {...layout}>
 						{data?.mainImage && (
-							<PreviewImage {...data.mainImage} alt={data?.title} />
+							<MainImage {...data.mainImage} alt={data?.title} />
 						)}
-						<Wrapper
-							suppressHydrationWarning
-							className="infobox-wrap"
-							// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-							dangerouslySetInnerHTML={{ __html: data?.content ?? "no text" }}
-						/>
+						<Wrapper>
+							{data?.content.map(({ figure, tagName, textContent }, index) => {
+								const Component = components[tagName]
+								const SubComponent =
+									tagName === "ul" || tagName === "ol"
+										? components.li
+										: Fragment
+
+								return (
+									// biome-ignore lint/suspicious/noArrayIndexKey: none available
+									<Component key={index}>
+										{textContent?.map(
+											({ reactStyleObject, text, href }, index) => (
+												// biome-ignore lint/suspicious/noArrayIndexKey: none available
+												<SubComponent key={index}>
+													{href ? (
+														<a href={href} style={reactStyleObject}>
+															{text}
+														</a>
+													) : (
+														<span style={reactStyleObject}>{text}</span>
+													)}
+												</SubComponent>
+											),
+										)}
+										{figure?.src && (
+											<>
+												<ContentImage
+													src={figure.src}
+													alt={figure.alt}
+													width={figure.width}
+													height={figure.height}
+												/>
+												<figcaption>{figure.caption}</figcaption>
+											</>
+										)}
+									</Component>
+								)
+							})}
+						</Wrapper>
+						<a href={data?.url}>Read more on the MRT wiki</a>
+						<p>
+							Generated summary using "<a href={data?.url}>{data?.title}</a>" by
+							Contributers to the MRT wiki under{" "}
+							<a
+								href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+								style={{ whiteSpace: "nowrap" }}
+							>
+								CC BY-NC-SA 3.0
+							</a>
+						</p>
 					</motion.div>
 				)}
 			</AnimatePresence>
@@ -88,20 +150,20 @@ const Wrapper = styled.div`
 	max-width: 100%;
 	overflow:clip;
 	padding: 12px;
-
-	img {
-		width: 100%;
-		height: auto;
-		display: block;
-	}
-
+	
 	h1:first-child {
 		display: none;
 	}
 `
 
-const PreviewImage = styled.img`
-	width: 100%;
-	height: auto;
-	display: block;
+const MainImage = styled.img`
+		width: 100%;
+		height: auto;
+		display: block;
+`
+
+const ContentImage = styled.img`
+		width: 100%;
+		height: auto;
+		display: block;
 `

@@ -4,6 +4,7 @@ import { useSearchParamState } from "app/utils/useSearchParamState"
 import { useRouting } from "./RoutingContext"
 import Box from "./Box"
 import { AnimatePresence, motion } from "motion/react"
+import TypeModeFilter from "./TypeModeFilter"
 
 const layout = {
 	layout: "position",
@@ -33,22 +34,26 @@ export default function RouteOptions() {
 		<Box isVisible={state !== "empty"}>
 			<AnimatePresence mode="popLayout" initial={false}>
 				{state === "loading" && (
-					<motion.h1 {...layout} key="loading">
+					<motion.div {...layout} key="loading">
+						<TypeModeFilter key="mode" />
 						loading...
-					</motion.h1>
+					</motion.div>
 				)}
 				{state === "error" && (
-					<motion.h1 {...layout} key="error">
+					<motion.div {...layout} key="error">
+						<TypeModeFilter key="mode" />
 						error!
-					</motion.h1>
+					</motion.div>
 				)}
 				{state === "404" && (
-					<motion.h1 {...layout} key="404">
+					<motion.div {...layout} key="404">
+						<TypeModeFilter key="mode" />
 						no routes found
-					</motion.h1>
+					</motion.div>
 				)}
 				{state === "success" && (
 					<motion.div {...layout} key={`${from}-${to}`}>
+						<TypeModeFilter key="mode" />
 						the following options are available:
 						{routes?.map((route, index) => (
 							<button

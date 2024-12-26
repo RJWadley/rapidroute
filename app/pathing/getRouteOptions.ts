@@ -90,7 +90,14 @@ export const getRouteOptions = (from: Place, to: Place) => {
 			route: { type: "Walk", distance: walkOption.distance },
 		})
 
-	const fastestTime = Math.min(...options.map((o) => o.time))
+	const fastestTime = Math.min(
+		...options
+			.filter(
+				// don't let walks be the fastest option to avoid excessive filtering
+				(o) => o.route.type !== "Walk",
+			)
+			.map((o) => o.time),
+	)
 
 	// only keep options within 60s of the fastest time (to avoid showing stupid options)
 	return options.filter((o) => o.time <= fastestTime + 60).map((o) => o.route)

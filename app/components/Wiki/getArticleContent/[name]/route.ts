@@ -5,10 +5,7 @@ import { generateObject } from "ai"
 import { google } from "@ai-sdk/google"
 import { z } from "zod"
 import dedent from "dedent"
-import {
-	loadImageDimensions,
-	updateImageDimensions,
-} from "./getImageDimensions"
+import { loadImageDimensions } from "./getImageDimensions"
 
 export const dynamic = "force-static"
 
@@ -33,8 +30,68 @@ const googleModel = google("gemini-1.5-flash", {
 	],
 })
 
+const schema = z.object({
+	mainImage: z
+		.string()
+		.optional()
+		.describe(
+			"if there is a prominent image, include it here for preview purposes",
+		),
+	innerHTML: z.array(
+		z.object({
+			tagName: z.enum([
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"p",
+				"figure",
+				"ol",
+				"ul",
+			]),
+			textContent: z
+				.array(
+					z.object({
+						text: z.string(),
+						href: z.string().optional(),
+						reactStyleObject: z.record(z.string(), z.string()).optional(),
+					}),
+				)
+				.optional(),
+			figure: z
+				.object({
+					src: z.string(),
+					alt: z.string(),
+					caption: z.string(),
+				})
+				.optional(),
+		}),
+	),
+})
+
+const addImageDimensions = (result: z.infer<typeof schema>["innerHTML"]) => {
+	return Promise.all(
+		result.map(async (node) => {
+			const figure = node.figure
+
+			return {
+				...node,
+				figure: figure
+					? {
+							...figure,
+							...(await loadImageDimensions(figure.src)),
+						}
+					: undefined,
+			}
+		}),
+	)
+}
+
 export type WikiResult = {
-	content: string
+	url: string
+	content: Awaited<ReturnType<typeof addImageDimensions>>
 	title: string
 	mainImage: {
 		width: number
@@ -42,7 +99,7 @@ export type WikiResult = {
 		src: string
 	} | null
 	type: "specific" | "generic"
-}
+} | null
 
 export const GET = async (
 	_: unknown,
@@ -87,10 +144,14 @@ export const GET = async (
 				type: "specific",
 				...specificResult,
 			} as const)
-		: ({
-				type: "generic",
-				...genericResult,
-			} as const)
+		: genericResult
+			? ({
+					type: "generic",
+					...genericResult,
+				} as const)
+			: null
+
+	if (!result) return new Response(null satisfies WikiResult, { status: 200 })
 
 	const pageParams = {
 		action: "parse",
@@ -127,41 +188,28 @@ export const GET = async (
 	const synopsis = await generateObject({
 		model: googleModel,
 		prompt: dedent(`
+			ARTICLE:
+			${text}
+
 			Given a wiki article, create a place details synopsis for a online maps listing for that place.
 
-			Use HTML tags to structure the synopsis.
 			structure the synopsis as headings and paragraphs. each heading should be followed by one or two paragraphs.
 			you may use h3 and h4 tags for subheadings as needed.
 			
-			If there are images in the article include them using img tags if they are revelant. include a caption for each image using <caption> tags.
+			If there are images in the article include if they are relevant AND not a flag/marker.
 
 			start with a top level h1 of '${result.title || "Untitled"}'
 			and a p with a overview paragraph
 			then, include the rest of the synopsis
-
-			this is for mobile devices, so:
-			tables are not allowed
-			floats are not allowed
-
-			ARTICLE:
-
-			${text}
 		`),
-		schema: z.object({
-			mainImage: z
-				.string()
-				.optional()
-				.describe(
-					"if there is a prominent image, include it here for preview purposes",
-				),
-			innerHTML: z.string(),
-		}),
+		schema,
 	})
 
 	return new Response(
 		JSON.stringify({
-			content: await updateImageDimensions(synopsis.object.innerHTML),
-			title: result?.title ?? "Untitled",
+			content: await addImageDimensions(synopsis.object.innerHTML),
+			title: result.title,
+			url: `${RAW_WIKI_URL}index.php/${result.title}`,
 			type: result.type,
 			mainImage: synopsis.object.mainImage
 				? await loadImageDimensions(synopsis.object.mainImage)
