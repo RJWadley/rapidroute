@@ -4,12 +4,15 @@
  */
 export const getRouteTime = (
 	props:
-		| { type: "flight" }
+		| { type: "SpawnWarp" }
+		| { type: "AirFlight" }
 		| { type: "Walk"; distance: number }
 		| { type: "RailLine" | "SeaLine" | "BusLine" | undefined; mode?: "cart" },
 ) => {
 	switch (props.type) {
-		case "flight":
+		case "SpawnWarp":
+			return 60
+		case "AirFlight":
 			return 60 * 4
 		case "Walk":
 			return props.distance / 4

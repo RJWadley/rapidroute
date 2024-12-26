@@ -4,8 +4,14 @@ import {
 	flights,
 	gates,
 	places,
+	spawnWarps,
 } from "app/data"
 import { getRouteTime } from "./getRouteTime"
+
+const spawn = places.list
+	.filter((x) => x.type === "Town")
+	.find((x) => x.name === "Central City")
+if (!spawn) throw new Error("could not find central city")
 
 /**
  * get all places that can be reached from a given location,
@@ -18,29 +24,47 @@ export const getNeighbors = (
 	const location = places.map.get(locationId)
 	if (!location) return []
 
-	/**
-	 * walking neighbors
-	 */
 	const neighbors: {
 		placeId: string
 		time: number
-	}[] = excludeRoutes.Walk
-		? []
-		: [
-				...Object.entries(location.proximity).flatMap(([id, proximity]) =>
-					proximity.distance
-						? [
-								{
-									placeId: id,
-									time: getRouteTime({
-										type: "Walk",
-										distance: proximity.distance,
-									}),
-								},
-							]
-						: [],
-				),
-			]
+	}[] = []
+
+	/**
+	 * spawn warps
+	 */
+	if (!excludeRoutes.SpawnWarp) {
+		neighbors.push({
+			placeId: spawn.i,
+			time: getRouteTime({ type: "SpawnWarp" }),
+		})
+		neighbors.push(
+			...spawnWarps.list.map((warp) => ({
+				placeId: warp.i,
+				time: getRouteTime({ type: "SpawnWarp" }),
+			})),
+		)
+	}
+
+	/**
+	 * walking neighbors
+	 */
+	if (!excludeRoutes.Walk) {
+		neighbors.push(
+			...Object.entries(location.proximity).flatMap(([id, proximity]) =>
+				proximity.distance
+					? [
+							{
+								placeId: id,
+								time: getRouteTime({
+									type: "Walk",
+									distance: proximity.distance,
+								}),
+							},
+						]
+					: [],
+			),
+		)
+	}
 
 	/**
 	 * find neighbors via plane connections
@@ -66,7 +90,7 @@ export const getNeighbors = (
 			.map((airport) => ({
 				placeId: airport.i,
 				// TODO factor in gate existance & airport size
-				time: getRouteTime({ type: "flight" }),
+				time: getRouteTime({ type: "AirFlight" }),
 			}))
 
 		neighbors.push(...allReachedAirports)
@@ -117,6 +141,13 @@ export const getNeighbors = (
 			)
 
 		neighbors.push(...reachedPlaces)
+	}
+
+	// assert that we don't return any zero-time neighbors
+	for (const neighbor of neighbors) {
+		if (neighbor.time === 0) {
+			throw new Error("generated neighbor has zero time! this is a bug.")
+		}
 	}
 
 	return neighbors

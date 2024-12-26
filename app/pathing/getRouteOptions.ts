@@ -1,9 +1,18 @@
-import { type Place, connectionLines, flights } from "app/data"
+import {
+	type ConnectionLine,
+	type Flight,
+	type Place,
+	type SpawnWarp,
+	connectionLines,
+	flights,
+	spawnWarps,
+} from "app/data"
 import { getRouteTime } from "./getRouteTime"
 
 type Route =
-	| (typeof flights.list)[number]
-	| (typeof connectionLines.list)[number]
+	| Flight
+	| ConnectionLine
+	| SpawnWarp
 	| { type: "Walk"; distance: number }
 
 /**
@@ -11,7 +20,33 @@ type Route =
  * note that this is a bit expensive, so we only do this after pathing
  */
 export const getRouteOptions = (from: Place, to: Place) => {
+	// todo excluded route modes
 	const options: { time: number; route: Route }[] = []
+
+	/* warps */
+	const potentialWarp = spawnWarps.map.get(to.i)
+	if (potentialWarp) {
+		options.push({
+			time: getRouteTime({ type: "SpawnWarp" }),
+			route: potentialWarp,
+		})
+	}
+	if (to.type === "Town" && to.name === "Central City") {
+		options.push({
+			time: getRouteTime({ type: "SpawnWarp" }),
+			// this is only used for display - not routing
+			route: {
+				type: "SpawnWarp",
+				i: "warp-spawn",
+				name: "warp spawn",
+				proximity: {},
+				warp_type: "misc",
+				world: "New",
+				shared_facility: [],
+				coordinates: [0, 0],
+			} satisfies SpawnWarp,
+		})
+	}
 
 	/* flights */
 	if ("gates" in from && "gates" in to) {
@@ -26,7 +61,7 @@ export const getRouteOptions = (from: Place, to: Place) => {
 					flight.gates.some((gate) => toGates.includes(gate)),
 			)
 			.map((flight) => ({
-				time: getRouteTime({ type: "flight" }),
+				time: getRouteTime({ type: "AirFlight" }),
 				route: flight,
 			}))
 

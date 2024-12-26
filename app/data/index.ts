@@ -32,6 +32,9 @@ const getPrettyId = (place: UglyPlace) => {
 			}
 			case "Town":
 				return place.name
+			case "SpawnWarp":
+				// warps are only used for routing - not display, so they don't need pretty ids
+				return place.i
 			default:
 				place satisfies never
 				return ""
@@ -61,7 +64,8 @@ const uglyPlacesArray = allNodes.filter(
 		place.type === "BusStop" ||
 		place.type === "RailStation" ||
 		place.type === "SeaStop" ||
-		place.type === "Town",
+		place.type === "Town" ||
+		place.type === "SpawnWarp",
 )
 type UglyPlace = (typeof uglyPlacesArray)[number]
 
@@ -131,12 +135,27 @@ export const connectionLines = {
 }
 export type ConnectionLine = (typeof connectionLinesArray)[number]
 
+/**
+ * spawn warps
+ */
+const spawnWarpsArray = allNodes.filter((place) => place.type === "SpawnWarp")
+
+export const spawnWarps = {
+	list: spawnWarpsArray,
+	map: new Map(spawnWarpsArray.map((warp) => [warp.i, warp])),
+}
+export type SpawnWarp = (typeof spawnWarpsArray)[number]
+
+/**
+ * route type/mode stuff
+ */
 export type RouteType =
 	| "AirFlight"
 	| "RailLine"
 	| "SeaLine"
 	| "BusLine"
 	| "Walk"
+	| "SpawnWarp"
 
 type Join<Type extends string, Mode> = Mode extends string
 	? `${Mode}${Type}`

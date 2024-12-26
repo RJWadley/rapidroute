@@ -39,6 +39,7 @@ export function RoutingProvider({
 	// TODO - mode ui
 
 	const excludeRoutes: ExcludedRoutes = {
+		SpawnWarp: false,
 		AirFlight: false,
 		RailLine: false,
 		SeaLine: false,
