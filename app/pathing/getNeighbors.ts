@@ -19,10 +19,12 @@ if (!spawn) throw new Error("could not find central city")
  */
 export const getNeighbors = (
 	locationId: string,
-	excludeRoutes: ExcludedRoutes,
+	excludedRoutes: ExcludedRoutes,
 ) => {
 	const location = places.map.get(locationId)
 	if (!location) return []
+
+	console.log(excludedRoutes)
 
 	const neighbors: {
 		placeId: string
@@ -32,23 +34,24 @@ export const getNeighbors = (
 	/**
 	 * spawn warps
 	 */
-	if (!excludeRoutes.SpawnWarp) {
+	if (!excludedRoutes.SpawnWarp.misc)
 		neighbors.push({
 			placeId: spawn.i,
 			time: getRouteTime({ type: "SpawnWarp" }),
 		})
-		neighbors.push(
-			...spawnWarps.list.map((warp) => ({
+	neighbors.push(
+		...spawnWarps.list
+			.filter((warp) => !excludedRoutes.SpawnWarp[warp.mode])
+			.map((warp) => ({
 				placeId: warp.i,
 				time: getRouteTime({ type: "SpawnWarp" }),
 			})),
-		)
-	}
+	)
 
 	/**
 	 * walking neighbors
 	 */
-	if (!excludeRoutes.Walk) {
+	if (!excludedRoutes.Walk.unk) {
 		neighbors.push(
 			...Object.entries(location.proximity).flatMap(([id, proximity]) =>
 				proximity.distance
@@ -69,13 +72,14 @@ export const getNeighbors = (
 	/**
 	 * find neighbors via plane connections
 	 */
-	if ("gates" in location && !excludeRoutes.AirFlight) {
+	if (location.type === "AirAirport") {
 		const allGatesHere = location.gates.map((gateId) => gates.map.get(gateId))
 		const allFlights = allGatesHere
 			.flatMap((gate) =>
 				gate?.flights.map((flightId) => flights.map.get(flightId)),
 			)
 			.filter((flight) => flight !== undefined)
+			.filter((flight) => !excludedRoutes.AirFlight[flight.mode])
 
 		const allReachedAirports = allFlights
 			// get all gates at this airport
@@ -122,14 +126,15 @@ export const getNeighbors = (
 						const line = c.line
 						if (!line) return false
 
+						if (line.type === "BusLine" && excludedRoutes.BusLine.unk)
+							return false
 						if (
-							"mode" in line &&
-							line.mode &&
-							excludeRoutes[`${line.mode}${line.type}` as keyof ExcludedRoutes]
+							line.type !== "BusLine" &&
+							excludedRoutes[line.type][line.mode as "unk"]
 						)
 							return false
 
-						return !excludeRoutes[line.type]
+						return true
 					})
 					.map((c) => ({
 						placeId,

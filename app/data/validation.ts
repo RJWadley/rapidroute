@@ -13,7 +13,8 @@ const RawData = JSON.parse(
 		// gotta save those bytes
 		.replaceAll("colour", "color")
 		// easier to work with
-		.replaceAll("warp plane", "warpPlane"),
+		.replaceAll("warp plane", "warpPlane")
+		.replaceAll("warp_type", "mode"),
 )
 
 // all this schema is primarily to verify the data is of the type I'm expecting,
@@ -160,7 +161,9 @@ const schema = z
 					i: id,
 					source,
 					codes: requiredString.array().min(1),
-					mode: optional(z.enum(["seaplane", "helicopter", "warpPlane"])),
+					mode: optional(
+						z.enum(["seaplane", "helicopter", "warpPlane"]),
+					).transform((v) => v ?? "unk"),
 					gates: id.array().min(1),
 					airline: id,
 				}),
@@ -171,7 +174,7 @@ const schema = z
 					code: requiredString,
 					name: requiredString,
 					color: optionalString,
-					mode: optional(z.enum(["warp"])),
+					mode: optional(z.enum(["warp"])).transform((v) => v ?? "unk"),
 					company: id,
 					ref_station: optional(id),
 				}),
@@ -203,7 +206,7 @@ const schema = z
 					code: requiredString,
 					name: requiredString,
 					color: optionalString,
-					mode: optional(z.enum(["ferry"])),
+					mode: optional(z.enum(["ferry"])).transform((v) => v ?? "unk"),
 					company: id,
 					ref_stop: optional(id),
 				}),
@@ -294,7 +297,7 @@ const schema = z
 					proximity,
 					shared_facility,
 					name: requiredString,
-					warp_type: z.enum(["portal", "premier", "terminus", "misc"]),
+					mode: z.enum(["portal", "premier", "terminus", "misc"]),
 				}),
 			]),
 		),

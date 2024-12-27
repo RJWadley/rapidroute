@@ -157,19 +157,42 @@ export type RouteType =
 	| "Walk"
 	| "SpawnWarp"
 
-type Join<Type extends string, Mode> = Mode extends string
-	? `${Mode}${Type}`
-	: Type
-type ExtractMode<T extends (typeof allNodes)[number]> = T extends {
+type NodesOfType<T> = (typeof allNodes)[number] & { type: T }
+
+type ExtractModes<T> = T extends {
 	mode?: unknown
 }
-	? Join<T["type"], T["mode"]>
-	: T["type"]
+	? T["mode"]
+	: never
 
 export type ExcludedRoutes = {
-	[K in RouteType as ExtractMode<
-		(typeof allNodes)[number] & { type: K }
-	>]: boolean
-} & {
-	Walk: boolean
+	[Type in RouteType]: {
+		[Mode in ExtractModes<NodesOfType<Type>> extends number
+			? "unk"
+			: ExtractModes<NodesOfType<Type>>]: boolean
+	}
 }
+
+/**
+ * some assertions about the data - so that I'll know if things change
+ */
+if (!flights.list.find((x) => x.mode === "unk"))
+	throw new Error(
+		"flights: unk mode specified but not found. it should be removed from the schema",
+	)
+if (
+	!connectionLines.list
+		.filter((x) => x.type === "RailLine")
+		.find((x) => x.mode === "unk")
+)
+	throw new Error(
+		"rail: unk mode specified but not found. it should be removed from the schema",
+	)
+if (
+	!connectionLines.list
+		.filter((x) => x.type === "SeaLine")
+		.find((x) => x.mode === "unk")
+)
+	throw new Error(
+		"sea: unk mode specified but not found. it should be removed from the schema",
+	)

@@ -7,27 +7,25 @@ import { findPathInServer } from "app/pathing/server-front"
 import { findPathInWorker } from "app/pathing/worker-front"
 import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useSearchParamState } from "app/utils/useSearchParamState"
-import {
-	createContext,
-	type Dispatch,
-	startTransition,
-	use,
-	useReducer,
-	useState,
-} from "react"
+import { createContext, startTransition, use, useState } from "react"
 
 const defaultExcludedRoutes: ExcludedRoutes = {
-	SpawnWarp: false,
-	AirFlight: false,
-	RailLine: false,
-	SeaLine: false,
-	BusLine: false,
-	Walk: false,
-	ferrySeaLine: false,
-	warpRailLine: false,
-	helicopterAirFlight: false,
-	seaplaneAirFlight: false,
-	warpPlaneAirFlight: false,
+	AirFlight: {
+		helicopter: false,
+		seaplane: false,
+		unk: false,
+		warpPlane: false,
+	},
+	RailLine: { unk: false, warp: false },
+	SeaLine: { ferry: false, unk: false },
+	BusLine: { unk: false },
+	Walk: { unk: false },
+	SpawnWarp: {
+		portal: false,
+		premier: false,
+		terminus: false,
+		misc: false,
+	},
 }
 
 const routingContext = createContext<{
@@ -37,11 +35,11 @@ const routingContext = createContext<{
 	isLoading: boolean
 	isError: boolean
 	excludedRoutes: ExcludedRoutes
-	updateExcludedRoutes: Dispatch<{
-		type: "set"
-		mode: keyof ExcludedRoutes
+	updateExcludedRoutes: <T extends keyof ExcludedRoutes>(action: {
+		type: T
+		mode: keyof ExcludedRoutes[T]
 		value: boolean
-	}>
+	}) => void
 }>({
 	isError: false,
 	isLoading: false,
@@ -64,18 +62,17 @@ export function RoutingProvider({
 	const [from] = useSearchParamState("from")
 	const [to] = useSearchParamState("to")
 	const [preferredRoute, setPreferredRoute] = useState<number>()
-	const [excludedRoutes, updateExcludedRoutes] = useReducer(
-		(
-			state: ExcludedRoutes,
-			action: { type: "set"; mode: keyof ExcludedRoutes; value: boolean },
-		) => {
-			return {
-				...state,
-				[action.mode]: action.value,
-			}
-		},
-		defaultExcludedRoutes,
-	)
+	const [excludedRoutes, setExcludedRoutes] = useState(defaultExcludedRoutes)
+	const updateExcludedRoutes = <T extends keyof ExcludedRoutes>(action: {
+		type: T
+		mode: keyof ExcludedRoutes[T]
+		value: boolean
+	}) => {
+		setExcludedRoutes((prev) => ({
+			...prev,
+			[action.type]: { ...prev[action.type], [action.mode]: action.value },
+		}))
+	}
 
 	// TODO - persist to URL
 

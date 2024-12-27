@@ -40,7 +40,7 @@ export const getRouteOptions = (from: Place, to: Place) => {
 				i: "warp-spawn",
 				name: "warp spawn",
 				proximity: {},
-				warp_type: "misc",
+				mode: "misc",
 				world: "New",
 				shared_facility: [],
 				coordinates: [0, 0],
