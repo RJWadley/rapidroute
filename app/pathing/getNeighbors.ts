@@ -1,17 +1,5 @@
-import {
-	connectionLines,
-	type ExcludedRoutes,
-	flights,
-	gates,
-	places,
-	spawnWarps,
-} from "app/data"
+import type { DataType, ExcludedRoutes } from "app/data"
 import { getRouteTime } from "./getRouteTime"
-
-const spawn = places.list
-	.filter((x) => x.type === "Town")
-	.find((x) => x.name === "Central City")
-if (!spawn) throw new Error("could not find central city")
 
 /**
  * get all places that can be reached from a given location,
@@ -20,11 +8,12 @@ if (!spawn) throw new Error("could not find central city")
 export const getNeighbors = (
 	locationId: string,
 	excludedRoutes: ExcludedRoutes,
+	data: DataType,
 ) => {
+	const { places, spawn, spawnWarps, gates, flights, connectionLines } = data
+
 	const location = places.map.get(locationId)
 	if (!location) return []
-
-	console.log(excludedRoutes)
 
 	const neighbors: {
 		placeId: string

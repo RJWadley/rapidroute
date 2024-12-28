@@ -1,6 +1,8 @@
 import type { convertToRoutes } from "./convertToRoutes"
 
-export function combineWalks(result: ReturnType<typeof convertToRoutes>) {
+export function combineWalks(
+	result: Awaited<ReturnType<typeof convertToRoutes>>,
+) {
 	const mutablePath: ((typeof result.path)[number] | undefined)[] = [
 		...result.path,
 	]

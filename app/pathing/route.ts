@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 import { findPath } from "."
-import type { ExcludedRoutes } from "app/data"
+import { data, type ExcludedRoutes } from "app/data"
 
 /**
  * find a path between two locations on the server-side
@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
 		searchParams.get("from"),
 		searchParams.get("to"),
 		excludedRoutes,
+		data,
 	)
 
 	return new Response(JSON.stringify(path), {

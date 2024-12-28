@@ -23,7 +23,8 @@
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
-		"noImplicitAny": true
+		"noImplicitAny": true,
+		"verbatimModuleSyntax": true
 	},
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
 	"exclude": ["node_modules", "sst.config.ts"]

@@ -1,11 +1,9 @@
-import {
-	type ConnectionLine,
-	type Flight,
-	type Place,
-	type SpawnWarp,
-	connectionLines,
-	flights,
-	spawnWarps,
+import type {
+	ConnectionLine,
+	DataType,
+	Flight,
+	Place,
+	SpawnWarp,
 } from "app/data"
 import { getRouteTime } from "./getRouteTime"
 
@@ -19,7 +17,9 @@ type Route =
  * given two places, get all possible routes between them
  * note that this is a bit expensive, so we only do this after pathing
  */
-export const getRouteOptions = (from: Place, to: Place) => {
+export const getRouteOptions = (from: Place, to: Place, data: DataType) => {
+	const { spawnWarps, flights, connectionLines } = data
+
 	// todo excluded route modes
 	const options: { time: number; route: Route }[] = []
 
@@ -42,7 +42,6 @@ export const getRouteOptions = (from: Place, to: Place) => {
 				proximity: {},
 				mode: "misc",
 				world: "New",
-				shared_facility: [],
 				coordinates: [0, 0],
 			} satisfies SpawnWarp,
 		})

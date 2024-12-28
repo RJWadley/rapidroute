@@ -1,5 +1,5 @@
 import type { RoutingResult } from "."
-import { type Place, companies, gates } from "app/data"
+import type { DataType, Place } from "app/data"
 import { getRouteOptions } from "./getRouteOptions"
 
 /**
@@ -8,7 +8,9 @@ import { getRouteOptions } from "./getRouteOptions"
  *
  * @see {getRouteOptions}
  */
-export const convertToRoutes = (result: RoutingResult) => {
+export const convertToRoutes = (result: RoutingResult, data: DataType) => {
+	const { gates, companies } = data
+
 	const allLocationPairs = result.path
 		.map((_, index) => {
 			const first = result.path[index]
@@ -22,7 +24,7 @@ export const convertToRoutes = (result: RoutingResult) => {
 			from,
 			to,
 			skipped: null as Place[] | null,
-			options: getRouteOptions(from, to).map((option) => ({
+			options: getRouteOptions(from, to, data).map((option) => ({
 				...option,
 				gates:
 					"gates" in option

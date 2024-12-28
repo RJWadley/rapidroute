@@ -1,6 +1,6 @@
-import { compressedPlaces } from "app/utils/compressedPlaces"
+import { getCompressedPlaces } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
-import { type ExcludedRoutes, type Place, places } from "app/data"
+import type { DataType, ExcludedRoutes, Place } from "app/data"
 import PriorityQueue from "../utils/PriorityQueue"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
@@ -18,10 +18,14 @@ export const findPath = (
 	from: string | null | undefined,
 	to: string | null | undefined,
 	excludedRoutes: ExcludedRoutes,
+	data: DataType,
 ) => {
+	const { places } = data
+
 	if (!from || !to) return null
 	if (from === to) return null
 
+	const compressedPlaces = getCompressedPlaces(data)
 	const startID = findClosestPlace(from, compressedPlaces)?.id
 	const endID = findClosestPlace(to, compressedPlaces)?.id
 
@@ -50,7 +54,7 @@ export const findPath = (
 		// if we've reached the end, exit the loop (we've found the path)
 		if (currentId === end.i) break
 
-		const neighbors = getNeighbors(currentId, excludedRoutes)
+		const neighbors = getNeighbors(currentId, excludedRoutes, data)
 
 		for (const neighbor of neighbors) {
 			const { placeId, time } = neighbor
@@ -165,7 +169,7 @@ export const findPath = (
 
 	return (
 		completedPaths
-			.map(convertToRoutes)
+			.map((x) => convertToRoutes(x, data))
 			.map(combineWalks)
 			.map(compressResult)
 			.map((x) => ({

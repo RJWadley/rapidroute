@@ -1,12 +1,6 @@
 import { z } from "zod"
 import BritishData from "../../gatelogue/data_no_sources.json"
-import { isServer, isWorker } from "app/utils/isBrowser"
-
-// validate that we are either on the server OR in a web worker
-if (!isServer && !isWorker) {
-	// TODO - only server should be allowed
-	throw new Error("raw gatelogue data was imported in a non-worker environment")
-}
+import "server-only"
 
 const RawData = JSON.parse(
 	JSON.stringify(BritishData)
@@ -114,7 +108,7 @@ const connections = z.record(
 		.array(),
 )
 
-const shared_facility = id.array()
+const shared_facility = id.array().transform((v) => undefined)
 
 const schema = z
 	.strictObject({
@@ -126,8 +120,8 @@ const schema = z
 					i: id,
 					name: requiredString,
 					link: optionalString,
-					flights: z.array(id),
-					gates: z.array(id),
+					flights: z.array(id).transform((v) => undefined),
+					gates: z.array(id).transform((v) => undefined),
 					source,
 				}),
 				z.strictObject({
@@ -151,10 +145,12 @@ const schema = z
 					i: id,
 					source,
 					code: optionalString,
-					size: optional(z.enum(["SP", "H", "MS", "S", "ML", "XS", "M", "L"])),
+					size: optional(
+						z.enum(["SP", "H", "MS", "S", "ML", "XS", "M", "L"]),
+					).transform((v) => undefined),
 					flights: id.array(),
 					airport: id,
-					airline: optional(id),
+					airline: optional(id).transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("AirFlight"),
@@ -176,15 +172,21 @@ const schema = z
 					color: optionalString,
 					mode: optional(z.enum(["warp"])).transform((v) => v ?? "unk"),
 					company: id,
-					ref_station: optional(id),
+					ref_station: optional(id).transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("RailCompany"),
 					i: id,
 					source,
 					name: requiredString,
-					lines: id.array().min(1),
-					stations: id.array().min(1),
+					lines: id
+						.array()
+						.min(1)
+						.transform((v) => undefined),
+					stations: id
+						.array()
+						.min(1)
+						.transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("RailStation"),
@@ -208,7 +210,7 @@ const schema = z
 					color: optionalString,
 					mode: optional(z.enum(["ferry"])).transform((v) => v ?? "unk"),
 					company: id,
-					ref_stop: optional(id),
+					ref_stop: optional(id).transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("SeaStop"),
@@ -228,8 +230,14 @@ const schema = z
 					i: id,
 					source,
 					name: requiredString,
-					lines: id.array().min(1),
-					stops: id.array().min(1),
+					lines: id
+						.array()
+						.min(1)
+						.transform((v) => undefined),
+					stops: id
+						.array()
+						.min(1)
+						.transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("BusLine"),
@@ -239,7 +247,7 @@ const schema = z
 					name: optionalString,
 					color: optionalString,
 					company: id,
-					ref_stop: optional(id),
+					ref_stop: optional(id).transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("BusStop"),
@@ -264,8 +272,8 @@ const schema = z
 					i: id,
 					source,
 					name: requiredString,
-					lines: id.array(),
-					stops: id.array(),
+					lines: id.array().transform((v) => undefined),
+					stops: id.array().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("Town"),

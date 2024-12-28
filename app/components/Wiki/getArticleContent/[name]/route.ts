@@ -201,6 +201,10 @@ export const GET = async (
 			start with a top level h1 of '${result.title || "Untitled"}'
 			and a p with a overview paragraph
 			then, include the rest of the synopsis
+
+			this is for mobile devices, so:
+			tables are not allowed
+			floats are not allowed
 		`),
 		schema,
 	})

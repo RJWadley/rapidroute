@@ -8,8 +8,9 @@ import AppGrid from "./AppGrid"
 import MinecraftMap from "./components/Map/MapServer"
 import { RoutingProvider } from "./components/RoutingContext"
 import "./global.css"
-import { compressedPlaces } from "./utils/compressedPlaces"
+import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { findClosestPlace } from "./utils/search"
+import { data } from "app/data"
 
 export const metadata = {
 	title: "Create Next App!!!",
@@ -27,6 +28,7 @@ export default async function MainPage({
 }) {
 	const promises: Promise<unknown>[] = []
 	const queryClient = new QueryClient()
+	const compressedPlaces = getCompressedPlaces(await data)
 
 	const fromID = Array.isArray(searchParams.from)
 		? searchParams.from[0]
@@ -82,7 +84,7 @@ export default async function MainPage({
 			<RoutingProvider>
 				<Application>
 					<MinecraftMap />
-					<AppGrid places={compressedPlaces} />
+					<AppGrid places={await compressedPlaces} />
 				</Application>
 			</RoutingProvider>
 		</HydrationBoundary>
