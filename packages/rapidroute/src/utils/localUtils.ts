@@ -3,7 +3,7 @@ import { DataDatabaseType, Hashes } from "@rapidroute/database-types"
 
 import { isBrowser } from "./functions"
 
-const latestVersion = 20241228
+const latestVersion = 20241229
 
 /**
  * return types from local storage
