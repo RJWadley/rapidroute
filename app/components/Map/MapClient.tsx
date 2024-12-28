@@ -4,12 +4,13 @@ import { styled } from "@linaria/react"
 import { Application, extend } from "@pixi/react"
 import { TanstackProvider } from "app/TanstackProvider"
 import { Container, Graphics } from "pixi.js"
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useRef, useState } from "react"
 import { MovementContext } from "../MapMovement"
 import DynmapMarkers from "./Dynmap/DynmapMarkers"
 import type { MarkersResponse } from "./Dynmap/dynmapType"
 import PixiViewport from "./PixiViewport"
 import Satellite from "./Satellite"
+import { useEventListener } from "ahooks"
 
 extend({
 	Container,
@@ -28,17 +29,28 @@ export default function MapClient({
 	/**
 	 * prevent scroll events from bubbling up to the document
 	 */
-	useEffect(() => {
-		const handleWheel = (e: WheelEvent) => {
+	useEventListener(
+		"wheel",
+		(e) => {
 			if (e.target instanceof HTMLCanvasElement) {
 				e.preventDefault()
 			}
-		}
-		document.addEventListener("wheel", handleWheel, { passive: false })
-		return () => {
-			document.removeEventListener("wheel", handleWheel)
-		}
-	}, [])
+		},
+		{ passive: false },
+	)
+
+	/**
+	 * prevent selection of app text while dragging
+	 */
+	useEventListener(
+		"pointerdown",
+		(e) => {
+			if (e.target instanceof HTMLCanvasElement) {
+				e.preventDefault()
+			}
+		},
+		{ passive: false },
+	)
 
 	const touchStart = () => {
 		moveContextValue.lastUsedMethod.current = "touchStillActive"
