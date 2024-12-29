@@ -30,6 +30,7 @@ const playerKeys: Record<
 	world: true,
 	x: true,
 	z: true,
+	label: true,
 }
 
 export const search = <T extends Partial<CompressedPlace>>(

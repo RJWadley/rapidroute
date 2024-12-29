@@ -31,6 +31,7 @@ export const getOnlinePlayers = async () => {
 							type: "OnlinePlayer",
 							position: `x${player.x}z${player.z}`,
 							coordinates: [player.x, player.z],
+							label: "Current Location",
 						},
 					] as const,
 			),
