@@ -3,6 +3,7 @@ import { startTransition, useState } from "react"
 
 import { useViewport, useViewportMoved } from "../PixiViewport"
 import SatelliteLayer from "./SatelliteLayer"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 const breakpoints = [
 	Number.POSITIVE_INFINITY,
@@ -45,6 +46,8 @@ export default function Satellite() {
 
 	// TODO - post react 19 upgrade I want to go back and refactor initial load timing
 	// gonna move on for now though
+
+	const [isometric] = useSearchParamState("isometric")
 
 	return (
 		<>

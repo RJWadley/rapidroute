@@ -4,18 +4,28 @@ import { useEffect, useRef, useState } from "react"
 import { useViewport, useViewportMoved } from "../PixiViewport"
 import { regular } from "../textStyles"
 import MulticolorDot from "./MulticolorDot"
+import { SCALE_FACTOR, shiftWorldCoordinate } from "../pixiUtils"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 interface MRTStopProps {
 	name: string
 	colors: string[]
 	x: number
+	y: number
 	z: number
 	visible: boolean
 }
 
 extend({ Container, Text })
 
-export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
+export default function MRTStop({
+	name,
+	colors,
+	x,
+	y,
+	z,
+	visible,
+}: MRTStopProps) {
 	const viewport = useViewport()
 	const textRef = useRef<Text>(null)
 	const containerRef = useRef<Container>(null)
@@ -55,6 +65,9 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 	const app = useApp()
 	if (!app) return
 
+	const [isometric] = useSearchParamState("isometric")
+	const skewed = isometric ? shiftWorldCoordinate(x, y, z) : { x, z }
+
 	return (
 		<container
 			eventMode="static"
@@ -66,20 +79,29 @@ export default function MRTStop({ name, colors, x, z, visible }: MRTStopProps) {
 			ref={containerRef}
 			cullable
 		>
-			<MulticolorDot point={{ x, z }} colors={colors} renderer={app.renderer} />
+			<MulticolorDot
+				point={{ x: skewed.x, z: skewed.z }}
+				colors={colors}
+				renderer={app.renderer}
+			/>
 			{hover && (
-				<pixiText
-					text={name}
-					x={x}
-					y={z}
-					style={regular}
-					ref={textRef}
-					anchor={{
-						x: 0.5,
-						y: 1.5,
-					}}
-					alpha={0}
-				/>
+				<container
+					angle={isometric ? 45 : 0}
+					scale={isometric ? { x: 1, y: 1 / SCALE_FACTOR } : { x: 1, y: 1 }}
+					x={skewed.x}
+					y={skewed.z}
+				>
+					<pixiText
+						text={name}
+						style={regular}
+						ref={textRef}
+						anchor={{
+							x: 0.5,
+							y: 1.5,
+						}}
+						alpha={0}
+					/>
+				</container>
 			)}
 		</container>
 	)

@@ -13,6 +13,7 @@ import {
 } from "react"
 import { CLAMP, triggerMovementManually } from "./Map/PixiViewport"
 import { getDistance } from "app/utils/getDistance"
+import { skewWorldCoordinate } from "./Map/pixiUtils"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -23,7 +24,7 @@ type Coordinate = {
 }
 
 export const MovementContext = createContext<{
-	moveCamera: (coordinate: Partial<Coordinate>) => void
+	moveCamera: (coordinate: Coordinate) => void
 	viewport: Viewport | null
 	setViewport: (viewport: Viewport | null) => void
 	/**
@@ -58,11 +59,15 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 	const zSpring = useSpring(0, options)
 	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 })
 
-	const moveCamera = (coordinate: Partial<Coordinate>) => {
+	const moveCamera = (coordinateRaw: Coordinate) => {
 		;(async () => {
 			if (lastUsedMethod.current === "touchStillActive") return
 			lastUsedMethod.current = "moveCamera"
 
+			const coordinate = {
+				...coordinateRaw,
+				...skewWorldCoordinate(coordinateRaw.x, 60, coordinateRaw.z),
+			}
 			const startX = xSpring.get()
 			const startZ = zSpring.get()
 			const startWidth = worldScreenWidthSpring.get()

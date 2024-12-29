@@ -2,6 +2,7 @@ import { startTransition, useMemo, useRef, useState } from "react"
 import useIsMounted from "../../../utils/useIsMounted"
 import { useViewport, useViewportMoved, worldSize } from "../PixiViewport"
 import ImageTile from "./ImageTile"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 interface SatelliteProps {
 	zoomLevel: number
@@ -20,10 +21,11 @@ export default function SatelliteLayer({
 	dynamic = false,
 }: SatelliteProps) {
 	const viewport = useViewport()
-	const halfSize = worldSize / 2
+	const clipSize = worldSize * 1.4
+	const halfSize = clipSize / 2
 	const [viewportBounds, setViewportBounds] = useState<WorldValues>({
-		width: dynamic ? 200 : worldSize,
-		height: dynamic ? 200 : worldSize,
+		width: dynamic ? 200 : clipSize,
+		height: dynamic ? 200 : clipSize,
 		x: dynamic ? -100 : -halfSize,
 		y: dynamic ? -100 : -halfSize,
 	})
@@ -68,6 +70,8 @@ export default function SatelliteLayer({
 	const startingX = Math.floor(viewportBounds.x / tileWidth)
 	const startingY = Math.floor(viewportBounds.y / tileWidth)
 
+	const [isometric] = useSearchParamState("isometric")
+
 	const tiles = useMemo(
 		() =>
 			create2DArray(tilesVertical, tilesHorizontal, (row, column) => {
@@ -78,7 +82,7 @@ export default function SatelliteLayer({
 
 				return (
 					<ImageTile
-						key={`${tileX},${tileY},${zoomLevel}`}
+						key={`${isometric}${tileX},${tileY},${zoomLevel}`}
 						x={tileX * tileWidth}
 						y={tileY * tileWidth}
 						zoomLevel={zoomLevel}
@@ -86,6 +90,7 @@ export default function SatelliteLayer({
 				)
 			}),
 		[
+			isometric,
 			startingX,
 			startingY,
 			tileWidth,

@@ -13,17 +13,23 @@ interface MarkerLinesProps {
 function MarkerLine({
 	line,
 	background = false,
+	debug,
 }: {
 	line: LineType
 	background?: boolean
+	debug: string | false
 }) {
-	const points = line.x.map((x, i) => ({
-		x,
-		z: line.z[i] ?? 0,
-	}))
+	const points = line.x
+		.map((x, i) => {
+			const z = line.z[i] ?? 0
+			const y = line.y[i] ?? 0
+			return { x, y, z }
+		})
+		.filter(Boolean)
 
 	return (
 		<Line
+			debug={debug}
 			points={points}
 			color={background ? "#000000" : line.color}
 			width={background ? 15 : 10}
@@ -52,10 +58,19 @@ export default function MarkerLines({ lines }: MarkerLinesProps) {
 	return (
 		<container ref={containerRef}>
 			{lines.map((line) => (
-				<MarkerLine key={JSON.stringify(line)} line={line} background />
+				<MarkerLine
+					key={JSON.stringify(line)}
+					line={line}
+					background
+					debug={false}
+				/>
 			))}
 			{lines.map((line) => (
-				<MarkerLine key={JSON.stringify(line)} line={line} />
+				<MarkerLine
+					key={JSON.stringify(line)}
+					line={line}
+					debug={line.label.includes("Zephyr") ? line.label : false}
+				/>
 			))}
 		</container>
 	)

@@ -13,6 +13,7 @@ export interface ColoredMarker {
 
 interface Stop {
 	x: number
+	y: number
 	z: number
 	markers: Marker[]
 	singleColors: string[]
@@ -58,6 +59,7 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 			} else {
 				newStops.push({
 					x: newStop.marker.x,
+					y: newStop.marker.y,
 					z: newStop.marker.z,
 					markers: [newStop.marker],
 					singleColors: [newStop.color, newStop.invertedColor],
@@ -71,12 +73,13 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 	return (
 		<>
 			{stops.map((stop) => {
-				const { combinedColors, singleColors, markers, x, z } = stop
+				const { combinedColors, singleColors, markers, x, y, z } = stop
 				return (
 					<MRTStop
 						key={`${x}${z}`}
 						colors={combinedColors ?? singleColors}
 						x={x}
+						y={y}
 						z={z}
 						name={getStopName(markers)}
 						visible={visible}

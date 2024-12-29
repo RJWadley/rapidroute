@@ -8,8 +8,11 @@ import { LayoutGroup, motion, MotionConfig } from "motion/react"
 import type { CompressedPlace } from "./utils/compressedPlaces"
 
 import "./global.css"
+import { useSearchParamState } from "./utils/useSearchParamState"
 
 export default function AppGrid({ places }: { places: CompressedPlace[] }) {
+	const [isometric, setIsometric] = useSearchParamState("isometric")
+
 	return (
 		<MotionConfig reducedMotion="user">
 			<LayoutGroup>
@@ -20,6 +23,12 @@ export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 					</Column>
 					<Column>
 						<SelectedRoute />
+						<button
+							type="button"
+							onClick={() => setIsometric(isometric ? undefined : "true")}
+						>
+							toggle isometric
+						</button>
 					</Column>
 				</Columns>
 			</LayoutGroup>

@@ -1,8 +1,11 @@
-export default function getTileUrl(coords: {
-	xIn: number
-	zIn: number
-	zoom: number
-}) {
+export default function getTileUrl(
+	coords: {
+		xIn: number
+		zIn: number
+		zoom: number
+	},
+	isometric: boolean,
+) {
 	const zoomFactor = 2 ** (8 - coords.zoom)
 	const x = Number(coords.xIn)
 	const y = coords.zIn * -1
@@ -25,5 +28,7 @@ export default function getTileUrl(coords: {
 
 	if (coords.zoom !== 8) zzz += "_"
 
-	return `https://dynmap.minecartrapidtransit.net/main/tiles/new/flat/${group.x}_${group.y}/${zzz}${numberInGroup.x}_${numberInGroup.y}.png`
+	return `https://dynmap.minecartrapidtransit.net/main/tiles/new/${
+		isometric ? "surface" : "flat"
+	}/${group.x}_${group.y}/${zzz}${numberInGroup.x}_${numberInGroup.y}.png`
 }

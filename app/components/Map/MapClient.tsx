@@ -11,6 +11,7 @@ import type { MarkersResponse } from "./Dynmap/dynmapType"
 import PixiViewport from "./PixiViewport"
 import Satellite from "./Satellite"
 import { useEventListener } from "ahooks"
+import { skewWorldCoordinate } from "./pixiUtils"
 
 extend({
 	Container,
