@@ -12,6 +12,7 @@ import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { findClosestPlace } from "./utils/search"
 import { data } from "app/data"
 import { redirect } from "next/navigation"
+import { getOnlinePlayers } from "./utils/onlinePlayers"
 
 export const metadata = {
 	title: "Create Next App!!!",
@@ -54,11 +55,11 @@ export default async function MainPage({
 	/**
 	 * if we don't have a valid from or to, rewrite to the correct page
 	 */
-	if (fromID && !fromPlace) {
+	if (fromID && !fromPlace && !fromID.startsWith("player-")) {
 		params.delete("from")
 		redirect(`/?${params.toString()}`)
 	}
-	if (toID && !toPlace) {
+	if (toID && !toPlace && !toID.startsWith("player-")) {
 		params.delete("to")
 		redirect(`/?${params.toString()}`)
 	}
@@ -94,6 +95,14 @@ export default async function MainPage({
 		queryClient.prefetchQuery({
 			queryKey: ["search-params"],
 			queryFn: () => searchParams,
+		}),
+	)
+
+	// prefetch online players
+	promises.push(
+		queryClient.prefetchQuery({
+			queryKey: ["online-players"],
+			queryFn: () => getOnlinePlayers(),
 		}),
 	)
 

@@ -48,12 +48,12 @@ export const getNeighbors = ({
 	 * walking neighbors
 	 */
 	if (
-		startPlace !== fromPlace ||
+		!placesMatch(startPlace, fromPlace) ||
 		// start filter
 		(placesMatch(startPlace, fromPlace) && !excludedRoutes.Walk.atRouteStart)
 	) {
 		const coordinateFromDestinations: Neighbor[] =
-			startPlace?.type === "Coordinate"
+			startPlace?.type === "Coordinate" && placesMatch(startPlace, fromPlace)
 				? getClosestPlaces(startPlace.coordinates, data).map(
 						({ place, distance }) => ({
 							place,
@@ -72,12 +72,13 @@ export const getNeighbors = ({
 							place: endPlace,
 							time: getRouteTime({
 								type: "Walk",
-								distance: getDistance(
-									fromPlace.coordinates[0],
-									fromPlace.coordinates[1],
-									endPlace.coordinates[0],
-									endPlace.coordinates[1],
-								),
+								distance:
+									getDistance(
+										fromPlace.coordinates[0],
+										fromPlace.coordinates[1],
+										endPlace.coordinates[0],
+										endPlace.coordinates[1],
+									) || 1,
 							}),
 						} satisfies Neighbor,
 					]

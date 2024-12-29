@@ -4,6 +4,7 @@ import type { ComponentProps, FocusEvent } from "react"
 import { useRef, useState } from "react"
 import { getTextboxName } from "./getTextboxName"
 import type { Coordinate } from "app/data/coordinates"
+import type { OnlinePlayer } from "app/utils/onlinePlayers"
 
 const blurActiveElement = () => {
 	if (document.activeElement instanceof HTMLElement)
@@ -28,12 +29,12 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * which place is initially selected (via search params)?
 	 */
-	initiallySelectedPlace?: T | Coordinate
+	initiallySelectedPlace?: T | Coordinate | OnlinePlayer
 	/**
 	 * a callback when the selected place changes
 	 */
 	onItemSelected?: (
-		item: T | Coordinate | undefined,
+		item: T | Coordinate | OnlinePlayer | undefined,
 		explicitly: boolean,
 	) => void
 	/**
@@ -46,7 +47,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * (or undefined if no item selected)
 	 */
 	const [selectedPlace, setSelectedPlace] = useState<
-		T | Coordinate | undefined
+		T | Coordinate | OnlinePlayer | undefined
 	>(initiallySelectedPlace)
 	/**
 	 * what the user has physically typed into the input
@@ -62,7 +63,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	const [isOpen, setIsOpen] = useState(false)
 
 	const selectPlace = (
-		place: T | Coordinate | undefined,
+		place: T | Coordinate | OnlinePlayer | undefined,
 		explicitly: boolean,
 	) => {
 		setSelectedPlace(place)
@@ -194,7 +195,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 * the current search results, or undefined if the suggestions dropdown is not visible
 		 */
 		searchResults:
-			| ((T | Coordinate) & {
+			| ((T | Coordinate | OnlinePlayer) & {
 					selectItem: VoidFunction
 					highlighted: boolean
 			  })[]

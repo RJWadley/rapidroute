@@ -5,6 +5,7 @@ import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "app/pathing"
 import { findPathInServer } from "app/pathing/server-front"
 import { findPathInWorker } from "app/pathing/worker-front"
+import { useOnlinePlayers } from "app/utils/onlinePlayers"
 import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { createContext, startTransition, use, useState } from "react"
@@ -112,8 +113,8 @@ export function RoutingProvider({
 }: {
 	children: React.ReactNode
 }) {
-	const [from] = useSearchParamState("from")
-	const [to] = useSearchParamState("to")
+	const [fromID] = useSearchParamState("from")
+	const [toID] = useSearchParamState("to")
 	const [preferredRoute, setPreferredRoute] = useState<number>()
 	const [excludedRoutes, setExcludedRoutes] = useState(defaultExcludedRoutes)
 	const updateExcludedRoutes = <T extends keyof ExcludedRoutes>(action: {
@@ -127,7 +128,12 @@ export function RoutingProvider({
 		}))
 	}
 
-	// TODO - persist to URL
+	const { data: players } = useOnlinePlayers()
+	const fromPlayer = players && fromID ? players[fromID]?.position : null
+	const toPlayer = players && toID ? players[toID]?.position : null
+
+	const from = fromPlayer ?? fromID
+	const to = toPlayer ?? toID
 
 	const { status, data, isPending, isError } = useQuery({
 		queryKey: ["find-path", from, to, JSON.stringify(excludedRoutes)],

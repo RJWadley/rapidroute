@@ -39,7 +39,7 @@ export default function WikiArticle({
 	const relevantPlace = findClosestPlace(placeID, places)
 
 	const name =
-		relevantPlace?.type === "Coordinate"
+		relevantPlace?.type === "Coordinate" || placeID?.startsWith("player-")
 			? null
 			: relevantPlace?.name || relevantPlace?.id || placeID
 

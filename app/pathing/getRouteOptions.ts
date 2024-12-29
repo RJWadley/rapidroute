@@ -20,17 +20,16 @@ export const getRouteOptions = (
 	to: Place | Coordinate,
 	data: DataType,
 ) => {
-	const { spawnWarps, flights, connectionLines } = data
+	const { flights, connectionLines } = data
 
 	// todo excluded route modes
 	const options: { time: number; route: Route | SpawnWarp }[] = []
 
 	/* warps */
-	const potentialWarp = spawnWarps.map.get(to.i)
-	if (potentialWarp) {
+	if (to.type === "SpawnWarp") {
 		options.push({
 			time: getRouteTime({ type: "SpawnWarp" }),
-			route: potentialWarp,
+			route: to,
 		})
 	}
 	if (to.type === "Town" && to.name === "Central City") {
@@ -85,7 +84,7 @@ export const getRouteOptions = (
 
 	/* walking */
 	const walkOption =
-		"proximity" in from
+		"proximity" in from && from.proximity[to.i]
 			? from.proximity[to.i]
 			: from.coordinates && to.coordinates
 				? {
@@ -98,7 +97,7 @@ export const getRouteOptions = (
 					}
 				: null
 
-	if (walkOption?.distance)
+	if (walkOption?.distance && options.length === 0)
 		options.push({
 			time: getRouteTime({ type: "Walk", distance: walkOption.distance }),
 			route: { type: "Walk", distance: walkOption.distance },

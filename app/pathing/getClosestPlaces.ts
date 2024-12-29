@@ -14,7 +14,7 @@ export const getClosestPlaces = (
 		.map((place) => ({
 			place,
 			distance: place.coordinates
-				? getDistance(x, z, place.coordinates[0], place.coordinates[1])
+				? getDistance(x, z, place.coordinates[0], place.coordinates[1]) || 1
 				: Number.POSITIVE_INFINITY,
 		}))
 		.sort((a, b) => a.distance - b.distance)

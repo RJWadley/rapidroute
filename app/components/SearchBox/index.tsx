@@ -14,6 +14,7 @@ import { IoSearch } from "react-icons/io5"
 import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
 import Box from "../Box"
+import { useOnlinePlayers } from "app/utils/onlinePlayers"
 
 export function SearchBox({
 	places,
@@ -28,9 +29,10 @@ export function SearchBox({
 	const [from, setFrom] = useSearchParamState("from")
 	const [to, setTo] = useSearchParamState("to")
 	const [navMode, setNavMode] = useState(Boolean(from))
+	const { data: players } = useOnlinePlayers()
 
-	const fromPlace = findClosestPlace(from, places)
-	const toPlace = findClosestPlace(to, places)
+	const fromPlace = players?.[from ?? ""] ?? findClosestPlace(from, places)
+	const toPlace = players?.[to ?? ""] ?? findClosestPlace(to, places)
 
 	const {
 		inputProps: fromProps,

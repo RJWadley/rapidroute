@@ -1,10 +1,19 @@
 import type { Coordinate } from "app/data/coordinates"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
+import type { OnlinePlayer } from "app/utils/onlinePlayers"
 
 export const getTextboxName = (
-	place: Partial<CompressedPlace> | Coordinate | undefined | null,
+	place:
+		| Partial<CompressedPlace>
+		| Coordinate
+		| OnlinePlayer
+		| undefined
+		| null,
 ) => {
 	if (!place) return ""
+
+	if (place.type === "OnlinePlayer")
+		return `${place.name} (player at ${place.position})`
 
 	if (place.type === "Coordinate")
 		return `Coordinate ${place.coordinates[0]}, ${place.coordinates[1]}`
