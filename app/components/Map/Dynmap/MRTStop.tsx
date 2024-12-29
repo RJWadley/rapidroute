@@ -13,19 +13,11 @@ interface MRTStopProps {
 	x: number
 	y: number
 	z: number
-	visible: boolean
 }
 
 extend({ Container, Text })
 
-export default function MRTStop({
-	name,
-	colors,
-	x,
-	y,
-	z,
-	visible,
-}: MRTStopProps) {
+export default function MRTStop({ name, colors, x, y, z }: MRTStopProps) {
 	const viewport = useViewport()
 	const textRef = useRef<Text>(null)
 	const containerRef = useRef<Container>(null)
@@ -75,7 +67,6 @@ export default function MRTStop({
 			onmouseleave={pointerOut}
 			ontouchend={() => setTimeout(pointerOut, 3000)}
 			cursor="pointer"
-			visible={visible}
 			ref={containerRef}
 			cullable
 		>

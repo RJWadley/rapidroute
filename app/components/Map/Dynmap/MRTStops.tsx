@@ -25,13 +25,6 @@ interface MRTStopsProps {
 }
 
 export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
-	const [visible, setVisible] = useState(false)
-	const viewport = useViewport()
-	const updateMRTVisibility = () => {
-		setVisible(!!(viewport && viewport.scale.x > 0.1))
-	}
-	useViewportMoved(updateMRTVisibility)
-
 	const stops = useDeepCompareMemo(() => {
 		const newStops: Stop[] = []
 
@@ -82,7 +75,6 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 						y={y}
 						z={z}
 						name={getStopName(markers)}
-						visible={visible}
 					/>
 				)
 			})}
