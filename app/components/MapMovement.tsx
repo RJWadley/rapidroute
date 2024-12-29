@@ -1,6 +1,9 @@
 "use client"
 
-import { setParamManually } from "app/utils/useSearchParamState"
+import {
+	setParamManually,
+	useSearchParamState,
+} from "app/utils/useSearchParamState"
 import { type SpringOptions, useSpring } from "framer-motion"
 import type { Viewport } from "pixi-viewport"
 import {
@@ -59,15 +62,19 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 	const zSpring = useSpring(0, options)
 	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 })
 
+	const [isometric] = useSearchParamState("isometric")
+
 	const moveCamera = (coordinateRaw: Coordinate) => {
 		;(async () => {
 			if (lastUsedMethod.current === "touchStillActive") return
 			lastUsedMethod.current = "moveCamera"
 
-			const coordinate = {
-				...coordinateRaw,
-				...skewWorldCoordinate(coordinateRaw.x, 60, coordinateRaw.z),
-			}
+			const coordinate = isometric
+				? {
+						...coordinateRaw,
+						...skewWorldCoordinate(coordinateRaw.x, 60, coordinateRaw.z),
+					}
+				: coordinateRaw
 			const startX = xSpring.get()
 			const startZ = zSpring.get()
 			const startWidth = worldScreenWidthSpring.get()
