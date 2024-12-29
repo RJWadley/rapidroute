@@ -1,6 +1,6 @@
 /**
- * returns distance between two points, manhattan distance
+ * returns distance between two points
  */
 export const getDistance = (x1: number, y1: number, x2: number, y2: number) => {
-	return Math.abs(x1 - x2) + Math.abs(y1 - y2)
+	return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 }

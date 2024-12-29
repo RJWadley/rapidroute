@@ -1,9 +1,13 @@
+import type { Coordinate } from "app/data/coordinates"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
 
 export const getTextboxName = (
-	place: Partial<CompressedPlace> | undefined | null,
+	place: Partial<CompressedPlace> | Coordinate | undefined | null,
 ) => {
 	if (!place) return ""
+
+	if (place.type === "Coordinate")
+		return `Coordinate ${place.coordinates[0]}, ${place.coordinates[1]}`
 
 	if (place.type === "Town") return `${place.rank} City - ${place.name}`
 

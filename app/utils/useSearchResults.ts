@@ -1,11 +1,12 @@
 import { useDeferredValue, useMemo } from "react"
 import type { CompressedPlace } from "./compressedPlaces"
 import { search } from "./search"
+import type { Coordinate } from "app/data/coordinates"
 
 export const useSearchResults = <T extends Partial<CompressedPlace>>(
 	rawQuery: string | undefined | null,
 	initialPlaces: T[],
-): T[] => {
+): (T | Coordinate)[] => {
 	const query = useDeferredValue(rawQuery)
 
 	const results = useMemo(

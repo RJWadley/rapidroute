@@ -37,7 +37,11 @@ export default function WikiArticle({
 }) {
 	const [placeID] = useSearchParamState("to")
 	const relevantPlace = findClosestPlace(placeID, places)
-	const name = relevantPlace?.name || relevantPlace?.id || placeID
+
+	const name =
+		relevantPlace?.type === "Coordinate"
+			? null
+			: relevantPlace?.name || relevantPlace?.id || placeID
 
 	const { data, isLoading } = useQuery({
 		queryKey: ["wiki-article", name],

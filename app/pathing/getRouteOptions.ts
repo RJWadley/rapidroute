@@ -6,22 +6,24 @@ import type {
 	SpawnWarp,
 } from "app/data"
 import { getRouteTime } from "./getRouteTime"
+import type { Coordinate } from "app/data/coordinates"
+import { getDistance } from "app/utils/getDistance"
 
-type Route =
-	| Flight
-	| ConnectionLine
-	| SpawnWarp
-	| { type: "Walk"; distance: number }
+type Route = Flight | ConnectionLine | { type: "Walk"; distance: number }
 
 /**
  * given two places, get all possible routes between them
  * note that this is a bit expensive, so we only do this after pathing
  */
-export const getRouteOptions = (from: Place, to: Place, data: DataType) => {
+export const getRouteOptions = (
+	from: Place | Coordinate,
+	to: Place | Coordinate,
+	data: DataType,
+) => {
 	const { spawnWarps, flights, connectionLines } = data
 
 	// todo excluded route modes
-	const options: { time: number; route: Route }[] = []
+	const options: { time: number; route: Route | SpawnWarp }[] = []
 
 	/* warps */
 	const potentialWarp = spawnWarps.map.get(to.i)
@@ -37,6 +39,7 @@ export const getRouteOptions = (from: Place, to: Place, data: DataType) => {
 			// this is only used for display - not routing
 			route: {
 				type: "SpawnWarp",
+				pretty_id: "warp-spawn",
 				i: "warp-spawn",
 				name: "warp spawn",
 				proximity: {},
@@ -81,7 +84,19 @@ export const getRouteOptions = (from: Place, to: Place, data: DataType) => {
 	}
 
 	/* walking */
-	const walkOption = from.proximity[to.i]
+	const walkOption =
+		"proximity" in from
+			? from.proximity[to.i]
+			: from.coordinates && to.coordinates
+				? {
+						distance: getDistance(
+							from.coordinates[0],
+							from.coordinates[1],
+							to.coordinates[0],
+							to.coordinates[1],
+						),
+					}
+				: null
 
 	if (walkOption?.distance)
 		options.push({
@@ -89,15 +104,5 @@ export const getRouteOptions = (from: Place, to: Place, data: DataType) => {
 			route: { type: "Walk", distance: walkOption.distance },
 		})
 
-	const fastestTime = Math.min(
-		...options
-			.filter(
-				// don't let walks be the fastest option to avoid excessive filtering
-				(o) => o.route.type !== "Walk",
-			)
-			.map((o) => o.time),
-	)
-
-	// only keep options within 60s of the fastest time (to avoid showing stupid options)
-	return options.filter((o) => o.time <= fastestTime + 60).map((o) => o.route)
+	return options.map((o) => o.route)
 }

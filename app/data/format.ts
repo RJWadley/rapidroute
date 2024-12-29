@@ -145,7 +145,9 @@ export type ConnectionLine = (typeof connectionLinesArray)[number]
 /**
  * spawn warps
  */
-const spawnWarpsArray = allNodes.filter((place) => place.type === "SpawnWarp")
+const spawnWarpsArray = places.list.filter(
+	(place) => place.type === "SpawnWarp",
+)
 
 export const spawnWarps = {
 	list: spawnWarpsArray,
@@ -164,7 +166,10 @@ export type RouteType =
 	| "Walk"
 	| "SpawnWarp"
 
-type NodesOfType<T> = (typeof allNodes)[number] & { type: T }
+type NodesOfType<T> = (
+	| (typeof allNodes)[number]
+	| { type: "Walk"; mode: "atRouteStart" | "middle" | "atRouteEnd" }
+) & { type: T }
 
 type ExtractModes<T> = T extends {
 	mode?: unknown

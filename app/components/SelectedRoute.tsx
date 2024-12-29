@@ -3,8 +3,10 @@
 import type { Place } from "app/data"
 import Box from "./Box"
 import { useRouting } from "./RoutingContext"
+import type { Coordinate } from "app/data/coordinates"
 
-const getPlaceDisplay = (place: Place) => {
+const getPlaceDisplay = (place: Place | Coordinate) => {
+	if (place.type === "Coordinate") return place.id
 	const code =
 		"code" in place
 			? place.code
@@ -16,7 +18,7 @@ const getPlaceDisplay = (place: Place) => {
 }
 
 export default function SelectedRoute() {
-	const { routes, preferredRoute, isLoading } = useRouting()
+	const { routes, preferredRoute } = useRouting()
 
 	const index = preferredRoute ?? 0
 

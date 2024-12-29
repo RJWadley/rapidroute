@@ -17,7 +17,9 @@ const identifyRoute = (
  *
  * any locations we cut out get added to a list of "skipped" locations for display purposes
  */
-export function compressResult(result: Awaited<ReturnType<typeof convertToRoutes>>) {
+export function compressResult(
+	result: Awaited<ReturnType<typeof convertToRoutes>>,
+): ReturnType<typeof convertToRoutes> {
 	const mutablePath: ((typeof result.path)[number] | undefined)[] = [
 		...result.path,
 	]

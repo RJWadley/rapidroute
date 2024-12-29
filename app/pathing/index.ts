@@ -1,14 +1,19 @@
+import type { DataType, ExcludedRoutes, Place } from "app/data"
+import { parseCoordinateId, type Coordinate } from "app/data/coordinates"
+import { placesMatch } from "app/data/placesMatch"
 import { getCompressedPlaces } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
-import type { DataType, ExcludedRoutes, Place } from "app/data"
+import hash from "object-hash"
 import PriorityQueue from "../utils/PriorityQueue"
+import { combineWalks } from "./combineWalks"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
-import hash from "object-hash"
-import { combineWalks } from "./combineWalks"
 
-export type RoutingResult = { path: Place[]; time: number }
+export type RoutingResult = {
+	path: (Place | Coordinate)[]
+	time: number
+}
 
 /**
  * this is where the magic happens! we do some dijkstra's algorithm to find the shortest path
@@ -26,39 +31,52 @@ export const findPath = (
 	if (from === to) return null
 
 	const compressedPlaces = getCompressedPlaces(data)
-	const startID = findClosestPlace(from, compressedPlaces)?.id
-	const endID = findClosestPlace(to, compressedPlaces)?.id
+	const startSearch = findClosestPlace(from, compressedPlaces)
+	const endSearch = findClosestPlace(to, compressedPlaces)
 
-	if (!startID) return null
-	if (!endID) return null
+	if (!startSearch) return null
+	if (!endSearch) return null
 
-	const start = places.list.find((x) => x.pretty_id === startID)
-	const end = places.list.find((x) => x.pretty_id === endID)
+	const start =
+		startSearch.type === "Coordinate"
+			? startSearch
+			: places.list.find((x) => x.pretty_id === startSearch.id)
+	const end =
+		endSearch.type === "Coordinate"
+			? endSearch
+			: places.list.find((x) => x.pretty_id === endSearch.id)
 
 	if (!start) return null
 	if (!end) return null
 
-	const frontier = new PriorityQueue<string>()
+	const frontier = new PriorityQueue<Place | Coordinate>()
 	const cameFrom = new Map<string, Set<string>>()
 	const timesSoFar = new Map<string, number>()
 	const timesCache: Record<string, number> = {}
 
-	frontier.enqueue(start.i, 0)
+	frontier.enqueue(start, 0)
 	timesSoFar.set(start.i, 0)
 
 	// while there are nodes to visit
 	while (!frontier.isEmpty()) {
-		const currentId = frontier.dequeue()
-		if (!currentId) break
+		const current = frontier.dequeue()
+
+		if (!current) break
 
 		// if we've reached the end, exit the loop (we've found the path)
-		if (currentId === end.i) break
+		if (placesMatch(current, end)) break
 
-		const neighbors = getNeighbors(currentId, excludedRoutes, data)
+		const neighbors = getNeighbors({
+			fromPlace: current,
+			data,
+			excludedRoutes,
+			startPlace: start,
+			endPlace: end,
+		})
 
 		for (const neighbor of neighbors) {
-			const { placeId, time } = neighbor
-			timesCache[`${currentId}${placeId}`] = time
+			const { place, time } = neighbor
+			timesCache[`${current.i}${place.i}`] = time
 
 			// for each neighbor, we want to calculate the time (cost) to get there
 			// if we haven't visited the neighbor yet, we add it to the frontier
@@ -66,32 +84,32 @@ export const findPath = (
 			// if it is, we update the path and add it to the frontier
 			// otherwise it's slower, so we ignore it
 
-			const timeSoFar = timesSoFar.get(currentId)
+			const timeSoFar = timesSoFar.get(current.i)
 			// if there is no timeSoFar, we have a bug
 			if (timeSoFar === undefined)
 				throw new Error(
-					`could not find time so far for current place: ${places.map.get(currentId)?.name}`,
+					`could not find time so far for current place: ${"name" in current ? current?.name : place.i}`,
 				)
 			const newTime = timeSoFar + time
 
 			// if we haven't visited the neighbor yet, add it to the frontier
-			const oldTime = timesSoFar.get(placeId)
+			const oldTime = timesSoFar.get(place.i)
 			if (!oldTime) {
-				frontier.enqueue(placeId, newTime)
-				timesSoFar.set(placeId, newTime)
-				cameFrom.set(placeId, new Set([currentId]))
+				frontier.enqueue(place, newTime)
+				timesSoFar.set(place.i, newTime)
+				cameFrom.set(place.i, new Set([current.i]))
 			}
 			// otherwise, if we have visited the neighbor, check if the new path is faster and update accordingly (see above)
 			else {
 				if (newTime === oldTime) {
 					// add this location if it's not already in there
-					const list = cameFrom.get(placeId) ?? new Set()
-					list.add(currentId)
-					cameFrom.set(placeId, list)
+					const list = cameFrom.get(place.i) ?? new Set()
+					list.add(current.i)
+					cameFrom.set(place.i, list)
 				} else if (newTime < oldTime) {
-					frontier.enqueue(placeId, newTime)
-					timesSoFar.set(placeId, newTime)
-					cameFrom.set(placeId, new Set([currentId]))
+					frontier.enqueue(place, newTime)
+					timesSoFar.set(place.i, newTime)
+					cameFrom.set(place.i, new Set([current.i]))
 				}
 			}
 		}
@@ -125,9 +143,10 @@ export const findPath = (
 
 		const newPaths: RoutingResult[] = Array.from(currentCameFrom)
 			.map((placeId) => ({
-				path: [places.map.get(placeId), ...nextPath.path].filter(
-					(x) => x !== undefined,
-				),
+				path: [
+					parseCoordinateId(placeId) ?? places.map.get(placeId),
+					...nextPath.path,
+				].filter((x) => x !== undefined),
 				time:
 					nextPath.time +
 					(timesCache[`${placeId}${currentPlace.i}`] ??
@@ -142,16 +161,15 @@ export const findPath = (
 				const uniquePlaces = new Set(path.map((x) => x.i))
 				if (uniquePlaces.size !== path.length)
 					console.warn(
-						`infinite loop detected in path from ${startID} to ${endID}`,
+						`infinite loop detected in path from ${startSearch} to ${endSearch}`,
 					)
 				return uniquePlaces.size === path.length
 			})
 
 		for (const newPath of newPaths) {
 			if (newPath.time > totalTimeToDestination) {
-				// TODO http://localhost:3000/?to=IntraBus-New+Beginnings+North+MCR+Station&from=IntraBus-Snowtopic+IntraRail%2FRaiLinQ+stations
 				console.warn(
-					`reconstructed path from ${startID} to ${endID} was too long! ${newPath.time} > ${totalTimeToDestination}`,
+					`reconstructed path from ${startSearch} to ${endSearch} was too long! ${newPath.time} > ${totalTimeToDestination}`,
 				)
 			}
 			if (newPath.path[0]?.i === start.i) {
@@ -164,7 +182,9 @@ export const findPath = (
 
 	if (completedPaths.length === 0)
 		throw new Error(
-			`Reconstruction failed! Path was between ${start.pretty_id} and ${end.pretty_id}`,
+			`Reconstruction failed! Path was between ${
+				"name" in start ? start.name : start.i
+			} and ${"name" in end ? end.name : end.i}`,
 		)
 
 	return (
@@ -174,6 +194,7 @@ export const findPath = (
 			.map(compressResult)
 			.map((x) => ({
 				...x,
+				path: x.path.map((y) => ({ ...y, id: hash(y) })),
 				id: hash(x),
 			}))
 			// filter out duplicates - we can take advantage of the id being a hash

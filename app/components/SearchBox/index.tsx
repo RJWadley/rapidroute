@@ -32,8 +32,6 @@ export function SearchBox({
 	const fromPlace = findClosestPlace(from, places)
 	const toPlace = findClosestPlace(to, places)
 
-	if (to && !toPlace) setTo(findClosestPlace(to, places)?.id)
-
 	const {
 		inputProps: fromProps,
 		onFocusLost: fromFocusLost,
@@ -71,7 +69,6 @@ export function SearchBox({
 				document
 					.querySelector<HTMLButtonElement>("button#navigateButton")
 					?.focus()
-				fromFieldRef.current?.focus()
 			})
 		},
 	})

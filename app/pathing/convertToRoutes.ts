@@ -1,6 +1,7 @@
 import type { RoutingResult } from "."
 import type { DataType, Place } from "app/data"
 import { getRouteOptions } from "./getRouteOptions"
+import type { Coordinate } from "app/data/coordinates"
 
 /**
  * takes a list of places (what the pather returns) and converts it
@@ -19,27 +20,24 @@ export const convertToRoutes = (result: RoutingResult, data: DataType) => {
 		})
 		.filter((x) => x !== null)
 
-	const routes = allLocationPairs
-		.map(([from, to]) => ({
-			from,
-			to,
-			skipped: null as Place[] | null,
-			options: getRouteOptions(from, to, data).map((option) => ({
-				...option,
-				gates:
-					"gates" in option
-						? option.gates
-								.map((gate) => gates.map.get(gate))
-								.filter((x) => x !== undefined)
-						: null,
-				airline: "airline" in option ? companies.map.get(option.airline) : null,
-				company: "company" in option ? companies.map.get(option.company) : null,
-			})),
-		}))
-		.map((x, index) => ({
-			...x,
-			id: `route-${index}`,
-		}))
+	const routes = allLocationPairs.map(([from, to]) => ({
+		from,
+		to,
+		skipped: undefined as (Place | Coordinate)[] | undefined,
+		options: getRouteOptions(from, to, data).map((option) => ({
+			...option,
+			gates:
+				"gates" in option
+					? option.gates
+							.map((gate) => gates.map.get(gate))
+							.filter((x) => x !== undefined)
+					: undefined,
+			airline:
+				"airline" in option ? companies.map.get(option.airline) : undefined,
+			company:
+				"company" in option ? companies.map.get(option.company) : undefined,
+		})),
+	}))
 
 	return {
 		...result,

@@ -11,6 +11,7 @@ import "./global.css"
 import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { findClosestPlace } from "./utils/search"
 import { data } from "app/data"
+import { redirect } from "next/navigation"
 
 export const metadata = {
 	title: "Create Next App!!!",
@@ -30,17 +31,40 @@ export default async function MainPage({
 	const queryClient = new QueryClient()
 	const compressedPlaces = getCompressedPlaces(await data)
 
+	const params = new URLSearchParams()
+	for (const [key, value] of Object.entries(searchParams)) {
+		if (Array.isArray(value)) {
+			for (const v of value) {
+				params.append(key, v)
+			}
+		} else if (typeof value === "string") params.append(key, value)
+	}
+
 	const fromID = Array.isArray(searchParams.from)
 		? searchParams.from[0]
 		: searchParams.from
 	const toID = Array.isArray(searchParams.to)
 		? searchParams.to[0]
 		: searchParams.to
-	const relevantPlace = findClosestPlace(toID, compressedPlaces)
-	const name = relevantPlace?.name || relevantPlace?.id || toID
+	const fromPlace = findClosestPlace(fromID, compressedPlaces)
+	const toPlace = findClosestPlace(toID, compressedPlaces)
+	const name =
+		toPlace?.type === "Coordinate" ? null : toPlace?.name || toPlace?.id || toID
 
-	// prefetch wiki article
+	/**
+	 * if we don't have a valid from or to, rewrite to the correct page
+	 */
+	if (fromID && !fromPlace) {
+		params.delete("from")
+		redirect(`/?${params.toString()}`)
+	}
+	if (toID && !toPlace) {
+		params.delete("to")
+		redirect(`/?${params.toString()}`)
+	}
+
 	if (!fromID) {
+		// prefetch wiki article
 		promises.push(
 			queryClient.prefetchQuery({
 				queryKey: ["wiki-article", name],

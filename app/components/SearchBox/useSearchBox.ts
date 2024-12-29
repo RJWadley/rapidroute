@@ -3,6 +3,7 @@ import { useSearchResults } from "app/utils/useSearchResults"
 import type { ComponentProps, FocusEvent } from "react"
 import { useRef, useState } from "react"
 import { getTextboxName } from "./getTextboxName"
+import type { Coordinate } from "app/data/coordinates"
 
 const blurActiveElement = () => {
 	if (document.activeElement instanceof HTMLElement)
@@ -27,11 +28,14 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * which place is initially selected (via search params)?
 	 */
-	initiallySelectedPlace?: T
+	initiallySelectedPlace?: T | Coordinate
 	/**
 	 * a callback when the selected place changes
 	 */
-	onItemSelected?: (item: T | undefined, explicitly: boolean) => void
+	onItemSelected?: (
+		item: T | Coordinate | undefined,
+		explicitly: boolean,
+	) => void
 	/**
 	 * called after an item is selected and the input is blurred
 	 */
@@ -41,9 +45,9 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * the currently selected item in the list
 	 * (or undefined if no item selected)
 	 */
-	const [selectedPlace, setSelectedPlace] = useState<T | undefined>(
-		initiallySelectedPlace,
-	)
+	const [selectedPlace, setSelectedPlace] = useState<
+		T | Coordinate | undefined
+	>(initiallySelectedPlace)
 	/**
 	 * what the user has physically typed into the input
 	 */
@@ -57,7 +61,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 */
 	const [isOpen, setIsOpen] = useState(false)
 
-	const selectPlace = (place: T | undefined, explicitly: boolean) => {
+	const selectPlace = (
+		place: T | Coordinate | undefined,
+		explicitly: boolean,
+	) => {
 		setSelectedPlace(place)
 		onItemSelected?.(place, explicitly)
 	}
@@ -187,7 +194,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 * the current search results, or undefined if the suggestions dropdown is not visible
 		 */
 		searchResults:
-			| (T & { selectItem: VoidFunction; highlighted: boolean })[]
+			| ((T | Coordinate) & {
+					selectItem: VoidFunction
+					highlighted: boolean
+			  })[]
 			| undefined
 		/**
 		 * props to be passed to the text area for event handling

@@ -19,7 +19,11 @@ const defaultExcludedRoutes: ExcludedRoutes = {
 	RailLine: { unk: false, warp: false },
 	SeaLine: { ferry: false, unk: false },
 	BusLine: { unk: false },
-	Walk: { unk: false },
+	Walk: {
+		atRouteStart: false,
+		middle: false,
+		atRouteEnd: false,
+	},
 	SpawnWarp: {
 		portal: false,
 		premier: false,
@@ -28,24 +32,73 @@ const defaultExcludedRoutes: ExcludedRoutes = {
 	},
 }
 
-const routingContext = createContext<{
-	routes: ReturnType<typeof findPath> | undefined
+type NonEmptyArray<T> = [T, ...T[]]
+
+type StatusUnion =
+	| {
+			status: "pending"
+			routes?: undefined
+			isPending: true
+			isError: false
+	  }
+	| {
+			status: "error"
+			routes?: undefined
+			isPending: false
+			isError: true
+	  }
+	| {
+			/**
+			 * route was not worthy of searching - i.e. input data was incomplete
+			 */
+			status: "skipped"
+			routes: null
+			isPending: false
+			isError: false
+	  }
+	| {
+			/**
+			 * we searched, but found no routes
+			 */
+			status: "404"
+			routes: null
+			isPending: false
+			isError: false
+	  }
+	| {
+			/**
+			 * at least one result was found
+			 */
+			status: "success"
+			routes: NonEmptyArray<NonNullable<ReturnType<typeof findPath>>[number]>
+			isPending: false
+			isError: false
+	  }
+
+type ContextType = StatusUnion & {
+	/**
+	 * highlighted, or 'preferred' route
+	 */
 	preferredRoute: number | undefined
 	setPreferredRoute: (route: number | undefined) => void
-	isLoading: boolean
-	isError: boolean
+	/**
+	 * route types and modes to allow or exclude during pathing
+	 */
 	excludedRoutes: ExcludedRoutes
 	updateExcludedRoutes: <T extends keyof ExcludedRoutes>(action: {
 		type: T
 		mode: keyof ExcludedRoutes[T]
 		value: boolean
 	}) => void
-}>({
+}
+
+const routingContext = createContext<ContextType>({
+	status: "pending",
+	routes: undefined,
 	isError: false,
-	isLoading: false,
-	routes: [],
-	setPreferredRoute: () => {},
+	isPending: true,
 	preferredRoute: undefined,
+	setPreferredRoute: () => {},
 	excludedRoutes: defaultExcludedRoutes,
 	updateExcludedRoutes: () => {},
 })
@@ -76,7 +129,7 @@ export function RoutingProvider({
 
 	// TODO - persist to URL
 
-	const { isLoading, data, isError } = useQuery({
+	const { status, data, isPending, isError } = useQuery({
 		queryKey: ["find-path", from, to, JSON.stringify(excludedRoutes)],
 		queryFn: () => {
 			if (!from || !to) return null
@@ -92,16 +145,34 @@ export function RoutingProvider({
 		},
 	})
 
+	const [firstRoute, ...restRoutes] = data ?? []
+
+	const statusUnion: StatusUnion =
+		!from || !to
+			? { status: "skipped", isPending: false, isError: false, routes: null }
+			: status === "pending"
+				? { status, isPending, isError }
+				: status === "error"
+					? { status, isPending, isError }
+					: data === null
+						? { status: "skipped", isPending, isError, routes: null }
+						: firstRoute
+							? {
+									status: "success",
+									routes: [firstRoute, ...restRoutes],
+									isPending,
+									isError,
+								}
+							: { status: "404", isError, isPending, routes: null }
+
 	return (
 		<routingContext.Provider
 			value={{
-				isError,
-				isLoading,
-				routes: data,
-				preferredRoute,
-				setPreferredRoute,
+				...statusUnion,
 				excludedRoutes,
 				updateExcludedRoutes,
+				preferredRoute,
+				setPreferredRoute,
 			}}
 		>
 			{children}

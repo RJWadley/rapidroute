@@ -1,11 +1,10 @@
+import { getDistance } from "app/utils/getDistance"
 import type { convertToRoutes } from "./convertToRoutes"
 
 export function combineWalks(
 	result: Awaited<ReturnType<typeof convertToRoutes>>,
-) {
-	const mutablePath: ((typeof result.path)[number] | undefined)[] = [
-		...result.path,
-	]
+): ReturnType<typeof convertToRoutes> {
+	const mutablePath = [...result.path, undefined]
 
 	// iterate through the path and squish legs together one by one
 	for (let i = 0; i < mutablePath.length; i++) {
@@ -19,12 +18,33 @@ export function combineWalks(
 				thisLeg.options.every((option) => option.type === "Walk") &&
 				nextLeg.options.every((option) => option.type === "Walk")
 
-			if (canSquish) {
+			const fromCoordinates = thisLeg.from.coordinates
+			const toCoordinates = nextLeg.to.coordinates
+
+			if (canSquish && fromCoordinates && toCoordinates) {
 				const squishedLeg = {
 					...thisLeg,
 					to: nextLeg.to,
-					// only keep options available in both legs
-					options: thisLeg.options,
+					options: [
+						{
+							type: "Walk" as const,
+							/**
+							 * recalculate distance for proper deduplication
+							 */
+							distance:
+								Math.round(
+									getDistance(
+										fromCoordinates[0],
+										fromCoordinates[1],
+										toCoordinates[0],
+										toCoordinates[1],
+									),
+								) || 1,
+							gates: undefined,
+							airline: undefined,
+							company: undefined,
+						},
+					],
 					// don't include skipped locations for walks
 				}
 
