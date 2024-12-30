@@ -1,40 +1,23 @@
 import { fetchData } from "app/data/worker"
 import { findPath } from "."
 import type { ExcludedRoutes } from "app/data"
+import { expose } from "comlink"
 
-export type WorkerInput = {
+let data: ReturnType<typeof fetchData> | undefined
+
+const findPathInternal = async ({
+	from,
+	to,
+	excludedRoutes,
+}: {
 	from: string
 	to: string
-	id: string
 	excludedRoutes: ExcludedRoutes
+}) => {
+	if (!data) data = fetchData()
+	return findPath(from, to, excludedRoutes, await data)
 }
 
-export type WorkerOutput =
-	| {
-			id: string
-			result: ReturnType<typeof findPath>
-	  }
-	| {
-			id: string
-			error: unknown
-	  }
-
-const data = fetchData()
-
-self.addEventListener("message", async (event) => {
-	try {
-		const { from, to, id, excludedRoutes } = event.data as WorkerInput
-
-		const result = findPath(from, to, excludedRoutes, await data)
-
-		self.postMessage({
-			id,
-			result,
-		})
-	} catch (error) {
-		self.postMessage({
-			id: event.data.id,
-			error,
-		})
-	}
-})
+const out = { findPathInternal }
+expose(out)
+export type WorkerOut = typeof out

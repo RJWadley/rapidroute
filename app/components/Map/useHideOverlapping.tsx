@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-// TODO replace with threads
+// TODO replace with comlink
 import { useWorker } from "@koale/useworker"
 import {
 	type Container,
