@@ -12,6 +12,7 @@ import { useSearchParamState } from "./utils/useSearchParamState"
 
 export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 	const [isometric, setIsometric] = useSearchParamState("isometric")
+	const [dark, setDark] = useSearchParamState("dark")
 
 	return (
 		<MotionConfig reducedMotion="user">
@@ -28,6 +29,12 @@ export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 							onClick={() => setIsometric(isometric ? undefined : "true")}
 						>
 							toggle isometric
+						</button>
+						<button
+							type="button"
+							onClick={() => setDark(dark ? undefined : "true")}
+						>
+							toggle dark
 						</button>
 					</Column>
 				</Columns>

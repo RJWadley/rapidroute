@@ -1,9 +1,10 @@
 import type { Viewport } from "pixi-viewport"
-import { startTransition, useState } from "react"
+import { startTransition, useMemo, useState } from "react"
 
 import { useViewport, useViewportMoved } from "../PixiViewport"
 import SatelliteLayer from "./SatelliteLayer"
 import { ColorMatrixFilter } from "pixi.js"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 const breakpoints = [
 	Number.POSITIVE_INFINITY,
@@ -47,12 +48,14 @@ export default function Satellite() {
 	// TODO - post react 19 upgrade I want to go back and refactor initial load timing
 	// gonna move on for now though
 
-	const filter = new ColorMatrixFilter()
-	filter.brightness(0.6, true)
-	filter.saturate(0.3, true)
+	const [dark] = useSearchParamState("dark")
+	const filter = useMemo(() => new ColorMatrixFilter(), [])
+	filter.tint(0xccccff, false)
+	filter.contrast(2, true)
+	filter.brightness(0.3, true)
 
 	return (
-		<container filters={[filter]}>
+		<container filters={dark ? [filter] : []}>
 			{breakpoints.map(
 				(breakpoint, i) =>
 					i <= maxZoom && (
