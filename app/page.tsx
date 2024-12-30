@@ -116,7 +116,7 @@ export default async function MainPage({
 		<HydrationBoundary state={dehydrate(queryClient)}>
 			<RoutingProvider>
 				<Application>
-					<MinecraftMap />
+					<MinecraftMap compressedPlaces={await compressedPlaces} />
 					<AppGrid places={await compressedPlaces} />
 				</Application>
 			</RoutingProvider>

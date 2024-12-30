@@ -1,8 +1,11 @@
+import type { CompressedPlace } from "app/utils/compressedPlaces"
 import type { MarkersResponse } from "./Dynmap/dynmapType"
 import MapClient from "./MapClient"
 import { getMapPreview } from "./preview"
 
-export default async function MinecraftMap() {
+export default async function MinecraftMap({
+	compressedPlaces,
+}: { compressedPlaces: CompressedPlace[] }) {
 	const [initialMarkers, initialCities, previewImage] = await Promise.all([
 		fetch(
 			"https://dynmap.minecartrapidtransit.net/main/tiles/_markers_/marker_new.json",
@@ -13,6 +16,10 @@ export default async function MinecraftMap() {
 	])
 
 	return (
-		<MapClient initialMarkers={initialMarkers} previewImage={previewImage} />
+		<MapClient
+			initialMarkers={initialMarkers}
+			previewImage={previewImage}
+			compressedPlaces={compressedPlaces}
+		/>
 	)
 }

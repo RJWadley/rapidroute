@@ -1,5 +1,4 @@
-import { extend, useApp } from "@pixi/react"
-import type { PixiReactNode } from "@pixi/react"
+import { extend, useApplication, type PixiReactElementProps } from "@pixi/react"
 import { useEventListener } from "ahooks"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { Viewport } from "pixi-viewport"
@@ -74,11 +73,10 @@ export const triggerMovementManually = () => {
 		cb()
 	}
 }
-
 declare global {
 	namespace JSX {
 		interface IntrinsicElements {
-			viewport: PixiReactNode<typeof Viewport>
+			viewport: PixiReactElementProps<typeof Viewport>
 		}
 	}
 }
@@ -102,7 +100,7 @@ export default function PixiViewport({
 }: {
 	children: React.ReactNode
 }) {
-	const app = useApp()
+	const { app } = useApplication()
 	const [viewport, setViewport] = useState<Viewport | null>(null)
 	const [xRaw, setX] = useSearchParamState("x")
 	const [zRaw, setZ] = useSearchParamState("z")

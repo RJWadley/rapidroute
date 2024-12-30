@@ -27,6 +27,9 @@
 					}
 				},
 				"noUnusedImports": "warn"
+			},
+			"a11y": {
+				"useKeyWithClickEvents": "off"
 			}
 		}
 	},

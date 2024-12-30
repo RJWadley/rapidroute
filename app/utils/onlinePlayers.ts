@@ -4,7 +4,18 @@ import { z } from "zod"
 const schema = z.object({
 	players: z.array(
 		z.object({
-			world: z.string(),
+			world: z.string().transform((v) => {
+				switch (v) {
+					case "new":
+						return "New"
+					case "old":
+						return "Old"
+					case "space":
+						return "Space"
+					default:
+						return "Unknown"
+				}
+			}),
 			name: z.string(),
 			x: z.number().transform((v) => Math.round(v)),
 			z: z.number().transform((v) => Math.round(v)),

@@ -1,7 +1,14 @@
 import type { EventMode, IHitArea } from "pixi.js"
 import { Rectangle } from "pixi.js"
+import { useUpdateOverlapping } from "./useHideOverlapping"
 
 export const SCALE_FACTOR = 0.7072
+
+export const PixiHooks = () => {
+	useUpdateOverlapping()
+
+	return null
+}
 
 /**
  * raise and lower the world coordinate by y blocks when in 3d view

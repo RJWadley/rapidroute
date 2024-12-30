@@ -11,7 +11,10 @@ import type { MarkersResponse } from "./Dynmap/dynmapType"
 import PixiViewport from "./PixiViewport"
 import Satellite from "./Satellite"
 import { useEventListener } from "ahooks"
-import { skewWorldCoordinate } from "./pixiUtils"
+import MapPlayers from "./Players"
+import Cities from "./Cities"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
+import { PixiHooks } from "./pixiUtils"
 
 extend({
 	Container,
@@ -21,7 +24,12 @@ extend({
 export default function MapClient({
 	initialMarkers,
 	previewImage,
-}: { initialMarkers: MarkersResponse; previewImage: string }) {
+	compressedPlaces,
+}: {
+	initialMarkers: MarkersResponse
+	previewImage: string
+	compressedPlaces: CompressedPlace[]
+}) {
 	// return null
 	const [hasInit, setHasInit] = useState(false)
 	const wrapperRef = useRef<HTMLDivElement>(null)
@@ -83,8 +91,11 @@ export default function MapClient({
 					<TanstackProvider>
 						{hasInit && (
 							<PixiViewport>
+								<PixiHooks />
 								<Satellite />
 								<DynmapMarkers initialMarkers={initialMarkers} />
+								<MapPlayers />
+								<Cities places={compressedPlaces} />
 							</PixiViewport>
 						)}
 					</TanstackProvider>

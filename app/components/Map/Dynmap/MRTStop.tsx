@@ -63,9 +63,9 @@ export default function MRTStop({ name, colors, x, y, z }: MRTStopProps) {
 	return (
 		<container
 			eventMode="static"
-			onpointerenter={pointerIn}
-			onmouseleave={pointerOut}
-			ontouchend={() => setTimeout(pointerOut, 3000)}
+			onPointerEnter={pointerIn}
+			onPointerLeave={pointerOut}
+			onTouchEnd={() => setTimeout(pointerOut, 3000)}
 			cursor="pointer"
 			ref={containerRef}
 			cullable
