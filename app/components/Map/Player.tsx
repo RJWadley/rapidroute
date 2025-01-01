@@ -5,6 +5,8 @@ import { Container, Point, Sprite, Text, type Texture } from "pixi.js"
 import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import { useRef, useState } from "react"
 import { regular, regularHover } from "./textStyles"
+import { skewWorldCoordinate } from "./pixiUtils"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 extend({ Sprite, Text, Container })
 
@@ -53,6 +55,11 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 		setHover(false)
 	}
 
+	const [isometric] = useSearchParamState("isometric")
+	const skewed = isometric
+		? skewWorldCoordinate(player.x, player.y, player.z)
+		: { x: player.x, z: player.z }
+
 	if (!isSuccess) return null
 	return (
 		<container
@@ -65,8 +72,8 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 				pointerOut()
 			}}
 			cullable
-			x={player.coordinates[0]}
-			y={player.coordinates[1]}
+			x={skewed.x}
+			y={skewed.z}
 		>
 			<sprite
 				texture={head}

@@ -29,6 +29,7 @@ const playerKeys: Record<
 	type: true,
 	world: true,
 	x: true,
+	y: true,
 	z: true,
 	label: true,
 }

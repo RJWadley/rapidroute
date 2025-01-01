@@ -18,6 +18,7 @@ const schema = z.object({
 			}),
 			name: z.string(),
 			x: z.number().transform((v) => Math.round(v)),
+			y: z.number().transform((v) => Math.round(v)),
 			z: z.number().transform((v) => Math.round(v)),
 		}),
 	),
