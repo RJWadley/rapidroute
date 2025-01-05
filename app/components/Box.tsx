@@ -1,14 +1,14 @@
-import { AnimatePresence, motion } from "motion/react";
-import { styled } from "restyle";
+import { AnimatePresence, motion } from "motion/react"
+import { styled } from "restyle"
 
 export default function Box({
 	children,
 	className,
 	isVisible = true,
 }: {
-	children: React.ReactNode;
-	className?: string;
-	isVisible?: boolean;
+	children: React.ReactNode
+	className?: string
+	isVisible?: boolean
 }) {
 	return (
 		<AnimatePresence mode="popLayout" initial={false}>
@@ -25,7 +25,7 @@ export default function Box({
 				</Wrapper>
 			)}
 		</AnimatePresence>
-	);
+	)
 }
 
 const Wrapper = styled(motion.div, {
@@ -33,4 +33,4 @@ const Wrapper = styled(motion.div, {
 	background: "#eeed",
 	overflow: "clip",
 	position: "relative",
-});
+})

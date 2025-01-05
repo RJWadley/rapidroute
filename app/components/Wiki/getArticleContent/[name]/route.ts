@@ -1,13 +1,13 @@
-import { google } from "@ai-sdk/google";
-import { generateObject } from "ai";
-import dedent from "dedent";
-import { z } from "zod";
-import type { SearchResponse } from "../../types/PageSearch";
-import type { ParseResponse } from "../../types/ParseQuery";
-import { RAW_WIKI_URL, getWikiURL } from "../../url";
-import { loadImageDimensions } from "./getImageDimensions";
+import { google } from "@ai-sdk/google"
+import { generateObject } from "ai"
+import dedent from "dedent"
+import { z } from "zod"
+import type { SearchResponse } from "../../types/PageSearch"
+import type { ParseResponse } from "../../types/ParseQuery"
+import { RAW_WIKI_URL, getWikiURL } from "../../url"
+import { loadImageDimensions } from "./getImageDimensions"
 
-export const dynamic = "force-static";
+export const dynamic = "force-static"
 
 const googleModel = google("gemini-1.5-flash", {
 	safetySettings: [
@@ -28,7 +28,7 @@ const googleModel = google("gemini-1.5-flash", {
 			threshold: "BLOCK_NONE",
 		},
 	],
-});
+})
 
 const schema = z.object({
 	mainImage: z
@@ -69,12 +69,12 @@ const schema = z.object({
 				.optional(),
 		}),
 	),
-});
+})
 
 const addImageDimensions = (result: z.infer<typeof schema>["innerHTML"]) => {
 	return Promise.all(
 		result.map(async (node) => {
-			const figure = node.figure;
+			const figure = node.figure
 
 			return {
 				...node,
@@ -84,31 +84,31 @@ const addImageDimensions = (result: z.infer<typeof schema>["innerHTML"]) => {
 							...(await loadImageDimensions(figure.src)),
 						}
 					: undefined,
-			};
+			}
 		}),
-	);
-};
+	)
+}
 
 export type WikiResult = {
-	url: string;
-	content: Awaited<ReturnType<typeof addImageDimensions>>;
-	title: string;
+	url: string
+	content: Awaited<ReturnType<typeof addImageDimensions>>
+	title: string
 	mainImage: {
-		width: number;
-		height: number;
-		src: string;
-	} | null;
-	type: "specific" | "generic";
-} | null;
+		width: number
+		height: number
+		src: string
+	} | null
+	type: "specific" | "generic"
+} | null
 
 export const GET = async (
 	_: unknown,
 	{ params }: { params: Promise<{ name: string }> },
 ) => {
-	const name = await (await params).name;
-	if (!name) return new Response("name is required", { status: 400 });
+	const name = await (await params).name
+	if (!name) return new Response("name is required", { status: 400 })
 
-	const wikiURL = getWikiURL();
+	const wikiURL = getWikiURL()
 
 	const specificParams = {
 		action: "query",
@@ -117,27 +117,27 @@ export const GET = async (
 		srsearch: name,
 		format: "json",
 		srlimit: "1",
-	};
+	}
 	const specificUrl = `${wikiURL}api.php?${new URLSearchParams(
 		specificParams,
-	).toString()}`;
+	).toString()}`
 	const genericParams = {
 		...specificParams,
 		srwhat: "text",
-	};
+	}
 	const genericUrl = `${wikiURL}api.php?${new URLSearchParams(
 		genericParams,
-	).toString()}`;
+	).toString()}`
 
 	const specificResults = await fetch(specificUrl).then(
 		(res) => res.json() as Promise<SearchResponse>,
-	);
+	)
 	const genericResults = await fetch(genericUrl).then(
 		(res) => res.json() as Promise<SearchResponse>,
-	);
+	)
 
-	const genericResult = genericResults?.query.search[0];
-	const specificResult = specificResults?.query.search[0];
+	const genericResult = genericResults?.query.search[0]
+	const specificResult = specificResults?.query.search[0]
 
 	const result = specificResult
 		? ({
@@ -149,9 +149,9 @@ export const GET = async (
 					type: "generic",
 					...genericResult,
 				} as const)
-			: null;
+			: null
 
-	if (!result) return new Response(null satisfies WikiResult, { status: 200 });
+	if (!result) return new Response(null satisfies WikiResult, { status: 200 })
 
 	const pageParams = {
 		action: "parse",
@@ -159,11 +159,11 @@ export const GET = async (
 		format: "json",
 		redirects: "true",
 		mobileformat: "true",
-	};
-	const url = `${wikiURL}api.php?${new URLSearchParams(pageParams).toString()}`;
+	}
+	const url = `${wikiURL}api.php?${new URLSearchParams(pageParams).toString()}`
 	const content = await fetch(url).then(
 		(res) => res.json() as Promise<ParseResponse>,
-	);
+	)
 
 	const text = content.parse?.text["*"]
 		.replaceAll("{{{subtextcolor}}}", "var(--default-text)")
@@ -177,13 +177,13 @@ export const GET = async (
 				.split(",")
 				.map((src) => src.trim())
 				.map((src) => {
-					const [imageURL, size] = src.split(" ");
+					const [imageURL, size] = src.split(" ")
 					return `${RAW_WIKI_URL}${imageURL} ${size}
-`;
+`
 				})
-				.join(",");
-			return `srcset="${srcset}"`;
-		});
+				.join(",")
+			return `srcset="${srcset}"`
+		})
 
 	const synopsis = await generateObject({
 		model: googleModel,
@@ -207,7 +207,7 @@ export const GET = async (
 			floats are not allowed
 		`),
 		schema,
-	});
+	})
 
 	return new Response(
 		JSON.stringify({
@@ -224,5 +224,5 @@ export const GET = async (
 				"content-type": "application/json",
 			},
 		},
-	);
-};
+	)
+}

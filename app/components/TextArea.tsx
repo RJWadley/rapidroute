@@ -1,5 +1,5 @@
-import { type ComponentProps, useState } from "react";
-import { styled } from "restyle";
+import { type ComponentProps, useState } from "react"
+import { styled } from "restyle"
 
 export const TextArea = ({
 	ref,
@@ -9,9 +9,9 @@ export const TextArea = ({
 	onChange,
 	...props
 }: ComponentProps<"textarea">) => {
-	const [internalValue, setValue] = useState(value ?? defaultValue);
+	const [internalValue, setValue] = useState(value ?? defaultValue)
 
-	const displayValue = value ?? internalValue;
+	const displayValue = value ?? internalValue
 
 	return (
 		<Wrapper className={className}>
@@ -21,14 +21,14 @@ export const TextArea = ({
 				ref={ref}
 				value={displayValue}
 				onChange={(e) => {
-					setValue(e.target.value);
-					onChange?.(e);
+					setValue(e.target.value)
+					onChange?.(e)
 				}}
 				{...props}
 			/>
 		</Wrapper>
-	);
-};
+	)
+}
 
 const Wrapper = styled("div", {
 	display: "grid",
@@ -36,13 +36,13 @@ const Wrapper = styled("div", {
 	"& > *": {
 		gridArea: "1/1/2/2",
 	},
-});
+})
 
 const Sizer = styled("div", {
 	whiteSpace: "break-spaces",
 	wordBreak: "break-word",
 	visibility: "hidden",
-});
+})
 
 const Element = styled("textarea", {
 	whiteSpace: "break-spaces",
@@ -53,4 +53,4 @@ const Element = styled("textarea", {
 	padding: 0,
 	resize: "none",
 	background: "transparent",
-});
+})

@@ -1,11 +1,11 @@
-import type { DataType } from "app/data";
-import { getDistance } from "app/utils/getDistance";
+import type { DataType } from "app/data"
+import { getDistance } from "app/utils/getDistance"
 
 export const getClosestPlaces = (
 	[x, z]: [x: number, z: number],
 	data: DataType,
 ) => {
-	const { places } = data;
+	const { places } = data
 
 	/**
 	 * return the 5 closest places to the given location
@@ -18,7 +18,7 @@ export const getClosestPlaces = (
 				: Number.POSITIVE_INFINITY,
 		}))
 		.sort((a, b) => a.distance - b.distance)
-		.slice(0, 10);
+		.slice(0, 10)
 
-	return closestPlaces;
-};
+	return closestPlaces
+}

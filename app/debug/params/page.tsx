@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import { useSearchParamState } from "app/utils/useSearchParamState";
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 export default function Application() {
-	const [a, setA] = useSearchParamState("a");
-	const [secondA, setSecondA] = useSearchParamState("a");
-	const [b, setB] = useSearchParamState("b");
+	const [a, setA] = useSearchParamState("a")
+	const [secondA, setSecondA] = useSearchParamState("a")
+	const [b, setB] = useSearchParamState("b")
 
 	return (
 		<div>
@@ -26,5 +26,5 @@ export default function Application() {
 				/>
 			</div>
 		</div>
-	);
+	)
 }

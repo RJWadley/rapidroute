@@ -1,9 +1,9 @@
-import type { DataType, ExcludedRoutes, Place } from "app/data";
-import type { Coordinate } from "app/data/coordinates";
-import { placesMatch } from "app/data/placesMatch";
-import { getDistance } from "app/utils/getDistance";
-import { getClosestPlaces } from "./getClosestPlaces";
-import { getRouteTime } from "./getRouteTime";
+import type { DataType, ExcludedRoutes, Place } from "app/data"
+import type { Coordinate } from "app/data/coordinates"
+import { placesMatch } from "app/data/placesMatch"
+import { getDistance } from "app/utils/getDistance"
+import { getClosestPlaces } from "./getClosestPlaces"
+import { getRouteTime } from "./getRouteTime"
 
 /**
  * get all places that can be reached from a given location,
@@ -16,16 +16,16 @@ export const getNeighbors = ({
 	excludedRoutes,
 	fromPlace,
 }: {
-	fromPlace: Place | Coordinate;
-	excludedRoutes: ExcludedRoutes;
-	data: DataType;
-	startPlace: Place | Coordinate;
-	endPlace: Place | Coordinate;
+	fromPlace: Place | Coordinate
+	excludedRoutes: ExcludedRoutes
+	data: DataType
+	startPlace: Place | Coordinate
+	endPlace: Place | Coordinate
 }) => {
-	const { places, spawn, spawnWarps, gates, flights, connectionLines } = data;
+	const { places, spawn, spawnWarps, gates, flights, connectionLines } = data
 
-	type Neighbor = { place: Place | Coordinate; time: number };
-	const neighbors: Neighbor[] = [];
+	type Neighbor = { place: Place | Coordinate; time: number }
+	const neighbors: Neighbor[] = []
 
 	/**
 	 * spawn warps
@@ -34,7 +34,7 @@ export const getNeighbors = ({
 		neighbors.push({
 			place: spawn,
 			time: getRouteTime({ type: "SpawnWarp" }),
-		});
+		})
 	neighbors.push(
 		...spawnWarps.list
 			.filter((warp) => !excludedRoutes.SpawnWarp[warp.mode])
@@ -42,7 +42,7 @@ export const getNeighbors = ({
 				place: warp,
 				time: getRouteTime({ type: "SpawnWarp" }),
 			})),
-	);
+	)
 
 	/**
 	 * walking neighbors
@@ -63,7 +63,7 @@ export const getNeighbors = ({
 							}),
 						}),
 					)
-				: [];
+				: []
 
 		const coordinateToDestination =
 			endPlace?.type === "Coordinate" && fromPlace.coordinates
@@ -82,13 +82,13 @@ export const getNeighbors = ({
 							}),
 						} satisfies Neighbor,
 					]
-				: [];
+				: []
 
 		const walkTo: Neighbor[] = [
 			...Object.entries(
 				"proximity" in fromPlace ? fromPlace.proximity : {},
 			).flatMap(([id, proximity]) => {
-				const toPlace = places.map.get(id);
+				const toPlace = places.map.get(id)
 				return proximity.distance && toPlace
 					? [
 							{
@@ -99,11 +99,11 @@ export const getNeighbors = ({
 								}),
 							} satisfies Neighbor,
 						]
-					: [];
+					: []
 			}),
 			...coordinateToDestination,
 			...coordinateFromDestinations,
-		];
+		]
 
 		neighbors.push(
 			...walkTo
@@ -121,20 +121,20 @@ export const getNeighbors = ({
 						? []
 						: [result],
 				),
-		);
+		)
 	}
 
 	/**
 	 * find neighbors via plane connections
 	 */
 	if (fromPlace.type === "AirAirport") {
-		const allGatesHere = fromPlace.gates.map((gateId) => gates.map.get(gateId));
+		const allGatesHere = fromPlace.gates.map((gateId) => gates.map.get(gateId))
 		const allFlights = allGatesHere
 			.flatMap((gate) =>
 				gate?.flights.map((flightId) => flights.map.get(flightId)),
 			)
 			.filter((flight) => flight !== undefined)
-			.filter((flight) => !excludedRoutes.AirFlight[flight.mode]);
+			.filter((flight) => !excludedRoutes.AirFlight[flight.mode])
 
 		const allReachedAirports = allFlights
 			// get all gates at this airport
@@ -150,9 +150,9 @@ export const getNeighbors = ({
 				place: airport,
 				// TODO factor in gate existance & airport size (not in this file though)
 				time: getRouteTime({ type: "AirFlight" }),
-			}));
+			}))
 
-		neighbors.push(...allReachedAirports);
+		neighbors.push(...allReachedAirports)
 	}
 
 	/**
@@ -178,18 +178,18 @@ export const getNeighbors = ({
 					}))
 					.filter((c) => {
 						// TODO - special handling for MRT lines (filter them separately)
-						const line = c.line;
-						if (!line) return false;
+						const line = c.line
+						if (!line) return false
 
 						if (line.type === "BusLine" && excludedRoutes.BusLine.unk)
-							return false;
+							return false
 						if (
 							line.type !== "BusLine" &&
 							excludedRoutes[line.type][line.mode as "unk"]
 						)
-							return false;
+							return false
 
-						return true;
+						return true
 					})
 					.map((c) => ({
 						place: places.map.get(placeId),
@@ -199,17 +199,17 @@ export const getNeighbors = ({
 						}),
 					}))
 					.flatMap(({ place, time }) => (place ? { place, time } : [])),
-			);
+			)
 
-		neighbors.push(...reachedPlaces);
+		neighbors.push(...reachedPlaces)
 	}
 
 	// assert that we don't return any zero-time neighbors
 	for (const neighbor of neighbors) {
 		if (neighbor.time === 0) {
-			throw new Error("generated neighbor has zero time! this is a bug.");
+			throw new Error("generated neighbor has zero time! this is a bug.")
 		}
 	}
 
-	return neighbors;
-};
+	return neighbors
+}

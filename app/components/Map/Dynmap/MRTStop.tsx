@@ -1,64 +1,64 @@
-import { extend, useApp } from "@pixi/react";
-import { useSearchParamState } from "app/utils/useSearchParamState";
-import { Container, Point, Text } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
-import { useViewport, useViewportMoved } from "../PixiViewport";
-import { SCALE_FACTOR, shiftWorldCoordinate } from "../pixiUtils";
-import { regular } from "../textStyles";
-import MulticolorDot from "./MulticolorDot";
+import { extend, useApp } from "@pixi/react"
+import { useSearchParamState } from "app/utils/useSearchParamState"
+import { Container, Point, Text } from "pixi.js"
+import { useEffect, useRef, useState } from "react"
+import { useViewport, useViewportMoved } from "../PixiViewport"
+import { SCALE_FACTOR, shiftWorldCoordinate } from "../pixiUtils"
+import { regular } from "../textStyles"
+import MulticolorDot from "./MulticolorDot"
 
 interface MRTStopProps {
-	name: string;
-	colors: string[];
-	x: number;
-	y: number;
-	z: number;
+	name: string
+	colors: string[]
+	x: number
+	y: number
+	z: number
 }
 
-extend({ Container, Text });
+extend({ Container, Text })
 
 export default function MRTStop({ name, colors, x, y, z }: MRTStopProps) {
-	const viewport = useViewport();
-	const textRef = useRef<Text>(null);
-	const containerRef = useRef<Container>(null);
-	const [hover, setHover] = useState(false);
+	const viewport = useViewport()
+	const textRef = useRef<Text>(null)
+	const containerRef = useRef<Container>(null)
+	const [hover, setHover] = useState(false)
 
 	const updateSize = () => {
 		if (textRef.current && viewport) {
 			textRef.current.scale = new Point(
 				1 / viewport.scale.x,
 				1 / viewport.scale.y,
-			);
-			textRef.current.alpha = 1;
+			)
+			textRef.current.alpha = 1
 		}
-	};
+	}
 
 	const pointerIn = () => {
-		setHover(true);
-	};
+		setHover(true)
+	}
 	const pointerOut = () => {
-		setHover(false);
-	};
+		setHover(false)
+	}
 
 	const updateOpacityWhenClose = () => {
 		if (viewport && containerRef.current) {
-			updateSize();
-			const zoom = viewport.scale.x;
+			updateSize()
+			const zoom = viewport.scale.x
 
-			const opacity = Math.max(0, Math.min(1, 1 - (zoom - 2.75)));
-			containerRef.current.alpha = opacity;
+			const opacity = Math.max(0, Math.min(1, 1 - (zoom - 2.75)))
+			containerRef.current.alpha = opacity
 		}
-	};
-	useViewportMoved(updateOpacityWhenClose);
+	}
+	useViewportMoved(updateOpacityWhenClose)
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: allowable extra dep
-	useEffect(updateSize, [hover]);
+	useEffect(updateSize, [hover])
 
-	const app = useApp();
-	if (!app) return;
+	const app = useApp()
+	if (!app) return
 
-	const [isometric] = useSearchParamState("isometric");
-	const skewed = isometric ? shiftWorldCoordinate(x, y, z) : { x, z };
+	const [isometric] = useSearchParamState("isometric")
+	const skewed = isometric ? shiftWorldCoordinate(x, y, z) : { x, z }
 
 	return (
 		<pixiContainer
@@ -95,5 +95,5 @@ export default function MRTStop({ name, colors, x, y, z }: MRTStopProps) {
 				</pixiContainer>
 			)}
 		</pixiContainer>
-	);
+	)
 }

@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { useQuery } from "@tanstack/react-query";
-import type { CompressedPlace } from "app/utils/compressedPlaces";
-import { findClosestPlace } from "app/utils/search";
-import { useSearchParamState } from "app/utils/useSearchParamState";
-import { AnimatePresence, motion } from "motion/react";
-import { Fragment } from "react";
-import { styled } from "restyle";
-import type { WikiResult } from "./getArticleContent/[name]/route";
+import { useQuery } from "@tanstack/react-query"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
+import { findClosestPlace } from "app/utils/search"
+import { useSearchParamState } from "app/utils/useSearchParamState"
+import { AnimatePresence, motion } from "motion/react"
+import { Fragment } from "react"
+import { styled } from "restyle"
+import type { WikiResult } from "./getArticleContent/[name]/route"
 
 const layout = {
 	layout: "position",
 	initial: { opacity: 0 },
 	animate: { opacity: 1 },
 	exit: { opacity: 0 },
-} as const;
+} as const
 
 const components = {
 	h1: styled("h1"),
@@ -28,31 +28,31 @@ const components = {
 	ol: styled("ol"),
 	ul: styled("ul"),
 	li: styled("li"),
-};
+}
 
 export default function WikiArticle({
 	places,
 }: {
-	places: CompressedPlace[];
+	places: CompressedPlace[]
 }) {
-	const [placeID] = useSearchParamState("to");
-	const relevantPlace = findClosestPlace(placeID, places);
+	const [placeID] = useSearchParamState("to")
+	const relevantPlace = findClosestPlace(placeID, places)
 
 	const name =
 		relevantPlace?.type === "Coordinate" || placeID?.startsWith("player-")
 			? null
-			: relevantPlace?.name || relevantPlace?.id || placeID;
+			: relevantPlace?.name || relevantPlace?.id || placeID
 
 	const { data, isLoading } = useQuery({
 		queryKey: ["wiki-article", name],
 		enabled: !!name,
 		queryFn: async () => {
-			if (!name) throw new Error("no title");
-			const content = await fetch(`/components/Wiki/getArticleContent/${name}`);
-			const result = await content.json();
-			return result as WikiResult;
+			if (!name) throw new Error("no title")
+			const content = await fetch(`/components/Wiki/getArticleContent/${name}`)
+			const result = await content.json()
+			return result as WikiResult
 		},
-	});
+	})
 
 	const state = !name
 		? "empty"
@@ -60,7 +60,7 @@ export default function WikiArticle({
 			? "loading"
 			: data?.type
 				? "success"
-				: "404";
+				: "404"
 
 	// TODO - allow wiki articles to manually specify content instead of using the generated summary
 
@@ -94,11 +94,11 @@ export default function WikiArticle({
 						)}
 						<Wrapper>
 							{data?.content.map(({ figure, tagName, textContent }, index) => {
-								const Component = components[tagName];
+								const Component = components[tagName]
 								const SubComponent =
 									tagName === "ul" || tagName === "ol"
 										? components.li
-										: Fragment;
+										: Fragment
 
 								return (
 									// biome-ignore lint/suspicious/noArrayIndexKey: none available
@@ -131,7 +131,7 @@ export default function WikiArticle({
 											</>
 										)}
 									</Component>
-								);
+								)
 							})}
 						</Wrapper>
 						<a href={data?.url}>Read more on the MRT wiki</a>
@@ -149,7 +149,7 @@ export default function WikiArticle({
 				)}
 			</AnimatePresence>
 		</motion.div>
-	);
+	)
 }
 
 const Wrapper = styled("div", {
@@ -160,16 +160,16 @@ const Wrapper = styled("div", {
 	"h1:first-child": {
 		display: "none",
 	},
-});
+})
 
 const MainImage = styled("img", {
 	width: "100%",
 	height: "auto",
 	display: "block",
-});
+})
 
 const ContentImage = styled("img", {
 	width: "100%",
 	height: "auto",
 	display: "block",
-});
+})

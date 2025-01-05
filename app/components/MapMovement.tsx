@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { getDistance } from "app/utils/getDistance";
+import { getDistance } from "app/utils/getDistance"
 import {
 	setParamManually,
 	useSearchParamState,
-} from "app/utils/useSearchParamState";
-import { type SpringOptions, useSpring } from "framer-motion";
-import type { Viewport } from "pixi-viewport";
+} from "app/utils/useSearchParamState"
+import { type SpringOptions, useSpring } from "framer-motion"
+import type { Viewport } from "pixi-viewport"
 import {
 	type MutableRefObject,
 	createContext,
@@ -14,173 +14,170 @@ import {
 	useEffect,
 	useRef,
 	useState,
-} from "react";
-import { CLAMP, triggerMovementManually } from "./Map/PixiViewport";
-import { skewWorldCoordinate } from "./Map/pixiUtils";
+} from "react"
+import { CLAMP, triggerMovementManually } from "./Map/PixiViewport"
+import { skewWorldCoordinate } from "./Map/pixiUtils"
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 type Coordinate = {
-	x: number;
-	z: number;
-	worldScreenWidth: number;
-};
+	x: number
+	z: number
+	worldScreenWidth: number
+}
 
 export const MovementContext = createContext<{
-	moveCamera: (coordinate: Coordinate) => void;
-	viewport: Viewport | null;
-	setViewport: (viewport: Viewport | null) => void;
+	moveCamera: (coordinate: Coordinate) => void
+	viewport: Viewport | null
+	setViewport: (viewport: Viewport | null) => void
 	/**
 	 * if the method is touch, it means the user has moved the camera using touch and we shouldn't spring the values
 	 * if the mothed is moveCamera, we should spring the values
 	 */
-	lastUsedMethod: MutableRefObject<"moveCamera" | "touchStillActive" | "touch">;
+	lastUsedMethod: MutableRefObject<"moveCamera" | "touchStillActive" | "touch">
 }>({
 	moveCamera: () => {},
 	viewport: null,
 	setViewport: () => {},
 	lastUsedMethod: { current: "touch" },
-});
+})
 
 export const useCamera = () => {
-	const { moveCamera } = useContext(MovementContext);
-	return { moveCamera };
-};
+	const { moveCamera } = useContext(MovementContext)
+	return { moveCamera }
+}
 
 export function MovementProvider({ children }: { children: React.ReactNode }) {
-	const [viewport, setViewport] = useState<Viewport | null>(null);
+	const [viewport, setViewport] = useState<Viewport | null>(null)
 	const lastUsedMethod = useRef<"moveCamera" | "touch" | "touchStillActive">(
 		"touch",
-	);
+	)
 
 	const options: SpringOptions = {
 		bounce: 0.1,
 		duration: 2000,
 		stiffness: 50,
-	};
-	const xSpring = useSpring(0, options);
-	const zSpring = useSpring(0, options);
-	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 });
+	}
+	const xSpring = useSpring(0, options)
+	const zSpring = useSpring(0, options)
+	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 })
 
-	const [isometric] = useSearchParamState("isometric");
+	const [isometric] = useSearchParamState("isometric")
 
 	const moveCamera = (coordinateRaw: Coordinate) => {
-		(async () => {
-			if (lastUsedMethod.current === "touchStillActive") return;
-			lastUsedMethod.current = "moveCamera";
+		;(async () => {
+			if (lastUsedMethod.current === "touchStillActive") return
+			lastUsedMethod.current = "moveCamera"
 
 			const coordinate = isometric
 				? {
 						...coordinateRaw,
 						...skewWorldCoordinate(coordinateRaw.x, 60, coordinateRaw.z),
 					}
-				: coordinateRaw;
-			const startX = xSpring.get();
-			const startZ = zSpring.get();
-			const startWidth = worldScreenWidthSpring.get();
+				: coordinateRaw
+			const startX = xSpring.get()
+			const startZ = zSpring.get()
+			const startWidth = worldScreenWidthSpring.get()
 			const taxiDistance = getDistance(
 				startX,
 				startZ,
 				coordinate.x ?? startX,
 				coordinate.z ?? startZ,
-			);
+			)
 
 			if (typeof coordinate.worldScreenWidth !== "undefined")
-				worldScreenWidthSpring.set(Math.max(startWidth, taxiDistance * 2));
+				worldScreenWidthSpring.set(Math.max(startWidth, taxiDistance * 2))
 
-			await sleep(200);
-			if (coordinate.x !== undefined) xSpring.set(coordinate.x);
-			if (coordinate.z !== undefined) zSpring.set(coordinate.z);
+			await sleep(200)
+			if (coordinate.x !== undefined) xSpring.set(coordinate.x)
+			if (coordinate.z !== undefined) zSpring.set(coordinate.z)
 
-			await sleep(200);
+			await sleep(200)
 			if (coordinate.worldScreenWidth !== undefined)
 				worldScreenWidthSpring.set(
 					Math.min(
 						CLAMP.maxWorldScreenWidth,
 						Math.max(CLAMP.minWorldScreenWidth, coordinate.worldScreenWidth),
 					),
-				);
-		})();
-	};
+				)
+		})()
+	}
 
 	useEffect(() => {
-		if (!viewport) return;
+		if (!viewport) return
 
-		xSpring.jump(viewport.center.x);
-		zSpring.jump(viewport.center.y);
-		worldScreenWidthSpring.jump(viewport.worldScreenWidth);
+		xSpring.jump(viewport.center.x)
+		zSpring.jump(viewport.center.y)
+		worldScreenWidthSpring.jump(viewport.worldScreenWidth)
 
 		const resetIfApplicable = () => {
-			if (lastUsedMethod.current === "moveCamera") return;
+			if (lastUsedMethod.current === "moveCamera") return
 
-			xSpring.jump(viewport.center.x);
-			zSpring.jump(viewport.center.y);
-			worldScreenWidthSpring.jump(viewport.worldScreenWidth);
-		};
+			xSpring.jump(viewport.center.x)
+			zSpring.jump(viewport.center.y)
+			worldScreenWidthSpring.jump(viewport.worldScreenWidth)
+		}
 
-		let batchTimeout: ReturnType<typeof setTimeout> | null = null;
-		let batchFrame: ReturnType<typeof requestAnimationFrame> | null = null;
+		let batchTimeout: ReturnType<typeof setTimeout> | null = null
+		let batchFrame: ReturnType<typeof requestAnimationFrame> | null = null
 		let nextValue: Partial<{
-			x: number;
-			z: number;
-			worldScreenWidth: number;
-		}> = {};
+			x: number
+			z: number
+			worldScreenWidth: number
+		}> = {}
 
 		const batchUpdate = () => {
-			if (batchTimeout) clearTimeout(batchTimeout);
+			if (batchTimeout) clearTimeout(batchTimeout)
 			batchTimeout = setTimeout(() => {
-				resetIfApplicable();
-				if (lastUsedMethod.current !== "moveCamera") return;
+				resetIfApplicable()
+				if (lastUsedMethod.current !== "moveCamera") return
 				viewport.moveCenter(
 					nextValue.x ?? viewport.center.x,
 					nextValue.z ?? viewport.center.y,
-				);
+				)
 
 				const zoom = nextValue.worldScreenWidth
 					? viewport.findFitWidth(nextValue.worldScreenWidth)
-					: viewport.scale.x;
+					: viewport.scale.x
 
-				viewport.setZoom(zoom, true);
+				viewport.setZoom(zoom, true)
 
-				if (batchFrame) cancelAnimationFrame(batchFrame);
-				batchFrame = requestAnimationFrame(triggerMovementManually);
+				if (batchFrame) cancelAnimationFrame(batchFrame)
+				batchFrame = requestAnimationFrame(triggerMovementManually)
 
-				nextValue = {};
+				nextValue = {}
 
-				setParamManually("x", Math.round(viewport.center.x).toString());
-				setParamManually("z", Math.round(viewport.center.y).toString());
-				setParamManually(
-					"zoom",
-					Number(viewport.scale.x.toFixed(4)).toString(),
-				);
-			});
-		};
+				setParamManually("x", Math.round(viewport.center.x).toString())
+				setParamManually("z", Math.round(viewport.center.y).toString())
+				setParamManually("zoom", Number(viewport.scale.x.toFixed(4)).toString())
+			})
+		}
 
 		const unsubscribeX = xSpring.on("change", (x) => {
-			nextValue.x = x;
-			batchUpdate();
-		});
+			nextValue.x = x
+			batchUpdate()
+		})
 		const unsubscribeY = zSpring.on("change", (z) => {
-			nextValue.z = z;
-			batchUpdate();
-		});
+			nextValue.z = z
+			batchUpdate()
+		})
 		const unsubscribeZoom = worldScreenWidthSpring.on(
 			"change",
 			(worldScreenWidth) => {
-				nextValue.worldScreenWidth = worldScreenWidth;
-				batchUpdate();
+				nextValue.worldScreenWidth = worldScreenWidth
+				batchUpdate()
 			},
-		);
+		)
 
-		viewport?.addEventListener("moved", resetIfApplicable);
+		viewport?.addEventListener("moved", resetIfApplicable)
 
 		return () => {
-			unsubscribeX();
-			unsubscribeY();
-			unsubscribeZoom();
-			viewport.removeEventListener("moved", resetIfApplicable);
-		};
-	}, [viewport, xSpring, zSpring, worldScreenWidthSpring]);
+			unsubscribeX()
+			unsubscribeY()
+			unsubscribeZoom()
+			viewport.removeEventListener("moved", resetIfApplicable)
+		}
+	}, [viewport, xSpring, zSpring, worldScreenWidthSpring])
 
 	return (
 		<MovementContext.Provider
@@ -193,5 +190,5 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 		>
 			{children}
 		</MovementContext.Provider>
-	);
+	)
 }

@@ -1,7 +1,7 @@
-import { type RefObject, useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react"
 
 // TODO replace with comlink
-import { useWorker } from "@koale/useworker";
+import { useWorker } from "@koale/useworker"
 import {
 	type Container,
 	type ContainerChild,
@@ -9,31 +9,31 @@ import {
 	type Sprite,
 	type Text,
 	Ticker,
-} from "pixi.js";
+} from "pixi.js"
 
-import { useInterval } from "ahooks";
-import { useViewport } from "./PixiViewport";
-import getAllCullDistances, { type CullInfo } from "./getAllCullDistances";
-import { hideItem, showItem } from "./pixiUtils";
+import { useInterval } from "ahooks"
+import { useViewport } from "./PixiViewport"
+import getAllCullDistances, { type CullInfo } from "./getAllCullDistances"
+import { hideItem, showItem } from "./pixiUtils"
 
-type ObjectType = Text | Sprite | Container<ContainerChild>;
-let updateNeeded = false;
+type ObjectType = Text | Sprite | Container<ContainerChild>
+let updateNeeded = false
 
 type OverlappingProperties = {
-	name: string;
-	item: ObjectType;
-	priority: number;
+	name: string
+	item: ObjectType
+	priority: number
 	/**
 	 * should we be allowed to change the alpha of this item?
 	 */
-	allowChange?: boolean;
+	allowChange?: boolean
 	/**
 	 * at what zoom level should we hide this item?
 	 */
-	minZoom?: number;
-};
+	minZoom?: number
+}
 
-const objects: OverlappingProperties[] = [];
+const objects: OverlappingProperties[] = []
 
 /**
  * Items with a higher priority (index) will be preferred.
@@ -49,8 +49,8 @@ const priorities = [
 	"spawn",
 	"players",
 	"hover",
-] as const;
-export type PriorityType = (typeof priorities)[number];
+] as const
+export type PriorityType = (typeof priorities)[number]
 
 export default function useHideOverlapping({
 	item,
@@ -60,58 +60,55 @@ export default function useHideOverlapping({
 	minZoom,
 	skipCheck = false,
 }: {
-	item: RefObject<ObjectType | null>;
-	name: string;
-	priority: PriorityType;
-	allowChange?: boolean;
-	minZoom?: number;
-	skipCheck?: boolean;
+	item: RefObject<ObjectType | null>
+	name: string
+	priority: PriorityType
+	allowChange?: boolean
+	minZoom?: number
+	skipCheck?: boolean
 }) {
-	const [refreshSignal, setRefreshSignal] = useState(0);
-	const viewport = useViewport();
+	const [refreshSignal, setRefreshSignal] = useState(0)
+	const viewport = useViewport()
 
 	useEffect(() => {
 		if (skipCheck || !viewport) {
-			return;
+			return
 		}
-		const itemToTrack = item.current;
-		const priorityNumber = priorities.indexOf(priority);
+		const itemToTrack = item.current
+		const priorityNumber = priorities.indexOf(priority)
 		if (!itemToTrack) {
 			// check again in 100ms
 			if (refreshSignal > 10) {
-				console.error("item not found:", name);
-				return;
+				console.error("item not found:", name)
+				return
 			}
-			const timeout = setTimeout(
-				() => setRefreshSignal(refreshSignal + 1),
-				100,
-			);
-			return () => clearTimeout(timeout);
+			const timeout = setTimeout(() => setRefreshSignal(refreshSignal + 1), 100)
+			return () => clearTimeout(timeout)
 		}
 
 		// items with a higher priority should be first in the array
 		const indexToInsert = objects.findIndex(
 			(object) => object.priority < priorityNumber,
-		);
+		)
 		const objectToInsert = {
 			item: itemToTrack,
 			priority: priorityNumber,
 			name,
 			allowChange,
 			minZoom,
-		};
+		}
 		if (indexToInsert === -1) {
-			objects.push(objectToInsert);
+			objects.push(objectToInsert)
 		} else {
-			objects.splice(indexToInsert, 0, objectToInsert);
+			objects.splice(indexToInsert, 0, objectToInsert)
 		}
 
-		updateNeeded = true;
+		updateNeeded = true
 
 		return () => {
-			const indexToRemove = objects.indexOf(objectToInsert);
-			objects.splice(indexToRemove, 1);
-		};
+			const indexToRemove = objects.indexOf(objectToInsert)
+			objects.splice(indexToRemove, 1)
+		}
 	}, [
 		allowChange,
 		item,
@@ -121,7 +118,7 @@ export default function useHideOverlapping({
 		refreshSignal,
 		skipCheck,
 		viewport,
-	]);
+	])
 }
 
 /**
@@ -130,38 +127,38 @@ export default function useHideOverlapping({
  * @returns rectangle of the bounds
  */
 const getWorldBounds = (item: ObjectType): Rectangle => {
-	const x = item.localTransform?.tx ?? 0;
-	const y = item.localTransform?.ty ?? 0;
-	const localBounds = item.getLocalBounds?.() ?? new Rectangle(0, 0, 0, 0);
+	const x = item.localTransform?.tx ?? 0
+	const y = item.localTransform?.ty ?? 0
+	const localBounds = item.getLocalBounds?.() ?? new Rectangle(0, 0, 0, 0)
 	const transformedBounds = new Rectangle(
 		x + localBounds.x,
 		y + localBounds.y,
 		localBounds.width,
 		localBounds.height,
-	);
-	return transformedBounds;
-};
+	)
+	return transformedBounds
+}
 
 export function useUpdateOverlapping() {
-	const viewport = useViewport();
-	const [cullWorker] = useWorker(getAllCullDistances);
-	const [distances, setDistances] = useState<CullInfo[]>([]);
-	const [localObjects, setLocalObjects] = useState<ObjectType[]>([]);
-	const isUpdating = useRef(false);
-	const inFirstTenSeconds = useRef(true);
+	const viewport = useViewport()
+	const [cullWorker] = useWorker(getAllCullDistances)
+	const [distances, setDistances] = useState<CullInfo[]>([])
+	const [localObjects, setLocalObjects] = useState<ObjectType[]>([])
+	const isUpdating = useRef(false)
+	const inFirstTenSeconds = useRef(true)
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
-			inFirstTenSeconds.current = false;
-		}, 10000);
-		return () => clearTimeout(timeout);
-	}, []);
+			inFirstTenSeconds.current = false
+		}, 10000)
+		return () => clearTimeout(timeout)
+	}, [])
 
 	const updateObjects = () => {
-		if (isUpdating.current) return;
-		if (!updateNeeded) return;
-		updateNeeded = false;
-		isUpdating.current = true;
+		if (isUpdating.current) return
+		if (!updateNeeded) return
+		updateNeeded = false
+		isUpdating.current = true
 		const result = cullWorker(
 			objects.map((object, i) => ({
 				bounds: getWorldBounds(object.item),
@@ -169,45 +166,45 @@ export function useUpdateOverlapping() {
 				item: undefined,
 				itemIndex: i,
 			})),
-		);
+		)
 		result
 			.then((newResult) => {
-				if (viewport) viewport.dirty = true;
-				isUpdating.current = false;
-				setDistances(newResult);
-				setLocalObjects(objects.map((obj) => obj.item));
+				if (viewport) viewport.dirty = true
+				isUpdating.current = false
+				setDistances(newResult)
+				setLocalObjects(objects.map((obj) => obj.item))
 			})
-			.catch(console.error);
-	};
+			.catch(console.error)
+	}
 
-	useInterval(updateObjects, 100);
+	useInterval(updateObjects, 100)
 
 	/**
 	 * apply the calculated culling
 	 */
 	useEffect(() => {
 		const update = () => {
-			if (!viewport?.dirty) return;
-			if (viewport.destroyed) return;
-			const zoom = viewport.scale.x;
-			viewport.dirty = false;
+			if (!viewport?.dirty) return
+			if (viewport.destroyed) return
+			const zoom = viewport.scale.x
+			viewport.dirty = false
 			for (const distance of distances) {
 				const {
 					zoom: zoomLevelToCull,
 					target: { itemIndex, allowChange },
-				} = distance;
-				const item = localObjects[itemIndex];
-				if (!allowChange || !item) continue;
+				} = distance
+				const item = localObjects[itemIndex]
+				if (!allowChange || !item) continue
 				if (zoom < zoomLevelToCull) {
-					hideItem(item);
+					hideItem(item)
 				} else {
-					showItem(item);
+					showItem(item)
 				}
 			}
-		};
-		Ticker.shared.add(update);
+		}
+		Ticker.shared.add(update)
 		return () => {
-			Ticker.shared.remove(update);
-		};
-	}, [distances, localObjects, viewport]);
+			Ticker.shared.remove(update)
+		}
+	}, [distances, localObjects, viewport])
 }

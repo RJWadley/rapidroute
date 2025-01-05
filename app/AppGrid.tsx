@@ -1,18 +1,19 @@
-"use client";
+"use client"
 
-import { LayoutGroup, MotionConfig, motion } from "motion/react";
-import { styled } from "restyle";
-import RouteOptions from "./components/RouteOptions";
-import { SearchBox } from "./components/SearchBox";
-import SelectedRoute from "./components/SelectedRoute";
-import type { CompressedPlace } from "./utils/compressedPlaces";
+import { LayoutGroup, MotionConfig, motion } from "motion/react"
+import { styled } from "restyle"
+import RouteOptions from "./components/RouteOptions"
+import { SearchBox } from "./components/SearchBox"
+import SelectedRoute from "./components/SelectedRoute"
+import type { CompressedPlace } from "./utils/compressedPlaces"
 
-import "./global.css";
-import { useSearchParamState } from "./utils/useSearchParamState";
+import "./global.css"
+import { useSearchParamState } from "./utils/useSearchParamState"
+import { useLocalDark } from "./utils/locals"
 
 export default function AppGrid({ places }: { places: CompressedPlace[] }) {
-	const [isometric, setIsometric] = useSearchParamState("isometric");
-	const [dark, setDark] = useSearchParamState("dark");
+	const [isometric, setIsometric] = useSearchParamState("isometric")
+	const [{ preference }, setDarkPreference] = useLocalDark()
 
 	return (
 		<MotionConfig reducedMotion="user">
@@ -32,7 +33,12 @@ export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 						</button>
 						<button
 							type="button"
-							onClick={() => setDark(dark ? undefined : "true")}
+							onClick={() => {
+								// dark -> light -> system
+								if (preference === "dark") setDarkPreference("light")
+								else if (preference === "light") setDarkPreference("system")
+								else setDarkPreference("dark")
+							}}
 						>
 							toggle dark
 						</button>
@@ -40,7 +46,7 @@ export default function AppGrid({ places }: { places: CompressedPlace[] }) {
 				</Columns>
 			</LayoutGroup>
 		</MotionConfig>
-	);
+	)
 }
 
 const Columns = styled(motion.div, {
@@ -52,7 +58,7 @@ const Columns = styled(motion.div, {
 	pointerEvents: "none",
 	display: "grid",
 	gridTemplateColumns: "400px 400px 1fr",
-});
+})
 
 const Column = styled(motion.div, {
 	overflow: "clip auto",
@@ -68,4 +74,4 @@ const Column = styled(motion.div, {
 	"& > *": {
 		pointerEvents: "auto",
 	},
-});
+})

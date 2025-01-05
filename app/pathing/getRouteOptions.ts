@@ -4,12 +4,12 @@ import type {
 	Flight,
 	Place,
 	SpawnWarp,
-} from "app/data";
-import type { Coordinate } from "app/data/coordinates";
-import { getDistance } from "app/utils/getDistance";
-import { getRouteTime } from "./getRouteTime";
+} from "app/data"
+import type { Coordinate } from "app/data/coordinates"
+import { getDistance } from "app/utils/getDistance"
+import { getRouteTime } from "./getRouteTime"
 
-type Route = Flight | ConnectionLine | { type: "Walk"; distance: number };
+type Route = Flight | ConnectionLine | { type: "Walk"; distance: number }
 
 /**
  * given two places, get all possible routes between them
@@ -20,17 +20,17 @@ export const getRouteOptions = (
 	to: Place | Coordinate,
 	data: DataType,
 ) => {
-	const { flights, connectionLines } = data;
+	const { flights, connectionLines } = data
 
 	// todo excluded route modes
-	const options: { time: number; route: Route | SpawnWarp }[] = [];
+	const options: { time: number; route: Route | SpawnWarp }[] = []
 
 	/* warps */
 	if (to.type === "SpawnWarp") {
 		options.push({
 			time: getRouteTime({ type: "SpawnWarp" }),
 			route: to,
-		});
+		})
 	}
 	if (to.type === "Town" && to.name === "Central City") {
 		options.push({
@@ -46,13 +46,13 @@ export const getRouteOptions = (
 				world: "New",
 				coordinates: [0, 0],
 			} satisfies SpawnWarp,
-		});
+		})
 	}
 
 	/* flights */
 	if ("gates" in from && "gates" in to) {
-		const fromGates = from.gates;
-		const toGates = to.gates;
+		const fromGates = from.gates
+		const toGates = to.gates
 
 		const applicableFlights = flights.list
 			.filter(
@@ -64,9 +64,9 @@ export const getRouteOptions = (
 			.map((flight) => ({
 				time: getRouteTime({ type: "AirFlight" }),
 				route: flight,
-			}));
+			}))
 
-		options.push(...applicableFlights);
+		options.push(...applicableFlights)
 	}
 
 	/* other connections */
@@ -77,9 +77,9 @@ export const getRouteOptions = (
 			.map((c) => ({
 				time: getRouteTime({ type: c?.type }),
 				route: c,
-			}));
+			}))
 
-		if (allConnections) options.push(...allConnections);
+		if (allConnections) options.push(...allConnections)
 	}
 
 	/* walking */
@@ -95,13 +95,13 @@ export const getRouteOptions = (
 							to.coordinates[1],
 						),
 					}
-				: null;
+				: null
 
 	if (walkOption?.distance && options.length === 0)
 		options.push({
 			time: getRouteTime({ type: "Walk", distance: walkOption.distance }),
 			route: { type: "Walk", distance: walkOption.distance },
-		});
+		})
 
-	return options.map((o) => o.route);
-};
+	return options.map((o) => o.route)
+}

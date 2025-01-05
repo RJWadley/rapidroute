@@ -1,39 +1,38 @@
-import { extend } from "@pixi/react";
-import { useSearchParamState } from "app/utils/useSearchParamState";
-import { Container } from "pixi.js";
-import invertLightness from "../../../utils/color";
-import { SCALE_FACTOR } from "../pixiUtils";
-import type { ColoredMarker } from "./MRTStops";
-import MRTStops from "./MRTStops";
-import MarkerLines from "./MarkerLines";
-import { type MarkersResponse, isMRTLine } from "./dynmapType";
+import { extend } from "@pixi/react"
+import { useSearchParamState } from "app/utils/useSearchParamState"
+import { Container } from "pixi.js"
+import invertLightness from "../../../utils/color"
+import { SCALE_FACTOR } from "../pixiUtils"
+import type { ColoredMarker } from "./MRTStops"
+import MRTStops from "./MRTStops"
+import MarkerLines from "./MarkerLines"
+import { type MarkersResponse, isMRTLine } from "./dynmapType"
 
-extend({ Container });
+extend({ Container })
 
 export default function DynmapMarkers({
 	initialMarkers,
 }: {
-	initialMarkers: MarkersResponse;
+	initialMarkers: MarkersResponse
 }) {
-	const markerSets = initialMarkers.sets;
+	const markerSets = initialMarkers.sets
 
 	const allStops: ColoredMarker[] = Object.keys(markerSets).flatMap((name) => {
 		if (isMRTLine(name)) {
 			return Object.values(markerSets[name].markers).map((marker) => {
-				const color =
-					Object.values(markerSets[name].lines)[0]?.color ?? "black";
-				const invertedColor = invertLightness(color);
+				const color = Object.values(markerSets[name].lines)[0]?.color ?? "black"
+				const invertedColor = invertLightness(color)
 				return {
 					marker,
 					color,
 					invertedColor,
-				};
-			});
+				}
+			})
 		}
-		return [];
-	});
+		return []
+	})
 
-	const [isometric] = useSearchParamState("isometric");
+	const [isometric] = useSearchParamState("isometric")
 
 	return (
 		<pixiContainer
@@ -47,11 +46,11 @@ export default function DynmapMarkers({
 								key={name}
 								lines={Object.values(markerSets[name].lines)}
 							/>
-						);
-					return null;
+						)
+					return null
 				})}
 				<MRTStops stops={allStops} />
 			</pixiContainer>
 		</pixiContainer>
-	);
+	)
 }

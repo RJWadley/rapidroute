@@ -1,44 +1,44 @@
-import { useSearchParamState } from "app/utils/useSearchParamState";
-import { startTransition, useMemo, useRef, useState } from "react";
-import useIsMounted from "../../../utils/useIsMounted";
-import { useViewport, useViewportMoved, worldSize } from "../PixiViewport";
-import ImageTile from "./ImageTile";
+import { useSearchParamState } from "app/utils/useSearchParamState"
+import { startTransition, useMemo, useRef, useState } from "react"
+import useIsMounted from "../../../utils/useIsMounted"
+import { useViewport, useViewportMoved, worldSize } from "../PixiViewport"
+import ImageTile from "./ImageTile"
 
 interface SatelliteProps {
-	zoomLevel: number;
-	dynamic?: boolean;
+	zoomLevel: number
+	dynamic?: boolean
 }
 
 interface WorldValues {
-	width: number;
-	height: number;
-	x: number;
-	y: number;
+	width: number
+	height: number
+	x: number
+	y: number
 }
 
 export default function SatelliteLayer({
 	zoomLevel,
 	dynamic = false,
 }: SatelliteProps) {
-	const viewport = useViewport();
-	const clipSize = worldSize * 1.4;
-	const halfSize = clipSize / 2;
+	const viewport = useViewport()
+	const clipSize = worldSize * 1.4
+	const halfSize = clipSize / 2
 	const [viewportBounds, setViewportBounds] = useState<WorldValues>({
 		width: dynamic ? 200 : clipSize,
 		height: dynamic ? 200 : clipSize,
 		x: dynamic ? -100 : -halfSize,
 		y: dynamic ? -100 : -halfSize,
-	});
+	})
 
 	/**
 	 * track the world values so we can update the tiles when the world changes
 	 */
-	const cooldown = useRef(false);
-	const pending = useRef(false);
-	const isMounted = useIsMounted();
+	const cooldown = useRef(false)
+	const pending = useRef(false)
+	const isMounted = useIsMounted()
 	const onChanged = () => {
 		if (viewport && dynamic && !cooldown.current) {
-			cooldown.current = true;
+			cooldown.current = true
 			startTransition(() => {
 				if (isMounted.current)
 					setViewportBounds({
@@ -46,39 +46,39 @@ export default function SatelliteLayer({
 						height: viewport.screenHeightInWorldPixels,
 						x: viewport.left,
 						y: viewport.top,
-					});
-			});
+					})
+			})
 
 			setTimeout(
 				() => {
-					cooldown.current = false;
-					if (pending.current) onChanged();
-					pending.current = false;
+					cooldown.current = false
+					if (pending.current) onChanged()
+					pending.current = false
 				},
 				1000 + 1000 * Math.random(),
-			);
+			)
 		} else if (dynamic) {
-			pending.current = true;
+			pending.current = true
 		}
-	};
-	useViewportMoved(onChanged);
+	}
+	useViewportMoved(onChanged)
 
-	const tileWidth = 2 ** (8 - zoomLevel) * 32;
-	const tilesVertical = Math.ceil(viewportBounds.height / tileWidth) + 1;
-	const tilesHorizontal = Math.ceil(viewportBounds.width / tileWidth) + 1;
+	const tileWidth = 2 ** (8 - zoomLevel) * 32
+	const tilesVertical = Math.ceil(viewportBounds.height / tileWidth) + 1
+	const tilesHorizontal = Math.ceil(viewportBounds.width / tileWidth) + 1
 
-	const startingX = Math.floor(viewportBounds.x / tileWidth);
-	const startingY = Math.floor(viewportBounds.y / tileWidth);
+	const startingX = Math.floor(viewportBounds.x / tileWidth)
+	const startingY = Math.floor(viewportBounds.y / tileWidth)
 
-	const [isometric] = useSearchParamState("isometric");
+	const [isometric] = useSearchParamState("isometric")
 
 	const tiles = useMemo(
 		() =>
 			create2DArray(tilesVertical, tilesHorizontal, (row, column) => {
-				const tileX = startingX + column;
-				const tileY = startingY + row;
+				const tileX = startingX + column
+				const tileY = startingY + row
 
-				if (Number.isNaN(tileX) || Number.isNaN(tileY)) return null;
+				if (Number.isNaN(tileX) || Number.isNaN(tileY)) return null
 
 				return (
 					<ImageTile
@@ -87,7 +87,7 @@ export default function SatelliteLayer({
 						y={tileY * tileWidth}
 						zoomLevel={zoomLevel}
 					/>
-				);
+				)
 			}),
 		[
 			isometric,
@@ -98,9 +98,9 @@ export default function SatelliteLayer({
 			tilesVertical,
 			zoomLevel,
 		],
-	);
+	)
 
-	return <>{tiles}</>;
+	return <>{tiles}</>
 }
 
 const create2DArray = <T,>(
@@ -108,9 +108,9 @@ const create2DArray = <T,>(
 	columns: number,
 	fill: (row: number, column: number) => T,
 ) => {
-	if (Number.isNaN(rows) || Number.isNaN(columns)) return [];
+	if (Number.isNaN(rows) || Number.isNaN(columns)) return []
 	const array = Array.from({ length: rows }, (_, row) =>
 		Array.from({ length: columns }, (__, column) => fill(row, column)),
-	);
-	return array.flat();
-};
+	)
+	return array.flat()
+}

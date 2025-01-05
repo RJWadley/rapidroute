@@ -14,7 +14,7 @@
 			"correctness": { "noUnusedImports": "warn" }
 		}
 	},
-	"javascript": { "formatter": { "enabled": true } },
+	"javascript": { "formatter": { "enabled": true, "semicolons": "asNeeded" } },
 	"files": { "ignore": ["pnpm-lock.yaml", "gatelogue"] },
 	"vcs": {
 		"enabled": true,

@@ -1,6 +1,6 @@
-import type { CompressedPlace } from "app/utils/compressedPlaces";
-import type { MarkersResponse } from "./Dynmap/dynmapType";
-import MapClient from "./MapClient";
+import type { CompressedPlace } from "app/utils/compressedPlaces"
+import type { MarkersResponse } from "./Dynmap/dynmapType"
+import MapClient from "./MapClient"
 
 export default async function MinecraftMap({
 	compressedPlaces,
@@ -11,12 +11,12 @@ export default async function MinecraftMap({
 		).then((res) => res.json() as Promise<MarkersResponse>),
 		// getCities(),
 		null,
-	]);
+	])
 
 	return (
 		<MapClient
 			initialMarkers={initialMarkers}
 			compressedPlaces={compressedPlaces}
 		/>
-	);
+	)
 }

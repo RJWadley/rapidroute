@@ -1,6 +1,6 @@
-import { z } from "zod";
-import BritishData from "../../gatelogue/data_no_sources.json";
-import "server-only";
+import { z } from "zod"
+import BritishData from "../../gatelogue/data_no_sources.json"
+import "server-only"
 
 const RawData = JSON.parse(
 	JSON.stringify(BritishData)
@@ -9,7 +9,7 @@ const RawData = JSON.parse(
 		// easier to work with
 		.replaceAll("warp plane", "warpPlane")
 		.replaceAll("warp_type", "mode"),
-);
+)
 
 // all this schema is primarily to verify the data is of the type I'm expecting,
 // and helps me to understand the data structure better and its relationships
@@ -21,7 +21,7 @@ const optional = <T>(schema: z.ZodType<T>) =>
 	schema
 		.nullable()
 		.optional()
-		.transform((v) => (v === null ? undefined : v));
+		.transform((v) => (v === null ? undefined : v))
 
 /**
  * each node has a unique identifier
@@ -32,12 +32,12 @@ const id = z
 	.refine((v) => v.toString().match(/^\d+$/))
 	// it doesn't matter if we choose a string or a number, as long as it's the same everywhere
 	// because object keys serialize to strings, I'm going with strings always
-	.transform((v) => (typeof v === "number" ? v.toString() : v));
+	.transform((v) => (typeof v === "number" ? v.toString() : v))
 
-const requiredString = z.string().min(1);
+const requiredString = z.string().min(1)
 const optionalString = optional(
 	z.string().transform((v) => (v === "" ? null : v)),
-);
+)
 
 /**
  * data sources, in order
@@ -46,12 +46,12 @@ const source = requiredString
 	.array()
 	.min(1)
 	// we don't consume these sources
-	.transform((v) => undefined);
+	.transform((v) => undefined)
 
 /**
  * coordinates of a node in its respective world, if available
  */
-const coordinates = optional(z.tuple([z.number(), z.number()]));
+const coordinates = optional(z.tuple([z.number(), z.number()]))
 
 /**
  * nearby nodes, with distances
@@ -72,7 +72,7 @@ const proximity = z.record(
 				.transform((v) => Math.max(v, 1)),
 		),
 	}),
-);
+)
 
 /**
  * airports have unique codes
@@ -82,16 +82,16 @@ const uniqueCode = requiredString.refine((v) =>
 	{
 		const matches =
 			// @ts-expect-error
-			Object.values(RawData.nodes).filter((node) => node.code === v);
+			Object.values(RawData.nodes).filter((node) => node.code === v)
 
-		if (matches.length === 1) return true;
+		if (matches.length === 1) return true
 
-		console.warn(`code ${v} is not unique`, matches);
-		return false;
+		console.warn(`code ${v} is not unique`, matches)
+		return false
 	},
-);
+)
 
-const world = optional(z.enum(["New", "Old", "Space"]));
+const world = optional(z.enum(["New", "Old", "Space"]))
 
 const connections = z.record(
 	id,
@@ -106,9 +106,9 @@ const connections = z.record(
 			}),
 		})
 		.array(),
-);
+)
 
-const shared_facility = id.array().transform((v) => undefined);
+const shared_facility = id.array().transform((v) => undefined)
 
 const schema = z
 	.strictObject({
@@ -312,15 +312,15 @@ const schema = z
 		timestamp: requiredString,
 		version: z.number(),
 	})
-	.readonly();
+	.readonly()
 
 // const byteSize = (str: string) => new Blob([str]).size
 
 // globalThis.allowNull = true
 // const dataWithNull = schema.parse(RawData)
 // globalThis.allowNull = false
-const data = schema.parse(RawData);
-Object.freeze(data);
+const data = schema.parse(RawData)
+Object.freeze(data)
 
 // console.info("data is valid")
 
@@ -333,4 +333,4 @@ Object.freeze(data);
 // 	`parsing with null removal saves ${startingSize - sizeWithoutNull} KB (${sizeWithoutNull - sizeWithNull} KB)`,
 // )
 
-export { data };
+export { data }

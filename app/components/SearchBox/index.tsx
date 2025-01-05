@@ -1,38 +1,38 @@
-"use client";
+"use client"
 
-import { useClickAway } from "ahooks";
-import type { CompressedPlace } from "app/utils/compressedPlaces";
-import { useOnlinePlayers } from "app/utils/onlinePlayers";
-import { findClosestPlace } from "app/utils/search";
-import { useSearchParamState } from "app/utils/useSearchParamState";
-import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState } from "react";
-import { IoSearch } from "react-icons/io5";
-import { styled } from "restyle";
-import Box from "../Box";
-import { useCamera } from "../MapMovement";
-import { TextArea } from "../TextArea";
-import WikiArticle from "../Wiki/WikiArticle";
-import { getTextboxName } from "./getTextboxName";
-import useSearchBox from "./useSearchBox";
+import { useClickAway } from "ahooks"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
+import { useOnlinePlayers } from "app/utils/onlinePlayers"
+import { findClosestPlace } from "app/utils/search"
+import { useSearchParamState } from "app/utils/useSearchParamState"
+import { AnimatePresence, motion } from "motion/react"
+import { useRef, useState } from "react"
+import { IoSearch } from "react-icons/io5"
+import { styled } from "restyle"
+import Box from "../Box"
+import { useCamera } from "../MapMovement"
+import { TextArea } from "../TextArea"
+import WikiArticle from "../Wiki/WikiArticle"
+import { getTextboxName } from "./getTextboxName"
+import useSearchBox from "./useSearchBox"
 
 export function SearchBox({
 	places,
 }: {
-	places: CompressedPlace[];
+	places: CompressedPlace[]
 }) {
-	const wrapper = useRef<HTMLDivElement>(null);
-	const navigateRef = useRef<HTMLButtonElement>(null);
-	const fromFieldRef = useRef<HTMLTextAreaElement>(null);
-	const { moveCamera } = useCamera();
+	const wrapper = useRef<HTMLDivElement>(null)
+	const navigateRef = useRef<HTMLButtonElement>(null)
+	const fromFieldRef = useRef<HTMLTextAreaElement>(null)
+	const { moveCamera } = useCamera()
 
-	const [from, setFrom] = useSearchParamState("from");
-	const [to, setTo] = useSearchParamState("to");
-	const [navMode, setNavMode] = useState(Boolean(from));
-	const { data: players } = useOnlinePlayers();
+	const [from, setFrom] = useSearchParamState("from")
+	const [to, setTo] = useSearchParamState("to")
+	const [navMode, setNavMode] = useState(Boolean(from))
+	const { data: players } = useOnlinePlayers()
 
-	const fromPlace = players?.[from ?? ""] ?? findClosestPlace(from, places);
-	const toPlace = players?.[to ?? ""] ?? findClosestPlace(to, places);
+	const fromPlace = players?.[from ?? ""] ?? findClosestPlace(from, places)
+	const toPlace = players?.[to ?? ""] ?? findClosestPlace(to, places)
 
 	const {
 		inputProps: fromProps,
@@ -43,9 +43,9 @@ export function SearchBox({
 		initialPlaces: places,
 		initiallySelectedPlace: fromPlace,
 		onItemSelected: (item) => {
-			setFrom(item?.id);
+			setFrom(item?.id)
 		},
-	});
+	})
 	const {
 		inputProps: toProps,
 		onFocusLost: toFocusLost,
@@ -55,42 +55,42 @@ export function SearchBox({
 		initialPlaces: places,
 		initiallySelectedPlace: toPlace,
 		onItemSelected: (item, explicitly) => {
-			setTo(item?.id);
+			setTo(item?.id)
 
 			if (item?.coordinates && explicitly)
 				moveCamera({
 					x: item.coordinates[0] - 150,
 					z: item.coordinates[1],
 					worldScreenWidth: 1500,
-				});
+				})
 		},
 		onBlur: () => {
 			setTimeout(() => {
 				// TODO react 19 fix broken ref
-				navigateRef.current?.focus();
+				navigateRef.current?.focus()
 				document
 					.querySelector<HTMLButtonElement>("button#navigateButton")
-					?.focus();
-			});
+					?.focus()
+			})
 		},
-	});
+	})
 
-	useClickAway(fromFocusLost, wrapper);
-	useClickAway(toFocusLost, wrapper);
+	useClickAway(fromFocusLost, wrapper)
+	useClickAway(toFocusLost, wrapper)
 
-	const hasRoutes = Boolean(from);
-	const hasFromResults = Boolean(fromResults?.[0]);
-	const hasSearchResults = Boolean(fromResults?.[0] || toResults?.[0]);
-	const allIsBlank = !from && !to && !hasSearchResults;
+	const hasRoutes = Boolean(from)
+	const hasFromResults = Boolean(fromResults?.[0])
+	const hasSearchResults = Boolean(fromResults?.[0] || toResults?.[0])
+	const allIsBlank = !from && !to && !hasSearchResults
 
-	const allowChildren = !hasRoutes && !hasSearchResults && !allIsBlank;
+	const allowChildren = !hasRoutes && !hasSearchResults && !allIsBlank
 
 	const layout = {
 		layout: "position",
 		initial: { opacity: 0 },
 		animate: { opacity: 1 },
 		exit: { opacity: 0 },
-	} as const;
+	} as const
 
 	return (
 		<Box>
@@ -102,8 +102,8 @@ export function SearchBox({
 								<TextArea
 									{...fromProps}
 									onFocus={(e) => {
-										toFocusLost();
-										fromProps.onFocus(e);
+										toFocusLost()
+										fromProps.onFocus(e)
 									}}
 									placeholder="From"
 									ref={fromFieldRef}
@@ -114,8 +114,8 @@ export function SearchBox({
 								layout="position"
 								type="button"
 								onClick={() => {
-									clearFrom();
-									setNavMode(false);
+									clearFrom()
+									setNavMode(false)
 								}}
 							>
 								Clear
@@ -127,10 +127,10 @@ export function SearchBox({
 							key="navigate"
 							type="button"
 							onClick={() => {
-								setNavMode(true);
+								setNavMode(true)
 								setTimeout(() => {
-									fromFieldRef.current?.focus();
-								});
+									fromFieldRef.current?.focus()
+								})
 							}}
 							ref={navigateRef}
 							{...layout}
@@ -147,8 +147,8 @@ export function SearchBox({
 						<TextArea
 							{...toProps}
 							onFocus={(e) => {
-								fromFocusLost();
-								toProps.onFocus(e);
+								fromFocusLost()
+								toProps.onFocus(e)
 							}}
 							placeholder="to"
 						/>
@@ -169,20 +169,20 @@ export function SearchBox({
 									ref={
 										result.highlighted
 											? (el) => {
-													const bounds = el?.getBoundingClientRect();
-													if (!bounds) return;
+													const bounds = el?.getBoundingClientRect()
+													if (!bounds) return
 
 													const isInView =
 														bounds.top >= 0 &&
 														bounds.bottom <=
 															(window.innerHeight ||
-																document.documentElement.clientHeight);
-													if (isInView) return;
+																document.documentElement.clientHeight)
+													if (isInView) return
 
 													el?.scrollIntoView({
 														behavior: "smooth",
 														block: "nearest",
-													});
+													})
 												}
 											: null
 									}
@@ -202,14 +202,14 @@ export function SearchBox({
 				</AnimatePresence>
 			</div>
 		</Box>
-	);
+	)
 }
 
 const SearchIcon = styled(IoSearch, {
 	width: "24px",
 	height: "24px",
 	border: "1px solid blue",
-});
+})
 
 const PrimarySearch = styled(motion.label, {
 	border: "1px solid blue",
@@ -217,16 +217,16 @@ const PrimarySearch = styled(motion.label, {
 	display: "grid",
 	gridTemplateColumns: "auto 1fr auto",
 	placeItems: "center start",
-});
+})
 
 const Results = styled(motion.div, {
 	border: "1px solid orange",
-});
+})
 
 const Result = styled("button", {
 	display: "block",
 	scrollMargin: "200px",
-});
+})
 
 const SecondarySearch = styled(motion.label, {
 	border: "1px solid purple",
@@ -234,8 +234,8 @@ const SecondarySearch = styled(motion.label, {
 	display: "grid",
 	gridTemplateColumns: "1fr auto",
 	placeItems: "center start",
-});
+})
 
 const NavigateTrigger = styled(motion.button, {
 	border: "1px solid red",
-});
+})

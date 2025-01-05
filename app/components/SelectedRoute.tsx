@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import type { Place } from "app/data";
-import type { Coordinate } from "app/data/coordinates";
-import Box from "./Box";
-import { useRouting } from "./RoutingContext";
+import type { Place } from "app/data"
+import type { Coordinate } from "app/data/coordinates"
+import Box from "./Box"
+import { useRouting } from "./Providers/RoutingContext"
 
 const getPlaceDisplay = (place: Place | Coordinate) => {
-	if (place.type === "Coordinate") return place.id;
+	if (place.type === "Coordinate") return place.id
 	const code =
 		"code" in place
 			? place.code
 			: "codes" in place
 				? place.codes?.join(", ")
-				: null;
-	const name = place.name || "Unnamed";
-	return code ? `${code} - ${name} ${place.type}` : `${place.type} ${name}`;
-};
+				: null
+	const name = place.name || "Unnamed"
+	return code ? `${code} - ${name} ${place.type}` : `${place.type} ${name}`
+}
 
 export default function SelectedRoute() {
-	const { routes, preferredRoute } = useRouting();
+	const { routes, preferredRoute } = useRouting()
 
-	const index = preferredRoute ?? 0;
+	const index = preferredRoute ?? 0
 
-	const result = routes?.[index];
+	const result = routes?.[index]
 
 	return (
 		<Box isVisible={!!result}>
@@ -63,5 +63,5 @@ export default function SelectedRoute() {
 				</>
 			)}
 		</Box>
-	);
+	)
 }

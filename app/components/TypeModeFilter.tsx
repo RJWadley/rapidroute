@@ -1,7 +1,7 @@
-import { useRouting } from "./RoutingContext";
+import { useRouting } from "./Providers/RoutingContext"
 
 export default function TypeModeFilter() {
-	const { excludedRoutes, updateExcludedRoutes } = useRouting();
+	const { excludedRoutes, updateExcludedRoutes } = useRouting()
 	return (
 		<div>
 			configure modes:
@@ -23,5 +23,5 @@ export default function TypeModeFilter() {
 				)),
 			)}
 		</div>
-	);
+	)
 }

@@ -1,52 +1,52 @@
-import { useDeepCompareMemo } from "use-deep-compare";
-import { getDistance } from "../../../utils/getDistance";
-import MRTStop from "./MRTStop";
-import type { Marker } from "./dynmapType";
+import { useDeepCompareMemo } from "use-deep-compare"
+import { getDistance } from "../../../utils/getDistance"
+import MRTStop from "./MRTStop"
+import type { Marker } from "./dynmapType"
 
 export interface ColoredMarker {
-	marker: Marker;
-	color: string;
-	invertedColor: string;
+	marker: Marker
+	color: string
+	invertedColor: string
 }
 
 interface Stop {
-	x: number;
-	y: number;
-	z: number;
-	markers: Marker[];
-	singleColors: string[];
-	combinedColors?: string[];
+	x: number
+	y: number
+	z: number
+	markers: Marker[]
+	singleColors: string[]
+	combinedColors?: string[]
 }
 
 interface MRTStopsProps {
-	stops: ColoredMarker[];
+	stops: ColoredMarker[]
 }
 
 export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 	const stops = useDeepCompareMemo(() => {
-		const newStops: Stop[] = [];
+		const newStops: Stop[] = []
 
 		for (const newStop of coloredMarkers) {
 			// if the stop is within a distance of an existing stop, add it to that stop
-			const maxDistance = 20;
+			const maxDistance = 20
 			const existingStop = newStops.find((stop) => {
 				return (
 					getDistance(stop.x, stop.z, newStop.marker.x, newStop.marker.z) <
 					maxDistance
-				);
-			});
+				)
+			})
 			if (existingStop) {
-				existingStop.markers.push(newStop.marker);
+				existingStop.markers.push(newStop.marker)
 				existingStop.x =
 					existingStop.markers.reduce((sum, marker) => sum + marker.x, 0) /
-					existingStop.markers.length;
+					existingStop.markers.length
 				existingStop.z =
 					existingStop.markers.reduce((sum, marker) => sum + marker.z, 0) /
-					existingStop.markers.length;
+					existingStop.markers.length
 				existingStop.combinedColors ||= [
 					existingStop.singleColors[0] ?? "black",
-				];
-				existingStop.combinedColors.push(newStop.color);
+				]
+				existingStop.combinedColors.push(newStop.color)
 			} else {
 				newStops.push({
 					x: newStop.marker.x,
@@ -54,17 +54,17 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 					z: newStop.marker.z,
 					markers: [newStop.marker],
 					singleColors: [newStop.color, newStop.invertedColor],
-				});
+				})
 			}
 		}
 
-		return newStops;
-	}, [coloredMarkers]);
+		return newStops
+	}, [coloredMarkers])
 
 	return (
 		<>
 			{stops.map((stop) => {
-				const { combinedColors, singleColors, markers, x, y, z } = stop;
+				const { combinedColors, singleColors, markers, x, y, z } = stop
 				return (
 					<MRTStop
 						key={`${x}${z}`}
@@ -74,23 +74,23 @@ export default function MRTStops({ stops: coloredMarkers }: MRTStopsProps) {
 						z={z}
 						name={getStopName(markers)}
 					/>
-				);
+				)
 			})}
 		</>
-	);
+	)
 }
 
 const getStopName = (markers: Marker[]) => {
-	const namedRegex = /^([\S\s]+)\((\w\w?\d*)\)$/;
-	const unnamedRegex = /^(\w\w?\d+) Station$/;
+	const namedRegex = /^([\S\s]+)\((\w\w?\d*)\)$/
+	const unnamedRegex = /^(\w\w?\d+) Station$/
 	if (markers.every((marker) => namedRegex.test(marker.label))) {
-		const stationName = markers[0]?.label.match(namedRegex)?.[1]?.trim();
+		const stationName = markers[0]?.label.match(namedRegex)?.[1]?.trim()
 		const stationCodes = markers.map(
 			(marker) => marker.label.match(namedRegex)?.[2],
-		);
+		)
 
 		if (stationName && stationCodes.every(Boolean))
-			return `${stationName}\n${stationCodes.join(" - ")}`;
+			return `${stationName}\n${stationCodes.join(" - ")}`
 	}
 
 	if (
@@ -99,10 +99,10 @@ const getStopName = (markers: Marker[]) => {
 	) {
 		const stationCodes = markers.map(
 			(marker) => marker.label.match(unnamedRegex)?.[1],
-		);
+		)
 
-		if (stationCodes.every(Boolean)) return `${stationCodes.join(" - ")}`;
+		if (stationCodes.every(Boolean)) return `${stationCodes.join(" - ")}`
 	}
 
-	return markers.map((marker) => marker.label).join("\n");
-};
+	return markers.map((marker) => marker.label).join("\n")
+}
