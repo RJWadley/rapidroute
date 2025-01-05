@@ -1,10 +1,10 @@
-import type { CompressedPlace } from "app/utils/compressedPlaces"
-import CityMarker from "./CityMarker"
+import type { CompressedPlace } from "app/utils/compressedPlaces";
+import CityMarker from "./CityMarker";
 
 export default function Cities({
 	places,
 }: {
-	places: CompressedPlace[]
+	places: CompressedPlace[];
 }) {
 	return places.map((place) =>
 		place.type === "Town" && place.coordinates ? (
@@ -19,5 +19,5 @@ export default function Cities({
 				}
 			/>
 		) : null,
-	)
+	);
 }

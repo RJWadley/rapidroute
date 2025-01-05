@@ -1,20 +1,20 @@
-import { extend, useAssets } from "@pixi/react"
-import { useViewport, useViewportMoved } from "./PixiViewport"
+import { extend, useAssets } from "@pixi/react";
+import { useViewport, useViewportMoved } from "./PixiViewport";
 
-import { Container, Point, Sprite, Text, type Texture } from "pixi.js"
-import type { OnlinePlayer } from "app/utils/onlinePlayers"
-import { useRef, useState } from "react"
-import { regular, regularHover } from "./textStyles"
-import { skewWorldCoordinate } from "./pixiUtils"
-import { useSearchParamState } from "app/utils/useSearchParamState"
+import type { OnlinePlayer } from "app/utils/onlinePlayers";
+import { useSearchParamState } from "app/utils/useSearchParamState";
+import { Container, Point, Sprite, Text, type Texture } from "pixi.js";
+import { useRef, useState } from "react";
+import { skewWorldCoordinate } from "./pixiUtils";
+import { regular, regularHover } from "./textStyles";
 
-extend({ Sprite, Text, Container })
+extend({ Sprite, Text, Container });
 
 export default function MapPlayer({ player }: { player: OnlinePlayer }) {
-	const viewport = useViewport()
-	const headRef = useRef<Sprite>(null)
-	const textRef = useRef<Text>(null)
-	const [hover, setHover] = useState(false)
+	const viewport = useViewport();
+	const headRef = useRef<Sprite>(null);
+	const textRef = useRef<Text>(null);
+	const [hover, setHover] = useState(false);
 
 	const {
 		assets: [head],
@@ -23,59 +23,59 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 		{
 			src: `https://mc-heads.net/avatar/${player.name}.png`,
 		},
-	])
+	]);
 
 	/**
 	 * update the head size and name offset
 	 */
 	const updatePlayerHeadSize = () => {
-		if (!viewport) return
-		if (!headRef.current) return null
-		if (!textRef.current) return null
+		if (!viewport) return;
+		if (!headRef.current) return null;
+		if (!textRef.current) return null;
 
 		const blocksPerPixel =
-			viewport.screenWidthInWorldPixels / viewport.screenWidth
-		const preferredSize = 20 * blocksPerPixel
-		const size = Math.max(8, preferredSize)
-		headRef.current.width = size
-		headRef.current.height = size
+			viewport.screenWidthInWorldPixels / viewport.screenWidth;
+		const preferredSize = 20 * blocksPerPixel;
+		const size = Math.max(8, preferredSize);
+		headRef.current.width = size;
+		headRef.current.height = size;
 		textRef.current.scale = new Point(
 			1 / viewport.scale.x,
 			1 / viewport.scale.y,
-		)
-		const newAdjustment = (8 - Math.min(8, preferredSize)) * 0.2
-		textRef.current.anchor.y = 1.5 + newAdjustment ** 3
-	}
-	useViewportMoved(updatePlayerHeadSize)
+		);
+		const newAdjustment = (8 - Math.min(8, preferredSize)) * 0.2;
+		textRef.current.anchor.y = 1.5 + newAdjustment ** 3;
+	};
+	useViewportMoved(updatePlayerHeadSize);
 
 	const pointerIn = () => {
-		setHover(true)
-	}
+		setHover(true);
+	};
 	const pointerOut = () => {
-		setHover(false)
-	}
+		setHover(false);
+	};
 
-	const [isometric] = useSearchParamState("isometric")
+	const [isometric] = useSearchParamState("isometric");
 	const skewed = isometric
 		? skewWorldCoordinate(player.x, player.y, player.z)
-		: { x: player.x, z: player.z }
+		: { x: player.x, z: player.z };
 
-	if (!isSuccess) return null
+	if (!isSuccess) return null;
 	return (
-		<container
+		<pixiContainer
 			eventMode="static"
 			cursor="pointer"
 			onPointerEnter={pointerIn}
 			onPointerLeave={pointerOut}
 			onTouchStart={pointerIn}
 			onTouchEnd={() => {
-				pointerOut()
+				pointerOut();
 			}}
 			cullable
 			x={skewed.x}
 			y={skewed.z}
 		>
-			<sprite
+			<pixiSprite
 				texture={head}
 				anchor={0.5}
 				ref={headRef}
@@ -88,6 +88,6 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 				style={hover ? regularHover : regular}
 				ref={textRef}
 			/>
-		</container>
-	)
+		</pixiContainer>
+	);
 }

@@ -1,4 +1,4 @@
-import { TextStyle } from "pixi.js"
+import { TextStyle } from "pixi.js";
 
 export const regular = new TextStyle({
 	fill: "white",
@@ -12,7 +12,7 @@ export const regular = new TextStyle({
 	fontSize: 16,
 	fontWeight: "500",
 	align: "center",
-})
+});
 
 export const regularHover = new TextStyle({
 	fill: "#ffe499",
@@ -26,4 +26,4 @@ export const regularHover = new TextStyle({
 	fontSize: 16,
 	fontWeight: "500",
 	align: "center",
-})
+});

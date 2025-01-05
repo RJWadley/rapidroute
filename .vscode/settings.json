@@ -1,30 +1,22 @@
 {
 	/* formatting */
 	"editor.defaultFormatter": "biomejs.biome",
-	"[jsonc]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[json]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
 	"[xml]": {
 		"editor.defaultFormatter": "redhat.vscode-xml"
 	},
 
-	/* recommended extension config */
-	"template-string-converter.addBracketsToProps": true,
-	"template-string-converter.autoRemoveTemplateString": true,
-	"stylelint.validate": ["css", "scss", "javascriptreact", "typescriptreact"],
-
 	/* workbench settings */
 	"typescript.tsdk": "./node_modules/typescript/lib",
 	"typescript.enablePromptUseWorkspaceTsdk": true,
+	"typescript.preferences.autoImportSpecifierExcludeRegexes": ["^next/router$"],
 	"workbench.editor.customLabels.patterns": {
 		"**/index.tsx": "${dirname} / index.tsx",
 		"**/index.ts": "${dirname} / index.ts",
-        "**/page.tsx": "${dirname} / page.tsx"
+		"**/page.tsx": "${dirname} / page.tsx",
+		"**/layout.ts": "${dirname} / layout.ts"
 	},
-    "editor.linkedEditing": true,
+	"editor.linkedEditing": true,
+	"typescript.tsserver.experimental.enableProjectDiagnostics": true,
 
 	/* unsorted settings */
 	"": ""

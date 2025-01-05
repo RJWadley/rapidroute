@@ -1,5 +1,5 @@
-import { data } from "app/data/validation"
+import { data } from "app/data/validation";
 
 export default function MainPage() {
-	return JSON.stringify(typeof data)
+	return JSON.stringify(typeof data);
 }

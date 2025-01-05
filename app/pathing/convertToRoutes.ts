@@ -1,7 +1,7 @@
-import type { RoutingResult } from "."
-import type { DataType, Place } from "app/data"
-import { getRouteOptions } from "./getRouteOptions"
-import type { Coordinate } from "app/data/coordinates"
+import type { DataType, Place } from "app/data";
+import type { Coordinate } from "app/data/coordinates";
+import type { RoutingResult } from ".";
+import { getRouteOptions } from "./getRouteOptions";
 
 /**
  * takes a list of places (what the pather returns) and converts it
@@ -10,15 +10,15 @@ import type { Coordinate } from "app/data/coordinates"
  * @see {getRouteOptions}
  */
 export const convertToRoutes = (result: RoutingResult, data: DataType) => {
-	const { gates, companies } = data
+	const { gates, companies } = data;
 
 	const allLocationPairs = result.path
 		.map((_, index) => {
-			const first = result.path[index]
-			const second = result.path[index + 1]
-			return first && second ? ([first, second] as const) : null
+			const first = result.path[index];
+			const second = result.path[index + 1];
+			return first && second ? ([first, second] as const) : null;
 		})
-		.filter((x) => x !== null)
+		.filter((x) => x !== null);
 
 	const routes = allLocationPairs.map(([from, to]) => ({
 		from,
@@ -37,10 +37,10 @@ export const convertToRoutes = (result: RoutingResult, data: DataType) => {
 			company:
 				"company" in option ? companies.map.get(option.company) : undefined,
 		})),
-	}))
+	}));
 
 	return {
 		...result,
 		path: routes,
-	}
-}
+	};
+};

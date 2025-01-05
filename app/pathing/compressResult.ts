@@ -1,11 +1,11 @@
-import type { convertToRoutes } from "./convertToRoutes"
+import type { convertToRoutes } from "./convertToRoutes";
 
 /**
  * get a unique identifier for a route (id if available, type otherwise)
  */
 const identifyRoute = (
 	route: { type: string; i: string } | { type: "Walk" },
-) => ("i" in route ? route.i : route.type)
+) => ("i" in route ? route.i : route.type);
 
 /**
  * compress a result's path
@@ -22,22 +22,22 @@ export function compressResult(
 ): ReturnType<typeof convertToRoutes> {
 	const mutablePath: ((typeof result.path)[number] | undefined)[] = [
 		...result.path,
-	]
+	];
 
 	// iterate through the path and squish legs together one by one
 	for (let i = 0; i < mutablePath.length; i++) {
 		// pull the leg from the compressed path if it exists (so that we can chain squished legs together)
-		const thisLeg = mutablePath[i]
-		const nextLeg = mutablePath[i + 1]
+		const thisLeg = mutablePath[i];
+		const nextLeg = mutablePath[i + 1];
 
 		if (thisLeg && nextLeg) {
-			const firstRoute = thisLeg.options.map((o) => identifyRoute(o))
-			const secondRoute = nextLeg.options.map((o) => identifyRoute(o))
+			const firstRoute = thisLeg.options.map((o) => identifyRoute(o));
+			const secondRoute = nextLeg.options.map((o) => identifyRoute(o));
 
 			// if we can stay on the same route, let's get squishy!
 			const canSquish = firstRoute.some((routeId) =>
 				secondRoute.includes(routeId),
-			)
+			);
 
 			if (canSquish) {
 				const squishedLeg = {
@@ -48,12 +48,12 @@ export function compressResult(
 						secondRoute.includes(identifyRoute(option)),
 					),
 					skipped: [...(thisLeg.skipped ?? []), nextLeg.from],
-				}
+				};
 
 				// to keep indexes in sync, set to undefined instead of removing
 				// we'll filter them out at the end
-				mutablePath[i] = undefined
-				mutablePath[i + 1] = squishedLeg
+				mutablePath[i] = undefined;
+				mutablePath[i + 1] = squishedLeg;
 			}
 		}
 	}
@@ -61,5 +61,5 @@ export function compressResult(
 	return {
 		...result,
 		path: mutablePath.filter((x) => x !== undefined),
-	}
+	};
 }

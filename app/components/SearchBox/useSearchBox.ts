@@ -1,15 +1,15 @@
-import type { CompressedPlace } from "app/utils/compressedPlaces"
-import { useSearchResults } from "app/utils/useSearchResults"
-import type { ComponentProps, FocusEvent } from "react"
-import { useRef, useState } from "react"
-import { getTextboxName } from "./getTextboxName"
-import type { Coordinate } from "app/data/coordinates"
-import type { OnlinePlayer } from "app/utils/onlinePlayers"
+import type { Coordinate } from "app/data/coordinates";
+import type { CompressedPlace } from "app/utils/compressedPlaces";
+import type { OnlinePlayer } from "app/utils/onlinePlayers";
+import { useSearchResults } from "app/utils/useSearchResults";
+import type { ComponentProps, FocusEvent } from "react";
+import { useRef, useState } from "react";
+import { getTextboxName } from "./getTextboxName";
 
 const blurActiveElement = () => {
 	if (document.activeElement instanceof HTMLElement)
-		document.activeElement.blur()
-}
+		document.activeElement.blur();
+};
 
 /**
  * This list will handle up and down arrow keys to navigate a list of items,
@@ -25,22 +25,22 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * the initial list of all places to search through
 	 */
-	initialPlaces: T[]
+	initialPlaces: T[];
 	/**
 	 * which place is initially selected (via search params)?
 	 */
-	initiallySelectedPlace?: T | Coordinate | OnlinePlayer
+	initiallySelectedPlace?: T | Coordinate | OnlinePlayer;
 	/**
 	 * a callback when the selected place changes
 	 */
 	onItemSelected?: (
 		item: T | Coordinate | OnlinePlayer | undefined,
 		explicitly: boolean,
-	) => void
+	) => void;
 	/**
 	 * called after an item is selected and the input is blurred
 	 */
-	onBlur?: () => void
+	onBlur?: () => void;
 }) {
 	/**
 	 * the currently selected item in the list
@@ -48,63 +48,65 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 */
 	const [selectedPlace, setSelectedPlace] = useState<
 		T | Coordinate | OnlinePlayer | undefined
-	>(initiallySelectedPlace)
+	>(initiallySelectedPlace);
 	/**
 	 * what the user has physically typed into the input
 	 */
-	const [userTyped, setUserTyped] = useState<string>()
+	const [userTyped, setUserTyped] = useState<string>();
 	/**
 	 * current search results, based on the userTyped
 	 */
-	const currentSearch = useSearchResults(userTyped, initialPlaces)
+	const currentSearch = useSearchResults(userTyped, initialPlaces);
 	/**
 	 * track if the dropdown should be open or closed
 	 */
-	const [isOpen, setIsOpen] = useState(false)
+	const [isOpen, setIsOpen] = useState(false);
 
 	const selectPlace = (
 		place: T | Coordinate | OnlinePlayer | undefined,
 		explicitly: boolean,
 	) => {
-		setSelectedPlace(place)
-		onItemSelected?.(place, explicitly)
-	}
+		setSelectedPlace(place);
+		onItemSelected?.(place, explicitly);
+	};
 
-	const currentIndex = selectedPlace ? currentSearch.indexOf(selectedPlace) : -1
+	const currentIndex = selectedPlace
+		? currentSearch.indexOf(selectedPlace)
+		: -1;
 
 	const move = (direction: "up" | "down") => {
 		// if not open, skip
-		if (!isOpen) return
+		if (!isOpen) return;
 
-		let nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1
+		let nextIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
 
 		// if we're before the first item, go to the end
-		if (nextIndex < -1) nextIndex = currentSearch.length - 1
+		if (nextIndex < -1) nextIndex = currentSearch.length - 1;
 		// if we're after the last item, go to the start
-		if (nextIndex >= currentSearch.length) nextIndex = -1
-		const nextItem = currentSearch[nextIndex]
-		selectPlace(nextItem, false)
-	}
+		if (nextIndex >= currentSearch.length) nextIndex = -1;
+		const nextItem = currentSearch[nextIndex];
+		selectPlace(nextItem, false);
+	};
 
 	const boxText =
-		currentIndex === -1 ? userTyped : getTextboxName(selectedPlace).trim()
+		currentIndex === -1 ? userTyped : getTextboxName(selectedPlace).trim();
 
 	/**
 	 * if autofocus is true, browsers will fire focus then blur
 	 * so we need to account for that
 	 */
-	const firstFocus = useRef(true)
+	const firstFocus = useRef(true);
 
 	return {
 		onFocusLost: () => {
-			if (document.hasFocus()) setIsOpen(false)
+			if (document.hasFocus()) setIsOpen(false);
 		},
 		searchResults: isOpen
 			? currentSearch.map((item) => ({
 					...item,
 					selectItem: () => {
-						setIsOpen(false)
-						selectPlace(item, true)
+						setIsOpen(false);
+						selectPlace(item, true);
 					},
 					highlighted: selectedPlace?.id === item.id,
 				}))
@@ -112,66 +114,66 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		inputProps: {
 			value: isOpen || !selectedPlace ? boxText : getTextboxName(selectedPlace),
 			onFocus: (e?: FocusEvent<HTMLTextAreaElement>) => {
-				const input = e?.currentTarget
-				if (!input) return
+				const input = e?.currentTarget;
+				if (!input) return;
 
 				if (input.autofocus && firstFocus.current) {
-					firstFocus.current = false
-					return
+					firstFocus.current = false;
+					return;
 				}
-				setIsOpen(true)
+				setIsOpen(true);
 			},
 			onClick: (e) => {
-				e.currentTarget.select()
-				setIsOpen(true)
+				e.currentTarget.select();
+				setIsOpen(true);
 			},
 			onInput: (e) => {
-				const newValue = e.currentTarget.value
-				setUserTyped(newValue)
-				setSelectedPlace(undefined)
-				setIsOpen(true)
+				const newValue = e.currentTarget.value;
+				setUserTyped(newValue);
+				setSelectedPlace(undefined);
+				setIsOpen(true);
 
 				if (newValue.trim() === "") {
-					selectPlace(undefined, false)
-					setUserTyped("")
+					selectPlace(undefined, false);
+					setUserTyped("");
 				} else if (newValue.includes("\n") && currentSearch.length > 0) {
-					const newActiveItem = selectedPlace ?? currentSearch[0]
-					selectPlace(newActiveItem, true)
-					setIsOpen(false)
-					setUserTyped(newValue.trim())
-					blurActiveElement()
-					blurCallback?.()
+					const newActiveItem = selectedPlace ?? currentSearch[0];
+					selectPlace(newActiveItem, true);
+					setIsOpen(false);
+					setUserTyped(newValue.trim());
+					blurActiveElement();
+					blurCallback?.();
 				} else if (newValue.includes("\n")) {
-					setUserTyped(newValue.trim())
+					setUserTyped(newValue.trim());
 				}
 			},
 			onKeyDown: (e) => {
 				switch (e.key) {
 					case "ArrowUp":
-						e.preventDefault()
-						move("up")
+						e.preventDefault();
+						move("up");
 
-						break
+						break;
 
 					case "ArrowDown":
-						e.preventDefault()
-						move("down")
+						e.preventDefault();
+						move("down");
 
-						break
+						break;
 
 					case "Tab":
-						setIsOpen(false)
-						break
+						setIsOpen(false);
+						break;
 
 					case "Escape":
-						e.preventDefault()
-						setIsOpen(false)
-						blurActiveElement()
+						e.preventDefault();
+						setIsOpen(false);
+						blurActiveElement();
 
 						// needed in some browsers as well (for initial interaction)
-						e.currentTarget.blur()
+						e.currentTarget.blur();
 
-						break
+						break;
 				}
 			},
 
@@ -186,9 +188,9 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		},
 		clear: () => {
 			// reset all state
-			setUserTyped("")
-			setIsOpen(false)
-			selectPlace(undefined, true)
+			setUserTyped("");
+			setIsOpen(false);
+			selectPlace(undefined, true);
 		},
 	} satisfies {
 		/**
@@ -196,23 +198,23 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 */
 		searchResults:
 			| ((T | Coordinate | OnlinePlayer) & {
-					selectItem: VoidFunction
-					highlighted: boolean
+					selectItem: VoidFunction;
+					highlighted: boolean;
 			  })[]
-			| undefined
+			| undefined;
 		/**
 		 * props to be passed to the text area for event handling
 		 */
 		inputProps: Partial<ComponentProps<"textarea">> &
-			Record<`data-${string}`, boolean>
+			Record<`data-${string}`, boolean>;
 		/**
 		 * a function for the parent, to call when a common ancestor of the text area and the results loses focus
 		 * (it can't be the input itself, because then we'd lose focus when clicking on a result)
 		 */
-		onFocusLost: VoidFunction
+		onFocusLost: VoidFunction;
 		/**
 		 * clear this search box
 		 */
-		clear: () => void
-	}
+		clear: () => void;
+	};
 }

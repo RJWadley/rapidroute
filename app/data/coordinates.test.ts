@@ -1,5 +1,5 @@
-import { test, expect } from "bun:test"
-import { parseCoordinate } from "./coordinates"
+import { expect, test } from "bun:test";
+import { parseCoordinate } from "./coordinates";
 
 // parseCoordinateId
 
@@ -10,24 +10,24 @@ test("can parse coordinates", () => {
 		id: "x1z1",
 		coordinates: [1, 1],
 		world: "New",
-	})
+	});
 	expect(parseCoordinate("x100z100")).toEqual({
 		type: "Coordinate",
 		i: "x100z100",
 		id: "x100z100",
 		coordinates: [100, 100],
 		world: "New",
-	})
-})
+	});
+});
 
 test("returns null if no coordinates", () => {
 	// uses y instead of z
-	expect(parseCoordinate("x1y1")).toBeNull()
+	expect(parseCoordinate("x1y1")).toBeNull();
 	// uses letters instead of numbers
-	expect(parseCoordinate("x1z1a")).toBeNull()
+	expect(parseCoordinate("x1z1a")).toBeNull();
 	// unrelated string
-	expect(parseCoordinate("hello world")).toBeNull()
-})
+	expect(parseCoordinate("hello world")).toBeNull();
+});
 
 // parseCoordinateQuery
 
@@ -38,8 +38,8 @@ test("can parse comma", () => {
 		id: "x1z1",
 		coordinates: [1, 1],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse comma compact", () => {
 	expect(parseCoordinate("1,1")).toEqual({
@@ -48,8 +48,8 @@ test("can parse comma compact", () => {
 		id: "x1z1",
 		coordinates: [1, 1],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse comma within content", () => {
 	expect(parseCoordinate("hello 1, 1 world")).toEqual({
@@ -58,15 +58,15 @@ test("can parse comma within content", () => {
 		id: "x1z1",
 		coordinates: [1, 1],
 		world: "New",
-	})
+	});
 	expect(parseCoordinate("hello 1,1 world")).toEqual({
 		type: "Coordinate",
 		i: "x1z1",
 		id: "x1z1",
 		coordinates: [1, 1],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse comma negatives", () => {
 	expect(parseCoordinate("-1, -1")).toEqual({
@@ -75,8 +75,8 @@ test("can parse comma negatives", () => {
 		id: "x-1z-1",
 		coordinates: [-1, -1],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse period", () => {
 	expect(parseCoordinate("100.100")).toEqual({
@@ -85,8 +85,8 @@ test("can parse period", () => {
 		id: "x100z100",
 		coordinates: [100, 100],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse underscore", () => {
 	expect(parseCoordinate("100_100")).toEqual({
@@ -95,8 +95,8 @@ test("can parse underscore", () => {
 		id: "x100z100",
 		coordinates: [100, 100],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse space", () => {
 	expect(parseCoordinate("100 100")).toEqual({
@@ -105,8 +105,8 @@ test("can parse space", () => {
 		id: "x100z100",
 		coordinates: [100, 100],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse with two separators", () => {
 	expect(parseCoordinate("1.000, 1.000")).toEqual({
@@ -115,8 +115,8 @@ test("can parse with two separators", () => {
 		id: "x1000z1000",
 		coordinates: [1000, 1000],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse with three separators", () => {
 	expect(parseCoordinate("1_000, 1.000")).toEqual({
@@ -125,8 +125,8 @@ test("can parse with three separators", () => {
 		id: "x1000z1000",
 		coordinates: [1000, 1000],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse with two separators and negatives", () => {
 	expect(parseCoordinate("-1.000, -1.000")).toEqual({
@@ -135,8 +135,8 @@ test("can parse with two separators and negatives", () => {
 		id: "x-1000z-1000",
 		coordinates: [-1000, -1000],
 		world: "New",
-	})
-})
+	});
+});
 
 test("can parse with three separators and negatives", () => {
 	expect(parseCoordinate("-1_000, -1.000")).toEqual({
@@ -145,5 +145,5 @@ test("can parse with three separators and negatives", () => {
 		id: "x-1000z-1000",
 		coordinates: [-1000, -1000],
 		world: "New",
-	})
-})
+	});
+});

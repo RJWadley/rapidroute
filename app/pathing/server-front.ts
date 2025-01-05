@@ -1,5 +1,5 @@
-import type { ExcludedRoutes } from "app/data"
-import type { findPath } from "."
+import type { ExcludedRoutes } from "app/data";
+import type { findPath } from ".";
 
 /**
  * find a path between two locations on the server-side
@@ -9,14 +9,14 @@ export const findPathInServer = async (
 	to: string | undefined | null,
 	excludedRoutes: ExcludedRoutes,
 ) => {
-	if (typeof window === "undefined") return null
-	if (!from || !to) return null
+	if (typeof window === "undefined") return null;
+	if (!from || !to) return null;
 
 	const options = {
 		from,
 		to,
 		excludedRoutes: JSON.stringify(excludedRoutes),
-	}
+	};
 
 	const data = await fetch(
 		`/pathing?${Object.entries(options)
@@ -28,7 +28,7 @@ export const findPathInServer = async (
 				"content-type": "application/json",
 			},
 		},
-	).then((res) => res.json())
+	).then((res) => res.json());
 
-	return data as ReturnType<typeof findPath>
-}
+	return data as ReturnType<typeof findPath>;
+};

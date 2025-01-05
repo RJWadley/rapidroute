@@ -1,0 +1,24 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"organizeImports": { "enabled": true },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"style": {
+				"useSelfClosingElements": {
+					"level": "warn",
+					"fix": "safe"
+				}
+			},
+			"correctness": { "noUnusedImports": "warn" }
+		}
+	},
+	"javascript": { "formatter": { "enabled": true } },
+	"files": { "ignore": ["pnpm-lock.yaml", "gatelogue"] },
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	}
+}

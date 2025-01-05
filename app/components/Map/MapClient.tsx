@@ -1,39 +1,34 @@
-"use client"
+"use client";
 
-import { styled } from "@linaria/react"
-import { Application, extend } from "@pixi/react"
-import { TanstackProvider } from "app/TanstackProvider"
-import { Container, Graphics } from "pixi.js"
-import { useContext, useRef, useState } from "react"
-import { MovementContext } from "../MapMovement"
-import DynmapMarkers from "./Dynmap/DynmapMarkers"
-import type { MarkersResponse } from "./Dynmap/dynmapType"
-import PixiViewport from "./PixiViewport"
-import Satellite from "./Satellite"
-import { useEventListener } from "ahooks"
-import MapPlayers from "./Players"
-import Cities from "./Cities"
-import type { CompressedPlace } from "app/utils/compressedPlaces"
-import { PixiHooks } from "./pixiUtils"
+import { Application, extend } from "@pixi/react";
+import { useEventListener } from "ahooks";
+import type { CompressedPlace } from "app/utils/compressedPlaces";
+import { Container, Graphics } from "pixi.js";
+import { use, useRef } from "react";
+import { styled } from "restyle";
+import { MovementContext } from "../MapMovement";
+import Cities from "./Cities";
+import DynmapMarkers from "./Dynmap/DynmapMarkers";
+import type { MarkersResponse } from "./Dynmap/dynmapType";
+import PixiViewport from "./PixiViewport";
+import MapPlayers from "./Players";
+import Satellite from "./Satellite";
+import { PixiHooks } from "./pixiUtils";
 
 extend({
 	Container,
 	Graphics,
-})
+});
 
 export default function MapClient({
 	initialMarkers,
-	previewImage,
 	compressedPlaces,
 }: {
-	initialMarkers: MarkersResponse
-	previewImage: string
-	compressedPlaces: CompressedPlace[]
+	initialMarkers: MarkersResponse;
+	compressedPlaces: CompressedPlace[];
 }) {
-	// return null
-	const [hasInit, setHasInit] = useState(false)
-	const wrapperRef = useRef<HTMLDivElement>(null)
-	const moveContextValue = useContext(MovementContext)
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const { lastUsedMethod } = use(MovementContext);
 
 	/**
 	 * prevent scroll events from bubbling up to the document
@@ -42,11 +37,11 @@ export default function MapClient({
 		"wheel",
 		(e) => {
 			if (e.target instanceof HTMLCanvasElement) {
-				e.preventDefault()
+				e.preventDefault();
 			}
 		},
 		{ passive: false },
-	)
+	);
 
 	/**
 	 * prevent selection of app text while dragging
@@ -55,18 +50,18 @@ export default function MapClient({
 		"pointerdown",
 		(e) => {
 			if (e.target instanceof HTMLCanvasElement) {
-				e.preventDefault()
+				e.preventDefault();
 			}
 		},
 		{ passive: false },
-	)
+	);
 
 	const touchStart = () => {
-		moveContextValue.lastUsedMethod.current = "touchStillActive"
-	}
+		lastUsedMethod.current = "touchStillActive";
+	};
 	const touchEnd = () => {
-		moveContextValue.lastUsedMethod.current = "touch"
-	}
+		lastUsedMethod.current = "touch";
+	};
 
 	return (
 		<Wrapper
@@ -78,57 +73,37 @@ export default function MapClient({
 			onWheel={touchEnd}
 		>
 			<Background />
-			<PreviewImage src={previewImage} loading="eager" id="mapPreview" />
 			<Application
 				antialias
 				autoDensity
-				onInit={() => setHasInit(true)}
 				resizeTo={wrapperRef}
 				backgroundAlpha={0}
 				resolution={typeof window !== "undefined" ? window.devicePixelRatio : 1}
 			>
-				<MovementContext.Provider value={moveContextValue}>
-					<TanstackProvider>
-						{hasInit && (
-							<PixiViewport>
-								<PixiHooks />
-								<Satellite />
-								<DynmapMarkers initialMarkers={initialMarkers} />
-								<MapPlayers />
-								<Cities places={compressedPlaces} />
-							</PixiViewport>
-						)}
-					</TanstackProvider>
-				</MovementContext.Provider>
+				<PixiViewport>
+					<PixiHooks />
+					<Satellite />
+					<DynmapMarkers initialMarkers={initialMarkers} />
+					<MapPlayers />
+					<Cities places={compressedPlaces} />
+				</PixiViewport>
 			</Application>
 		</Wrapper>
-	)
+	);
 }
 
-const Wrapper = styled.div`
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 1;
-	overflow:clip;
-`
+const Wrapper = styled("div", {
+	position: "absolute",
+	inset: "0",
+	width: "100%",
+	height: "100%",
+	zIndex: "1",
+	overflow: "clip",
+});
 
-const PreviewImage = styled.img`
-	min-width: 100%;
-	min-height: 100%;
-	aspect-ratio: 1;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	translate: -50% -50%;
-	z-index: -1;
-	pointer-events: none;
-`
-
-const Background = styled.div`
-	position: absolute;
-	inset:0;
-	z-index: -2;
-	background: #546461;
-`
+const Background = styled("div", {
+	position: "absolute",
+	inset: 0,
+	zIndex: -2,
+	background: "#546461",
+});

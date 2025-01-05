@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { useSearchParamState } from "app/utils/useSearchParamState"
-import Box from "./Box"
-import { AnimatePresence, motion } from "motion/react"
-import TypeModeFilter from "./TypeModeFilter"
-import { useRouting } from "./RoutingContext"
+import { useSearchParamState } from "app/utils/useSearchParamState";
+import { AnimatePresence, motion } from "motion/react";
+import Box from "./Box";
+import { useRouting } from "./RoutingContext";
+import TypeModeFilter from "./TypeModeFilter";
 
 const layout = {
 	layout: "position",
 	initial: { opacity: 0 },
 	animate: { opacity: 1 },
 	exit: { opacity: 0 },
-} as const
+} as const;
 
 export default function RouteOptions() {
-	const { status, routes, setPreferredRoute } = useRouting()
-	const [from] = useSearchParamState("from")
-	const [to] = useSearchParamState("to")
+	const { status, routes, setPreferredRoute } = useRouting();
+	const [from] = useSearchParamState("from");
+	const [to] = useSearchParamState("to");
 
 	return (
 		<Box isVisible={status !== "skipped"}>
@@ -56,5 +56,5 @@ export default function RouteOptions() {
 				)}
 			</AnimatePresence>
 		</Box>
-	)
+	);
 }
