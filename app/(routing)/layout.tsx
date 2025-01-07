@@ -6,7 +6,7 @@ import { SearchBox } from "app/components/SearchBox"
 import RouteOptions from "app/components/RouteOptions"
 import SelectedRoute from "app/components/SelectedRoute"
 
-export default function SegmentHandler() {
+export default function AppGrid() {
 	return (
 		<LayoutGroup>
 			<Columns>

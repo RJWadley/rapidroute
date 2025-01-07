@@ -11,7 +11,14 @@ export function Providers({ children }: { children: ReactNode }) {
 			{children}
 		</>
 	)
-	children = <MotionConfig reducedMotion="user">{children}</MotionConfig>
+	children = (
+		<MotionConfig
+			reducedMotion="user"
+			transition={{ duration: 2, type: "spring" }}
+		>
+			{children}
+		</MotionConfig>
+	)
 	children = <RoutingProvider>{children}</RoutingProvider>
 	children = <TanstackProvider>{children}</TanstackProvider>
 	return children

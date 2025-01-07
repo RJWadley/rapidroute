@@ -40,6 +40,8 @@ const getPrettyId = (place: UglyPlace) => {
 				return ""
 		}
 	})()
+		.replaceAll(" ", "+")
+		.replaceAll("/", "--")
 
 	if (usedIds[id]) {
 		let i = 1

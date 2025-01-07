@@ -128,7 +128,7 @@ export function RoutingProvider({
 		segments: undefined | string[]
 	}>()
 	const [routeType, placeId, navigateFirstId, _, navigateSecondId] =
-		segments ?? []
+		segments?.map((x) => decodeURIComponent(x)) ?? []
 	const currentRoute =
 		routeType === "place" && placeId
 			? // /place/to
@@ -164,13 +164,17 @@ export function RoutingProvider({
 		fromID: string | null | undefined,
 		toID: string | null | undefined,
 	) => {
+		const encodedFrom = fromID
+		const encodedTo = toID
 		const currentSearchParams = window.location.search
 		if (fromID && toID) {
-			router.push(`/navigate/from/${fromID}/to/${toID}${currentSearchParams}`)
+			router.push(
+				`/navigate/from/${encodedFrom}/to/${encodedTo}${currentSearchParams}`,
+			)
 		} else if (fromID) {
-			router.push(`/navigate/from/${fromID}${currentSearchParams}`)
+			router.push(`/navigate/from/${encodedFrom}${currentSearchParams}`)
 		} else if (toID) {
-			router.push(`/place/${toID}${currentSearchParams}`)
+			router.push(`/place/${encodedTo}${currentSearchParams}`)
 		} else {
 			router.push(`/${currentSearchParams}`)
 		}
