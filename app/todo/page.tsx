@@ -4,9 +4,9 @@ import {
 	dehydrate,
 } from "@tanstack/react-query"
 import { styled } from "restyle"
-import AppGrid from "./AppGrid"
-import MinecraftMap from "./components/Map/MapServer"
-import { data } from "app/todo/data"
+import AppGrid from "../components/app-grid"
+import MinecraftMap from "../components/Map/MapServer"
+import { data } from "app/data"
 import { redirect } from "next/navigation"
 import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { getOnlinePlayers } from "./utils/onlinePlayers"
@@ -113,7 +113,7 @@ export default async function MainPage(props: {
 		<HydrationBoundary state={dehydrate(queryClient)}>
 			<Application>
 				<MinecraftMap compressedPlaces={await compressedPlaces} />
-				<AppGrid places={await compressedPlaces} />
+				<AppGrid />
 			</Application>
 		</HydrationBoundary>
 	)
