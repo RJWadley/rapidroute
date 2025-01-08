@@ -1,3 +1,4 @@
+import { theme } from "app/utils/theme"
 import { AnimatePresence, motion } from "motion/react"
 import { styled } from "restyle"
 
@@ -30,7 +31,8 @@ export default function Box({
 
 const Wrapper = styled(motion.div, {
 	margin: "5px",
-	background: "#eeed",
+	background: theme.cardBackground,
+	color: theme.cardText,
 	overflow: "clip",
 	position: "relative",
 })

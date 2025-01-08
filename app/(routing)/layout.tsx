@@ -5,8 +5,13 @@ import { styled } from "restyle"
 import { SearchBox } from "app/components/SearchBox"
 import RouteOptions from "app/components/RouteOptions"
 import SelectedRoute from "app/components/SelectedRoute"
+import { useLocalDark } from "app/utils/locals"
+import { useSearchParamState } from "app/utils/useSearchParamState"
 
 export default function AppGrid() {
+	const [{ preference, isDark }, setDarkPreference] = useLocalDark()
+	const [isometric, setIsometric] = useSearchParamState("isometric")
+
 	return (
 		<LayoutGroup>
 			<Columns>
@@ -16,6 +21,27 @@ export default function AppGrid() {
 				</Column>
 				<Column>
 					<SelectedRoute />
+					<button
+						type="button"
+						onClick={() => {
+							setIsometric(isometric ? undefined : "true")
+						}}
+					>
+						toggle isometric
+					</button>
+					<br />
+					<button
+						suppressHydrationWarning
+						type="button"
+						onClick={() => {
+							// dark -> light -> system -> dark
+							if (preference === "dark") setDarkPreference("light")
+							else if (preference === "light") setDarkPreference("system")
+							else setDarkPreference("dark")
+						}}
+					>
+						toggle dark, currently {preference} ({isDark ? "dark" : "light"})
+					</button>
 				</Column>
 			</Columns>
 		</LayoutGroup>

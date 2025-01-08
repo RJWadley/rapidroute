@@ -33,7 +33,12 @@ export default function RootLayout({
 
 	return (
 		<html lang="en">
-			<body className={inter.className} style={{ fontWeight: 300 }}>
+			<body
+				className={inter.className}
+				style={{ fontWeight: 300 }}
+				// for theme cookie
+				suppressHydrationWarning
+			>
 				<Providers>
 					<HydrationBoundary state={dehydrate(queryClient)}>
 						<Application>

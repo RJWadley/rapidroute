@@ -1,5 +1,11 @@
 import { useCookieState } from "ahooks"
 import { useSyncExternalStore } from "react"
+import TypedEventEmitter from "./TypedEventEmitter"
+import { flushSync } from "react-dom"
+
+const events = new TypedEventEmitter<{
+	darkModeChange: [newValue: "system" | "light" | "dark"]
+}>()
 
 // TODO --- QUERY STATE ---
 
@@ -20,8 +26,15 @@ function useSystemDarkMode() {
 }
 
 export const useLocalDark = () => {
+	const systemIsDark = useSystemDarkMode()
 	const [preferenceDirect, setPreferenceDirect] = useCookieState("dark", {
 		defaultValue: "system",
+	})
+
+	events.useEventListener("darkModeChange", (newValue) => {
+		flushSync(() => {
+			if (newValue !== preferenceDirect) setPreferenceDirect(newValue)
+		})
 	})
 
 	const currentPreference =
@@ -32,10 +45,14 @@ export const useLocalDark = () => {
 				: "system"
 
 	const setPreference = (value: "system" | "light" | "dark") => {
-		setPreferenceDirect(value)
+		if (document.startViewTransition) {
+			document.startViewTransition(() => {
+				events.dispatchEvent("darkModeChange", value)
+			})
+		} else {
+			events.dispatchEvent("darkModeChange", value)
+		}
 	}
-
-	const systemIsDark = useSystemDarkMode()
 
 	const isDark =
 		currentPreference === "system" ? systemIsDark : currentPreference === "dark"
