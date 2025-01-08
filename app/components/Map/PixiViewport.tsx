@@ -95,17 +95,21 @@ const updateClamp = (viewport: Viewport) => {
 }
 
 function useScrollInputType() {
-	const lastHundredScrollDeltas = useRef<number[]>([])
+	const [lastHundredScrollDeltas, setLastHundredScrollDeltas] = useState<
+		number[]
+	>([])
 
 	useEventListener("wheel", (e) => {
-		lastHundredScrollDeltas.current.push(Math.abs(e.deltaY))
-		if (lastHundredScrollDeltas.current.length > 100) {
-			lastHundredScrollDeltas.current.shift()
-		}
+		setLastHundredScrollDeltas((lastHundredScrollDeltas) => {
+			const newDeltas = [...lastHundredScrollDeltas, Math.abs(e.deltaY)]
+			if (newDeltas.length > 100) {
+				newDeltas.shift()
+			}
+			return newDeltas
+		})
 	})
 
-	const isTouchpad = lastHundredScrollDeltas.current.some((delta) => delta < 16)
-
+	const isTouchpad = lastHundredScrollDeltas.some((delta) => delta < 16)
 	return isTouchpad ? "touchpad" : "mouse"
 }
 
@@ -135,7 +139,6 @@ export default function PixiViewport({
 		if (!viewport) return
 		if (!viewport.plugins.plugins.wheel) return
 
-		console.log(scrollInputType)
 		if (scrollInputType === "touchpad")
 			// @ts-expect-error untyped
 			viewport.plugins.plugins.wheel.options.smooth = 0
@@ -151,7 +154,7 @@ export default function PixiViewport({
 		viewport
 			.drag()
 			.pinch()
-			.wheel({ smooth: 0 })
+			.wheel({ smooth: 30 })
 			.decelerate()
 			.setZoom(zoom)
 			.moveCenter({

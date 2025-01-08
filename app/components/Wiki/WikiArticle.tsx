@@ -3,7 +3,6 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
-import { useSearchParamState } from "app/utils/useSearchParamState"
 import { AnimatePresence, motion } from "motion/react"
 import { Fragment } from "react"
 import { styled } from "restyle"
