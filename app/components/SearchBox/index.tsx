@@ -3,7 +3,6 @@
 import { useClickAway } from "ahooks"
 import { useOnlinePlayers } from "app/utils/onlinePlayers"
 import { findClosestPlace } from "app/utils/search"
-import { useSearchParamState } from "app/utils/useSearchParamState"
 import { AnimatePresence, motion } from "motion/react"
 import { useRef, useState } from "react"
 import { IoSearch } from "react-icons/io5"
@@ -153,6 +152,7 @@ export function SearchBox() {
 								toProps.onFocus(e)
 							}}
 							placeholder="to"
+							autoFocus
 						/>
 					</motion.div>
 					<motion.button layout="position" type="button" onClick={clearTo}>

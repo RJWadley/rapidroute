@@ -115,7 +115,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				const input = e?.currentTarget
 				if (!input) return
 
-				if (input.autofocus && firstFocus.current) {
+				// for some unholy reason, happy dom doesn't return true for this
+				const isAutoFocus = input.autofocus || input.dataset.autofocus
+
+				if (isAutoFocus && firstFocus.current) {
 					firstFocus.current = false
 					return
 				}
