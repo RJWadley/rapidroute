@@ -5,7 +5,7 @@ import {
 	setParamManually,
 	useSearchParamState,
 } from "app/utils/useSearchParamState"
-import { type SpringOptions, useSpring } from "motion/react"
+import { useSpring } from "motion/react"
 import type { Viewport } from "pixi-viewport"
 import {
 	type MutableRefObject,
@@ -53,7 +53,7 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 		"touch",
 	)
 
-	const options: SpringOptions = {
+	const options = {
 		bounce: 0.1,
 		duration: 2000,
 		stiffness: 50,
