@@ -8,7 +8,7 @@ import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { data } from "./data"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
-import MinecraftMap from "./components/Map/MapServer"
+import MinecraftMap from "./components/MapOLD/MapServer"
 
 const inter = Inter({ subsets: ["latin"] })
 

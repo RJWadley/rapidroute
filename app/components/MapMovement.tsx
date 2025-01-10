@@ -15,8 +15,8 @@ import {
 	useRef,
 	useState,
 } from "react"
-import { CLAMP, triggerMovementManually } from "./Map/PixiViewport"
-import { skewWorldCoordinate } from "./Map/pixiUtils"
+import { CLAMP, triggerMovementManually } from "./MapOLD/PixiViewport"
+import { skewWorldCoordinate } from "./MapOLD/pixiUtils"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
