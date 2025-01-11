@@ -5,11 +5,26 @@ import { flushSync } from "react-dom"
 
 const events = new TypedEventEmitter<{
 	darkModeChange: [newValue: "system" | "light" | "dark"]
+	isometricChange: [newValue: "isometric" | "flat"]
 }>()
 
-// TODO --- QUERY STATE ---
+export const useLocalIsometric = () => {
+	const [direct, setDirect] = useCookieState("isometric", {
+		defaultValue: "isometric",
+	})
 
-// --- COOKIE STATE ---
+	events.useEventListener("isometricChange", (newValue) => {
+		setDirect(newValue)
+	})
+
+	return [
+		direct === "isometric",
+		(value: boolean) => {
+			events.dispatchEvent("isometricChange", value ? "isometric" : "flat")
+		},
+	] as const
+}
+
 function useSystemDarkMode() {
 	return useSyncExternalStore(
 		// Subscribe to changes in the dark mode preference

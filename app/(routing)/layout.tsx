@@ -5,12 +5,11 @@ import { styled } from "restyle"
 import { SearchBox } from "app/components/SearchBox"
 import RouteOptions from "app/components/RouteOptions"
 import SelectedRoute from "app/components/SelectedRoute"
-import { useLocalDark } from "app/utils/locals"
-import { useSearchParamState } from "app/utils/useSearchParamState"
+import { useLocalDark, useLocalIsometric } from "app/utils/locals"
 
 export default function AppGrid() {
 	const [{ preference, isDark }, setDarkPreference] = useLocalDark()
-	const [isometric, setIsometric] = useSearchParamState("isometric")
+	const [isometric, setIsometric] = useLocalIsometric()
 
 	return (
 		<LayoutGroup>
@@ -24,7 +23,7 @@ export default function AppGrid() {
 					<button
 						type="button"
 						onClick={() => {
-							setIsometric(isometric ? undefined : "true")
+							setIsometric(!isometric)
 						}}
 					>
 						toggle isometric

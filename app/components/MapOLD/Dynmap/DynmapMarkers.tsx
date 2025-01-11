@@ -5,8 +5,9 @@ import invertLightness from "../../../utils/color"
 import { SCALE_FACTOR } from "../pixiUtils"
 import type { ColoredMarker } from "./MRTStops"
 import MRTStops from "./MRTStops"
-import MarkerLines from "./MarkerLines"
+import MarkerLines from "../../Map/Dynmap/MarkerLine"
 import { type MarkersResponse, isMRTLine } from "./DynmapType"
+import { useLocalIsometric } from "app/utils/locals"
 
 extend({ Container })
 
@@ -32,14 +33,14 @@ export default function DynmapMarkers({
 		return []
 	})
 
-	const [isometric] = useSearchParamState("isometric")
+	const [isometric] = useLocalIsometric()
 
 	return (
 		<pixiContainer
 			scale={isometric ? { x: 1, y: SCALE_FACTOR } : { x: 1, y: 1 }}
 		>
 			<pixiContainer angle={isometric ? -45 : 0}>
-				{Object.keys(markerSets).map((name) => {
+				{/* {Object.keys(markerSets).map((name) => {
 					if (isMRTLine(name))
 						return (
 							<MarkerLines
@@ -48,7 +49,7 @@ export default function DynmapMarkers({
 							/>
 						)
 					return null
-				})}
+				})} */}
 				<MRTStops stops={allStops} />
 			</pixiContainer>
 		</pixiContainer>

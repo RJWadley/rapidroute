@@ -152,7 +152,6 @@ export function SearchBox() {
 								toProps.onFocus(e)
 							}}
 							placeholder="to"
-							autoFocus
 						/>
 					</motion.div>
 					<motion.button layout="position" type="button" onClick={clearTo}>

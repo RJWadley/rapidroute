@@ -15,8 +15,8 @@ import {
 	useRef,
 	useState,
 } from "react"
-import { CLAMP, triggerMovementManually } from "./MapOLD/PixiViewport"
 import { skewWorldCoordinate } from "./MapOLD/pixiUtils"
+import { useLocalIsometric } from "app/utils/locals"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -62,7 +62,7 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 	const zSpring = useSpring(0, options)
 	const worldScreenWidthSpring = useSpring(0, { bounce: 0, stiffness: 20 })
 
-	const [isometric] = useSearchParamState("isometric")
+	const [isometric] = useLocalIsometric()
 
 	const moveCamera = (coordinateRaw: Coordinate) => {
 		;(async () => {
@@ -93,13 +93,13 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 			if (coordinate.z !== undefined) zSpring.set(coordinate.z)
 
 			await sleep(200)
-			if (coordinate.worldScreenWidth !== undefined)
-				worldScreenWidthSpring.set(
-					Math.min(
-						CLAMP.maxWorldScreenWidth,
-						Math.max(CLAMP.minWorldScreenWidth, coordinate.worldScreenWidth),
-					),
-				)
+			// if (coordinate.worldScreenWidth !== undefined)
+			// 	worldScreenWidthSpring.set(
+			// 		Math.min(
+			// 			CLAMP.maxWorldScreenWidth,
+			// 			Math.max(CLAMP.minWorldScreenWidth, coordinate.worldScreenWidth),
+			// 		),
+			// 	)
 		})()
 	}
 
@@ -143,7 +143,8 @@ export function MovementProvider({ children }: { children: React.ReactNode }) {
 				viewport.setZoom(zoom, true)
 
 				if (batchFrame) cancelAnimationFrame(batchFrame)
-				batchFrame = requestAnimationFrame(triggerMovementManually)
+				// TODO
+				// batchFrame = requestAnimationFrame(triggerMovementManually)
 
 				nextValue = {}
 

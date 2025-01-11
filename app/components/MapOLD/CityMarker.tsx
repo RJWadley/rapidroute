@@ -1,10 +1,11 @@
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { type Container, Point, type Text } from "pixi.js"
 import { useRef } from "react"
-import { useViewport, useViewportMoved } from "./PixiViewport"
 import { hideItem, showItem, skewWorldCoordinate } from "./pixiUtils"
 import { regular, regularHover } from "./textStyles"
 import useHideOverlapping from "./useHideOverlapping"
+import { useViewport, useViewportMoved } from "../Map/Viewport"
+import { useLocalIsometric } from "app/utils/locals"
 
 type CityType =
 	| "Unranked"
@@ -69,7 +70,7 @@ export default function CityMarker({
 		minZoom: ZoomThresholds[type] ?? max,
 	})
 
-	const [isometric] = useSearchParamState("isometric")
+	const [isometric] = useLocalIsometric()
 	const skewed = isometric ? skewWorldCoordinate(x, 60, z) : { x, z }
 
 	return (

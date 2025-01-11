@@ -12,9 +12,9 @@ import {
 } from "pixi.js"
 
 import { useInterval } from "ahooks"
-import { useViewport } from "./PixiViewport"
 import getAllCullDistances, { type CullInfo } from "./getAllCullDistances"
 import { hideItem, showItem } from "./pixiUtils"
+import { useViewport } from "../Map/Viewport"
 
 type ObjectType = Text | Sprite | Container<ContainerChild>
 let updateNeeded = false

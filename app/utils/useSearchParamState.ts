@@ -33,7 +33,7 @@ if (liveSearchParams) {
 }
 
 export function useSearchParamState(
-	name: "isometric" | "x" | "z" | "zoom" | "a" | "b" | "c",
+	name: "x" | "z" | "zoom" | "a" | "b" | "c",
 ) {
 	const serverParams = useQuery<{
 		[key: string]: string | string[] | undefined

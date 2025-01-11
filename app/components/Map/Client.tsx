@@ -1,32 +1,21 @@
 "use client"
 
-import { Application, extend } from "@pixi/react"
+import { Application } from "@pixi/react"
 import { useEventListener } from "ahooks"
-import type { CompressedPlace } from "app/utils/compressedPlaces"
-import { Container, Graphics } from "pixi.js"
 import { use, useRef } from "react"
 import { styled } from "restyle"
 import { MovementContext } from "../MapMovement"
-import Cities from "./Cities"
-import DynmapMarkers from "./Dynmap/DynmapMarkers"
-import type { MarkersResponse } from "./Dynmap/DynmapType"
-import PixiViewport from "./PixiViewport"
+import { PixiHooks } from "../MapOLD/pixiUtils"
+import { PixiViewport } from "./Viewport"
+import type { parseMarkersWithFallback } from "./markers-schema"
+import { isBrowser } from "app/utils/isBrowser"
+import { Satellite } from "./Satellite"
+import { Dynmap } from "./Dynmap"
 import MapPlayers from "./Players"
-import Satellite from "./Satellite"
-import { PixiHooks } from "./pixiUtils"
 
-extend({
-	Container,
-	Graphics,
-})
-
-export default function MapClient({
-	initialMarkers,
-	compressedPlaces,
-}: {
-	initialMarkers: MarkersResponse
-	compressedPlaces: CompressedPlace[]
-}) {
+export function MapClient({
+	markers,
+}: { markers: ReturnType<typeof parseMarkersWithFallback> }) {
 	const wrapperRef = useRef<HTMLDivElement>(null)
 	const { lastUsedMethod } = use(MovementContext)
 
@@ -56,6 +45,9 @@ export default function MapClient({
 		{ passive: false },
 	)
 
+	/**
+	 * propogate touch events to the map movement provider
+	 */
 	const touchStart = () => {
 		lastUsedMethod.current = "touchStillActive"
 	}
@@ -74,18 +66,17 @@ export default function MapClient({
 		>
 			<Background />
 			<Application
-				antialias
-				autoDensity
 				resizeTo={wrapperRef}
 				backgroundAlpha={0}
-				resolution={typeof window !== "undefined" ? window.devicePixelRatio : 1}
+				antialias
+				autoDensity
+				resolution={isBrowser ? window.devicePixelRatio : 1}
 			>
 				<PixiViewport>
 					<PixiHooks />
 					<Satellite />
-					<DynmapMarkers initialMarkers={initialMarkers} />
+					{markers.data && <Dynmap markers={markers.data} />}
 					<MapPlayers />
-					<Cities places={compressedPlaces} />
 				</PixiViewport>
 			</Application>
 		</Wrapper>

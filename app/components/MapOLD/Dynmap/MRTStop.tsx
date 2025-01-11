@@ -2,10 +2,11 @@ import { extend, useApp } from "@pixi/react"
 import { useSearchParamState } from "app/utils/useSearchParamState"
 import { Container, Point, Text } from "pixi.js"
 import { useEffect, useRef, useState } from "react"
-import { useViewport, useViewportMoved } from "../PixiViewport"
 import { SCALE_FACTOR, shiftWorldCoordinate } from "../pixiUtils"
 import { regular } from "../textStyles"
 import MulticolorDot from "./MulticolorDot"
+import { useViewport, useViewportMoved } from "app/components/Map/Viewport"
+import { useLocalIsometric } from "app/utils/locals"
 
 interface MRTStopProps {
 	name: string
@@ -57,7 +58,7 @@ export default function MRTStop({ name, colors, x, y, z }: MRTStopProps) {
 	const app = useApp()
 	if (!app) return
 
-	const [isometric] = useSearchParamState("isometric")
+	const [isometric] = useLocalIsometric()
 	const skewed = isometric ? shiftWorldCoordinate(x, y, z) : { x, z }
 
 	return (

@@ -1,9 +1,16 @@
 import { extend } from "@pixi/react"
-import { useSearchParamState } from "app/utils/useSearchParamState"
-import { Graphics } from "pixi.js"
-import { shiftWorldCoordinate } from "../pixiUtils"
 
-interface LineProps {
+import { Graphics } from "pixi.js"
+import { useLocalIsometric } from "app/utils/locals"
+import { shiftWorldCoordinateToIsometric } from "../util/isometric"
+
+extend({ Graphics })
+
+export default function Line({
+	points,
+	color,
+	width = 10,
+}: {
 	/**
 	 * the color of the line as a hex code, eg #123456
 	 */
@@ -14,17 +21,14 @@ interface LineProps {
 		z: number
 	}[]
 	width?: number
-	debug: string | false
-}
+}) {
+	const [isometric] = useLocalIsometric()
 
-extend({ Graphics })
-
-export default function Line({ points, color, width = 10, debug }: LineProps) {
-	const [isometric] = useSearchParamState("isometric")
 	return (
 		<pixiGraphics
 			draw={(g) => {
 				const colorAsHex = Number.parseInt(color.replace("#", ""), 16)
+
 				g.clear()
 				g.setStrokeStyle({
 					color: colorAsHex,
@@ -32,15 +36,20 @@ export default function Line({ points, color, width = 10, debug }: LineProps) {
 					join: "round",
 					width,
 				})
+
 				const [firstPoint] = points
 				if (!firstPoint) return
 
 				const start = isometric
-					? shiftWorldCoordinate(firstPoint.x, firstPoint.y, firstPoint.z)
+					? shiftWorldCoordinateToIsometric(firstPoint)
 					: firstPoint
 				g.moveTo(start.x, start.z)
+
 				for (const { x, y, z } of points) {
-					const skewed = isometric ? shiftWorldCoordinate(x, y, z) : { x, z }
+					const skewed = isometric
+						? shiftWorldCoordinateToIsometric({ x, y, z })
+						: { x, z }
+
 					g.lineTo(skewed.x, skewed.z)
 				}
 				g.stroke()

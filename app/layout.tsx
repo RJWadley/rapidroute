@@ -8,7 +8,7 @@ import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { data } from "./data"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
-import MinecraftMap from "./components/MapOLD/MapServer"
+import { MapServer } from "components/Map/Server"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -42,7 +42,7 @@ export default function RootLayout({
 				<Providers>
 					<HydrationBoundary state={dehydrate(queryClient)}>
 						<Application>
-							<MinecraftMap compressedPlaces={compressedPlaces} />
+							<MapServer />
 							{children}
 						</Application>
 					</HydrationBoundary>

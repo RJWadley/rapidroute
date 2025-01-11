@@ -1,12 +1,11 @@
 "use client"
 
-import type { ReactNode } from "react"
-import { TanstackProvider } from "app/providers/tanstack/TanstackProvider"
-import { RoutingProvider } from "./RoutingContext"
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { MotionConfig } from "motion/react"
-import { MovementProvider } from "app/components/MapMovement"
+import { TanstackProvider } from "app/providers/tanstack/TanstackProvider"
 import { SetupTheme } from "app/utils/theme"
+import { MotionConfig } from "motion/react"
+import type { ReactNode } from "react"
+import { RoutingProvider } from "./RoutingContext"
 
 export function Providers({ children }: { children: ReactNode }) {
 	children = (
@@ -24,7 +23,6 @@ export function Providers({ children }: { children: ReactNode }) {
 			{children}
 		</MotionConfig>
 	)
-	children = <MovementProvider>{children}</MovementProvider>
 	children = <RoutingProvider>{children}</RoutingProvider>
 	children = <TanstackProvider>{children}</TanstackProvider>
 	return children

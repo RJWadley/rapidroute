@@ -52,7 +52,11 @@
 			"react-dom": "$react-dom",
 			"@types/react": "^19",
 			"@types/react-dom": "^19"
-		}
+		},
+		"onlyBuiltDependencies": [
+			"@vercel/speed-insights",
+			"@biomejs/biome"
+		]
 	},
 	"packageManager": "pnpm@10.0.0"
 }

@@ -5,7 +5,6 @@ export default function MapPlayers() {
 	const { data: onlinePlayers } = useOnlinePlayers()
 
 	if (!onlinePlayers) return null
-
 	const players = Object.values(onlinePlayers)
 
 	return (
