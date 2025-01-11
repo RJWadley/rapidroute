@@ -49,7 +49,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 			eventMode="static"
 			cursor="pointer"
 			onPointerEnter={enter}
-			onPointerLeave={leave}
+			onMouseLeave={leave}
 			onTouchEnd={() => setTimeout(leave, 3000)}
 			cullable
 			x={skewed.x}

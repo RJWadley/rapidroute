@@ -72,7 +72,7 @@ export default function MRTStop({
 				cursor="pointer"
 				eventMode="static"
 				onPointerEnter={enter}
-				onPointerLeave={leave}
+				onMouseLeave={leave}
 				onTouchEnd={() => setTimeout(leave, 3000)}
 				cullable
 				x={skewed.x}
@@ -118,7 +118,7 @@ export default function MRTStop({
 				y={skewed.z}
 				anchor={{ x: 0.5, y: 0.5 }}
 				onPointerEnter={enter}
-				onPointerLeave={leave}
+				onMouseLeave={leave}
 				onTouchEnd={() => setTimeout(leave, 3000)}
 			/>
 		</>
