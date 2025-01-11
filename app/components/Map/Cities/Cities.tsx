@@ -14,6 +14,7 @@ export default function Cities() {
 				key={place.id}
 				name={place.name}
 				x={place.coordinates[0]}
+				y={60}
 				z={place.coordinates[1]}
 				type={
 					place.name === "Central City" ? "spawn" : (place.rank ?? "Unranked")

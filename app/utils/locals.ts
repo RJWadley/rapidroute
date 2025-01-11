@@ -17,12 +17,17 @@ export const useLocalIsometric = () => {
 		setDirect(newValue)
 	})
 
-	return [
-		direct === "isometric",
-		(value: boolean) => {
+	const setPreference = (value: boolean) => {
+		if (document.startViewTransition) {
+			document.startViewTransition(() => {
+				events.dispatchEvent("isometricChange", value ? "isometric" : "flat")
+			})
+		} else {
 			events.dispatchEvent("isometricChange", value ? "isometric" : "flat")
-		},
-	] as const
+		}
+	}
+
+	return [direct === "isometric", setPreference] as const
 }
 
 function useSystemDarkMode() {

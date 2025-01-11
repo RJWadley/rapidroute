@@ -37,7 +37,12 @@ export default function ImageTile({
 
 	if (!isSuccess) return null
 	return (
-		<MotionContainer initial={{ alpha: 0 }} x={x} y={y + VERTICAL_OFFSET}>
+		<MotionContainer
+			initial={{ alpha: 0 }}
+			animate={{ alpha: 1 }}
+			x={x}
+			y={y + VERTICAL_OFFSET}
+		>
 			<pixiSprite
 				key={url}
 				texture={texture}

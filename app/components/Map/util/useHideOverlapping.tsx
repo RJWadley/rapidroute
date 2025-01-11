@@ -14,6 +14,7 @@ import PriorityQueue from "app/utils/PriorityQueue"
 import { useQuery } from "@tanstack/react-query"
 import { useViewportMoved } from "../Viewport"
 import { useTimeout } from "ahooks"
+import { useLocalIsometric } from "app/utils/locals"
 
 const { getAllCullDistances } =
 	typeof Worker === "undefined"
@@ -90,9 +91,10 @@ export function OverlappingProvider({
 	)
 	const [signal, setSignal] = useState(0)
 	const triggerUpdate = () => setSignal((p) => p + 1)
+	const [isometric] = useLocalIsometric()
 
 	const { data } = useQuery({
-		queryKey: ["cull-distances", signal],
+		queryKey: ["cull-distances", signal, isometric],
 		queryFn: async () => {
 			if (objectQueue.length() === 0) return {}
 			if (!getAllCullDistances) return {}

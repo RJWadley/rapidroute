@@ -32,12 +32,14 @@ export default function CityMarker({
 	name,
 	id,
 	x,
+	y,
 	z,
 	type,
 }: {
 	name: string
 	id: string
 	x: number
+	y: number
 	z: number
 	type: CityType
 }) {
@@ -62,7 +64,7 @@ export default function CityMarker({
 	})
 
 	const [isometric] = useLocalIsometric()
-	const skewed = isometric ? convertPointToIsometric({ x, z }) : { x, z }
+	const skewed = isometric ? convertPointToIsometric({ x, y, z }) : { x, z }
 
 	return (
 		<MotionContainer
@@ -71,6 +73,7 @@ export default function CityMarker({
 			ref={containerRef}
 			cursor="pointer"
 			cullable
+			initial={{ alpha: 0 }}
 			animate={{ alpha: visible ? 1 : 0 }}
 		>
 			<pixiText text={name} style={regular} anchor={0.5} />

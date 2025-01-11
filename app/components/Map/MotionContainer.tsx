@@ -1,22 +1,18 @@
 import { extend } from "@pixi/react"
 import {
+	type SpringOptions,
 	useMotionValueEvent,
 	useSpring,
-	type SpringOptions,
 } from "motion/react"
 import { Container } from "pixi.js"
-import { useEffect, useRef, type ComponentProps, type RefObject } from "react"
+import { type ComponentProps, type RefObject, useEffect, useRef } from "react"
 
 extend({ Container })
 
-const supportedValues = [
-	{ key: "x", fallback: undefined },
-	{ key: "y", fallback: undefined },
-	{ key: "alpha", fallback: 1 },
-] as const
+const supportedValues = ["x", "y", "alpha"] as const
 
 type SupportedValues = {
-	[K in (typeof supportedValues)[number]["key"]]?: number
+	[K in (typeof supportedValues)[number]]?: number
 }
 
 const err = (value: string) => {
@@ -30,51 +26,52 @@ export function MotionContainer({
 	ref,
 	...containerProps
 }: {
-	initial?: Partial<SupportedValues>
-	animate?: Partial<SupportedValues>
+	initial?: SupportedValues
+	animate?: SupportedValues
 	options?: SpringOptions
 	ref?: RefObject<Container | null>
 } & ComponentProps<"pixiContainer">) {
 	const internalRef = useRef<Container>(null)
 	const containerRef = ref ?? internalRef
 
-	const getInitialValue = (key: keyof SupportedValues, fallback?: number) => {
-		return (
-			initial?.[key] ??
-			animate?.[key] ??
-			containerProps[key] ??
-			fallback ??
-			err(key)
-		)
-	}
+	/**
+	 * create a spring for each supported value
+	 */
+	const springs = supportedValues.map((valueName) => {
+		const initialValue = initial?.[valueName] ?? animate?.[valueName]
+		const spring = useSpring(initialValue ?? 0, options)
 
-	const springs = supportedValues.map(({ key, fallback }) => {
-		const spring = useSpring(getInitialValue(key, fallback), options)
+		const isAnimated = animate?.[valueName] !== undefined
 
 		useMotionValueEvent(spring, "change", (value) => {
+			if (!isAnimated) return
+
 			const container = containerRef.current
-			if (container) container[key] = value
-			if (container && key === "alpha") container.visible = value > 0
+			if (container) container[valueName] = value
+			if (container && valueName === "alpha") container.visible = value > 0
 		})
 
-		return { key, spring, fallback }
+		return { valueName, spring, isAnimated }
 	})
 
+	/**
+	 * pass value changes to the spring
+	 */
 	useEffect(() => {
-		for (const { key, spring, fallback } of springs) {
-			const value = animate?.[key] ?? fallback ?? undefined
-			if (containerRef.current?.renderable && value !== undefined)
+		for (const { valueName, spring, isAnimated } of springs) {
+			const value = animate?.[valueName]
+			if (containerRef.current?.renderable && isAnimated && value !== undefined)
 				spring.set(value)
 		}
 	})
 
 	return (
 		<pixiContainer
-			{...containerProps}
 			ref={containerRef}
 			{...Object.fromEntries(
-				springs.map(({ key, spring }) => [key, spring.get()]),
+				springs.map(({ valueName, spring }) => [valueName, spring.get()]),
 			)}
+			{...containerProps}
 		/>
 	)
 }

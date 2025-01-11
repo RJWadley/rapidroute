@@ -44,14 +44,17 @@ export const shiftWorldCoordinateFromIsometric = ({
 /**
  * convert a 3d world coordinate to an isometric 3d world coordinate
  */
-export const convertPointToIsometric = ({ x, z }: { x: number; z: number }) => {
+export const convertPointToIsometric = ({
+	x,
+	y,
+	z,
+}: { x: number; y: number; z: number }) => {
 	const { x: newX, z: newZ } = rotatePoints(x, z, 0, 0, -45)
 
-	return shiftWorldCoordinateToIsometric({
+	return {
 		x: newX,
-		y: 60,
-		z: newZ * SCALE_FACTOR - 32,
-	})
+		z: (newZ - y) * SCALE_FACTOR,
+	}
 }
 
 /**
@@ -59,15 +62,16 @@ export const convertPointToIsometric = ({ x, z }: { x: number; z: number }) => {
  */
 export const convertPointFromIsometric = ({
 	x,
+	y,
 	z,
-}: { x: number; z: number }) => {
-	const unshifted = shiftWorldCoordinateFromIsometric({
+}: { x: number; y: number; z: number }) => {
+	const unshifted = {
 		x,
-		y: 60,
-		z: (z + 32) / SCALE_FACTOR,
-	})
+		z: z / SCALE_FACTOR + y,
+	}
 
-	return rotatePoints(unshifted.x, unshifted.z, 0, 0, 45)
+	const rotated = rotatePoints(unshifted.x, unshifted.z, 0, 0, 45)
+	return { x: rotated.x, y, z: rotated.z }
 }
 
 export const unskew = (isometric: boolean) => ({

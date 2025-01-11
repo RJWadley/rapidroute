@@ -12,8 +12,8 @@ import {
 import { useRef, useState } from "react"
 import { useViewportMoved } from "../Viewport"
 import { convertPointToIsometric } from "../util/isometric"
-import { MotionContainer } from "../MotionContainer"
 import { useHideOverlapping } from "../util/useHideOverlapping"
+import { MotionContainer } from "../MotionContainer"
 
 extend({ Sprite, Text, Container })
 
@@ -54,6 +54,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 	if (!isSuccess) return null
 	return (
 		<MotionContainer
+			key={isometric ? "iso" : "flat"}
 			eventMode="static"
 			cursor="pointer"
 			onPointerEnter={enter}
@@ -65,9 +66,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 				visualDuration: 4,
 				bounce: 0.25,
 			}}
-			animate={{ x: skewed.x, y: skewed.z }}
-			// x={skewed.x}
-			// y={skewed.z}
+			animate={{ x: skewed.x, y: skewed.z, alpha: 1 }}
 			ref={containerRef}
 		>
 			<pixiGraphics
