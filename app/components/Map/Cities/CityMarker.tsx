@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { useViewport, useViewportMoved } from "../Viewport"
 import { convertPointToIsometric } from "../util/isometric"
 import { useHideOverlapping } from "../util/useHideOverlapping"
+import { MotionContainer } from "../MotionContainer"
 
 type CityType =
 	| "Unranked"
@@ -64,16 +65,16 @@ export default function CityMarker({
 	const skewed = isometric ? convertPointToIsometric({ x, z }) : { x, z }
 
 	return (
-		<pixiContainer
+		<MotionContainer
 			x={skewed.x}
 			y={skewed.z}
 			ref={containerRef}
 			cursor="pointer"
 			cullable
-			visible={!!visible}
+			animate={{ alpha: visible ? 1 : 0 }}
 		>
 			<pixiText text={name} style={regular} anchor={0.5} />
-		</pixiContainer>
+		</MotionContainer>
 	)
 }
 

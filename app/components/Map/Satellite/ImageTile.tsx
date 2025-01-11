@@ -2,6 +2,7 @@ import { extend, useAssets } from "@pixi/react"
 import { useLocalIsometric } from "app/utils/locals"
 import { Sprite, type Texture } from "pixi.js"
 import getTileUrl from "./getTileURL"
+import { MotionContainer } from "../MotionContainer"
 
 /**
  * shift all the tiles by 32 blocks to align with dynmap
@@ -36,13 +37,13 @@ export default function ImageTile({
 
 	if (!isSuccess) return null
 	return (
-		<pixiSprite
-			key={url}
-			texture={texture}
-			width={tileWidth}
-			height={tileWidth}
-			x={x}
-			y={y + VERTICAL_OFFSET}
-		/>
+		<MotionContainer initial={{ alpha: 0 }} x={x} y={y + VERTICAL_OFFSET}>
+			<pixiSprite
+				key={url}
+				texture={texture}
+				width={tileWidth}
+				height={tileWidth}
+			/>
+		</MotionContainer>
 	)
 }

@@ -54,6 +54,7 @@ export function MotionContainer({
 		useMotionValueEvent(spring, "change", (value) => {
 			const container = containerRef.current
 			if (container) container[key] = value
+			if (container && key === "alpha") container.visible = value > 0
 		})
 
 		return { key, spring, fallback }

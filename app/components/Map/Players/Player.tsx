@@ -107,6 +107,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 			<pixiText
 				anchor={{ x: 0, y: 0.5 }}
 				x={20}
+				// text is usually bottom heavy, compensate
 				y={-1}
 				text={player.name}
 				style={playerStyle}
@@ -116,10 +117,10 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 }
 
 const playerStyle = new TextStyle({
-	fill: "hsl(50, 90%, 95%)",
+	fill: "hsl(50, 90%, 80%)",
 	stroke: {
 		width: 3,
-		color: "hsl(50, 90%, 10%)",
+		color: "black",
 		miterLimit: 4,
 		cap: "round",
 	},
