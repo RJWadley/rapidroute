@@ -34,8 +34,7 @@ export default function MRTStop({
 	const touchTargetRef = useRef<Text>(null)
 
 	/**
-	 * update the size of our label based on zoom
-	 */
+uh	 */
 	const updateSize = useCallback((viewport: Viewport) => {
 		const scale = { x: 1 / viewport.scale.x, y: 1 / viewport.scale.y }
 		if (codesTextRef.current) codesTextRef.current.scale = scale

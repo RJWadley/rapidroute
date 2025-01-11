@@ -7,7 +7,7 @@ import {
 	Sprite,
 	Text,
 	TextStyle,
-	type Texture
+	type Texture,
 } from "pixi.js"
 import { useRef, useState } from "react"
 import { useViewportMoved } from "../Viewport"
