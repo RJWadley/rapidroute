@@ -53,7 +53,6 @@ const getStopName = (marker: MRTStopData) => {
 		)
 	}
 
-	console.log("marker", marker)
 	throw new Error(`stop matched no regex: '${marker.label}'`)
 }
 

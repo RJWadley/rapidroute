@@ -12,6 +12,8 @@ import {
 import { useRef, useState } from "react"
 import { useViewportMoved } from "../Viewport"
 import { convertPointToIsometric } from "../util/isometric"
+import { MotionContainer } from "../MotionContainer"
+import { useHideOverlapping } from "../util/useHideOverlapping"
 
 extend({ Sprite, Text, Container })
 
@@ -33,7 +35,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 	useViewportMoved((viewport) => {
 		if (!containerRef.current) return null
 
-		const scaleToUse = Math.max(0.05, viewport.scale.x)
+		const scaleToUse = Math.max(0.02, viewport.scale.x)
 		containerRef.current.scale = 1 / scaleToUse
 	})
 
@@ -43,17 +45,29 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 	const enter = () => setIsHover(true)
 	const leave = () => setIsHover(false)
 
+	useHideOverlapping({
+		item: containerRef,
+		priority: "players",
+		debugName: player.name,
+	})
+
 	if (!isSuccess) return null
 	return (
-		<pixiContainer
+		<MotionContainer
 			eventMode="static"
 			cursor="pointer"
 			onPointerEnter={enter}
 			onMouseLeave={leave}
 			onTouchEnd={() => setTimeout(leave, 3000)}
 			cullable
-			x={skewed.x}
-			y={skewed.z}
+			initial={{ alpha: 0 }}
+			options={{
+				visualDuration: 4,
+				bounce: 0.25,
+			}}
+			animate={{ x: skewed.x, y: skewed.z }}
+			// x={skewed.x}
+			// y={skewed.z}
 			ref={containerRef}
 		>
 			<pixiGraphics
@@ -97,7 +111,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 				text={player.name}
 				style={playerStyle}
 			/>
-		</pixiContainer>
+		</MotionContainer>
 	)
 }
 

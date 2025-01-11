@@ -2,22 +2,23 @@
 
 import { Application } from "@pixi/react"
 import { useEventListener } from "ahooks"
-import { use, useRef } from "react"
-import { styled } from "restyle"
-import { MovementContext } from "../MapMovement"
-import { PixiHooks } from "../MapOLD/pixiUtils"
-import { PixiViewport } from "./Viewport"
-import type { parseMarkersWithFallback } from "./markers-schema"
 import { isBrowser } from "app/utils/isBrowser"
-import { Satellite } from "./Satellite"
+import { useRef } from "react"
+import { styled } from "restyle"
 import { Dynmap } from "./Dynmap"
 import MapPlayers from "./Players"
+import { Satellite } from "./Satellite"
+import { PixiViewport } from "./Viewport"
+import type { parseMarkersWithFallback } from "./markers-schema"
+import { OverlappingProvider } from "./util/useHideOverlapping"
+import Cities from "./Cities/Cities"
 
 export function MapClient({
 	markers,
 }: { markers: ReturnType<typeof parseMarkersWithFallback> }) {
 	const wrapperRef = useRef<HTMLDivElement>(null)
-	const { lastUsedMethod } = use(MovementContext)
+	// TODO reenable
+	// const { lastUsedMethod } = use(MovementContext)
 
 	/**
 	 * prevent scroll events from bubbling up to the document
@@ -48,21 +49,21 @@ export function MapClient({
 	/**
 	 * propogate touch events to the map movement provider
 	 */
-	const touchStart = () => {
-		lastUsedMethod.current = "touchStillActive"
-	}
-	const touchEnd = () => {
-		lastUsedMethod.current = "touch"
-	}
+	// const touchStart = () => {
+	// 	lastUsedMethod.current = "touchStillActive"
+	// }
+	// const touchEnd = () => {
+	// 	lastUsedMethod.current = "touch"
+	// }
 
 	return (
 		<Wrapper
 			ref={wrapperRef}
-			onTouchStart={touchStart}
-			onTouchEnd={touchEnd}
-			onPointerDown={touchStart}
-			onPointerUp={touchEnd}
-			onWheel={touchEnd}
+			// onTouchStart={touchStart}
+			// onTouchEnd={touchEnd}
+			// onPointerDown={touchStart}
+			// onPointerUp={touchEnd}
+			// onWheel={touchEnd}
 		>
 			<Background />
 			<Application
@@ -73,10 +74,12 @@ export function MapClient({
 				resolution={isBrowser ? window.devicePixelRatio : 1}
 			>
 				<PixiViewport>
-					<PixiHooks />
-					<Satellite />
-					{markers.data && <Dynmap markers={markers.data} />}
-					<MapPlayers />
+					<OverlappingProvider>
+						<Satellite />
+						{markers.data && <Dynmap markers={markers.data} />}
+						<Cities />
+						<MapPlayers />
+					</OverlappingProvider>
 				</PixiViewport>
 			</Application>
 		</Wrapper>

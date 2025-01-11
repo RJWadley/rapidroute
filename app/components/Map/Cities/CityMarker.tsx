@@ -1,11 +1,9 @@
-import { useSearchParamState } from "app/utils/useSearchParamState"
-import { type Container, Point, type Text } from "pixi.js"
-import { useRef } from "react"
-import { hideItem, showItem, skewWorldCoordinate } from "./pixiUtils"
-import { regular, regularHover } from "./textStyles"
-import useHideOverlapping from "./useHideOverlapping"
-import { useViewport, useViewportMoved } from "../Map/Viewport"
 import { useLocalIsometric } from "app/utils/locals"
+import { type Container, Point, TextStyle } from "pixi.js"
+import { useRef } from "react"
+import { useViewport, useViewportMoved } from "../Viewport"
+import { convertPointToIsometric } from "../util/isometric"
+import { useHideOverlapping } from "../util/useHideOverlapping"
 
 type CityType =
 	| "Unranked"
@@ -44,7 +42,6 @@ export default function CityMarker({
 }) {
 	const viewport = useViewport()
 	const containerRef = useRef<Container>(null)
-	const hoverTextRef = useRef<Text>(null)
 
 	const onMove = () => {
 		if (containerRef.current && viewport) {
@@ -56,22 +53,15 @@ export default function CityMarker({
 	}
 	useViewportMoved(onMove)
 
-	const pointerIn = () => {
-		if (hoverTextRef.current) showItem(hoverTextRef.current, "auto")
-	}
-	const pointerOut = () => {
-		if (hoverTextRef.current) hideItem(hoverTextRef.current)
-	}
-
-	useHideOverlapping({
+	const visible = useHideOverlapping({
 		item: containerRef,
-		name,
 		priority: type,
 		minZoom: ZoomThresholds[type] ?? max,
+		debugName: name,
 	})
 
 	const [isometric] = useLocalIsometric()
-	const skewed = isometric ? skewWorldCoordinate(x, 60, z) : { x, z }
+	const skewed = isometric ? convertPointToIsometric({ x, z }) : { x, z }
 
 	return (
 		<pixiContainer
@@ -79,18 +69,24 @@ export default function CityMarker({
 			y={skewed.z}
 			ref={containerRef}
 			cursor="pointer"
-			onPointerEnter={pointerIn}
-			onPointerLeave={pointerOut}
 			cullable
+			visible={!!visible}
 		>
 			<pixiText text={name} style={regular} anchor={0.5} />
-			<pixiText
-				text={name}
-				style={regularHover}
-				anchor={0.5}
-				ref={hoverTextRef}
-				visible={false}
-			/>
 		</pixiContainer>
 	)
 }
+
+const regular = new TextStyle({
+	fill: "white",
+	stroke: {
+		width: 3,
+		color: "black",
+		miterLimit: 4,
+		cap: "round",
+	},
+	fontFamily: "Inter, Arial",
+	fontSize: 16,
+	fontWeight: "500",
+	align: "center",
+})

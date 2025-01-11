@@ -8,7 +8,6 @@ import { useRef, useState } from "react"
 import { IoSearch } from "react-icons/io5"
 import { styled } from "restyle"
 import Box from "../Box"
-import { useCamera } from "../MapMovement"
 import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
 import { getTextboxName } from "./getTextboxName"
@@ -21,7 +20,7 @@ export function SearchBox() {
 	const wrapper = useRef<HTMLDivElement>(null)
 	const navigateRef = useRef<HTMLButtonElement>(null)
 	const fromFieldRef = useRef<HTMLTextAreaElement>(null)
-	const { moveCamera } = useCamera()
+	// const { moveCamera } = useCamera()
 
 	const { fromID, setFromID, toID, setToID } = useRouting()
 	const [navMode, setNavMode] = useState(Boolean(fromID))
@@ -58,12 +57,13 @@ export function SearchBox() {
 		onItemSelected: (item, explicitly) => {
 			setToID(item?.id)
 
-			if (item?.coordinates && explicitly)
-				moveCamera({
-					x: item.coordinates[0] - 150,
-					z: item.coordinates[1],
-					worldScreenWidth: 1500,
-				})
+			// TODO
+			// if (item?.coordinates && explicitly)
+			// 	moveCamera({
+			// 		x: item.coordinates[0] - 150,
+			// 		z: item.coordinates[1],
+			// 		worldScreenWidth: 1500,
+			// 	})
 		},
 		onBlur: () => {
 			setTimeout(() => {

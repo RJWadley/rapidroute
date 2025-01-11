@@ -37,6 +37,18 @@ export default class PriorityQueue<T> {
 		return this.nodes.length === 0
 	}
 
+	public filter(predicate: (element: T) => boolean): void {
+		this.nodes = this.nodes.filter((node) => predicate(node.element))
+	}
+
+	public toArray(): T[] {
+		return this.nodes.map((node) => node.element)
+	}
+
+	public length(): number {
+		return this.nodes.length
+	}
+
 	public clear(): void {
 		this.nodes = []
 	}

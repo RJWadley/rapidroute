@@ -59,7 +59,7 @@ export const useOnlinePlayers = () => {
 	return useQuery({
 		queryKey: ["online-players"],
 		queryFn: () => getOnlinePlayers(),
-		refetchInterval: 5000,
+		refetchInterval: 1000,
 		placeholderData: (previous) => previous,
 	})
 }
