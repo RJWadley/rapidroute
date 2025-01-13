@@ -1,6 +1,11 @@
 import { z } from "zod"
 import BritishData from "@/gatelogue/data_no_sources.json"
-import "server-only"
+import { isServer } from "app/utils/isBrowser"
+
+if (!isServer)
+	throw new Error(
+		"raw gatelogue data was imported to the client! this will impact bundle size significantly!",
+	)
 
 const RawData = JSON.parse(
 	JSON.stringify(BritishData)
@@ -310,7 +315,7 @@ const schema = z
 			]),
 		),
 		timestamp: requiredString,
-		version: z.number(),
+		version: z.literal(6),
 	})
 	.readonly()
 

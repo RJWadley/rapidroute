@@ -6,7 +6,9 @@
 		"build": "next build",
 		"dev": "next dev --turbopack",
 		"lint": "next lint",
-		"start": "next start"
+		"start": "next start",
+		"test": "bun test",
+		"postinstall": "bun ./update-gatelogue.ts"
 	},
 	"dependencies": {
 		"@ai-sdk/google": "1.0.14",
@@ -14,12 +16,12 @@
 		"@happy-dom/global-registrator": "16.5.3",
 		"@koale/useworker": "4.1.0",
 		"@pixi/react": "8.0.0-beta.21",
-		"@preact/signals-react": "^3.0.0",
+		"@preact/signals-react": "3.0.0",
 		"@tanstack/react-query": "5.63.0",
 		"@testing-library/react": "16.1.0",
 		"@testing-library/user-event": "14.5.2",
 		"@total-typescript/ts-reset": "0.6.1",
-		"@total-typescript/tsconfig": "^1.0.4",
+		"@total-typescript/tsconfig": "1.0.4",
 		"@types/bun": "1.1.16",
 		"@types/object-hash": "3.0.6",
 		"@types/probe-image-size": "7.2.5",
@@ -29,6 +31,7 @@
 		"ahooks": "3.8.4",
 		"ai": "4.0.31",
 		"babel-plugin-react-compiler": "19.0.0-beta-63e3235-20250105",
+		"bun": "1.1.43",
 		"color2k": "2.0.3",
 		"comlink": "4.4.2",
 		"dedent": "1.5.3",
@@ -56,7 +59,9 @@
 		},
 		"onlyBuiltDependencies": [
 			"@vercel/speed-insights",
-			"@biomejs/biome"
+			"@biomejs/biome",
+			"sharp",
+			"bun"
 		]
 	},
 	"packageManager": "pnpm@10.0.0"
