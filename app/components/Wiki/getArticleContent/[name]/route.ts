@@ -4,10 +4,11 @@ import dedent from "dedent"
 import { z } from "zod"
 import type { SearchResponse } from "../../types/PageSearch"
 import type { ParseResponse } from "../../types/ParseQuery"
-import { RAW_WIKI_URL, getWikiURL } from "../../url"
 import { loadImageDimensions } from "./getImageDimensions"
 
 export const dynamic = "force-static"
+
+const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
 
 const googleModel = google("gemini-1.5-flash", {
 	safetySettings: [
@@ -108,8 +109,6 @@ export const GET = async (
 	const name = await (await params).name
 	if (!name) return new Response("name is required", { status: 400 })
 
-	const wikiURL = getWikiURL()
-
 	const specificParams = {
 		action: "query",
 		list: "search",
@@ -118,14 +117,14 @@ export const GET = async (
 		format: "json",
 		srlimit: "1",
 	}
-	const specificUrl = `${wikiURL}api.php?${new URLSearchParams(
+	const specificUrl = `${WIKI_URL}api.php?${new URLSearchParams(
 		specificParams,
 	).toString()}`
 	const genericParams = {
 		...specificParams,
 		srwhat: "text",
 	}
-	const genericUrl = `${wikiURL}api.php?${new URLSearchParams(
+	const genericUrl = `${WIKI_URL}api.php?${new URLSearchParams(
 		genericParams,
 	).toString()}`
 
@@ -160,7 +159,7 @@ export const GET = async (
 		redirects: "true",
 		mobileformat: "true",
 	}
-	const url = `${wikiURL}api.php?${new URLSearchParams(pageParams).toString()}`
+	const url = `${WIKI_URL}api.php?${new URLSearchParams(pageParams).toString()}`
 	const content = await fetch(url).then(
 		(res) => res.json() as Promise<ParseResponse>,
 	)
@@ -169,8 +168,8 @@ export const GET = async (
 		.replaceAll("{{{subtextcolor}}}", "var(--default-text)")
 		.replaceAll("#ccf", "#ddd")
 		// make sure URLs are valid
-		.replaceAll('src="/', `src="${RAW_WIKI_URL}`)
-		.replaceAll('href="/', `href="${RAW_WIKI_URL}`)
+		.replaceAll('src="/', `src="${WIKI_URL}`)
+		.replaceAll('href="/', `href="${WIKI_URL}`)
 		// split apart any srcset attributes, upgrade the src, and rejoin them
 		.replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
 			const srcset = p1
@@ -178,7 +177,7 @@ export const GET = async (
 				.map((src) => src.trim())
 				.map((src) => {
 					const [imageURL, size] = src.split(" ")
-					return `${RAW_WIKI_URL}${imageURL} ${size}
+					return `${WIKI_URL}${imageURL} ${size}
 `
 				})
 				.join(",")
@@ -213,7 +212,7 @@ export const GET = async (
 		JSON.stringify({
 			content: await addImageDimensions(synopsis.object.innerHTML),
 			title: result.title,
-			url: `${RAW_WIKI_URL}index.php/${result.title}`,
+			url: `${WIKI_URL}index.php/${result.title}`,
 			type: result.type,
 			mainImage: synopsis.object.mainImage
 				? await loadImageDimensions(synopsis.object.mainImage)

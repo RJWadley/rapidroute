@@ -6,6 +6,7 @@ import { Container, Point, Text, TextStyle } from "pixi.js"
 import { useCallback, useLayoutEffect, useRef, useState } from "react"
 import { shiftWorldCoordinateToIsometric, unskew } from "../util/isometric"
 import MulticolorDot from "./MulticolorDot"
+import { useHideOverlapping } from "../util/useHideOverlapping"
 
 extend({ Container, Text })
 
@@ -62,6 +63,13 @@ uh	 */
 	const skewed = isometric
 		? shiftWorldCoordinateToIsometric({ x, y, z })
 		: { x, z }
+
+	useHideOverlapping({
+		skipCheck: !isHover,
+		item: containerRef,
+		priority: "hover",
+		debugName: `mrt ${codes.join(" - ")}`,
+	})
 
 	if (!app) return null
 	return (

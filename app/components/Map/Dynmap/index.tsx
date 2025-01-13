@@ -5,9 +5,10 @@ import { SCALE_FACTOR } from "../util/isometric"
 import { Container } from "pixi.js"
 import { extend } from "@pixi/react"
 import MRTStops from "./MRTStops"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useViewportMoved } from "../Viewport"
 import MarkerLine from "./MarkerLine"
+import { MotionContainer } from "../MotionContainer"
 
 extend({ Container })
 
@@ -18,6 +19,8 @@ export function Dynmap({
 }) {
 	const [isometric] = useLocalIsometric()
 	const wrapper = useRef<Container>(null)
+	const [linesVisible, setLinesVisible] = useState(false)
+	const [stopsVisible, setStopsVisible] = useState(false)
 
 	/**
 	 * parse out every individual MRT stop
@@ -57,7 +60,8 @@ export function Dynmap({
 	useViewportMoved((viewport) => {
 		if (wrapper.current) {
 			const zoom = viewport.scale.x
-			wrapper.current.alpha = zoom < 2 && zoom > 0.1 ? 1 : 0
+			setStopsVisible(zoom < 2 && zoom > 0.2)
+			setLinesVisible(zoom < 2)
 		}
 	})
 
@@ -66,10 +70,14 @@ export function Dynmap({
 			scale={isometric ? { x: 1, y: SCALE_FACTOR } : { x: 1, y: 1 }}
 		>
 			<pixiContainer angle={isometric ? -45 : 0} ref={wrapper}>
-				{allLines.map(({ key, segments }) => (
-					<MarkerLine key={key} line={segments} />
-				))}
-				<MRTStops stops={allStops} />
+				<MotionContainer animate={{ alpha: linesVisible ? 1 : 0 }}>
+					{allLines.map(({ key, segments }) => (
+						<MarkerLine key={key} line={segments} />
+					))}
+				</MotionContainer>
+				<MotionContainer animate={{ alpha: stopsVisible ? 1 : 0 }}>
+					<MRTStops stops={allStops} />
+				</MotionContainer>
 			</pixiContainer>
 		</pixiContainer>
 	)

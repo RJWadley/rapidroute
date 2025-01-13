@@ -1,20 +1,19 @@
-import { type Text, type Container, type Sprite, Rectangle } from "pixi.js"
+import { useQuery } from "@tanstack/react-query"
+import PriorityQueue from "app/utils/PriorityQueue"
+import { useLocalIsometric } from "app/utils/locals"
+import { wrap } from "comlink"
+import { type Container, Rectangle, type Sprite, type Text } from "pixi.js"
 import {
+	type RefObject,
 	createContext,
 	use,
 	useEffect,
 	useMemo,
 	useRef,
 	useState,
-	type RefObject,
 } from "react"
-import type { CullInput, WorkerOut } from "./getAllCullDistances"
-import { wrap } from "comlink"
-import PriorityQueue from "app/utils/PriorityQueue"
-import { useQuery } from "@tanstack/react-query"
 import { useViewportMoved } from "../Viewport"
-import { useTimeout } from "ahooks"
-import { useLocalIsometric } from "app/utils/locals"
+import type { CullInput, WorkerOut } from "./getAllCullDistances"
 
 const { getAllCullDistances } =
 	typeof Worker === "undefined"
@@ -39,6 +38,7 @@ type OverlappingProperties = {
  * Items with a higher priority (index) will be preferred.
  */
 const priorities = [
+	// cities
 	"Unranked",
 	"Community",
 	"Councillor",
@@ -46,8 +46,14 @@ const priorities = [
 	"Senator",
 	"Governor",
 	"Premier",
+
+	// spawn
 	"spawn",
+
+	// players
 	"players",
+
+	// hover
 	"hover",
 ] as const
 export type PriorityType = (typeof priorities)[number]
@@ -165,15 +171,11 @@ export function useHideOverlapping({
 	const [visible, setVisible] = useState(false)
 	const id = useMemo(() => crypto.randomUUID(), [])
 	const { results, addItem, removeItem } = use(OverlappingContext)
-	const [ready, setReady] = useState(false)
 	const boundsCache = useRef<Rectangle | null>(null)
-
-	useTimeout(() => setReady(true), 2000)
 
 	useEffect(() => {
 		if (!item.current) return
 		if (skipCheck) return
-		if (!ready) return
 
 		addItem(id, {
 			getBounds: () => {
@@ -189,17 +191,7 @@ export function useHideOverlapping({
 		})
 
 		return () => removeItem(id)
-	}, [
-		ready,
-		id,
-		addItem,
-		item,
-		minZoom,
-		priority,
-		removeItem,
-		skipCheck,
-		debugName,
-	])
+	}, [id, addItem, item, minZoom, priority, removeItem, skipCheck, debugName])
 
 	const zoomForThisItem = results[id]
 	useViewportMoved((viewport) => {

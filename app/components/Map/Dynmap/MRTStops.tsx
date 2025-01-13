@@ -71,7 +71,7 @@ export default function MRTStops({
 			const stopMeta = getStopName(newStop.marker)
 
 			// if the stop is within a distance of an existing stop, add it to that stop
-			const maxDistance = 20
+			const maxDistance = 100
 			const existingStop = newStops.find((stop) => {
 				return (
 					getDistance(stop.x, stop.z, newStop.marker.x, newStop.marker.z) <

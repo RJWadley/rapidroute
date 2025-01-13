@@ -79,24 +79,6 @@ export function PixiViewport({
 	>({})
 
 	/**
-	 * adjust the smoothness of the viewport
-	 * depending on the scroll input type
-	 */
-	const scrollInputType = useScrollInputType()
-	useEffect(() => {
-		if (!viewport) return
-		if (!viewport.plugins.plugins.wheel) return
-
-		if (scrollInputType === "touchpad") {
-			// @ts-expect-error untyped
-			viewport.plugins.plugins.wheel.options.smooth = 0
-		} else {
-			// @ts-expect-error untyped
-			viewport.plugins.plugins.wheel.options.smooth = 30
-		}
-	}, [viewport, scrollInputType])
-
-	/**
 	 * viewport setup
 	 */
 	useEffect(() => {
@@ -109,7 +91,7 @@ export function PixiViewport({
 		viewport
 			.drag()
 			.pinch()
-			.wheel({ smooth: 30 })
+			.wheel()
 			.decelerate()
 			.setZoom(zoom)
 			.moveCenter({
@@ -147,7 +129,6 @@ export function PixiViewport({
 
 		onMove()
 		requestAnimationFrame(onMove)
-
 		viewport.addEventListener("moved", onMove)
 		const interval = setInterval(onMove, 1000)
 
