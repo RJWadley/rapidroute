@@ -52,7 +52,7 @@ export const theme = Object.fromEntries(
 	[key in keyof typeof colors]: `var(${(typeof colors)[key]["variable"]}, light-dark(${(typeof colors)[key]["light"]}, ${(typeof colors)[key]["dark"]}))`
 }
 
-const syncTheme = (value: "system" | "light" | "dark") => {
+const syncTheme = (value: "system" | "light" | "dark" | undefined) => {
 	const themeValue = value || localStorage.getItem("dark") || "system"
 	const systemValue = window.matchMedia("(prefers-color-scheme: dark)").matches
 		? "dark"

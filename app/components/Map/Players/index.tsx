@@ -1,16 +1,30 @@
-import { useOnlinePlayers } from "app/utils/onlinePlayers"
+import { useOnlinePlayers, type OnlinePlayer } from "app/utils/onlinePlayers"
 import MapPlayer from "./Player"
+import { useEffect, useState } from "react"
 
 export default function MapPlayers() {
+	const [allTimePlayers, setAllTimePlayers] = useState<OnlinePlayer[]>([])
 	const { data: onlinePlayers } = useOnlinePlayers()
 
-	if (!onlinePlayers) return null
-	const players = Object.values(onlinePlayers)
+	useEffect(() => {
+		if (!onlinePlayers) return
 
+		setAllTimePlayers((p) =>
+			[...p, ...Object.values(onlinePlayers)].filter(
+				(player, i, arr) => arr.findIndex((x) => x.id === player.id) === i,
+			),
+		)
+	}, [onlinePlayers])
+
+	if (!onlinePlayers) return null
 	return (
 		<>
-			{players.map((player) => (
-				<MapPlayer key={player.name} player={player} />
+			{allTimePlayers.map((player) => (
+				<MapPlayer
+					key={player.name}
+					player={player}
+					isOnline={player.id in onlinePlayers}
+				/>
 			))}
 		</>
 	)

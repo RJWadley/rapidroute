@@ -225,6 +225,7 @@ export function RoutingProvider({
 				})
 			})
 		},
+		placeholderData: (p) => p,
 	})
 
 	const [firstRoute, ...restRoutes] = data ?? []

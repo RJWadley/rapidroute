@@ -12,9 +12,7 @@ const placesShim = [
 	{ id: "c", name: "thing c" },
 ]
 
-type Options = Partial<Parameters<typeof useSearchBox>[0]> & {
-	autoFocus?: boolean
-}
+type Options = Partial<Parameters<typeof useSearchBox>[0]>
 
 type OutputType = ReturnType<typeof useSearchBox>
 
@@ -27,30 +25,24 @@ const TestComponent = ({
 }) => {
 	const {
 		autoFocus,
-		initialPlaces,
+		places: initialPlaces,
 		initiallySelectedPlace,
 		onItemSelected,
 		onBlur,
 	} = options ?? {}
 
 	const out = useSearchBox({
-		initialPlaces: initialPlaces ?? placesShim,
+		places: initialPlaces ?? placesShim,
 		onItemSelected,
 		initiallySelectedPlace,
 		onBlur,
+		// autofocus is more convenient for testing
+		autoFocus: autoFocus ?? true,
 	})
 
 	outputRef.current = out
 
-	return (
-		<textarea
-			{...out.inputProps}
-			// biome-ignore lint/a11y/noAutofocus: part of the test
-			autoFocus={autoFocus ?? true}
-			data-autofocus={autoFocus ?? true}
-			placeholder="placeholder"
-		/>
-	)
+	return <textarea {...out.inputProps} placeholder="placeholder" />
 }
 
 function runHook(options?: Options) {

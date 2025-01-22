@@ -3,7 +3,7 @@ import type { CompressedPlace } from "app/utils/compressedPlaces"
 import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import { useSearchResults } from "app/utils/useSearchResults"
 import type { ComponentProps, FocusEvent } from "react"
-import { useRef, useState } from "react"
+import { startTransition, useEffect, useId, useRef, useState } from "react"
 import { getTextboxName } from "./getTextboxName"
 
 const blurActiveElement = () => {
@@ -17,17 +17,18 @@ const blurActiveElement = () => {
  * navigate the list with the arrow keys.
  */
 export default function useSearchBox<T extends Partial<CompressedPlace>>({
-	initialPlaces,
+	places,
 	initiallySelectedPlace,
 	onItemSelected,
 	onBlur: blurCallback,
+	autoFocus,
 }: {
 	/**
-	 * the initial list of all places to search through
+	 * the list of all places to search through
 	 */
-	initialPlaces: T[]
+	places: T[]
 	/**
-	 * which place is initially selected (via search params)?
+	 * which place is currently selected?
 	 */
 	initiallySelectedPlace?: T | Coordinate | OnlinePlayer
 	/**
@@ -41,6 +42,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * called after an item is selected and the input is blurred
 	 */
 	onBlur?: () => void
+	/**
+	 * should the input be focused on mount?
+	 */
+	autoFocus?: boolean
 }) {
 	/**
 	 * the currently selected item in the list
@@ -56,7 +61,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * current search results, based on the userTyped
 	 */
-	const currentSearch = useSearchResults(userTyped, initialPlaces)
+	const { results: currentSearch, runSearch } = useSearchResults(places)
 	/**
 	 * track if the dropdown should be open or closed
 	 */
@@ -90,10 +95,14 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		currentIndex === -1 ? userTyped : getTextboxName(selectedPlace).trim()
 
 	/**
-	 * if autofocus is true, browsers will fire focus then blur
+	 * if autofocus is true, focus will fire immediately
 	 * so we need to account for that
 	 */
 	const firstFocus = useRef(true)
+	const id = useId()
+	useEffect(() => {
+		if (autoFocus) document.getElementById(id)?.focus()
+	}, [autoFocus, id])
 
 	return {
 		onFocusLost: () => {
@@ -110,15 +119,15 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				}))
 			: undefined,
 		inputProps: {
+			id,
 			value: isOpen || !selectedPlace ? boxText : getTextboxName(selectedPlace),
 			onFocus: (e?: FocusEvent<HTMLTextAreaElement>) => {
 				const input = e?.currentTarget
 				if (!input) return
 
-				// for some unholy reason, happy dom doesn't return true for this
-				const isAutoFocus = input.autofocus || input.dataset.autofocus
+				if (input.autofocus) throw new Error("do not use native autofocus")
 
-				if (isAutoFocus && firstFocus.current) {
+				if (autoFocus && firstFocus.current) {
 					firstFocus.current = false
 					return
 				}
@@ -147,6 +156,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				} else if (newValue.includes("\n")) {
 					setUserTyped(newValue.trim())
 				}
+
+				startTransition(() => {
+					runSearch(e.currentTarget.value)
+				})
 			},
 			onKeyDown: (e) => {
 				switch (e.key) {

@@ -42,6 +42,8 @@ export const useLocalDark = () => {
 	const [preferenceDirect, setPreferenceDirect] = useLocalStorageState("dark", {
 		defaultValue: "system",
 		listenStorageChange: true,
+		serializer: (value) => value,
+		deserializer: (value) => value,
 	})
 
 	const setPreference = (value: "system" | "light" | "dark") => {

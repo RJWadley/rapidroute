@@ -41,7 +41,7 @@ export function SearchBox() {
 		searchResults: fromResults,
 		clear: clearFrom,
 	} = useSearchBox({
-		initialPlaces: compressedPlaces,
+		places: compressedPlaces,
 		initiallySelectedPlace: fromPlace,
 		onItemSelected: (item) => {
 			setFromID(item?.id)
@@ -53,7 +53,7 @@ export function SearchBox() {
 		searchResults: toResults,
 		clear: clearTo,
 	} = useSearchBox({
-		initialPlaces: compressedPlaces,
+		places: compressedPlaces,
 		initiallySelectedPlace: toPlace,
 		onItemSelected: (item, explicitly) => {
 			setToID(item?.id)
@@ -75,6 +75,7 @@ export function SearchBox() {
 					?.focus()
 			})
 		},
+		autoFocus: true,
 	})
 
 	useClickAway(fromFocusLost, wrapper)

@@ -1,27 +1,37 @@
 import type { Coordinate } from "app/data/coordinates"
-import { useDeferredValue, useMemo } from "react"
+import { useCallback, useMemo, useState } from "react"
 import type { CompressedPlace } from "./compressedPlaces"
 import { type OnlinePlayer, useOnlinePlayers } from "./onlinePlayers"
 import { search } from "./search"
 
 export const useSearchResults = <T extends Partial<CompressedPlace>>(
-	rawQuery: string | undefined | null,
-	initialPlaces: T[],
-): (T | Coordinate | OnlinePlayer)[] => {
-	const query = useDeferredValue(rawQuery)
+	places: T[],
+): {
+	results: (T | Coordinate | OnlinePlayer)[]
+	runSearch: (query: string) => void
+} => {
+	const [results, setResults] = useState<ReturnType<typeof search<T>>>()
 
 	const { data: players } = useOnlinePlayers()
 
-	const results = useMemo(
-		() =>
-			query ? search(query, initialPlaces, Object.values(players ?? {})) : null,
-		[query, initialPlaces, players],
+	const runSearch = useCallback(
+		(query: string) => {
+			const newResults = query
+				? search(query, places, Object.values(players ?? {}))
+				: null
+
+			setResults(newResults)
+		},
+		[places, players],
 	)
 
 	const randomPlaces = useMemo(() => {
-		const shuffled = [...initialPlaces].sort(() => Math.random() - 0.5)
+		const shuffled = [...places].sort(() => Math.random() - 0.5)
 		return shuffled.slice(0, 10)
-	}, [initialPlaces])
+	}, [places])
 
-	return results ? results.map((r) => r.obj) : randomPlaces
+	return {
+		results: results ? results.map((r) => r.obj) : randomPlaces,
+		runSearch,
+	}
 }

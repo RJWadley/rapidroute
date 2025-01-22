@@ -17,7 +17,10 @@ import { MotionContainer } from "../MotionContainer"
 
 extend({ Sprite, Text, Container })
 
-export default function MapPlayer({ player }: { player: OnlinePlayer }) {
+export default function MapPlayer({
+	player,
+	isOnline,
+}: { player: OnlinePlayer; isOnline: boolean }) {
 	const containerRef = useRef<Container>(null)
 	const [isometric] = useLocalIsometric()
 	const [isHover, setIsHover] = useState(false)
@@ -49,6 +52,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 		item: containerRef,
 		priority: "players",
 		debugName: player.name,
+		skipCheck: !isOnline,
 	})
 
 	if (!isSuccess) return null
@@ -66,7 +70,7 @@ export default function MapPlayer({ player }: { player: OnlinePlayer }) {
 				visualDuration: 4,
 				bounce: 0.25,
 			}}
-			animate={{ x: skewed.x, y: skewed.z, alpha: 1 }}
+			animate={{ x: skewed.x, y: skewed.z, alpha: isOnline ? 1 : 0 }}
 			ref={containerRef}
 		>
 			<pixiGraphics
