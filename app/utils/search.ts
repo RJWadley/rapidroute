@@ -6,6 +6,7 @@ import {
 import searcher from "fuzzysort"
 import type { CompressedPlace } from "./compressedPlaces"
 import type { OnlinePlayer } from "./onlinePlayers"
+import type { OfflinePlayer } from "./offlinePlayers"
 
 const keys: Record<Exclude<keyof CompressedPlace, "coordinates">, unknown> = {
 	codes: true,
@@ -37,13 +38,13 @@ const playerKeys: Record<
 export const search = <T extends Partial<CompressedPlace>>(
 	query: string | null | undefined,
 	places: T[],
-	onlinePlayers: OnlinePlayer[] | undefined,
+	players: (OnlinePlayer | OfflinePlayer)[] | undefined,
 ) => {
 	const coordinate = parseCoordinate(query)
 
 	if (query?.startsWith("player-")) {
 		const playerName = query.replace("player-", "")
-		const player = onlinePlayers?.find(
+		const player = players?.find(
 			(p) => p.name.toLowerCase() === playerName.toLowerCase(),
 		)
 		if (player) return [{ obj: player }]
@@ -51,7 +52,7 @@ export const search = <T extends Partial<CompressedPlace>>(
 
 	if (!query) return null
 	const results = query
-		? searcher.go(query, [...places.toReversed(), ...(onlinePlayers ?? [])], {
+		? searcher.go(query, [...places.toReversed(), ...(players ?? [])], {
 				keys: Object.keys({ ...keys, ...playerKeys }),
 				limit: 30,
 			})

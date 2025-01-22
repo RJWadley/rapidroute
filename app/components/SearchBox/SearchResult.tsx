@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getClosestPlaces } from "app/pathing/getClosestPlaces"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { getImageColor } from "app/utils/getImageColor"
+import type { OfflinePlayer } from "app/utils/offlinePlayers"
 import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import { dynamicColor, theme } from "app/utils/theme"
 import { useRef } from "react"
@@ -12,7 +13,7 @@ type SortedPlace = NonNullable<
 	ReturnType<typeof useSearchBox<CompressedPlace>>["searchResults"]
 >[number]
 
-function Player({ player }: { player: OnlinePlayer }) {
+function Player({ player }: { player: OnlinePlayer | OfflinePlayer }) {
 	const { data: compressedPlaces } = useQuery<CompressedPlace[]>({
 		queryKey: ["compressed-places"],
 	})
@@ -36,12 +37,15 @@ function Player({ player }: { player: OnlinePlayer }) {
 	if (isError) return "Failed to load player"
 	if (!compressedPlaces || !color) return <Loader ref={loaderRef} />
 
-	const [closestPlace] = getClosestPlaces(
-		player.coordinates,
-		compressedPlaces.filter(
-			(place) => place.type === "Town" || place.type === "AirAirport",
-		),
-	)
+	const [closestPlace] =
+		player.type === "OnlinePlayer"
+			? getClosestPlaces(
+					player.coordinates,
+					compressedPlaces.filter(
+						(place) => place.type === "Town" || place.type === "AirAirport",
+					),
+				)
+			: [null]
 
 	return (
 		<>
@@ -50,17 +54,21 @@ function Player({ player }: { player: OnlinePlayer }) {
 				alt={player.name}
 			/>
 			<PlayerName baseColor={color}>{player.name}</PlayerName>
-			{closestPlace
-				? `${
-						closestPlace.distance < 500
-							? closestPlace.place.type === "Town"
-								? "In"
-								: "At"
-							: closestPlace.distance < 2000
-								? "Near"
-								: "Wilderness near"
-					} ${closestPlace.place.name}`
-				: `at ${Math.round(player.coordinates[0])}, ${Math.round(player.coordinates[1])}`}
+			{player.type === "OfflinePlayer" ? (
+				<OfflineTag>OFFLINE</OfflineTag>
+			) : closestPlace ? (
+				`${
+					closestPlace.distance < 500
+						? closestPlace.place.type === "Town"
+							? "In"
+							: "At"
+						: closestPlace.distance < 2000
+							? "Near"
+							: "Wilderness near"
+				} ${closestPlace.place.name}`
+			) : (
+				`at ${Math.round(player.coordinates[0])}, ${Math.round(player.coordinates[1])}`
+			)}
 		</>
 	)
 }
@@ -92,7 +100,7 @@ export default function SearchResult({ place }: { place: SortedPlace }) {
 					: null
 			}
 		>
-			{place.type === "OnlinePlayer" ? (
+			{place.type === "OnlinePlayer" || place.type === "OfflinePlayer" ? (
 				<Player player={place} />
 			) : place.type === "Coordinate" ? (
 				"coordinate"
@@ -109,6 +117,7 @@ const Wrapper = styled(
 		background: highlighted ? theme.cardHover : "transparent",
 		border: "unset",
 		display: "flex",
+		alignItems: "center",
 		gap: 16,
 		scrollMargin: "200px",
 		textAlign: "left",
@@ -151,3 +160,10 @@ const PlayerName = styled("div", ({ baseColor }: { baseColor: string }) => ({
 	fontSize: 12,
 	flexShrink: 0,
 }))
+
+const OfflineTag = styled("div", {
+	color: theme.cardTextMuted,
+	fontWeight: 500,
+	fontSize: 10,
+	flexShrink: 0,
+})

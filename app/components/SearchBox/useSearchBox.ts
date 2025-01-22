@@ -5,6 +5,7 @@ import { useSearchResults } from "app/utils/useSearchResults"
 import type { ComponentProps, FocusEvent } from "react"
 import { startTransition, useEffect, useId, useRef, useState } from "react"
 import { getTextboxName } from "./getTextboxName"
+import type { OfflinePlayer } from "app/utils/offlinePlayers"
 
 const blurActiveElement = () => {
 	if (document.activeElement instanceof HTMLElement)
@@ -30,12 +31,12 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * which place is currently selected?
 	 */
-	initiallySelectedPlace?: T | Coordinate | OnlinePlayer
+	initiallySelectedPlace?: T | Coordinate | OnlinePlayer | OfflinePlayer
 	/**
 	 * a callback when the selected place changes
 	 */
 	onItemSelected?: (
-		item: T | Coordinate | OnlinePlayer | undefined,
+		item: T | Coordinate | OnlinePlayer | OfflinePlayer | undefined,
 		explicitly: boolean,
 	) => void
 	/**
@@ -52,7 +53,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * (or undefined if no item selected)
 	 */
 	const [selectedPlace, setSelectedPlace] = useState<
-		T | Coordinate | OnlinePlayer | undefined
+		T | Coordinate | OnlinePlayer | OfflinePlayer | undefined
 	>(initiallySelectedPlace)
 	/**
 	 * what the user has physically typed into the input
@@ -68,7 +69,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	const [isOpen, setIsOpen] = useState(false)
 
 	const selectPlace = (
-		place: T | Coordinate | OnlinePlayer | undefined,
+		place: T | Coordinate | OnlinePlayer | OfflinePlayer | undefined,
 		explicitly: boolean,
 	) => {
 		setSelectedPlace(place)
@@ -211,7 +212,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 * the current search results, or undefined if the suggestions dropdown is not visible
 		 */
 		searchResults:
-			| ((T | Coordinate | OnlinePlayer) & {
+			| ((T | Coordinate | OnlinePlayer | OfflinePlayer) & {
 					selectItem: VoidFunction
 					highlighted: boolean
 			  })[]

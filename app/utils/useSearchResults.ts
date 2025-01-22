@@ -3,26 +3,40 @@ import { useCallback, useMemo, useState } from "react"
 import type { CompressedPlace } from "./compressedPlaces"
 import { type OnlinePlayer, useOnlinePlayers } from "./onlinePlayers"
 import { search } from "./search"
+import { useOfflinePlayers, type OfflinePlayer } from "./offlinePlayers"
 
 export const useSearchResults = <T extends Partial<CompressedPlace>>(
 	places: T[],
 ): {
-	results: (T | Coordinate | OnlinePlayer)[]
+	results: (T | Coordinate | OnlinePlayer | OfflinePlayer)[]
 	runSearch: (query: string) => void
 } => {
 	const [results, setResults] = useState<ReturnType<typeof search<T>>>()
 
-	const { data: players } = useOnlinePlayers()
+	const { data: onlinePlayers } = useOnlinePlayers()
+	const { data: offlinePlayers } = useOfflinePlayers()
 
 	const runSearch = useCallback(
 		(query: string) => {
-			const newResults = query
-				? search(query, places, Object.values(players ?? {}))
-				: null
+			const players = [
+				...Object.values(onlinePlayers ?? {}),
+				...(
+					offlinePlayers?.map(
+						(p) =>
+							({
+								id: `player-${p.toLowerCase()}`,
+								type: "OfflinePlayer",
+								name: p,
+							}) as const,
+					) ?? []
+				).filter((x) => (onlinePlayers ? !(x.id in onlinePlayers) : true)),
+			]
+
+			const newResults = query ? search(query, places, players) : null
 
 			setResults(newResults)
 		},
-		[places, players],
+		[offlinePlayers, onlinePlayers, places],
 	)
 
 	const randomPlaces = useMemo(() => {

@@ -4,6 +4,9 @@ import { GlobalStyles } from "restyle"
 import invertLightness from "./color"
 
 const colors = {
+	/**
+	 * backgrounds
+	 */
 	cardBackground: {
 		variable: "--card-background",
 		light: "#FBFBFB",
@@ -14,20 +17,31 @@ const colors = {
 		light: "white",
 		dark: "red",
 	},
-	cardBoxShadow: {
-		variable: "--card-shadow",
-		light: "0 4px 12px rgba(0, 0, 0, 0.12)",
-		dark: "0 4px 12px rgba(255, 255, 255, 1)",
-	},
 	cardHover: {
 		variable: "--card-hover",
 		light: "rgba(0, 0, 0, 0.08)",
 		dark: "red",
 	},
+	/**
+	 * foregrounds
+	 */
 	cardText: {
 		variable: "--card-text",
 		light: "#000",
 		dark: "black",
+	},
+	cardTextMuted: {
+		variable: "--card-text-muted",
+		light: "#444",
+		dark: "black",
+	},
+	/**
+	 * effects
+	 */
+	cardBoxShadow: {
+		variable: "--card-shadow",
+		light: "0 4px 12px rgba(0, 0, 0, 0.12)",
+		dark: "0 4px 12px rgba(255, 255, 255, 1)",
 	},
 	loaderPulse: {
 		variable: "--loader-pulse",

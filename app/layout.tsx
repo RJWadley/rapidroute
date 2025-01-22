@@ -9,6 +9,7 @@ import { data } from "./data"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
 import { MapServer } from "components/Map/Server"
+import { getOfflinePlayers } from "./utils/offlinePlayers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,6 +30,11 @@ export default function RootLayout({
 	queryClient.prefetchQuery({
 		queryKey: ["compressed-places"],
 		queryFn: async () => compressedPlaces,
+	})
+
+	queryClient.prefetchQuery({
+		queryKey: ["offline-players"],
+		queryFn: getOfflinePlayers,
 	})
 
 	return (

@@ -1,5 +1,6 @@
 import type { Coordinate } from "app/data/coordinates"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
+import type { OfflinePlayer } from "app/utils/offlinePlayers"
 import type { OnlinePlayer } from "app/utils/onlinePlayers"
 
 export const getTextboxName = (
@@ -7,6 +8,7 @@ export const getTextboxName = (
 		| Partial<CompressedPlace>
 		| Coordinate
 		| OnlinePlayer
+		| OfflinePlayer
 		| undefined
 		| null,
 ) => {
