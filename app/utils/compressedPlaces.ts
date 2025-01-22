@@ -1,7 +1,7 @@
 import type { DataType } from "app/data"
 
-const getCompany = async (id: string, data: DataType) => {
-	const { companies } = await data
+const getCompany = (id: string, data: DataType) => {
+	const { companies } = data
 	const company = companies.map.get(id)
 	return company
 		? {

@@ -39,7 +39,8 @@ export default function AppGrid() {
 							else setDarkPreference("dark")
 						}}
 					>
-						toggle dark, currently {preference} ({isDark ? "dark" : "light"})
+						toggle dark, currently {preference || "initializing"} (
+						{isDark ? "dark" : "light"})
 					</button>
 				</Column>
 			</Columns>

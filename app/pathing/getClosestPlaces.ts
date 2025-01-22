@@ -1,16 +1,15 @@
-import type { DataType } from "app/data"
+import type { Place } from "app/data"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { getDistance } from "app/utils/getDistance"
 
-export const getClosestPlaces = (
-	[x, z]: [x: number, z: number],
-	data: DataType,
-) => {
-	const { places } = data
-
+export const getClosestPlaces = <T extends Place | CompressedPlace>(
+	[x, z]: readonly [x: number, z: number],
+	places: T[],
+): { place: T; distance: number }[] => {
 	/**
 	 * return the 5 closest places to the given location
 	 */
-	const closestPlaces = places.list
+	const closestPlaces = places
 		.map((place) => ({
 			place,
 			distance: place.coordinates

@@ -17,6 +17,9 @@ export default function invertLightness(color: string) {
 	const colorIsLight = lightness > 0.5
 	const newLightness = colorIsLight ? 0.15 : 0.85
 
-	const newColor = hsla(hue, saturation, newLightness, alpha)
-	return toHex(newColor)
+	return {
+		inverted: toHex(hsla(hue, saturation, newLightness, alpha)),
+		darkColor: toHex(hsla(hue, saturation, 0.15, alpha)),
+		lightColor: toHex(hsla(hue, saturation, 0.85, alpha)),
+	}
 }

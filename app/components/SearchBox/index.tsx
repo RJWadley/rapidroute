@@ -1,20 +1,21 @@
 "use client"
 
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { useClickAway } from "ahooks"
+import { useRouting } from "app/providers/RoutingContext"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { useOnlinePlayers } from "app/utils/onlinePlayers"
 import { findClosestPlace } from "app/utils/search"
+import { theme } from "app/utils/theme"
 import { AnimatePresence, motion } from "motion/react"
 import { useRef, useState } from "react"
-import { IoSearch } from "react-icons/io5"
+import { IoClose, IoSearch } from "react-icons/io5"
 import { styled } from "restyle"
 import Box from "../Box"
 import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
-import { getTextboxName } from "./getTextboxName"
+import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import type { CompressedPlace } from "app/utils/compressedPlaces"
-import { useRouting } from "app/providers/RoutingContext"
 
 export function SearchBox() {
 	const wrapper = useRef<HTMLDivElement>(null)
@@ -154,42 +155,22 @@ export function SearchBox() {
 							placeholder="to"
 						/>
 					</motion.div>
-					<motion.button layout="position" type="button" onClick={clearTo}>
-						Clear
-					</motion.button>
+					<CloseButton
+						layout="position"
+						type="button"
+						onClick={clearTo}
+						title="Reset"
+						invisible={!toProps.value}
+					>
+						<CloseIcon />
+					</CloseButton>
 				</PrimarySearch>
 
 				<AnimatePresence mode="popLayout">
 					{hasSearchResults && (
 						<Results {...layout} key={hasFromResults ? "from" : "to"}>
 							{(fromResults ?? toResults)?.map((result) => (
-								<Result
-									type="button"
-									onClick={result.selectItem}
-									key={result.id}
-									ref={
-										result.highlighted
-											? (el) => {
-													const bounds = el?.getBoundingClientRect()
-													if (!bounds) return
-
-													const isInView =
-														bounds.top >= 0 &&
-														bounds.bottom <=
-															(window.innerHeight ||
-																document.documentElement.clientHeight)
-													if (isInView) return
-
-													el?.scrollIntoView({
-														behavior: "smooth",
-														block: "nearest",
-													})
-												}
-											: null
-									}
-								>
-									{getTextboxName(result)} {result.highlighted ? "🔍" : ""}
-								</Result>
+								<SearchResult key={result.id} place={result} />
 							))}
 						</Results>
 					)}
@@ -209,24 +190,47 @@ export function SearchBox() {
 const SearchIcon = styled(IoSearch, {
 	width: "24px",
 	height: "24px",
-	border: "1px solid blue",
+})
+
+const CloseButton = styled(
+	motion.button,
+	({ invisible }: { invisible: boolean }) => ({
+		border: "unset",
+		padding: 10,
+		margin: -10,
+		borderRadius: 99,
+		opacity: invisible ? 0 : 1,
+		transition: "opacity 0.2s, background 0.2s",
+		pointerEvents: invisible ? "none" : "auto",
+		background: "transparent",
+
+		"&:hover": {
+			background: theme.cardHover,
+		},
+	}),
+)
+
+const CloseIcon = styled(IoClose, {
+	width: "24px",
+	height: "24px",
 })
 
 const PrimarySearch = styled(motion.label, {
-	border: "1px solid blue",
 	padding: "16px",
 	display: "grid",
 	gridTemplateColumns: "auto 1fr auto",
 	placeItems: "center start",
+	gap: "16px",
+	background: theme.cardProminent,
+	boxShadow: theme.cardBoxShadow,
+	borderRadius: 28,
+	overflow: "clip",
 })
 
 const Results = styled(motion.div, {
-	border: "1px solid orange",
-})
-
-const Result = styled("button", {
-	display: "block",
-	scrollMargin: "200px",
+	padding: 16,
+	display: "grid",
+	gap: 16,
 })
 
 const SecondarySearch = styled(motion.label, {

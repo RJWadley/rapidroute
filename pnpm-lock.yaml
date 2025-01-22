@@ -86,6 +86,9 @@ importers:
       dedent:
         specifier: 1.5.3
         version: 1.5.3
+      fast-average-color:
+        specifier: 9.4.0
+        version: 9.4.0
       fuzzysort:
         specifier: 3.1.0
         version: 3.1.0
@@ -651,7 +654,6 @@ packages:
 
   bun@1.1.43:
     resolution: {integrity: sha512-8Acq5NuECRXx62jVera3rnLcsaHh4/k5Res3dOQFv783nyRKo39W3DHlenGlXB9bNWbtRybBEvkKaH+zdwzLHw==}
-    cpu: [arm64, x64, aarch64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -746,6 +748,10 @@ packages:
   eventsource-parser@3.0.0:
     resolution: {integrity: sha512-T1C0XCUimhxVQzW4zFipdx0SficT651NnkR0ZSH3yQwh+mFMdLfgjABVi4YtMTtaL4s168593DaoaRLMqryavA==}
     engines: {node: '>=18.0.0'}
+
+  fast-average-color@9.4.0:
+    resolution: {integrity: sha512-bvM8vV6YwK07dPbzFz77zJaBcfF6ABVfgNwaxVgXc2G+o0e/tzLCF9WU8Ryp1r0Nkk6JuJNsWCzbb4cLOMlB+Q==}
+    engines: {node: '>= 12'}
 
   framer-motion@11.16.4:
     resolution: {integrity: sha512-7ncPlBjrYX6iQXcTSw1kvZcHSVjEuOAW3uWuu+/+chUS4UWBMe8kCjniE4VMc2/BMo0su0Uw9sw0aWS9anpPWA==}
@@ -1531,6 +1537,8 @@ snapshots:
   eventemitter3@5.0.1: {}
 
   eventsource-parser@3.0.0: {}
+
+  fast-average-color@9.4.0: {}
 
   framer-motion@11.16.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:

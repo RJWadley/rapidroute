@@ -1,29 +1,21 @@
-import { useCookieState } from "ahooks"
+import { useLocalStorageState } from "ahooks"
 import { useSyncExternalStore } from "react"
-import TypedEventEmitter from "./TypedEventEmitter"
 import { flushSync } from "react-dom"
-
-const events = new TypedEventEmitter<{
-	darkModeChange: [newValue: "system" | "light" | "dark"]
-	isometricChange: [newValue: "isometric" | "flat"]
-}>()
+import { useClientOnly } from "./useClientOnly"
 
 export const useLocalIsometric = () => {
-	const [direct, setDirect] = useCookieState("isometric", {
+	const [direct, setDirect] = useLocalStorageState("isometric", {
 		defaultValue: "isometric",
-	})
-
-	events.useEventListener("isometricChange", (newValue) => {
-		setDirect(newValue)
+		listenStorageChange: true,
 	})
 
 	const setPreference = (value: boolean) => {
 		if (document.startViewTransition) {
 			document.startViewTransition(() => {
-				events.dispatchEvent("isometricChange", value ? "isometric" : "flat")
+				flushSync(() => setDirect(value ? "isometric" : "flat"))
 			})
 		} else {
-			events.dispatchEvent("isometricChange", value ? "isometric" : "flat")
+			setDirect(value ? "isometric" : "flat")
 		}
 	}
 
@@ -47,15 +39,20 @@ function useSystemDarkMode() {
 
 export const useLocalDark = () => {
 	const systemIsDark = useSystemDarkMode()
-	const [preferenceDirect, setPreferenceDirect] = useCookieState("dark", {
+	const [preferenceDirect, setPreferenceDirect] = useLocalStorageState("dark", {
 		defaultValue: "system",
+		listenStorageChange: true,
 	})
 
-	events.useEventListener("darkModeChange", (newValue) => {
-		flushSync(() => {
-			if (newValue !== preferenceDirect) setPreferenceDirect(newValue)
-		})
-	})
+	const setPreference = (value: "system" | "light" | "dark") => {
+		if (document.startViewTransition) {
+			document.startViewTransition(() => {
+				setPreferenceDirect(value)
+			})
+		} else {
+			setPreferenceDirect(value)
+		}
+	}
 
 	const currentPreference =
 		preferenceDirect === "light"
@@ -63,25 +60,20 @@ export const useLocalDark = () => {
 			: preferenceDirect === "dark"
 				? "dark"
 				: "system"
-
-	const setPreference = (value: "system" | "light" | "dark") => {
-		if (document.startViewTransition) {
-			document.startViewTransition(() => {
-				events.dispatchEvent("darkModeChange", value)
-			})
-		} else {
-			events.dispatchEvent("darkModeChange", value)
-		}
-	}
-
 	const isDark =
 		currentPreference === "system" ? systemIsDark : currentPreference === "dark"
 
 	return [
-		{
-			isDark,
-			preference: currentPreference,
-		},
+		useClientOnly(
+			{
+				isDark: isDark || false,
+				preference: currentPreference,
+			} as const,
+			{
+				isDark: null,
+				preference: null,
+			} as const,
+		),
 		setPreference,
 	] as const
 }

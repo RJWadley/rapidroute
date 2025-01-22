@@ -29,7 +29,7 @@ export function Dynmap({
 		if (isMRTLine(name)) {
 			return Object.values(markerSet.markers).map((marker) => {
 				const color = Object.values(markerSet.lines)[0]?.color ?? "black"
-				const invertedColor = invertLightness(color)
+				const invertedColor = invertLightness(color).inverted
 
 				return {
 					marker,

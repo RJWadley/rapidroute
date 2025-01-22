@@ -54,7 +54,7 @@ export const getNeighbors = ({
 	) {
 		const coordinateFromDestinations: Neighbor[] =
 			startPlace?.type === "Coordinate" && placesMatch(startPlace, fromPlace)
-				? getClosestPlaces(startPlace.coordinates, data).map(
+				? getClosestPlaces(startPlace.coordinates, data.places.list).map(
 						({ place, distance }) => ({
 							place,
 							time: getRouteTime({

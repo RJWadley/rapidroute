@@ -2,11 +2,11 @@ import { extend, useApplication } from "@pixi/react"
 import { useViewport, useViewportMoved } from "app/components/Map/Viewport"
 import { useLocalIsometric } from "app/utils/locals"
 import type { Viewport } from "pixi-viewport"
-import { Container, Point, Text, TextStyle } from "pixi.js"
+import { Container, Text, TextStyle } from "pixi.js"
 import { useCallback, useLayoutEffect, useRef, useState } from "react"
 import { shiftWorldCoordinateToIsometric, unskew } from "../util/isometric"
-import MulticolorDot from "./MulticolorDot"
 import { useHideOverlapping } from "../util/useHideOverlapping"
+import MulticolorDot from "./MulticolorDot"
 
 extend({ Container, Text })
 
