@@ -1,9 +1,13 @@
 import type { Coordinate } from "app/data/coordinates"
 import { useCallback, useMemo, useState } from "react"
 import type { CompressedPlace } from "./compressedPlaces"
+import {
+	type OfflinePlayer,
+	parseOfflinePlayers,
+	useOfflinePlayers,
+} from "./offlinePlayers"
 import { type OnlinePlayer, useOnlinePlayers } from "./onlinePlayers"
 import { search } from "./search"
-import { useOfflinePlayers, type OfflinePlayer } from "./offlinePlayers"
 
 export const useSearchResults = <T extends Partial<CompressedPlace>>(
 	places: T[],
@@ -20,16 +24,9 @@ export const useSearchResults = <T extends Partial<CompressedPlace>>(
 		(query: string) => {
 			const players = [
 				...Object.values(onlinePlayers ?? {}),
-				...(
-					offlinePlayers?.map(
-						(p) =>
-							({
-								id: `player-${p.toLowerCase()}`,
-								type: "OfflinePlayer",
-								name: p,
-							}) as const,
-					) ?? []
-				).filter((x) => (onlinePlayers ? !(x.id in onlinePlayers) : true)),
+				...Object.values(parseOfflinePlayers(offlinePlayers) ?? {}).filter(
+					(x) => (onlinePlayers ? !(x.id in onlinePlayers) : true),
+				),
 			]
 
 			const newResults = query ? search(query, places, players) : null

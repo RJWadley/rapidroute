@@ -7,6 +7,7 @@ import { findPathInServer } from "app/pathing/server-front"
 import { findPathInWorker } from "app/pathing/worker-front"
 import { useOnlinePlayers } from "app/utils/onlinePlayers"
 import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
+import { useBetterThrottle } from "app/utils/useBetterThrottle"
 import { useParams, useRouter } from "next/navigation"
 import { createContext, startTransition, use, useState } from "react"
 
@@ -208,8 +209,8 @@ export function RoutingProvider({
 	const toPlayer =
 		players && currentRoute.toID ? players[currentRoute.toID]?.position : null
 
-	const from = fromPlayer ?? currentRoute.fromID
-	const to = toPlayer ?? currentRoute.toID
+	const from = useBetterThrottle(fromPlayer ?? currentRoute.fromID, 1000)
+	const to = useBetterThrottle(toPlayer ?? currentRoute.toID, 1000)
 
 	const { status, data, isPending, isError } = useQuery({
 		queryKey: ["find-path", from, to, JSON.stringify(excludedRoutes)],

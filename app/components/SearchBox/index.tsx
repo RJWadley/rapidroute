@@ -16,6 +16,10 @@ import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
 import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
+import {
+	parseOfflinePlayers,
+	useOfflinePlayers,
+} from "app/utils/offlinePlayers"
 
 export function SearchBox() {
 	const wrapper = useRef<HTMLDivElement>(null)
@@ -26,14 +30,21 @@ export function SearchBox() {
 	const { fromID, setFromID, toID, setToID } = useRouting()
 	const [navMode, setNavMode] = useState(Boolean(fromID))
 	const { data: players } = useOnlinePlayers()
+	const { data: offlinePlayers } = useOfflinePlayers()
 	const { data: compressedPlaces } = useSuspenseQuery<CompressedPlace[]>({
 		queryKey: ["compressed-places"],
 	})
 
+	const parsedOfflinePlayers = parseOfflinePlayers(offlinePlayers)
+
 	const fromPlace =
-		players?.[fromID ?? ""] ?? findClosestPlace(fromID, compressedPlaces)
+		players?.[fromID ?? ""] ??
+		parsedOfflinePlayers?.[fromID ?? ""] ??
+		findClosestPlace(fromID, compressedPlaces)
 	const toPlace =
-		players?.[toID ?? ""] ?? findClosestPlace(toID, compressedPlaces)
+		players?.[toID ?? ""] ??
+		parsedOfflinePlayers?.[toID ?? ""] ??
+		findClosestPlace(toID, compressedPlaces)
 
 	const {
 		inputProps: fromProps,

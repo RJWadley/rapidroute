@@ -101,9 +101,18 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 */
 	const firstFocus = useRef(true)
 	const id = useId()
+
+	/**
+	 * side effects!
+	 */
 	useEffect(() => {
 		if (autoFocus) document.getElementById(id)?.focus()
 	}, [autoFocus, id])
+	const latestOpen = useRef(isOpen)
+	latestOpen.current = isOpen
+	useEffect(() => {
+		if (!latestOpen.current) setSelectedPlace(initiallySelectedPlace)
+	}, [initiallySelectedPlace])
 
 	return {
 		onFocusLost: () => {
@@ -159,6 +168,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				}
 
 				startTransition(() => {
+					console.log("runningSearch")
 					runSearch(e.currentTarget.value)
 				})
 			},

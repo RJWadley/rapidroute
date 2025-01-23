@@ -22,6 +22,25 @@ export const useOfflinePlayers = () => {
 	})
 }
 
+export const parseOfflinePlayers = (
+	offlinePlayers: string[] | undefined,
+): Record<string, OfflinePlayer> => {
+	if (!offlinePlayers) return {}
+
+	return Object.fromEntries(
+		offlinePlayers
+			.map(
+				(p) =>
+					({
+						id: `player-${p.toLowerCase()}`,
+						type: "OfflinePlayer",
+						name: p,
+					}) as const,
+			)
+			.map((player) => [player.id, player]),
+	)
+}
+
 export type OfflinePlayer = {
 	type: "OfflinePlayer"
 	name: string
