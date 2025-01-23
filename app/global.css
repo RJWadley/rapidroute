@@ -72,9 +72,3 @@ h6 {
 #__next {
 	isolation: isolate;
 }
-
-/* 10. Cap text height to baseline for easier alignment */
-html {
-	/* biome-ignore lint/correctness/noUnknownProperty: progressive enhancement */
-	text-box: trim-both cap alphabetic;
-}
