@@ -9,7 +9,6 @@ import { findClosestPlace } from "app/utils/search"
 import { theme } from "app/utils/theme"
 import { AnimatePresence, motion } from "motion/react"
 import { useRef, useState } from "react"
-import { IoClose, IoSearch } from "react-icons/io5"
 import { styled } from "restyle"
 import Box from "../Box"
 import { TextArea } from "../TextArea"
@@ -20,6 +19,8 @@ import {
 	parseOfflinePlayers,
 	useOfflinePlayers,
 } from "app/utils/offlinePlayers"
+import { Search } from "app/icons/search"
+import { Close } from "app/icons/close"
 
 export function SearchBox() {
 	const wrapper = useRef<HTMLDivElement>(null)
@@ -149,7 +150,7 @@ export function SearchBox() {
 							ref={navigateRef}
 							{...layout}
 						>
-							Navigate
+							Choose a starting point
 						</NavigateTrigger>
 					) : null}
 				</AnimatePresence>
@@ -199,7 +200,7 @@ export function SearchBox() {
 	)
 }
 
-const SearchIcon = styled(IoSearch, {
+const SearchIcon = styled(Search, {
 	width: "24px",
 	height: "24px",
 })
@@ -222,7 +223,7 @@ const CloseButton = styled(
 	}),
 )
 
-const CloseIcon = styled(IoClose, {
+const CloseIcon = styled(Close, {
 	width: "24px",
 	height: "24px",
 })
@@ -255,4 +256,7 @@ const SecondarySearch = styled(motion.label, {
 
 const NavigateTrigger = styled(motion.button, {
 	border: "1px solid red",
+	width: "100%",
+	textAlign: "left",
+	padding: "12px 24px",
 })

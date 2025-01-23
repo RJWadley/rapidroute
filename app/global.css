@@ -3,22 +3,29 @@
   https://www.joshwcomeau.com/css/custom-css-reset/
 */
 
+/* 1. Use a more-intuitive box-sizing model */
 *,
 *::before,
 *::after {
 	box-sizing: border-box;
 }
 
+/* 2. Remove default margin */
 * {
 	margin: 0;
-	user-select: none;
 }
 
+/* 3. Add accessible line-height */
+* {
+	line-height: calc(1em + 0.5rem);
+}
+
+/* 4. Improve text rendering */
 body {
-	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
 }
 
+/* 5. Improve media defaults */
 img,
 picture,
 video,
@@ -28,6 +35,7 @@ svg {
 	max-width: 100%;
 }
 
+/* 6. Inherit fonts for form controls */
 input,
 button,
 textarea,
@@ -35,6 +43,7 @@ select {
 	font: inherit;
 }
 
+/* 7. Avoid text overflows */
 p,
 h1,
 h2,
@@ -45,7 +54,27 @@ h6 {
 	overflow-wrap: break-word;
 }
 
+/* 8. Improve line wrapping */
+p {
+	text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
+}
+
+/* 9. Create a root stacking context */
 #root,
 #__next {
 	isolation: isolate;
+}
+
+/* 10. Cap text height to baseline for easier alignment */
+html {
+	/* biome-ignore lint/correctness/noUnknownProperty: progressive enhancement */
+	text-box: trim-both cap alphabetic;
 }
