@@ -10,6 +10,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
 import { MapServer } from "components/Map/Server"
 import { getOfflinePlayers } from "./utils/offlinePlayers"
+import { getOnlinePlayers } from "./utils/onlinePlayers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 
 const compressedPlaces = getCompressedPlaces(data)
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
@@ -32,9 +33,14 @@ export default function RootLayout({
 		queryFn: async () => compressedPlaces,
 	})
 
-	queryClient.prefetchQuery({
+	await queryClient.prefetchQuery({
 		queryKey: ["offline-players"],
 		queryFn: getOfflinePlayers,
+	})
+
+	queryClient.prefetchQuery({
+		queryKey: ["online-players"],
+		queryFn: getOnlinePlayers,
 	})
 
 	return (

@@ -168,7 +168,6 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				}
 
 				startTransition(() => {
-					console.log("runningSearch")
 					runSearch(e.currentTarget.value)
 				})
 			},

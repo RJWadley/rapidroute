@@ -14,6 +14,8 @@ import {
 } from "react"
 import { useViewportMoved } from "../Viewport"
 import type { CullInput, WorkerOut } from "./getAllCullDistances"
+import { useBetterThrottle } from "app/utils/useBetterThrottle"
+import { useTimeout } from "ahooks"
 
 const { getAllCullDistances } =
 	typeof Worker === "undefined"
@@ -99,8 +101,12 @@ export function OverlappingProvider({
 	const triggerUpdate = () => setSignal((p) => p + 1)
 	const [isometric] = useLocalIsometric()
 
+	const throttledSignal = useBetterThrottle(signal, 1000)
+	const [enabled, setEnabled] = useState(false)
+	useTimeout(() => setEnabled(true), 2000)
+
 	const { data } = useQuery({
-		queryKey: ["cull-distances", signal, isometric],
+		queryKey: ["cull-distances", throttledSignal, isometric],
 		queryFn: async () => {
 			if (objectQueue.length() === 0) return {}
 			if (!getAllCullDistances) return {}
@@ -116,14 +122,14 @@ export function OverlappingProvider({
 
 			const distances = await getAllCullDistances(items)
 			const after = performance.now()
-			console.log(`getAllCullDistances took ${after - before}ms`)
 
 			return Object.fromEntries(
 				distances.map(({ target, zoom }) => [target.id, zoom]),
 			)
 		},
 
-		refetchInterval: 2000,
+		enabled,
+		refetchInterval: 1500,
 		placeholderData: (previous) => previous,
 	})
 

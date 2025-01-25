@@ -2,8 +2,18 @@
 
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { useClickAway } from "ahooks"
+import { Add } from "app/icons/add"
+import { Close } from "app/icons/close"
+import { Pin } from "app/icons/pin"
+import { Point } from "app/icons/point"
+import { Search } from "app/icons/search"
+import { Start } from "app/icons/start"
 import { useRouting } from "app/providers/RoutingContext"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
+import {
+	parseOfflinePlayers,
+	useOfflinePlayers,
+} from "app/utils/offlinePlayers"
 import { useOnlinePlayers } from "app/utils/onlinePlayers"
 import { findClosestPlace } from "app/utils/search"
 import { theme } from "app/utils/theme"
@@ -15,12 +25,6 @@ import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
 import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
-import {
-	parseOfflinePlayers,
-	useOfflinePlayers,
-} from "app/utils/offlinePlayers"
-import { Search } from "app/icons/search"
-import { Close } from "app/icons/close"
 
 export function SearchBox() {
 	const wrapper = useRef<HTMLDivElement>(null)
@@ -111,35 +115,9 @@ export function SearchBox() {
 		<Box>
 			<div ref={wrapper}>
 				<AnimatePresence mode="popLayout" initial={false}>
-					{navMode ? (
-						<SecondarySearch {...layout} key="secondary">
-							<motion.div layout="position" key="search">
-								<TextArea
-									{...fromProps}
-									onFocus={(e) => {
-										toFocusLost()
-										fromProps.onFocus(e)
-									}}
-									placeholder="From"
-									ref={fromFieldRef}
-								/>
-							</motion.div>
-							<motion.button
-								key="clear"
-								layout="position"
-								type="button"
-								onClick={() => {
-									clearFrom()
-									setNavMode(false)
-								}}
-							>
-								Clear
-							</motion.button>
-						</SecondarySearch>
-					) : toID ? (
+					{!navMode && toID ? (
 						<NavigateTrigger
 							id="navigateButton"
-							key="navigate"
 							type="button"
 							onClick={() => {
 								setNavMode(true)
@@ -150,35 +128,73 @@ export function SearchBox() {
 							ref={navigateRef}
 							{...layout}
 						>
+							<AddIcon />
 							Choose a starting point
 						</NavigateTrigger>
 					) : null}
 				</AnimatePresence>
-				<PrimarySearch layout>
-					<motion.div layout="position">
-						<SearchIcon />
-					</motion.div>
-					<motion.div layout="position">
-						<TextArea
-							{...toProps}
-							onFocus={(e) => {
-								fromFocusLost()
-								toProps.onFocus(e)
-							}}
-							placeholder="to"
-						/>
-					</motion.div>
-					<CloseButton
-						layout="position"
-						type="button"
-						onClick={clearTo}
-						title="Reset"
-						invisible={!toProps.value}
-					>
-						<CloseIcon />
-					</CloseButton>
-				</PrimarySearch>
-
+				<SearchWrap layout style={{ borderRadius: 28 }}>
+					<AnimatePresence mode="popLayout" initial={false}>
+						{navMode && (
+							<SearchBar {...layout} layout>
+								<motion.div layout="position">
+									<PointIcon />
+								</motion.div>
+								<motion.div layout="position">
+									<TextArea
+										{...fromProps}
+										onFocus={(e) => {
+											toFocusLost()
+											fromProps.onFocus(e)
+										}}
+										placeholder="From"
+										ref={fromFieldRef}
+									/>
+								</motion.div>
+								<CloseButton
+									layout="position"
+									type="button"
+									onClick={() => {
+										clearFrom()
+										setNavMode(false)
+									}}
+									title="Reset Starting Point"
+									invisible={false}
+								>
+									<CloseIcon />
+								</CloseButton>
+							</SearchBar>
+						)}
+					</AnimatePresence>
+					<SearchBar layout>
+						<motion.div layout="position">
+							<SearchIcon
+								style={{ position: "absolute" }}
+								animate={{ opacity: navMode ? 0 : 1 }}
+							/>
+							<PinIcon animate={{ opacity: navMode ? 1 : 0 }} />
+						</motion.div>
+						<motion.div layout="position">
+							<TextArea
+								{...toProps}
+								onFocus={(e) => {
+									fromFocusLost()
+									toProps.onFocus(e)
+								}}
+								placeholder="to"
+							/>
+						</motion.div>
+						<CloseButton
+							layout="position"
+							type="button"
+							onClick={clearTo}
+							title="Reset"
+							invisible={!toProps.value}
+						>
+							<CloseIcon />
+						</CloseButton>
+					</SearchBar>
+				</SearchWrap>
 				<AnimatePresence mode="popLayout">
 					{hasSearchResults && (
 						<Results {...layout} key={hasFromResults ? "from" : "to"}>
@@ -201,6 +217,26 @@ export function SearchBox() {
 }
 
 const SearchIcon = styled(Search, {
+	width: "24px",
+	height: "24px",
+})
+
+const AddIcon = styled(Add, {
+	width: "24px",
+	height: "24px",
+})
+
+const StartIcon = styled(Start, {
+	width: "24px",
+	height: "24px",
+})
+
+const PointIcon = styled(Point, {
+	width: "24px",
+	height: "24px",
+})
+
+const PinIcon = styled(Pin, {
 	width: "24px",
 	height: "24px",
 })
@@ -228,15 +264,10 @@ const CloseIcon = styled(Close, {
 	height: "24px",
 })
 
-const PrimarySearch = styled(motion.label, {
-	padding: "16px",
-	display: "grid",
-	gridTemplateColumns: "auto 1fr auto",
-	placeItems: "center start",
-	gap: "16px",
+const SearchWrap = styled(motion.div, {
 	background: theme.cardProminent,
 	boxShadow: theme.cardBoxShadow,
-	borderRadius: 28,
+	position: "relative",
 	overflow: "clip",
 })
 
@@ -246,17 +277,28 @@ const Results = styled(motion.div, {
 	gap: 16,
 })
 
-const SecondarySearch = styled(motion.label, {
-	border: "1px solid purple",
+const SearchBar = styled(motion.label, {
 	padding: "16px",
 	display: "grid",
-	gridTemplateColumns: "1fr auto",
+	gridTemplateColumns: "auto 1fr auto",
 	placeItems: "center start",
+	gap: "16px",
+	borderRadius: 28,
 })
 
 const NavigateTrigger = styled(motion.button, {
-	border: "1px solid red",
 	width: "100%",
 	textAlign: "left",
-	padding: "12px 24px",
+	padding: "14px",
+	display: "grid",
+	gap: "16px",
+	gridTemplateColumns: "auto 1fr auto",
+	background: "transparent",
+	borderRadius: 28,
+	border: "2px solid transparent",
+
+	"&:focus-visible": {
+		outline: "none",
+		border: "2px solid currentcolor",
+	},
 })

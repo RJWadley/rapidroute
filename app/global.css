@@ -72,3 +72,8 @@ h6 {
 #__next {
 	isolation: isolate;
 }
+
+/* 10. Prevent user selection on non-user content */
+* {
+	user-select: none;
+}

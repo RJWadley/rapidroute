@@ -24,7 +24,7 @@ const schema = z.object({
 	),
 })
 
-const getOnlinePlayers = async () => {
+export const getOnlinePlayers = async () => {
 	const response = await fetch(
 		"https://dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json?t=0",
 	).then((res) => res.json())
