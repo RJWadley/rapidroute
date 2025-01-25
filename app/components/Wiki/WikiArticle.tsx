@@ -8,6 +8,7 @@ import { Fragment } from "react"
 import { styled } from "restyle"
 import type { WikiResult } from "./getArticleContent/[name]/route"
 import { useRouting } from "app/providers/RoutingContext"
+import { getTextboxName } from "../SearchBox/getTextboxName"
 
 const layout = {
 	layout: "position",
@@ -65,6 +66,16 @@ export default function WikiArticle() {
 
 	// TODO - allow wiki articles to manually specify content instead of using the generated summary
 
+	const [firstBlock, ...firstRest] = data?.content ?? []
+	const contentNoImage =
+		firstBlock?.tagName === "figure" ? firstRest : [firstBlock, ...firstRest]
+
+	const [secondBlock, ...secondRest] = contentNoImage
+	const trimmedContent =
+		secondBlock?.tagName === "h1" ? secondRest : [secondBlock, ...secondRest]
+
+	// TODO refactor getTextboxName to be in utils and use it everywhere
+
 	return (
 		<motion.div style={{ position: "relative" }}>
 			<AnimatePresence mode="popLayout" initial={false}>
@@ -78,62 +89,64 @@ export default function WikiArticle() {
 						no article found for '{placeID}'
 					</motion.h1>
 				)}
-				{state === "success" && data?.type === "generic" && (
-					<motion.h2 {...layout} key="generic">
-						May be related to {data.title}
-					</motion.h2>
-				)}
-				{state === "success" && data?.type === "specific" && (
-					<motion.h1 {...layout} key="specific">
-						{data.title}
-					</motion.h1>
-				)}
 				{state === "success" && (
 					<motion.div key="content" {...layout}>
-						{data?.mainImage && (
-							<MainImage {...data.mainImage} alt={data?.title} />
+						{firstBlock?.tagName === "figure" && (
+							<MainImage {...firstBlock.figure} alt={data?.title} />
 						)}
 						<Wrapper>
-							{data?.content.map(({ figure, tagName, textContent }, index) => {
-								const Component = components[tagName]
-								const SubComponent =
-									tagName === "ul" || tagName === "ol"
-										? components.li
-										: Fragment
+							{data?.type === "generic" && (
+								<motion.h1 {...layout} key="generic">
+									{getTextboxName(relevantPlace)} may be related to {data.title}
+								</motion.h1>
+							)}
+							{data?.type === "specific" && (
+								<motion.h1 {...layout} key="specific">
+									{data.title}
+								</motion.h1>
+							)}
+							{trimmedContent
+								.filter(Boolean)
+								.map(({ figure, tagName, textContent }, index) => {
+									const Component = components[tagName]
+									const SubComponent =
+										tagName === "ul" || tagName === "ol"
+											? components.li
+											: Fragment
 
-								return (
-									// biome-ignore lint/suspicious/noArrayIndexKey: none available
-									<Component key={index}>
-										{textContent?.map(
-											({ reactStyleObject, text, href }, index) => (
-												// biome-ignore lint/suspicious/noArrayIndexKey: none available
-												<SubComponent key={index}>
-													{href ? (
-														<a href={href} style={reactStyleObject}>
-															{text}
-														</a>
-													) : (
-														<span style={reactStyleObject}>{text}</span>
-													)}
-												</SubComponent>
-											),
-										)}
-										{figure?.src && (
-											<>
-												<ContentImage
-													src={figure.src}
-													alt={figure.alt}
-													width={figure.width}
-													height={figure.height}
-												/>
-												<figcaption>
-													{figure.caption.replaceAll(/\.$/g, "")}
-												</figcaption>
-											</>
-										)}
-									</Component>
-								)
-							})}
+									return (
+										// biome-ignore lint/suspicious/noArrayIndexKey: none available
+										<Component key={index}>
+											{textContent?.map(
+												({ reactStyleObject, text, href }, index) => (
+													// biome-ignore lint/suspicious/noArrayIndexKey: none available
+													<SubComponent key={index}>
+														{href ? (
+															<a href={href} style={reactStyleObject}>
+																{text}
+															</a>
+														) : (
+															<span style={reactStyleObject}>{text}</span>
+														)}
+													</SubComponent>
+												),
+											)}
+											{figure?.src && (
+												<>
+													<ContentImage
+														src={figure.src}
+														alt={figure.alt}
+														width={figure.width}
+														height={figure.height}
+													/>
+													<figcaption>
+														{figure.caption.replaceAll(/\.$/g, "")}
+													</figcaption>
+												</>
+											)}
+										</Component>
+									)
+								})}
 						</Wrapper>
 						<a href={data?.url}>Read more on the MRT wiki</a>
 						<p>

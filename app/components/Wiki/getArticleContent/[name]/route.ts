@@ -32,12 +32,6 @@ const googleModel = google("gemini-1.5-flash", {
 })
 
 const schema = z.object({
-	mainImage: z
-		.string()
-		.optional()
-		.describe(
-			"if there is a prominent image, include it here for preview purposes",
-		),
 	innerHTML: z.array(
 		z.object({
 			tagName: z.enum([
@@ -94,11 +88,6 @@ export type WikiResult = {
 	url: string
 	content: Awaited<ReturnType<typeof addImageDimensions>>
 	title: string
-	mainImage: {
-		width: number
-		height: number
-		src: string
-	} | null
 	type: "specific" | "generic"
 } | null
 
@@ -197,7 +186,9 @@ export const GET = async (
 			
 			If there are images in the article include if they are relevant AND not a flag/marker.
 
-			start with a top level h1 of '${result.title || "Untitled"}'
+			start with a prominent image if one exists,
+			then, include atop level h1 of '${result.title || "Untitled"}'
+			then, include an h2 with a subtitle, like 'City in Ward 2', 'Airport in Sampletown', 'Station on the MRT Western Line', etc.
 			and a p with a overview paragraph
 			then, include the rest of the synopsis
 
@@ -214,9 +205,6 @@ export const GET = async (
 			title: result.title,
 			url: `${WIKI_URL}index.php/${result.title}`,
 			type: result.type,
-			mainImage: synopsis.object.mainImage
-				? await loadImageDimensions(synopsis.object.mainImage)
-				: null,
 		} satisfies WikiResult),
 		{
 			headers: {
