@@ -19,7 +19,12 @@ const colors = {
 	},
 	cardHover: {
 		variable: "--card-hover",
-		light: "rgba(0, 0, 0, 0.08)",
+		light: "rgba(0, 0, 0, 0.06)",
+		dark: "red",
+	},
+	cardActive: {
+		variable: "--card-active",
+		light: "rgba(0, 0, 0, 0.12)",
 		dark: "red",
 	},
 	/**
@@ -35,6 +40,35 @@ const colors = {
 		light: "#444",
 		dark: "black",
 	},
+	/**
+	 * settings
+	 */
+	controlHeadingBackground: {
+		variable: "--control-heading-background",
+		light: "rgb(155, 182, 255)",
+		dark: "red",
+	},
+	controlHeadingText: {
+		variable: "--control-heading-text",
+		light: "rgb(35, 40, 54)",
+		dark: "green",
+	},
+	controlNeutralFill: {
+		variable: "--control-neutral-fill",
+		light: "#FBFBFB",
+		dark: "red",
+	},
+	controlNeutralStroke: {
+		variable: "--control-neutral-stroke",
+		light: "rgb(75, 80, 95)",
+		dark: "red",
+	},
+	controlActiveFill: {
+		variable: "--control-active-fill",
+		light: "rgb(18, 38, 90)",
+		dark: "red",
+	},
+
 	/**
 	 * effects
 	 */

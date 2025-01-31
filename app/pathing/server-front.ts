@@ -1,5 +1,6 @@
 import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "."
+import { sleep } from "app/utils/sleep"
 
 /**
  * find a path between two locations on the server-side
@@ -29,6 +30,8 @@ export const findPathInServer = async (
 			},
 		},
 	).then((res) => res.json())
+
+	await sleep(2000)
 
 	return data as ReturnType<typeof findPath>
 }

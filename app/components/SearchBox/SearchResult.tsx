@@ -133,6 +133,10 @@ const Wrapper = styled(
 			background: theme.cardHover,
 		},
 
+		"&:active": {
+			background: theme.cardActive,
+		},
+
 		"&:last-child": {
 			borderRadius: "12px 12px 20px 20px",
 		},

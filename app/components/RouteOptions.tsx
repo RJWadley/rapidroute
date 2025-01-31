@@ -1,10 +1,9 @@
 "use client"
 
-import { useSearchParamState } from "app/utils/useSearchParamState"
 import { AnimatePresence, motion } from "motion/react"
+import { useRouting } from "../providers/RoutingContext"
 import Box from "./Box"
 import TypeModeFilter from "./TypeModeFilter"
-import { useRouting } from "../providers/RoutingContext"
 
 const layout = {
 	layout: "position",
@@ -17,29 +16,26 @@ export default function RouteOptions() {
 	const { status, routes, setPreferredRoute } = useRouting()
 
 	return (
-		<Box isVisible={status !== "skipped"}>
+		<Box isVisible>
+			<motion.div {...layout} layout="position">
+				<TypeModeFilter />
+			</motion.div>
 			<AnimatePresence mode="popLayout" initial={false}>
 				{status === "pending" && (
-					<motion.div {...layout} key="loading">
-						<TypeModeFilter key="mode" />
-						loading...
-					</motion.div>
+					<motion.div {...layout}>loading...</motion.div>
 				)}
 				{status === "error" && (
 					<motion.div {...layout} key="error">
-						<TypeModeFilter key="mode" />
 						error!
 					</motion.div>
 				)}
 				{status === "404" && (
 					<motion.div {...layout} key="404">
-						<TypeModeFilter key="mode" />
 						no routes found
 					</motion.div>
 				)}
 				{status === "success" && (
 					<motion.div {...layout} key={routes.map((x) => x.id).join("-")}>
-						<TypeModeFilter key="mode" />
 						the following options are available:
 						{routes.map((route, index) => (
 							<button

@@ -9,6 +9,7 @@ import { combineWalks } from "./combineWalks"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
+import { sleep } from "app/utils/sleep"
 
 export type RoutingResult = {
 	path: (Place | Coordinate)[]
@@ -161,7 +162,7 @@ export const findPath = (
 				const uniquePlaces = new Set(path.map((x) => x.i))
 				if (uniquePlaces.size !== path.length)
 					console.warn(
-						`infinite loop detected in path from ${startSearch} to ${endSearch}`,
+						`infinite loop detected in path from ${startSearch.id} to ${endSearch.id}`,
 					)
 				return uniquePlaces.size === path.length
 			})
@@ -169,7 +170,7 @@ export const findPath = (
 		for (const newPath of newPaths) {
 			if (newPath.time > totalTimeToDestination) {
 				console.warn(
-					`reconstructed path from ${startSearch} to ${endSearch} was too long! ${newPath.time} > ${totalTimeToDestination}`,
+					`reconstructed path from ${startSearch.id} to ${endSearch.id} was too long! ${newPath.time} > ${totalTimeToDestination}`,
 				)
 			}
 			if (newPath.path[0]?.i === start.i) {

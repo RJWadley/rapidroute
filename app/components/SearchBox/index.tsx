@@ -256,6 +256,10 @@ const CloseButton = styled(
 		"&:hover": {
 			background: theme.cardHover,
 		},
+
+		"&:active": {
+			background: theme.cardActive,
+		},
 	}),
 )
 
@@ -284,21 +288,26 @@ const SearchBar = styled(motion.label, {
 	placeItems: "center start",
 	gap: "16px",
 	borderRadius: 28,
+	transition: "background 0.2s",
 })
 
 const NavigateTrigger = styled(motion.button, {
 	width: "100%",
 	textAlign: "left",
-	padding: "14px",
+	padding: `${16 - 5}px`,
 	display: "grid",
 	gap: "16px",
 	gridTemplateColumns: "auto 1fr auto",
 	background: "transparent",
 	borderRadius: 28,
-	border: "2px solid transparent",
+	border: `5px solid ${theme.cardBackground}`,
+	transition: "background 0.2s",
 
-	"&:focus-visible": {
-		outline: "none",
-		border: "2px solid currentcolor",
+	"&:hover": {
+		background: theme.cardHover,
+	},
+
+	"&:active": {
+		background: theme.cardActive,
 	},
 })

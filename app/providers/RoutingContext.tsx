@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "app/pathing/index"
+import { exclusionPresets } from "app/pathing/presets"
 import { findPathInServer } from "app/pathing/server-front"
 import { findPathInWorker } from "app/pathing/worker-front"
 import { useOnlinePlayers } from "app/utils/onlinePlayers"
@@ -10,29 +11,6 @@ import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useBetterThrottle } from "app/utils/useBetterThrottle"
 import { useParams, useRouter } from "next/navigation"
 import { createContext, startTransition, use, useState } from "react"
-
-const defaultExcludedRoutes: ExcludedRoutes = {
-	AirFlight: {
-		helicopter: false,
-		seaplane: false,
-		unk: false,
-		warpPlane: false,
-	},
-	RailLine: { unk: false, warp: false },
-	SeaLine: { ferry: false, unk: false },
-	BusLine: { unk: false },
-	Walk: {
-		atRouteStart: false,
-		middle: false,
-		atRouteEnd: false,
-	},
-	SpawnWarp: {
-		portal: false,
-		premier: false,
-		terminus: false,
-		misc: false,
-	},
-}
 
 type NonEmptyArray<T> = [T, ...T[]]
 
@@ -108,7 +86,7 @@ const routingContext = createContext<ContextType>({
 	isPending: true,
 	preferredRoute: undefined,
 	setPreferredRoute: () => {},
-	excludedRoutes: defaultExcludedRoutes,
+	excludedRoutes: exclusionPresets.default,
 	updateExcludedRoutes: () => {},
 	fromID: null,
 	toID: null,
@@ -189,7 +167,7 @@ export function RoutingProvider({
 	}
 
 	const [preferredRoute, setPreferredRoute] = useState<number>()
-	const [excludedRoutes, setExcludedRoutes] = useState(defaultExcludedRoutes)
+	const [excludedRoutes, setExcludedRoutes] = useState(exclusionPresets.default)
 	const updateExcludedRoutes = <T extends keyof ExcludedRoutes>(action: {
 		type: T
 		mode: keyof ExcludedRoutes[T]
@@ -226,7 +204,6 @@ export function RoutingProvider({
 				})
 			})
 		},
-		placeholderData: (p) => p,
 	})
 
 	const [firstRoute, ...restRoutes] = data ?? []

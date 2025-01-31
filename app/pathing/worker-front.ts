@@ -1,6 +1,7 @@
 import type { ExcludedRoutes } from "app/data"
 import { wrap } from "comlink"
 import type { WorkerOut } from "./worker-back"
+import { sleep } from "app/utils/sleep"
 
 const { findPathInternal } =
 	typeof Worker === "undefined"
@@ -22,6 +23,8 @@ export const findPathInWorker = async (
 		to,
 		excludedRoutes,
 	})
+
+	await sleep(2000)
 
 	return result
 }
