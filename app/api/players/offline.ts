@@ -40,9 +40,9 @@ export const getOfflinePlayers = async (): Promise<
 				.map(
 					(username) =>
 						[
-							username,
+							`player-${username.toLowerCase()}`,
 							{
-								id: `player-${username}`,
+								id: `player-${username.toLowerCase()}`,
 								isOnline: false,
 								type: "Player",
 								username,

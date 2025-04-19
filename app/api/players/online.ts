@@ -29,6 +29,7 @@ export const getOnlinePlayers = async (): Promise<
 > => {
 	const response = await fetch(
 		"https://dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json?t=0",
+		{ cache: "no-store" },
 	).then((res) => res.json())
 
 	const { success, data, error } = schema.safeParse(response)
@@ -38,14 +39,14 @@ export const getOnlinePlayers = async (): Promise<
 			data.players.map(
 				(player) =>
 					[
-						player.name,
+						`player-${player.name.toLowerCase()}`,
 						{
 							...player,
 							username: player.name,
 							type: "Player",
 							isOnline: true,
 							positionForRouting: `x${player.x}z${player.z}`,
-							id: `player-${player.name}`,
+							id: `player-${player.name.toLowerCase()}`,
 						} satisfies OnlinePlayer,
 					] as const,
 			),

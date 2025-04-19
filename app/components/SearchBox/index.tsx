@@ -7,7 +7,6 @@ import { Close } from "app/icons/close"
 import { Pin } from "app/icons/pin"
 import { Point } from "app/icons/point"
 import { Search } from "app/icons/search"
-import { Start } from "app/icons/start"
 import { useRouting } from "app/providers/RoutingContext"
 import { findClosestPlace } from "app/utils/search"
 import { theme } from "app/utils/theme"
@@ -123,7 +122,7 @@ export function SearchBox() {
 							ref={navigateRef}
 							{...layout}
 						>
-							<AddIcon />
+							<Add />
 							Choose a starting point
 						</NavigateTrigger>
 					) : null}
@@ -133,7 +132,7 @@ export function SearchBox() {
 						{navMode && (
 							<SearchBar {...layout} layout>
 								<motion.div layout="position">
-									<PointIcon />
+									<Point />
 								</motion.div>
 								<motion.div layout="position">
 									<TextArea
@@ -163,11 +162,11 @@ export function SearchBox() {
 					</AnimatePresence>
 					<SearchBar layout>
 						<motion.div layout="position">
-							<SearchIcon
+							<Search
 								style={{ position: "absolute" }}
 								animate={{ opacity: navMode ? 0 : 1 }}
 							/>
-							<PinIcon animate={{ opacity: navMode ? 1 : 0 }} />
+							<Pin animate={{ opacity: navMode ? 1 : 0 }} />
 						</motion.div>
 						<motion.div layout="position">
 							<TextArea
@@ -210,31 +209,6 @@ export function SearchBox() {
 		</Box>
 	)
 }
-
-const SearchIcon = styled(Search, {
-	width: "24px",
-	height: "24px",
-})
-
-const AddIcon = styled(Add, {
-	width: "24px",
-	height: "24px",
-})
-
-const StartIcon = styled(Start, {
-	width: "24px",
-	height: "24px",
-})
-
-const PointIcon = styled(Point, {
-	width: "24px",
-	height: "24px",
-})
-
-const PinIcon = styled(Pin, {
-	width: "24px",
-	height: "24px",
-})
 
 const CloseButton = styled(
 	motion.button,
