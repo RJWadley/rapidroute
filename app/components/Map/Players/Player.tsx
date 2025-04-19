@@ -1,4 +1,4 @@
-import { extend, useAssets } from "@pixi/react"
+import { extend } from "@pixi/react"
 import { useLocalIsometric } from "app/utils/locals"
 import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import {
@@ -14,6 +14,7 @@ import { useViewportMoved } from "../Viewport"
 import { convertPointToIsometric } from "../util/isometric"
 import { useHideOverlapping } from "../util/useHideOverlapping"
 import { MotionContainer } from "../MotionContainer"
+import { useAssets } from "app/utils/useAssets"
 
 extend({ Sprite, Text, Container })
 
@@ -25,12 +26,9 @@ export default function MapPlayer({
 	const [isometric] = useLocalIsometric()
 	const [isHover, setIsHover] = useState(false)
 
-	const {
-		assets: [head],
-		isSuccess,
-	} = useAssets<Texture>([
-		{ src: `https://mc-heads.net/avatar/${player.name}.png` },
-	])
+	const url = `https://mc-heads.net/avatar/${player.name}.png`
+	const { data, isLoaded } = useAssets<Texture>([{ src: url }])
+	const texture = data?.[url]
 
 	/**
 	 * update the head size and name offset
@@ -55,7 +53,7 @@ export default function MapPlayer({
 		skipCheck: !isOnline,
 	})
 
-	if (!isSuccess) return null
+	if (!isLoaded) return null
 	return (
 		<MotionContainer
 			key={isometric ? "iso" : "flat"}
@@ -98,7 +96,7 @@ export default function MapPlayer({
 
 					// fill the rectangle with the texture
 					g.setFillStyle({
-						texture: head,
+						texture: texture,
 						matrix: new Matrix()
 							.scale(size / 180, size / 180)
 							.translate(size / 2, size / 2)

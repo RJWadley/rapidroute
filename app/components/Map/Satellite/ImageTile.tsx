@@ -1,8 +1,9 @@
-import { extend, useAssets } from "@pixi/react"
+import { extend } from "@pixi/react"
 import { useLocalIsometric } from "app/utils/locals"
 import { Sprite, type Texture } from "pixi.js"
 import getTileUrl from "./getTileURL"
 import { MotionContainer } from "../MotionContainer"
+import { useAssets } from "app/utils/useAssets"
 
 /**
  * shift all the tiles by 32 blocks to align with dynmap
@@ -29,13 +30,11 @@ export default function ImageTile({
 		isometric,
 	})
 
-	const {
-		assets: [texture],
-		isSuccess,
-	} = useAssets<Texture>([url])
+	const { data, isLoaded } = useAssets<Texture>([url])
+	const texture = data?.[url]
 	if (texture) texture.source.scaleMode = "nearest"
 
-	if (!isSuccess) return null
+	if (!isLoaded) return null
 	return (
 		<MotionContainer
 			initial={{ alpha: 0 }}

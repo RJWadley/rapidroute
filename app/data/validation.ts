@@ -186,11 +186,9 @@ const schema = z
 					name: requiredString,
 					lines: id
 						.array()
-						.min(1)
 						.transform((v) => undefined),
 					stations: id
 						.array()
-						.min(1)
 						.transform((v) => undefined),
 				}),
 				z.strictObject({
