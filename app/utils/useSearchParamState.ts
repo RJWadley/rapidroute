@@ -39,6 +39,16 @@ export function useSearchParamState(
 		[key: string]: string | string[] | undefined
 	}>({
 		queryKey: ["search-params"],
+		queryFn: () => {
+			// return search params in next.js format
+			const params = new URLSearchParams(window.location.search)
+			return Object.fromEntries(
+				[...params.entries()].map(([key, value]) => [
+					key,
+					Array.isArray(value) ? value[0] : value,
+				]),
+			)
+		},
 	})
 
 	const getInitialValue = (key: string) => {

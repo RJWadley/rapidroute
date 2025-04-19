@@ -76,6 +76,7 @@ const proximity = z.record(
 				// so proximity should be at least 1, event though it could be 0
 				.transform((v) => Math.max(v, 1)),
 		),
+		explicit: z.boolean().transform(() => undefined),
 	}),
 )
 
@@ -175,7 +176,9 @@ const schema = z
 					code: requiredString,
 					name: requiredString,
 					color: optionalString,
-					mode: optional(z.enum(["warp"])).transform((v) => v ?? "unk"),
+					mode: optional(z.enum(["warp", "traincarts", "cart"])).transform(
+						(v) => v ?? "unk",
+					),
 					company: id,
 					ref_station: optional(id).transform((v) => undefined),
 				}),
@@ -184,12 +187,9 @@ const schema = z
 					i: id,
 					source,
 					name: requiredString,
-					lines: id
-						.array()
-						.transform((v) => undefined),
-					stations: id
-						.array()
-						.transform((v) => undefined),
+					lines: id.array().transform((v) => undefined),
+					stations: id.array().transform((v) => undefined),
+					local: z.boolean().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("RailStation"),
@@ -241,6 +241,7 @@ const schema = z
 						.array()
 						.min(1)
 						.transform((v) => undefined),
+					local: z.boolean().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("BusLine"),
@@ -277,6 +278,7 @@ const schema = z
 					name: requiredString,
 					lines: id.array().transform((v) => undefined),
 					stops: id.array().transform((v) => undefined),
+					local: z.boolean().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("Town"),
@@ -313,7 +315,7 @@ const schema = z
 			]),
 		),
 		timestamp: requiredString,
-		version: z.literal(6),
+		version: z.literal(8),
 	})
 	.readonly()
 

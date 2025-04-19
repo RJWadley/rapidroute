@@ -3,14 +3,12 @@ import { Inter } from "next/font/google"
 import { Providers } from "./providers"
 
 import "./global.css"
-import { getQueryClient } from "./providers/tanstack/getQueryClient"
 import { getCompressedPlaces } from "./utils/compressedPlaces"
 import { data } from "./data"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
 import { MapServer } from "components/Map/Server"
-import { getOfflinePlayers } from "./utils/offlinePlayers"
-import { getOnlinePlayers } from "./utils/onlinePlayers"
+import { getQueryClient } from "trpc/server"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -27,21 +25,6 @@ export default async function RootLayout({
 	children: React.ReactNode
 }>) {
 	const queryClient = getQueryClient()
-
-	queryClient.prefetchQuery({
-		queryKey: ["compressed-places"],
-		queryFn: async () => compressedPlaces,
-	})
-
-	await queryClient.prefetchQuery({
-		queryKey: ["offline-players"],
-		queryFn: getOfflinePlayers,
-	})
-
-	queryClient.prefetchQuery({
-		queryKey: ["online-players"],
-		queryFn: getOnlinePlayers,
-	})
 
 	return (
 		<html lang="en">

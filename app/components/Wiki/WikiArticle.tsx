@@ -1,14 +1,13 @@
 "use client"
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
 import { AnimatePresence, motion } from "motion/react"
 import { Fragment } from "react"
 import { styled } from "restyle"
-import type { WikiResult } from "./getArticleContent/[name]/route"
 import { useRouting } from "app/providers/RoutingContext"
 import { getTextboxName } from "../SearchBox/getTextboxName"
+import { useTRPC } from "app/api/trpc/client"
 
 const layout = {
 	layout: "position",
@@ -34,9 +33,10 @@ const components = {
 export default function WikiArticle() {
 	const { toID: placeID } = useRouting()
 
-	const { data: compressedPlaces } = useSuspenseQuery<CompressedPlace[]>({
-		queryKey: ["compressed-places"],
-	})
+	const trpc = useTRPC()
+	const { data: compressedPlaces } = useSuspenseQuery(
+		trpc.compressedPlaces.queryOptions(),
+	)
 
 	const relevantPlace = findClosestPlace(placeID, compressedPlaces)
 
@@ -45,16 +45,14 @@ export default function WikiArticle() {
 			? null
 			: relevantPlace?.name || relevantPlace?.id || placeID
 
-	const { data, isLoading } = useQuery({
-		queryKey: ["wiki-article", name],
-		enabled: !!name,
-		queryFn: async () => {
-			if (!name) throw new Error("no title")
-			const content = await fetch(`/components/Wiki/getArticleContent/${name}`)
-			const result = await content.json()
-			return result as WikiResult
-		},
-	})
+	const { data, isLoading } = useQuery(
+		trpc.wikiContent.queryOptions(
+			{ name: name ?? "" },
+			{
+				enabled: !!name,
+			},
+		),
+	)
 
 	const state = !name
 		? "empty"

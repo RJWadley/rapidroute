@@ -1,8 +1,10 @@
-import { useOnlinePlayers, type OnlinePlayer } from "app/utils/onlinePlayers"
+import type { OnlinePlayer } from "app/api/players/type"
 import MapPlayer from "./Player"
 import { useEffect, useState } from "react"
+import { useOnlinePlayers } from "app/api/players/client"
 
 export default function MapPlayers() {
+	// temporary workaround for pixi animation
 	const [allTimePlayers, setAllTimePlayers] = useState<OnlinePlayer[]>([])
 	const { data: onlinePlayers } = useOnlinePlayers()
 
@@ -21,9 +23,9 @@ export default function MapPlayers() {
 		<>
 			{allTimePlayers.map((player) => (
 				<MapPlayer
-					key={player.name}
+					key={player.username}
 					player={player}
-					isOnline={player.id in onlinePlayers}
+					isStillOnline={onlinePlayers[player.id]?.isOnline ?? false}
 				/>
 			))}
 		</>

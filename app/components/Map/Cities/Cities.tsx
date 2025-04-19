@@ -2,10 +2,14 @@ import type { CompressedPlace } from "app/utils/compressedPlaces"
 import CityMarker from "./CityMarker"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
+import { useQuery } from "@tanstack/react-query"
+import { useTRPC } from "trpc/client"
+
 export default function Cities() {
-	const { data: places } = useSuspenseQuery<CompressedPlace[]>({
-		queryKey: ["compressed-places"],
-	})
+	const trpc = useTRPC()
+	const { data: places } = useSuspenseQuery(
+		trpc.compressedPlaces.queryOptions(),
+	)
 
 	return places.map((place) =>
 		place.type === "Town" && place.coordinates ? (

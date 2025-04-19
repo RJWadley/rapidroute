@@ -1,6 +1,6 @@
 "use client"
 
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { useClickAway } from "ahooks"
 import { Add } from "app/icons/add"
 import { Close } from "app/icons/close"
@@ -9,12 +9,6 @@ import { Point } from "app/icons/point"
 import { Search } from "app/icons/search"
 import { Start } from "app/icons/start"
 import { useRouting } from "app/providers/RoutingContext"
-import type { CompressedPlace } from "app/utils/compressedPlaces"
-import {
-	parseOfflinePlayers,
-	useOfflinePlayers,
-} from "app/utils/offlinePlayers"
-import { useOnlinePlayers } from "app/utils/onlinePlayers"
 import { findClosestPlace } from "app/utils/search"
 import { theme } from "app/utils/theme"
 import { AnimatePresence, motion } from "motion/react"
@@ -25,8 +19,11 @@ import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
 import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
+import { useTRPC } from "trpc/client"
+import { useOnlinePlayers } from "app/api/players/client"
 
 export function SearchBox() {
+	const trpc = useTRPC()
 	const wrapper = useRef<HTMLDivElement>(null)
 	const navigateRef = useRef<HTMLButtonElement>(null)
 	const fromFieldRef = useRef<HTMLTextAreaElement>(null)
@@ -35,20 +32,18 @@ export function SearchBox() {
 	const { fromID, setFromID, toID, setToID } = useRouting()
 	const [navMode, setNavMode] = useState(Boolean(fromID))
 	const { data: players } = useOnlinePlayers()
-	const { data: offlinePlayers } = useOfflinePlayers()
-	const { data: compressedPlaces } = useSuspenseQuery<CompressedPlace[]>({
-		queryKey: ["compressed-places"],
-	})
-
-	const parsedOfflinePlayers = parseOfflinePlayers(offlinePlayers)
+	const { data: offlinePlayers } = useQuery(trpc.offlinePlayers.queryOptions())
+	const { data: compressedPlaces } = useSuspenseQuery(
+		trpc.compressedPlaces.queryOptions(),
+	)
 
 	const fromPlace =
 		players?.[fromID ?? ""] ??
-		parsedOfflinePlayers?.[fromID ?? ""] ??
+		offlinePlayers?.[fromID ?? ""] ??
 		findClosestPlace(fromID, compressedPlaces)
 	const toPlace =
 		players?.[toID ?? ""] ??
-		parsedOfflinePlayers?.[toID ?? ""] ??
+		offlinePlayers?.[toID ?? ""] ??
 		findClosestPlace(toID, compressedPlaces)
 
 	const {

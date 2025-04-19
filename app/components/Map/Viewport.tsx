@@ -11,12 +11,7 @@ import {
 	type ReactNode,
 	type RefObject,
 } from "react"
-import { useScrollInputType } from "app/utils/useScrollInputType"
 import { useLocalIsometric } from "app/utils/locals"
-import {
-	convertPointFromIsometric,
-	convertPointToIsometric,
-} from "./util/isometric"
 
 extend({ Viewport })
 

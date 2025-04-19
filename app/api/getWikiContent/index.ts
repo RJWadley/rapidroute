@@ -2,33 +2,25 @@ import { google } from "@ai-sdk/google"
 import { generateObject } from "ai"
 import dedent from "dedent"
 import { z } from "zod"
-import type { SearchResponse } from "../../types/PageSearch"
-import type { ParseResponse } from "../../types/ParseQuery"
+import type { SearchResponse } from "./types/PageSearch"
+import type { ParseResponse } from "./types/ParseQuery"
 import { loadImageDimensions } from "./getImageDimensions"
 
 export const dynamic = "force-static"
 
 const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
 
-const googleModel = google("gemini-1.5-flash", {
-	safetySettings: [
-		{
-			category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-			threshold: "BLOCK_NONE",
-		},
-		{
-			category: "HARM_CATEGORY_HARASSMENT",
-			threshold: "BLOCK_NONE",
-		},
-		{
-			category: "HARM_CATEGORY_HATE_SPEECH",
-			threshold: "BLOCK_NONE",
-		},
-		{
-			category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-			threshold: "BLOCK_NONE",
-		},
-	],
+const googleModel = google("gemini-2.5-flash", {
+	safetySettings: (
+		[
+			"HARM_CATEGORY_UNSPECIFIED",
+			"HARM_CATEGORY_HATE_SPEECH",
+			"HARM_CATEGORY_DANGEROUS_CONTENT",
+			"HARM_CATEGORY_HARASSMENT",
+			"HARM_CATEGORY_SEXUALLY_EXPLICIT",
+			"HARM_CATEGORY_CIVIC_INTEGRITY",
+		] as const
+	).map((category) => ({ category, threshold: "BLOCK_NONE" })),
 })
 
 const schema = z.object({
@@ -91,12 +83,8 @@ export type WikiResult = {
 	type: "specific" | "generic"
 } | null
 
-export const GET = async (
-	_: unknown,
-	{ params }: { params: Promise<{ name: string }> },
-) => {
-	const name = await (await params).name
-	if (!name) return new Response("name is required", { status: 400 })
+export const getWikiContent = async (name: string) => {
+	if (!name) throw new Error("name is required")
 
 	const specificParams = {
 		action: "query",
@@ -139,7 +127,7 @@ export const GET = async (
 				} as const)
 			: null
 
-	if (!result) return new Response(null satisfies WikiResult, { status: 200 })
+	if (!result) return null
 
 	const pageParams = {
 		action: "parse",
@@ -199,17 +187,10 @@ export const GET = async (
 		schema,
 	})
 
-	return new Response(
-		JSON.stringify({
-			content: await addImageDimensions(synopsis.object.innerHTML),
-			title: result.title,
-			url: `${WIKI_URL}index.php/${result.title}`,
-			type: result.type,
-		} satisfies WikiResult),
-		{
-			headers: {
-				"content-type": "application/json",
-			},
-		},
-	)
+	return {
+		content: await addImageDimensions(synopsis.object.innerHTML),
+		title: result.title,
+		url: `${WIKI_URL}index.php/${result.title}`,
+		type: result.type,
+	} satisfies WikiResult
 }

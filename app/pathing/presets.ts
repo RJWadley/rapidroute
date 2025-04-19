@@ -8,7 +8,7 @@ export const exclusionPresets = {
 			seaplane: false,
 			unk: false,
 		},
-		RailLine: { warp: false, unk: false },
+		RailLine: { warp: false, cart: false, traincarts: false, unk: false },
 		SeaLine: { ferry: false, unk: false },
 		BusLine: { unk: false },
 		Walk: {
@@ -30,7 +30,7 @@ export const exclusionPresets = {
 			seaplane: false,
 			unk: false,
 		},
-		RailLine: { warp: false, unk: false },
+		RailLine: { warp: false, cart: false, traincarts: false, unk: false },
 		SeaLine: { ferry: false, unk: false },
 		BusLine: { unk: false },
 		Walk: {
@@ -52,7 +52,7 @@ export const exclusionPresets = {
 			seaplane: true,
 			unk: true,
 		},
-		RailLine: { warp: false, unk: false },
+		RailLine: { warp: false, cart: false, traincarts: false, unk: false },
 		SeaLine: { ferry: false, unk: false },
 		BusLine: { unk: false },
 		Walk: {

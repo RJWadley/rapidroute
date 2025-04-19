@@ -1,31 +1,30 @@
 import type { Coordinate } from "app/data/coordinates"
 import { useCallback, useMemo, useState } from "react"
 import type { CompressedPlace } from "./compressedPlaces"
-import {
-	type OfflinePlayer,
-	parseOfflinePlayers,
-	useOfflinePlayers,
-} from "./offlinePlayers"
-import { type OnlinePlayer, useOnlinePlayers } from "./onlinePlayers"
 import { search } from "./search"
+import type { Player } from "app/api/players/type"
+import { useOnlinePlayers } from "app/api/players/client"
+import { useQuery } from "@tanstack/react-query"
+import { useTRPC } from "app/api/trpc/client"
 
 export const useSearchResults = <T extends Partial<CompressedPlace>>(
 	places: T[],
 ): {
-	results: (T | Coordinate | OnlinePlayer | OfflinePlayer)[]
+	results: (T | Coordinate | Player)[]
 	runSearch: (query: string) => void
 } => {
 	const [results, setResults] = useState<ReturnType<typeof search<T>>>()
 
+	const trpc = useTRPC()
 	const { data: onlinePlayers } = useOnlinePlayers()
-	const { data: offlinePlayers } = useOfflinePlayers()
+	const { data: offlinePlayers } = useQuery(trpc.offlinePlayers.queryOptions())
 
 	const runSearch = useCallback(
 		(query: string) => {
 			const players = [
 				...Object.values(onlinePlayers ?? {}),
-				...Object.values(parseOfflinePlayers(offlinePlayers) ?? {}).filter(
-					(x) => (onlinePlayers ? !(x.id in onlinePlayers) : true),
+				...Object.values(offlinePlayers ?? {}).filter((x) =>
+					onlinePlayers ? !(x.id in onlinePlayers) : true,
 				),
 			]
 

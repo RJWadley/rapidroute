@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
 import { z } from "zod"
+import type { OnlinePlayer } from "./type"
 
 const schema = z.object({
 	players: z.array(
@@ -24,7 +24,9 @@ const schema = z.object({
 	),
 })
 
-export const getOnlinePlayers = async () => {
+export const getOnlinePlayers = async (): Promise<
+	Record<string, OnlinePlayer>
+> => {
 	const response = await fetch(
 		"https://dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json?t=0",
 	).then((res) => res.json())
@@ -36,30 +38,19 @@ export const getOnlinePlayers = async () => {
 			data.players.map(
 				(player) =>
 					[
-						`player-${player.name.toLowerCase()}` as const,
+						player.name,
 						{
 							...player,
-							id: `player-${player.name.toLowerCase()}`,
-							type: "OnlinePlayer",
-							position: `x${player.x}z${player.z}`,
-							coordinates: [player.x, player.z],
-							label: "Current Location",
-						},
+							username: player.name,
+							type: "Player",
+							isOnline: true,
+							positionForRouting: `x${player.x}z${player.z}`,
+							id: `player-${player.name}`,
+						} satisfies OnlinePlayer,
 					] as const,
 			),
 		)
 
-	console.warn("failed to parse online players", error)
+	console.error("failed to parse online players", error)
 	return {}
-}
-
-export type OnlinePlayer = Awaited<ReturnType<typeof getOnlinePlayers>>[string]
-
-export const useOnlinePlayers = () => {
-	return useQuery({
-		queryKey: ["online-players"],
-		queryFn: () => getOnlinePlayers(),
-		refetchInterval: 1000,
-		placeholderData: (previous) => previous,
-	})
 }

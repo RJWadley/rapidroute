@@ -1,6 +1,5 @@
 import { extend } from "@pixi/react"
 import { useLocalIsometric } from "app/utils/locals"
-import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import {
 	Container,
 	Matrix,
@@ -15,18 +14,20 @@ import { convertPointToIsometric } from "../util/isometric"
 import { useHideOverlapping } from "../util/useHideOverlapping"
 import { MotionContainer } from "../MotionContainer"
 import { useAssets } from "app/utils/useAssets"
+import type { OnlinePlayer } from "app/api/players/type"
 
 extend({ Sprite, Text, Container })
 
 export default function MapPlayer({
 	player,
-	isOnline,
-}: { player: OnlinePlayer; isOnline: boolean }) {
+	// temporary workaround for pixi animation
+	isStillOnline,
+}: { player: OnlinePlayer; isStillOnline: boolean }) {
 	const containerRef = useRef<Container>(null)
 	const [isometric] = useLocalIsometric()
 	const [isHover, setIsHover] = useState(false)
 
-	const url = `https://mc-heads.net/avatar/${player.name}.png`
+	const url = `https://mc-heads.net/avatar/${player.username}.png`
 	const { data, isLoaded } = useAssets<Texture>([{ src: url }])
 	const texture = data?.[url]
 
@@ -49,8 +50,8 @@ export default function MapPlayer({
 	useHideOverlapping({
 		item: containerRef,
 		priority: "players",
-		debugName: player.name,
-		skipCheck: !isOnline,
+		debugName: player.username,
+		skipCheck: !isStillOnline,
 	})
 
 	if (!isLoaded) return null
@@ -68,7 +69,7 @@ export default function MapPlayer({
 				visualDuration: 4,
 				bounce: 0.25,
 			}}
-			animate={{ x: skewed.x, y: skewed.z, alpha: isOnline ? 1 : 0 }}
+			animate={{ x: skewed.x, y: skewed.z, alpha: isStillOnline ? 1 : 0 }}
 			ref={containerRef}
 		>
 			<pixiGraphics
@@ -110,7 +111,7 @@ export default function MapPlayer({
 				x={20}
 				// text is usually bottom heavy, compensate
 				y={-1}
-				text={player.name}
+				text={player.username}
 				style={playerStyle}
 			/>
 		</MotionContainer>

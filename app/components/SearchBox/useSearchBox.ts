@@ -1,11 +1,10 @@
 import type { Coordinate } from "app/data/coordinates"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
-import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import { useSearchResults } from "app/utils/useSearchResults"
 import type { ComponentProps, FocusEvent } from "react"
 import { startTransition, useEffect, useId, useRef, useState } from "react"
 import { getTextboxName } from "./getTextboxName"
-import type { OfflinePlayer } from "app/utils/offlinePlayers"
+import type { Player } from "app/api/players/type"
 
 const blurActiveElement = () => {
 	if (document.activeElement instanceof HTMLElement)
@@ -31,12 +30,12 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * which place is currently selected?
 	 */
-	initiallySelectedPlace?: T | Coordinate | OnlinePlayer | OfflinePlayer
+	initiallySelectedPlace?: T | Coordinate | Player
 	/**
 	 * a callback when the selected place changes
 	 */
 	onItemSelected?: (
-		item: T | Coordinate | OnlinePlayer | OfflinePlayer | undefined,
+		item: T | Coordinate | Player | undefined,
 		explicitly: boolean,
 	) => void
 	/**
@@ -53,7 +52,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * (or undefined if no item selected)
 	 */
 	const [selectedPlace, setSelectedPlace] = useState<
-		T | Coordinate | OnlinePlayer | OfflinePlayer | undefined
+		T | Coordinate | Player | undefined
 	>(initiallySelectedPlace)
 	/**
 	 * what the user has physically typed into the input
@@ -69,7 +68,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	const [isOpen, setIsOpen] = useState(false)
 
 	const selectPlace = (
-		place: T | Coordinate | OnlinePlayer | OfflinePlayer | undefined,
+		place: T | Coordinate | Player | undefined,
 		explicitly: boolean,
 	) => {
 		setSelectedPlace(place)
@@ -221,7 +220,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 * the current search results, or undefined if the suggestions dropdown is not visible
 		 */
 		searchResults:
-			| ((T | Coordinate | OnlinePlayer | OfflinePlayer) & {
+			| ((T | Coordinate | Player) & {
 					selectItem: VoidFunction
 					highlighted: boolean
 			  })[]

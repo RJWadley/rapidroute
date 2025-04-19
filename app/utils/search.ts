@@ -5,8 +5,7 @@ import {
 } from "app/data/coordinates"
 import searcher from "fuzzysort"
 import type { CompressedPlace } from "./compressedPlaces"
-import type { OnlinePlayer } from "./onlinePlayers"
-import type { OfflinePlayer } from "./offlinePlayers"
+import type { OnlinePlayer, Player } from "app/api/players/type"
 
 const keys: Record<Exclude<keyof CompressedPlace, "coordinates">, unknown> = {
 	codes: true,
@@ -21,31 +20,29 @@ const keys: Record<Exclude<keyof CompressedPlace, "coordinates">, unknown> = {
 }
 
 const playerKeys: Record<
-	Exclude<keyof OnlinePlayer, "coordinates">,
+	Exclude<keyof OnlinePlayer, "isOnline" | "positionForRouting">,
 	unknown
 > = {
 	id: true,
-	name: true,
-	position: true,
+	username: true,
 	type: true,
 	world: true,
 	x: true,
 	y: true,
 	z: true,
-	label: true,
 }
 
 export const search = <T extends Partial<CompressedPlace>>(
 	query: string | null | undefined,
 	places: T[],
-	players: (OnlinePlayer | OfflinePlayer)[] | undefined,
+	players: Player[] | undefined,
 ) => {
 	const coordinate = parseCoordinate(query)
 
 	if (query?.startsWith("player-")) {
 		const playerName = query.replace("player-", "")
 		const player = players?.find(
-			(p) => p.name.toLowerCase() === playerName.toLowerCase(),
+			(p) => p.username.toLowerCase() === playerName.toLowerCase(),
 		)
 		if (player) return [{ obj: player }]
 	}

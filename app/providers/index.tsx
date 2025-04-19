@@ -1,11 +1,11 @@
 "use client"
 
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { TanstackProvider } from "app/providers/tanstack/TanstackProvider"
 import { SetupTheme } from "app/utils/theme"
 import { MotionConfig } from "motion/react"
 import type { ReactNode } from "react"
 import { RoutingProvider } from "./RoutingContext"
+import { TRPCReactProvider } from "app/api/trpc/client"
 
 export function Providers({ children }: { children: ReactNode }) {
 	children = (
@@ -15,6 +15,7 @@ export function Providers({ children }: { children: ReactNode }) {
 			{children}
 		</>
 	)
+
 	children = (
 		<MotionConfig
 			reducedMotion="user"
@@ -23,7 +24,9 @@ export function Providers({ children }: { children: ReactNode }) {
 			{children}
 		</MotionConfig>
 	)
+
 	children = <RoutingProvider>{children}</RoutingProvider>
-	children = <TanstackProvider>{children}</TanstackProvider>
+	children = <TRPCReactProvider>{children}</TRPCReactProvider>
+
 	return children
 }

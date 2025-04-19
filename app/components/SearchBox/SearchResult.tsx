@@ -1,60 +1,50 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { getClosestPlaces } from "app/pathing/getClosestPlaces"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
-import { getImageColor } from "app/utils/getImageColor"
-import type { OfflinePlayer } from "app/utils/offlinePlayers"
-import type { OnlinePlayer } from "app/utils/onlinePlayers"
 import { dynamicColor, theme } from "app/utils/theme"
 import { useRef } from "react"
 import { styled } from "restyle"
 import type useSearchBox from "./useSearchBox"
+import { useTRPC } from "trpc/client"
+import type { Player as PlayerType } from "app/api/players/type"
 
 type SortedPlace = NonNullable<
 	ReturnType<typeof useSearchBox<CompressedPlace>>["searchResults"]
 >[number]
 
-function Player({ player }: { player: OnlinePlayer | OfflinePlayer }) {
-	const { data: compressedPlaces } = useQuery<CompressedPlace[]>({
-		queryKey: ["compressed-places"],
-	})
-	const {
-		data: color,
-		isError,
-		isPending,
-	} = useQuery({
-		queryKey: ["color", player.name],
-		queryFn: async () => {
-			if (!player.name) return null
-			const color = await getImageColor(
-				`https://mc-heads.net/avatar/${player.name}.png`,
-			)
-			return color
-		},
-	})
+function Player({ player }: { player: PlayerType }) {
+	const trpc = useTRPC()
+	const { data: compressedPlaces } = useSuspenseQuery(
+		trpc.compressedPlaces.queryOptions(),
+	)
+	const { data: color, isError } = useQuery(
+		trpc.playerColor.queryOptions({
+			username: player.username,
+		}),
+	)
 
 	const loaderRef = useRef<HTMLDivElement>(null)
 
 	if (isError) return "Failed to load player"
 	if (!compressedPlaces || !color) return <Loader ref={loaderRef} />
 
-	const [closestPlace] =
-		player.type === "OnlinePlayer"
-			? getClosestPlaces(
-					player.coordinates,
-					compressedPlaces.filter(
-						(place) => place.type === "Town" || place.type === "AirAirport",
-					),
-				)
-			: [null]
+	const [closestPlace] = player.isOnline
+		? getClosestPlaces(
+				[player.x, player.z],
+				compressedPlaces.filter(
+					(place) => place.type === "Town" || place.type === "AirAirport",
+				),
+			)
+		: [null]
 
 	return (
 		<>
 			<PlayerHead
-				src={`https://mc-heads.net/avatar/${player.name}.png`}
-				alt={player.name}
+				src={`https://mc-heads.net/avatar/${player.username}.png`}
+				alt={player.username}
 			/>
-			<PlayerName baseColor={color}>{player.name}</PlayerName>
-			{player.type === "OfflinePlayer" ? (
+			<PlayerName baseColor={color}>{player.username}</PlayerName>
+			{!player.isOnline ? (
 				<OfflineTag>OFFLINE</OfflineTag>
 			) : closestPlace ? (
 				`${
@@ -67,7 +57,7 @@ function Player({ player }: { player: OnlinePlayer | OfflinePlayer }) {
 							: "Wilderness near"
 				} ${closestPlace.place.name}`
 			) : (
-				`at ${Math.round(player.coordinates[0])}, ${Math.round(player.coordinates[1])}`
+				`at ${Math.round(player.x)}, ${Math.round(player.z)}`
 			)}
 		</>
 	)
@@ -100,7 +90,7 @@ export default function SearchResult({ place }: { place: SortedPlace }) {
 					: null
 			}
 		>
-			{place.type === "OnlinePlayer" || place.type === "OfflinePlayer" ? (
+			{place.type === "Player" ? (
 				<Player player={place} />
 			) : place.type === "Coordinate" ? (
 				"coordinate"
