@@ -10,8 +10,7 @@
 					"level": "warn",
 					"fix": "safe"
 				}
-			},
-			"correctness": { "noUnusedImports": "warn" }
+			}
 		}
 	},
 	"javascript": { "formatter": { "enabled": true, "semicolons": "asNeeded" } },

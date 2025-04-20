@@ -19,7 +19,7 @@ export function Providers({ children }: { children: ReactNode }) {
 	children = (
 		<MotionConfig
 			reducedMotion="user"
-			transition={{ type: "spring", bounce: 0.1 }}
+			transition={{ type: "spring", bounce: 0.1, visualDuration: 2 }}
 		>
 			{children}
 		</MotionConfig>

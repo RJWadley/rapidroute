@@ -10,18 +10,7 @@ export const dynamic = "force-static"
 
 const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
 
-const googleModel = google("gemini-2.5-flash", {
-	safetySettings: (
-		[
-			"HARM_CATEGORY_UNSPECIFIED",
-			"HARM_CATEGORY_HATE_SPEECH",
-			"HARM_CATEGORY_DANGEROUS_CONTENT",
-			"HARM_CATEGORY_HARASSMENT",
-			"HARM_CATEGORY_SEXUALLY_EXPLICIT",
-			"HARM_CATEGORY_CIVIC_INTEGRITY",
-		] as const
-	).map((category) => ({ category, threshold: "BLOCK_NONE" })),
-})
+const googleModel = google("gemini-2.0-flash-exp")
 
 const schema = z.object({
 	innerHTML: z.array(
@@ -75,13 +64,6 @@ const addImageDimensions = (result: z.infer<typeof schema>["innerHTML"]) => {
 		}),
 	)
 }
-
-export type WikiResult = {
-	url: string
-	content: Awaited<ReturnType<typeof addImageDimensions>>
-	title: string
-	type: "specific" | "generic"
-} | null
 
 export const getWikiContent = async (name: string) => {
 	if (!name) throw new Error("name is required")
@@ -161,36 +143,29 @@ export const getWikiContent = async (name: string) => {
 			return `srcset="${srcset}"`
 		})
 
-	const synopsis = await generateObject({
+	console.log("generating synopsis for", result.title)
+	const { object } = await generateObject({
 		model: googleModel,
 		prompt: dedent(`
 			ARTICLE:
 			${text}
 
 			Given a wiki article, create a place details synopsis for a online maps listing for that place.
+			The synopsis should be about a paragraph long.
 
-			structure the synopsis as headings and paragraphs. each heading should be followed by one or two paragraphs.
-			you may use h3 and h4 tags for subheadings as needed.
-			
-			If there are images in the article include if they are relevant AND not a flag/marker.
-
-			start with a prominent image if one exists,
-			then, include atop level h1 of '${result.title || "Untitled"}'
-			then, include an h2 with a subtitle, like 'City in Ward 2', 'Airport in Sampletown', 'Station on the MRT Western Line', etc.
-			and a p with a overview paragraph
-			then, include the rest of the synopsis
-
-			this is for mobile devices, so:
-			tables are not allowed
-			floats are not allowed
+			When selecting the most prominent image, the file might include a size descriptor, for example 'my/image/url/330px-Sample_Image.png'.
+			Update the size descriptor to 600px if it exists, for example 'my/image/url/600px-Sample_Image.png'..  If the image does not have a size descriptor, use the original url.
 		`),
-		schema,
+		schema: z.object({ synopsis: z.string(), mostProminentImage: z.string() }),
 	})
 
 	return {
-		content: await addImageDimensions(synopsis.object.innerHTML),
+		type: result.type,
 		title: result.title,
 		url: `${WIKI_URL}index.php/${result.title}`,
-		type: result.type,
-	} satisfies WikiResult
+		synopsis: object.synopsis,
+		mostProminentImage: object.mostProminentImage,
+
+		content: text,
+	}
 }

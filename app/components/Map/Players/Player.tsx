@@ -13,8 +13,8 @@ import { useViewportMoved } from "../Viewport"
 import { convertPointToIsometric } from "../util/isometric"
 import { useHideOverlapping } from "../util/useHideOverlapping"
 import { MotionContainer } from "../MotionContainer"
-import { useAssets } from "app/utils/useAssets"
 import type { OnlinePlayer } from "app/api/players/type"
+import { useAsset } from "app/utils/useAsset"
 
 extend({ Sprite, Text, Container })
 
@@ -28,8 +28,7 @@ export default function MapPlayer({
 	const [isHover, setIsHover] = useState(false)
 
 	const url = `https://mc-heads.net/avatar/${player.username}.png`
-	const { data, isLoaded } = useAssets<Texture>([{ src: url }])
-	const texture = data?.[url]
+	const texture = useAsset(url)
 
 	/**
 	 * update the head size and name offset
@@ -54,7 +53,7 @@ export default function MapPlayer({
 		skipCheck: !isStillOnline,
 	})
 
-	if (!isLoaded) return null
+	if (!texture) return null
 	return (
 		<MotionContainer
 			key={isometric ? "iso" : "flat"}

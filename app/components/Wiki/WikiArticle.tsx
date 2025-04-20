@@ -62,18 +62,6 @@ export default function WikiArticle() {
 				? "success"
 				: "404"
 
-	// TODO - allow wiki articles to manually specify content instead of using the generated summary
-
-	const [firstBlock, ...firstRest] = data?.content ?? []
-	const contentNoImage =
-		firstBlock?.tagName === "figure" ? firstRest : [firstBlock, ...firstRest]
-
-	const [secondBlock, ...secondRest] = contentNoImage
-	const trimmedContent =
-		secondBlock?.tagName === "h1" ? secondRest : [secondBlock, ...secondRest]
-
-	// TODO refactor getTextboxName to be in utils and use it everywhere
-
 	return (
 		<motion.div style={{ position: "relative" }}>
 			<AnimatePresence mode="popLayout" initial={false}>
@@ -87,69 +75,31 @@ export default function WikiArticle() {
 						no article found for '{placeID}'
 					</motion.h1>
 				)}
-				{state === "success" && (
+				{state === "success" && data && (
 					<motion.div key="content" {...layout}>
-						{firstBlock?.tagName === "figure" && (
-							<MainImage {...firstBlock.figure} alt={data?.title} />
-						)}
+						<MainImage src={data.mostProminentImage} alt={data.title} />
 						<Wrapper>
-							{data?.type === "generic" && (
+							{data.type === "generic" && (
 								<motion.h1 {...layout} key="generic">
 									{getTextboxName(relevantPlace)} may be related to {data.title}
 								</motion.h1>
 							)}
-							{data?.type === "specific" && (
+							{data.type === "specific" && (
 								<motion.h1 {...layout} key="specific">
 									{data.title}
 								</motion.h1>
 							)}
-							{trimmedContent
-								.filter(Boolean)
-								.map(({ figure, tagName, textContent }, index) => {
-									const Component = components[tagName]
-									const SubComponent =
-										tagName === "ul" || tagName === "ol"
-											? components.li
-											: Fragment
+							<p>{data.synopsis}</p>
 
-									return (
-										// biome-ignore lint/suspicious/noArrayIndexKey: none available
-										<Component key={index}>
-											{textContent?.map(
-												({ reactStyleObject, text, href }, index) => (
-													// biome-ignore lint/suspicious/noArrayIndexKey: none available
-													<SubComponent key={index}>
-														{href ? (
-															<a href={href} style={reactStyleObject}>
-																{text}
-															</a>
-														) : (
-															<span style={reactStyleObject}>{text}</span>
-														)}
-													</SubComponent>
-												),
-											)}
-											{figure?.src && (
-												<>
-													<ContentImage
-														src={figure.src}
-														alt={figure.alt}
-														width={figure.width}
-														height={figure.height}
-													/>
-													<figcaption>
-														{figure.caption.replaceAll(/\.$/g, "")}
-													</figcaption>
-												</>
-											)}
-										</Component>
-									)
-								})}
+							<ArticleContent
+								// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+								dangerouslySetInnerHTML={{ __html: data.content || "" }}
+							/>
 						</Wrapper>
-						<a href={data?.url}>Read more on the MRT wiki</a>
+
 						<p>
-							Generated summary using "<a href={data?.url}>{data?.title}</a>" by
-							Contributers to the MRT wiki under{" "}
+							"<a href={data.url}>{data.title}</a>" by Contributers to the MRT
+							wiki under{" "}
 							<a
 								href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
 								style={{ whiteSpace: "nowrap" }}
@@ -169,6 +119,10 @@ const Wrapper = styled("div", {
 	overflow: "clip",
 	padding: "12px",
 
+	"*": {
+		userSelect: "text",
+	},
+
 	"h1:first-child": {
 		display: "none",
 	},
@@ -180,8 +134,8 @@ const MainImage = styled("img", {
 	display: "block",
 })
 
-const ContentImage = styled("img", {
-	width: "100%",
-	height: "auto",
-	display: "block",
+const ArticleContent = styled("div", {
+	".hatnote": {
+		border: "1px solid red",
+	},
 })

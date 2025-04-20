@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useOnlinePlayers } from "app/api/players/client"
+import { useOnlinePlayer } from "app/api/players/client"
 import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "app/pathing/index"
 import { exclusionPresets } from "app/pathing/presets"
@@ -10,7 +10,8 @@ import { findPathInWorker } from "app/pathing/worker-front"
 import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useBetterThrottle } from "app/utils/useBetterThrottle"
 import { useParams, useRouter } from "next/navigation"
-import { createContext, startTransition, use, useState } from "react"
+import { createContext, memo, startTransition, use, useState } from "react"
+import { useDeepCompareMemo } from "use-deep-compare"
 
 type NonEmptyArray<T> = [T, ...T[]]
 
@@ -179,15 +180,10 @@ export function RoutingProvider({
 		}))
 	}
 
-	const { data: players } = useOnlinePlayers()
 	const fromPlayer =
-		players && currentRoute.fromID
-			? players[currentRoute.fromID]?.positionForRouting
-			: null
+		useOnlinePlayer(currentRoute.fromID)?.positionForRouting || null
 	const toPlayer =
-		players && currentRoute.toID
-			? players[currentRoute.toID]?.positionForRouting
-			: null
+		useOnlinePlayer(currentRoute.toID)?.positionForRouting || null
 
 	const from = useBetterThrottle(fromPlayer ?? currentRoute.fromID, 1000)
 	const to = useBetterThrottle(toPlayer ?? currentRoute.toID, 1000)

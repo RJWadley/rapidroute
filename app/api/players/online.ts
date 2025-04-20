@@ -29,7 +29,6 @@ export const getOnlinePlayers = async (): Promise<
 > => {
 	const response = await fetch(
 		"https://dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json?t=0",
-		{ cache: "no-store" },
 	).then((res) => res.json())
 
 	const { success, data, error } = schema.safeParse(response)

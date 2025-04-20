@@ -98,7 +98,13 @@ export function OverlappingProvider({
 			>(),
 	)
 	const [signal, setSignal] = useState(0)
-	const triggerUpdate = () => setSignal((p) => p + 1)
+	let timeout: ReturnType<typeof setTimeout> | undefined
+	const triggerUpdate = () => {
+		clearTimeout(timeout)
+		timeout = setTimeout(() => {
+			setSignal((p) => p + 1)
+		})
+	}
 	const [isometric] = useLocalIsometric()
 
 	const throttledSignal = useBetterThrottle(signal, 1000)

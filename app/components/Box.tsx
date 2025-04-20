@@ -12,7 +12,7 @@ export default function Box({
 	isVisible?: boolean
 }) {
 	return (
-		<AnimatePresence mode="popLayout" initial={false}>
+		<AnimatePresence mode="popLayout">
 			{isVisible && (
 				<Wrapper
 					initial={{ opacity: 0 }}

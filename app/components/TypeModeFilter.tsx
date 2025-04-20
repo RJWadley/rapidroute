@@ -71,7 +71,9 @@ const typeToString = (typeMode: string) => {
 	return `mode name not supported: ${typeMode}`
 }
 
-export default function TypeModeFilter() {
+export default function TypeModeFilter({
+	children,
+}: { children: React.ReactNode }) {
 	const { excludedRoutes, updateExcludedRoutes } = useRouting()
 
 	const allCombos = Object.entries(excludedRoutes).flatMap(([type, value]) =>
@@ -92,7 +94,7 @@ export default function TypeModeFilter() {
 		<Wrapper>
 			<DisclosureProvider>
 				<Row>
-					<PassiveTrigger>Found A Result or Whatever</PassiveTrigger>
+					<PassiveTrigger>{children}</PassiveTrigger>
 					<ResetTrigger>
 						<Reset />
 					</ResetTrigger>

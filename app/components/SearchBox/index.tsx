@@ -9,7 +9,6 @@ import { Point } from "app/icons/point"
 import { Search } from "app/icons/search"
 import { useRouting } from "app/providers/RoutingContext"
 import { findClosestPlace } from "app/utils/search"
-import { theme } from "app/utils/theme"
 import { AnimatePresence, motion } from "motion/react"
 import { useRef, useState } from "react"
 import { styled } from "restyle"
@@ -20,6 +19,7 @@ import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
 import { useTRPC } from "trpc/client"
 import { useOnlinePlayers } from "app/api/players/client"
+import { theme } from "app/utils/theme"
 
 export function SearchBox() {
 	const trpc = useTRPC()

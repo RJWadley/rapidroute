@@ -1,13 +1,13 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-	logging: {
-		incomingRequests: false,
-	},
 	experimental: {
 		reactCompiler: true,
 	},
-	reactStrictMode: false,
+
+	logging: {
+		incomingRequests: false, // next + trpc = lots of useless spam
+	},
 }
 
 export default nextConfig

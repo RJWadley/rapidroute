@@ -16,9 +16,9 @@ export default function RouteOptions() {
 	const { status, routes, setPreferredRoute } = useRouting()
 
 	return (
-		<Box isVisible>
+		<Box isVisible={status !== "skipped"}>
 			<motion.div {...layout} layout="position">
-				<TypeModeFilter />
+				<TypeModeFilter>Result or whatever</TypeModeFilter>
 			</motion.div>
 			<AnimatePresence mode="popLayout" initial={false}>
 				{status === "pending" && (

@@ -3,7 +3,7 @@ import { useLocalIsometric } from "app/utils/locals"
 import { Sprite, type Texture } from "pixi.js"
 import getTileUrl from "./getTileURL"
 import { MotionContainer } from "../MotionContainer"
-import { useAssets } from "app/utils/useAssets"
+import { useAsset } from "app/utils/useAsset"
 
 /**
  * shift all the tiles by 32 blocks to align with dynmap
@@ -30,11 +30,10 @@ export default function ImageTile({
 		isometric,
 	})
 
-	const { data, isLoaded } = useAssets<Texture>([url])
-	const texture = data?.[url]
+	const texture = useAsset(url)
 	if (texture) texture.source.scaleMode = "nearest"
 
-	if (!isLoaded) return null
+	if (!texture) return null
 	return (
 		<MotionContainer
 			initial={{ alpha: 0 }}

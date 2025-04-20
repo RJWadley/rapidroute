@@ -98,7 +98,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * if autofocus is true, focus will fire immediately
 	 * so we need to account for that
 	 */
-	const firstFocus = useRef(true)
+	const isAutoFocus = useRef(autoFocus)
 	const id = useId()
 
 	/**
@@ -136,8 +136,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 
 				if (input.autofocus) throw new Error("do not use native autofocus")
 
-				if (autoFocus && firstFocus.current) {
-					firstFocus.current = false
+				if (isAutoFocus.current) {
 					return
 				}
 				setIsOpen(true)
@@ -151,6 +150,8 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 				setUserTyped(newValue)
 				setSelectedPlace(undefined)
 				setIsOpen(true)
+
+				if (newValue.length > 0) isAutoFocus.current = false
 
 				if (newValue.trim() === "") {
 					selectPlace(undefined, false)

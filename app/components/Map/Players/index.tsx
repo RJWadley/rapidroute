@@ -1,7 +1,7 @@
 import type { OnlinePlayer } from "app/api/players/type"
 import MapPlayer from "./Player"
 import { useEffect, useState } from "react"
-import { useOnlinePlayers } from "app/api/players/client"
+import { useOnlinePlayers} from "app/api/players/client"
 
 export default function MapPlayers() {
 	// temporary workaround for pixi animation

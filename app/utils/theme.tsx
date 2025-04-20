@@ -1,103 +1,39 @@
+"use client"
+
 import { useLocalDark } from "./locals"
 import { isBrowser } from "./isBrowser"
-import { GlobalStyles } from "restyle"
 import invertLightness from "./color"
 
-const colors = {
+export const theme = {
 	/**
-	 * backgrounds
+	 * backgrounds for our cards
 	 */
-	cardBackground: {
-		variable: "--card-background",
-		light: "#FBFBFB",
-		dark: "red",
-	},
-	cardProminent: {
-		variable: "--card-prominent",
-		light: "white",
-		dark: "red",
-	},
-	cardHover: {
-		variable: "--card-hover",
-		light: "rgba(0, 0, 0, 0.06)",
-		dark: "red",
-	},
-	cardActive: {
-		variable: "--card-active",
-		light: "rgba(0, 0, 0, 0.12)",
-		dark: "red",
-	},
-	/**
-	 * foregrounds
-	 */
-	cardText: {
-		variable: "--card-text",
-		light: "#000",
-		dark: "black",
-	},
-	cardTextMuted: {
-		variable: "--card-text-muted",
-		light: "#444",
-		dark: "black",
-	},
-	/**
-	 * settings
-	 */
-	controlHeadingBackground: {
-		variable: "--control-heading-background",
-		light: "rgb(155, 182, 255)",
-		dark: "red",
-	},
-	controlHeadingText: {
-		variable: "--control-heading-text",
-		light: "rgb(35, 40, 54)",
-		dark: "green",
-	},
-	controlNeutralFill: {
-		variable: "--control-neutral-fill",
-		light: "#FBFBFB",
-		dark: "red",
-	},
-	controlNeutralStroke: {
-		variable: "--control-neutral-stroke",
-		light: "rgb(75, 80, 95)",
-		dark: "red",
-	},
-	controlActiveFill: {
-		variable: "--control-active-fill",
-		light: "rgb(18, 38, 90)",
-		dark: "red",
-	},
+	cardBackground: "light-dark(#FBFBFB,red)",
+	cardProminent: "light-dark(white,red)",
+	cardHover: "light-dark(rgba(0, 0, 0, 0.06),red)",
+	cardActive: "light-dark(rgba(0, 0, 0, 0.12),red)",
 
 	/**
-	 * effects
+	 * foregrounds for our cards
 	 */
-	cardBoxShadow: {
-		variable: "--card-shadow",
-		light: "0 4px 12px rgba(0, 0, 0, 0.12)",
-		dark: "0 4px 12px rgba(255, 255, 255, 1)",
-	},
-	loaderPulse: {
-		variable: "--loader-pulse",
-		light: "rgba(0, 0, 0, 0.08)",
-		dark: "red",
-	},
-} as const
+	cardText: "light-dark(#000, black)",
+	cardTextMuted: "light-dark(#444, black)",
 
-const darkVariables = Object.fromEntries(
-	Object.entries(colors).map(([key, value]) => [value.variable, value.dark]),
-)
-const lightVariables = Object.fromEntries(
-	Object.entries(colors).map(([key, value]) => [value.variable, value.light]),
-)
+	/**
+	 * settings toggles
+	 */
+	controlHeadingBackground: "light-dark(rgb(155, 182, 255), red)",
+	controlHeadingText: "light-dark(rgb(35, 40, 54), green)",
+	controlNeutralFill: "light-dark(#FBFBFB, red)",
+	controlNeutralStroke: "light-dark(rgb(75, 80, 95), red)",
+	controlActiveFill: "light-dark(rgb(18, 38, 90), red)",
 
-export const theme = Object.fromEntries(
-	Object.entries(colors).map(([key, value]) => [
-		key,
-		`var(${value.variable}, light-dark(${value.light}, ${value.dark}))`,
-	]),
-) as {
-	[key in keyof typeof colors]: `var(${(typeof colors)[key]["variable"]}, light-dark(${(typeof colors)[key]["light"]}, ${(typeof colors)[key]["dark"]}))`
+	/**
+	 * misc
+	 */
+	loaderPulse: "light-dark(rgba(0, 0, 0, 0.08), red)",
+	cardBoxShadow:
+		"light-dark(0 4px 12px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(255, 255, 255, 1))",
 }
 
 const syncTheme = (value: "system" | "light" | "dark" | undefined) => {
@@ -105,8 +41,9 @@ const syncTheme = (value: "system" | "light" | "dark" | undefined) => {
 	const systemValue = window.matchMedia("(prefers-color-scheme: dark)").matches
 		? "dark"
 		: "light"
-	document.body.setAttribute(
-		"data-theme",
+
+	document.body.style.setProperty(
+		"color-scheme",
 		themeValue === "dark"
 			? "dark"
 			: themeValue === "light"
@@ -117,37 +54,19 @@ const syncTheme = (value: "system" | "light" | "dark" | undefined) => {
 
 export const SetupTheme = () => {
 	const [{ preference }] = useLocalDark()
+
 	if (isBrowser && preference) {
 		syncTheme(preference)
 	}
 
-	return (
-		<>
-			<script>{`
-				(${syncTheme.toString()})()
-			`}</script>
-			<GlobalStyles>
-				{{
-					lightVariables,
-					'body[data-theme="light"]': lightVariables,
-					'body[data-theme="dark"]': darkVariables,
-				}}
-			</GlobalStyles>
-		</>
-	)
+	return <script>{`(${syncTheme.toString()})()`}</script>
 }
 
 export const dynamicColor = (color: string) => {
 	const parsed = invertLightness(color)
 
 	return {
-		'body[data-theme="light"] &': {
-			backgroundColor: parsed.lightColor,
-			color: parsed.darkColor,
-		},
-		'body[data-theme="dark"] &': {
-			backgroundColor: parsed.darkColor,
-			color: parsed.lightColor,
-		},
+		backgroundColor: `light-dark(${parsed.lightColor}, ${parsed.darkColor})`,
+		color: `light-dark(${parsed.darkColor}, ${parsed.lightColor})`,
 	}
 }

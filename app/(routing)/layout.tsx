@@ -6,45 +6,26 @@ import { SearchBox } from "app/components/SearchBox"
 import RouteOptions from "app/components/RouteOptions"
 import SelectedRoute from "app/components/SelectedRoute"
 import { useLocalDark, useLocalIsometric } from "app/utils/locals"
+import Box from "app/components/Box"
 
-export default function AppGrid() {
+export default function AppGrid({ children }: { children: React.ReactNode }) {
 	const [{ preference, isDark }, setDarkPreference] = useLocalDark()
 	const [isometric, setIsometric] = useLocalIsometric()
 
 	return (
-		<LayoutGroup>
-			<Columns>
-				<Column layout>
-					<SearchBox />
-					<RouteOptions />
-				</Column>
-				<Column>
-					<SelectedRoute />
-					<button
-						type="button"
-						onClick={() => {
-							setIsometric(!isometric)
-						}}
-					>
-						toggle isometric
-					</button>
-					<br />
-					<button
-						suppressHydrationWarning
-						type="button"
-						onClick={() => {
-							// dark -> light -> system -> dark
-							if (preference === "dark") setDarkPreference("light")
-							else if (preference === "light") setDarkPreference("system")
-							else setDarkPreference("dark")
-						}}
-					>
-						toggle dark, currently {preference || "initializing"} (
-						{isDark ? "dark" : "light"})
-					</button>
-				</Column>
-			</Columns>
-		</LayoutGroup>
+		<>
+			<LayoutGroup>
+				<Columns>
+					<Column layout>
+						<SearchBox />
+						<RouteOptions />
+					</Column>
+					<Column>
+						<SelectedRoute />
+					</Column>
+				</Columns>
+			</LayoutGroup>
+		</>
 	)
 }
 

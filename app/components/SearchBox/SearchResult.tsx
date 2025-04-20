@@ -1,12 +1,13 @@
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import type { Player as PlayerType } from "app/api/players/type"
 import { getClosestPlaces } from "app/pathing/getClosestPlaces"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
+import { useImageColor } from "app/utils/getImageColor"
 import { dynamicColor, theme } from "app/utils/theme"
 import { useRef } from "react"
 import { styled } from "restyle"
-import type useSearchBox from "./useSearchBox"
 import { useTRPC } from "trpc/client"
-import type { Player as PlayerType } from "app/api/players/type"
+import type useSearchBox from "./useSearchBox"
 
 type SortedPlace = NonNullable<
 	ReturnType<typeof useSearchBox<CompressedPlace>>["searchResults"]
@@ -17,10 +18,8 @@ function Player({ player }: { player: PlayerType }) {
 	const { data: compressedPlaces } = useSuspenseQuery(
 		trpc.compressedPlaces.queryOptions(),
 	)
-	const { data: color, isError } = useQuery(
-		trpc.playerColor.queryOptions({
-			username: player.username,
-		}),
+	const { data: color, isError } = useImageColor(
+		`https://mc-heads.net/avatar/${player.username}.png`,
 	)
 
 	const loaderRef = useRef<HTMLDivElement>(null)

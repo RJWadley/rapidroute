@@ -1,12 +1,12 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { Providers } from "./providers"
-
-import "./global.css"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
 import { MapServer } from "components/Map/Server"
 import { getQueryClient } from "trpc/server"
+
+import "./global.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
