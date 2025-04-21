@@ -43,7 +43,7 @@
 		"fast-average-color": "9.5.0",
 		"fuzzysort": "3.1.0",
 		"motion": "12.7.4",
-		"next": "15.3.1",
+		"next": "15.3.1-canary.14",
 		"object-hash": "3.0.0",
 		"pixi-viewport": "6.0.3",
 		"pixi.js": "8.9.1",
