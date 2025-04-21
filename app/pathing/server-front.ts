@@ -1,6 +1,7 @@
 import type { ExcludedRoutes } from "app/data"
 import type { findPath } from "."
 import { sleep } from "app/utils/sleep"
+import { getBaseURL } from "app/utils/getBaseURL"
 
 /**
  * find a path between two locations on the server-side
@@ -13,16 +14,8 @@ export const findPathInServer = async (
 	if (typeof window === "undefined") return null
 	if (!from || !to) return null
 
-	const options = {
-		from,
-		to,
-		excludedRoutes: JSON.stringify(excludedRoutes),
-	}
-
 	const data = await fetch(
-		`/pathing?${Object.entries(options)
-			.map(([key, value]) => `${key}=${value}`)
-			.join("&")}`,
+		`${getBaseURL()}/pathing/${from}/${to}/${JSON.stringify(excludedRoutes)}`,
 		{
 			method: "GET",
 			headers: {

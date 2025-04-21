@@ -1,21 +1,26 @@
 import { type ExcludedRoutes, data } from "app/data"
 import type { NextRequest } from "next/server"
-import { findPath } from "."
+import { findPath } from "../../.."
+
+export const dynamic = "force-static"
 
 /**
  * find a path between two locations on the server-side
  * includes from and to in request
  */
-export async function GET(request: NextRequest) {
-	const searchParams = request.nextUrl.searchParams
-
+export async function GET(
+	request: Request,
+	{
+		params,
+	}: { params: Promise<{ from: string; to: string; excludedRoutes: string }> },
+) {
 	const excludedRoutes = JSON.parse(
-		searchParams.get("excludedRoutes") ?? "throw",
+		(await params).excludedRoutes,
 	) as ExcludedRoutes
 
 	const path = findPath(
-		searchParams.get("from"),
-		searchParams.get("to"),
+		(await params).from,
+		(await params).to,
 		excludedRoutes,
 		data,
 	)
