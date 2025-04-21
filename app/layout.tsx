@@ -7,6 +7,7 @@ import { MapServer } from "components/Map/Server"
 import { getQueryClient } from "trpc/server"
 
 import "./global.css"
+import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -36,7 +37,7 @@ export default async function RootLayout({
 					<HydrationBoundary state={dehydrate(queryClient)}>
 						<Application>
 							<MapServer />
-							{children}
+							<Suspense fallback={null}>{children}</Suspense>
 						</Application>
 					</HydrationBoundary>
 				</Providers>
