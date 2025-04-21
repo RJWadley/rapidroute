@@ -143,7 +143,6 @@ export const getWikiContent = async (name: string) => {
 			return `srcset="${srcset}"`
 		})
 
-	console.log("generating synopsis for", result.title)
 	const { object } = await generateObject({
 		model: googleModel,
 		prompt: dedent(`
@@ -156,7 +155,10 @@ export const getWikiContent = async (name: string) => {
 			When selecting the most prominent image, the file might include a size descriptor, for example 'my/image/url/330px-Sample_Image.png'.
 			Update the size descriptor to 600px if it exists, for example 'my/image/url/600px-Sample_Image.png'..  If the image does not have a size descriptor, use the original url.
 		`),
-		schema: z.object({ synopsis: z.string(), mostProminentImage: z.string() }),
+		schema: z.object({
+			synopsis: z.string(),
+			mostProminentImage: z.string().optional(),
+		}),
 	})
 
 	return {

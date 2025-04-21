@@ -254,7 +254,7 @@ const SearchBar = styled(motion.label, {
 	padding: "16px",
 	display: "grid",
 	gridTemplateColumns: "auto 1fr auto",
-	placeItems: "center start",
+	placeItems: "center stretch",
 	gap: "16px",
 	borderRadius: 28,
 	transition: "background 0.2s",

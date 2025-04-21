@@ -53,4 +53,5 @@ const Element = styled("textarea", {
 	padding: 0,
 	resize: "none",
 	background: "transparent",
+	overflow: "clip",
 })

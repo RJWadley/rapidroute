@@ -6,7 +6,9 @@ import { type Container, Rectangle, type Sprite, type Text } from "pixi.js"
 import {
 	type RefObject,
 	createContext,
+	startTransition,
 	use,
+	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
@@ -98,13 +100,9 @@ export function OverlappingProvider({
 			>(),
 	)
 	const [signal, setSignal] = useState(0)
-	let timeout: ReturnType<typeof setTimeout> | undefined
-	const triggerUpdate = () => {
-		clearTimeout(timeout)
-		timeout = setTimeout(() => {
-			setSignal((p) => p + 1)
-		})
-	}
+	const triggerUpdate = useCallback(() => {
+		setSignal((p) => p + 1)
+	}, [])
 	const [isometric] = useLocalIsometric()
 
 	const throttledSignal = useBetterThrottle(signal, 1000)
@@ -142,23 +140,29 @@ export function OverlappingProvider({
 	return (
 		<OverlappingContext.Provider
 			value={{
-				addItem: (id, { getBounds, priority, minZoom, debugName }) => {
-					objectQueue.enqueue(
-						{
-							id,
-							getBounds,
-							priority,
-							minZoom,
-							debugName,
-						},
-						0,
-					)
-					triggerUpdate()
-				},
-				removeItem: (id) => {
-					objectQueue.filter((x) => x.id !== id)
-					triggerUpdate()
-				},
+				addItem: useCallback(
+					(id, { getBounds, priority, minZoom, debugName }) => {
+						objectQueue.enqueue(
+							{
+								id,
+								getBounds,
+								priority,
+								minZoom,
+								debugName,
+							},
+							0,
+						)
+						startTransition(triggerUpdate)
+					},
+					[objectQueue, triggerUpdate],
+				),
+				removeItem: useCallback(
+					(id) => {
+						objectQueue.filter((x) => x.id !== id)
+						startTransition(triggerUpdate)
+					},
+					[objectQueue, triggerUpdate],
+				),
 				results: data ?? {},
 			}}
 		>
