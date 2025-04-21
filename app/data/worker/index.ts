@@ -1,6 +1,6 @@
 import { isWorker } from "app/utils/isBrowser"
 import type { InternalFetchedData } from "./route"
-import { getBaseURL } from "app/utils/getBaseURL"
+import { siteURL } from "app/utils/siteURL"
 
 if (!isWorker)
 	throw new Error("gatelogue fetch was used in a non-worker environment")
@@ -18,7 +18,7 @@ function reviver(key: string, value: any) {
 export const fetchData = async () => {
 	if (!isWorker)
 		throw new Error("gatelogue fetch was used in a non-worker environment")
-	const data = await fetch(`${getBaseURL()}/data/worker`, {
+	const data = await fetch(`${siteURL}/data/worker`, {
 		priority: "low",
 	}).then((res) => res.text())
 

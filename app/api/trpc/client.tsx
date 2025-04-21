@@ -8,7 +8,7 @@ import { useState } from "react"
 import { makeQueryClient } from "./query-client"
 import type { AppRouter } from "./app"
 import superjson from "superjson"
-import { getBaseURL } from "app/utils/getBaseURL"
+import { siteURL } from "app/utils/siteURL"
 
 export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>()
 
@@ -27,8 +27,7 @@ function getQueryClient() {
 }
 
 function getUrl() {
-	const base = getBaseURL()
-	return `${base}/api/trpc`
+	return `${siteURL}/api/trpc`
 }
 
 export function TRPCReactProvider(
