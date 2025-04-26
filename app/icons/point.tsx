@@ -1,7 +1,5 @@
 import type { ComponentProps } from "react"
 
-
-
 import { motion } from "motion/react"
 
 export const Point = (props: ComponentProps<typeof motion.svg>) => (
@@ -10,7 +8,7 @@ export const Point = (props: ComponentProps<typeof motion.svg>) => (
 		height="24px"
 		viewBox="0 -960 960 960"
 		width="24px"
-		fill="000000"
+		fill="currentColor"
 		{...props}
 	>
 		<title>Point</title>

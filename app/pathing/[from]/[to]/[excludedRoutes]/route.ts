@@ -2,14 +2,14 @@ import { type ExcludedRoutes, data } from "app/data"
 import type { NextRequest } from "next/server"
 import { findPath } from "../../.."
 
-export const dynamic = "force-static"
+export const dynamic = "error"
 
 /**
  * find a path between two locations on the server-side
  * includes from and to in request
  */
 export async function GET(
-	request: Request,
+	_request: Request,
 	{
 		params,
 	}: { params: Promise<{ from: string; to: string; excludedRoutes: string }> },

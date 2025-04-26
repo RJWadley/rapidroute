@@ -2,7 +2,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { createTRPCContext } from "../init"
 import { appRouter } from "../app"
 
-export const dynamic = "force-static"
+export const dynamic = "error"
 
 const handler = (req: Request) =>
 	fetchRequestHandler({

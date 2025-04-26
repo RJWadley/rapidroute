@@ -7,7 +7,7 @@ export const Close = (props: ComponentProps<typeof motion.svg>) => (
 		height="24px"
 		viewBox="0 -960 960 960"
 		width="24px"
-		fill="000000"
+		fill="currentColor"
 		{...props}
 	>
 		<title>Close</title>

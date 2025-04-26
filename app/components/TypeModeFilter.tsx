@@ -251,6 +251,7 @@ const Toggle = styled(motion.button, ({ nested }: { nested: boolean }) => ({
 			}
 		: {
 				background: theme.controlHeadingBackground,
+				color: theme.controlHeadingText,
 				padding: "16px",
 				paddingLeft: 20,
 				margin: "12px",
@@ -279,6 +280,6 @@ const Knob = styled(motion.div, ({ active }: { active: boolean }) => ({
 	borderRadius: "50%",
 
 	backgroundColor: active
-		? theme.controlNeutralFill
+		? theme.controlActiveStroke
 		: theme.controlNeutralStroke,
 }))

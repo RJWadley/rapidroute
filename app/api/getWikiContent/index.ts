@@ -6,7 +6,7 @@ import type { SearchResponse } from "./types/PageSearch"
 import type { ParseResponse } from "./types/ParseQuery"
 import { loadImageDimensions } from "./getImageDimensions"
 
-export const dynamic = "force-static"
+export const dynamic = "error"
 
 const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
 
