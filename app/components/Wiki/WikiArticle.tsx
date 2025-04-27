@@ -6,8 +6,8 @@ import { AnimatePresence, motion } from "motion/react"
 import { Fragment } from "react"
 import { styled } from "restyle"
 import { useRouting } from "app/providers/RoutingContext"
-import { getTextboxName } from "../SearchBox/getTextboxName"
 import { useTRPC } from "app/api/trpc/client"
+import { getLongName } from "app/utils/displayNames"
 
 const layout = {
 	layout: "position",
@@ -81,7 +81,7 @@ export default function WikiArticle() {
 						<Wrapper>
 							{data.type === "generic" && (
 								<motion.h1 {...layout} key="generic">
-									{getTextboxName(relevantPlace)} may be related to {data.title}
+									{getLongName(relevantPlace)} may be related to {data.title}
 								</motion.h1>
 							)}
 							{data.type === "specific" && (

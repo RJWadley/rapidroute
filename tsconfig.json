@@ -1,7 +1,7 @@
 {
 	"extends": "@total-typescript/tsconfig/bundler/dom",
 	"compilerOptions": {
-		"lib": ["ES2023", "DOM", "DOM.Iterable"],
+		"lib": ["ES2024", "DOM", "DOM.Iterable"],
 		"jsx": "preserve",
 		"incremental": true,
 		"plugins": [{ "name": "next" }],

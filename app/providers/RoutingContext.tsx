@@ -9,11 +9,13 @@ import { findPathInServer } from "app/pathing/server-front"
 import { findPathInWorker } from "app/pathing/worker-front"
 import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useBetterThrottle } from "app/utils/useBetterThrottle"
+import { sleep } from "utils/sleep"
 import { useParams, useRouter } from "next/navigation"
 import { createContext, memo, startTransition, use, useState } from "react"
 import { useDeepCompareMemo } from "use-deep-compare"
 
 type NonEmptyArray<T> = [T, ...T[]]
+export type RouteResult = NonNullable<ReturnType<typeof findPath>>[number]
 
 type StatusUnion =
 	| {
@@ -51,9 +53,10 @@ type StatusUnion =
 			 * at least one result was found
 			 */
 			status: "success"
-			routes: NonEmptyArray<NonNullable<ReturnType<typeof findPath>>[number]>
+			routes: NonEmptyArray<RouteResult>
 			isPending: false
 			isError: false
+			took: number
 	  }
 
 type ContextType = StatusUnion & {
@@ -190,21 +193,28 @@ export function RoutingProvider({
 
 	const { status, data, isPending, isError } = useQuery({
 		queryKey: ["find-path", from, to, JSON.stringify(excludedRoutes)],
-		queryFn: () => {
+		queryFn: async () => {
 			if (!from || !to) return null
 			if (from === to) return null
+
+			const startTime = performance.now()
 			return racePromisesWithLog([
 				{ promise: findPathInWorker(from, to, excludedRoutes), name: "worker" },
 				{ promise: findPathInServer(from, to, excludedRoutes), name: "server" },
-			]).finally(() => {
-				startTransition(() => {
-					setPreferredRoute(undefined)
+			])
+				.then((result) => ({
+					result,
+					time: performance.now() - startTime,
+				}))
+				.finally(() => {
+					startTransition(() => {
+						setPreferredRoute(undefined)
+					})
 				})
-			})
 		},
 	})
 
-	const [firstRoute, ...restRoutes] = data ?? []
+	const [firstRoute, ...restRoutes] = data?.result ?? []
 
 	const statusUnion: StatusUnion =
 		!from || !to
@@ -221,6 +231,7 @@ export function RoutingProvider({
 									routes: [firstRoute, ...restRoutes],
 									isPending,
 									isError,
+									took: data.time,
 								}
 							: { status: "404", isError, isPending, routes: null }
 

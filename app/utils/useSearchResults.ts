@@ -7,13 +7,13 @@ import { useOnlinePlayers } from "app/api/players/client"
 import { useQuery } from "@tanstack/react-query"
 import { useTRPC } from "app/api/trpc/client"
 
-export const useSearchResults = <T extends Partial<CompressedPlace>>(
-	places: T[],
+export const useSearchResults = (
+	places: CompressedPlace[],
 ): {
-	results: (T | Coordinate | Player)[]
+	results: (CompressedPlace | Coordinate | Player)[]
 	runSearch: (query: string) => void
 } => {
-	const [results, setResults] = useState<ReturnType<typeof search<T>>>()
+	const [results, setResults] = useState<ReturnType<typeof search>>()
 
 	const trpc = useTRPC()
 	const { data: onlinePlayers } = useOnlinePlayers()

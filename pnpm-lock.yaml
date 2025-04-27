@@ -23,6 +23,12 @@ importers:
       '@biomejs/biome':
         specifier: 1.9.4
         version: 1.9.4
+      '@capsizecss/core':
+        specifier: 4.1.2
+        version: 4.1.2
+      '@capsizecss/metrics':
+        specifier: 3.4.0
+        version: 3.4.0
       '@happy-dom/global-registrator':
         specifier: 17.4.4
         version: 17.4.4
@@ -215,6 +221,10 @@ packages:
     resolution: {integrity: sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==}
     engines: {node: '>=6.9.0'}
 
+  '@babel/runtime@7.26.7':
+    resolution: {integrity: sha512-AOPI3D+a8dXnja+iwsUqGRjr1BbZIe771sXdapOtYI531gSqpi92vXivKcq2asu/DFpdl1ceFAKZyRzK2PCVcQ==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/types@7.26.10':
     resolution: {integrity: sha512-emqcG3vHrpxUKTrxcblR36dcrcoRDvKmnL/dCL6ZsHaShW80qxCAcNhzQZrpeM765VzEos+xOi4s+r4IXzTwdQ==}
     engines: {node: '>=6.9.0'}
@@ -271,6 +281,12 @@ packages:
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
+
+  '@capsizecss/core@4.1.2':
+    resolution: {integrity: sha512-5tMjLsVsaEEwJ816y3eTfhhTIyUWNFt58x6YcHni0eV5tta8MGDOAIe+CV5ICb5pguXgDpNGLprqhPqBWtkFSg==}
+
+  '@capsizecss/metrics@3.4.0':
+    resolution: {integrity: sha512-hIn8MAHxLvwyUh6ZvLQHDt2GPShBz6+gxBs1JTD9GleBkht1AZvtCFo0adr7bQvYYuQzUJeKi69zqlAwgKMHNA==}
 
   '@emnapi/runtime@1.4.3':
     resolution: {integrity: sha512-pBPWdu6MLKROBX05wSNKcNb++m5Er+KQ9QkB+WVM+pW2Kx9hoSrVTnu3BdkI5eBLZoKu/J6mW/B6i6bJB2ytXQ==}
@@ -1180,6 +1196,10 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
+  '@babel/runtime@7.26.7':
+    dependencies:
+      regenerator-runtime: 0.14.1
+
   '@babel/types@7.26.10':
     dependencies:
       '@babel/helper-string-parser': 7.25.9
@@ -1219,6 +1239,12 @@ snapshots:
 
   '@biomejs/cli-win32-x64@1.9.4':
     optional: true
+
+  '@capsizecss/core@4.1.2':
+    dependencies:
+      csstype: 3.1.3
+
+  '@capsizecss/metrics@3.4.0': {}
 
   '@emnapi/runtime@1.4.3':
     dependencies:
@@ -1420,7 +1446,7 @@ snapshots:
   '@testing-library/dom@10.4.0':
     dependencies:
       '@babel/code-frame': 7.26.2
-      '@babel/runtime': 7.26.10
+      '@babel/runtime': 7.26.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       chalk: 4.1.2

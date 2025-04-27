@@ -24,7 +24,5 @@ export const findPathInWorker = async (
 		excludedRoutes,
 	})
 
-	await sleep(2000)
-
 	return result
 }

@@ -32,9 +32,19 @@ export const theme = {
 	/**
 	 * misc
 	 */
-	loaderPulse: "light-dark(rgba(0, 0, 0, 0.08), red)",
+	loaderPulse: "light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08))",
 	cardBoxShadow:
-		"light-dark(0 4px 12px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(255, 255, 255, 1))",
+		"light-dark(0 4px 12px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(255, 0, 0, 0.5))",
+	timeBadge: "#BFF7BA",
+	timeBadgeText: "#0D4508",
+
+	/**
+	 * accent colors
+	 */
+	spinnerGreen: "light-dark(#4CAF50, #81C784)",
+	spinnerYellow: "light-dark(#FF9800, #FFB74D)",
+	spinnerBlue: "light-dark(#2196F3, #64B5F6)",
+	spinnerPink: "light-dark(#E91E63, #F06292)",
 }
 
 const syncTheme = (value: "system" | "light" | "dark" | undefined) => {

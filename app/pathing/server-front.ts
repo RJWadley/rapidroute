@@ -23,7 +23,5 @@ export const findPathInServer = async (
 		},
 	).then((res) => res.json())
 
-	await sleep(2000)
-
 	return data as ReturnType<typeof findPath>
 }

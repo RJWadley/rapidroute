@@ -84,7 +84,7 @@ const markersResponseSchema = z.strictObject({
 export const parseMarkersWithFallback = (markers: unknown) => {
 	const { data, error } = markersResponseSchema.safeParse(markers)
 
-	if (error) console.warn(error.issues)
+	if (markers && error) console.warn("invalid markers", error.issues)
 
 	return {
 		warnings: error,

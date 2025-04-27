@@ -5,12 +5,13 @@ import userEvent from "@testing-library/user-event"
 import useSearchBox from "./useSearchBox"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import type { ReactNode, RefObject } from "react"
+import type { CompressedPlace } from "app/utils/compressedPlaces"
 
 const placesShim = [
 	{ id: "a", name: "thing a" },
 	{ id: "b", name: "thing b" },
 	{ id: "c", name: "thing c" },
-]
+] as CompressedPlace[]
 
 type Options = Partial<Parameters<typeof useSearchBox>[0]>
 

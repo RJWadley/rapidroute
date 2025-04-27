@@ -10,7 +10,7 @@ import { useTRPC } from "trpc/client"
 import type useSearchBox from "./useSearchBox"
 
 type SortedPlace = NonNullable<
-	ReturnType<typeof useSearchBox<CompressedPlace>>["searchResults"]
+	ReturnType<typeof useSearchBox>["searchResults"]
 >[number]
 
 function Player({ player }: { player: PlayerType }) {

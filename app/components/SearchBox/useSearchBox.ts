@@ -3,7 +3,7 @@ import type { CompressedPlace } from "app/utils/compressedPlaces"
 import { useSearchResults } from "app/utils/useSearchResults"
 import type { ComponentProps, FocusEvent } from "react"
 import { startTransition, useEffect, useId, useRef, useState } from "react"
-import { getTextboxName } from "./getTextboxName"
+import { getTextboxName } from "../../utils/displayNames"
 import type { Player } from "app/api/players/type"
 
 const blurActiveElement = () => {
@@ -16,7 +16,7 @@ const blurActiveElement = () => {
  * for example, you have a list of results and want the user to be able to
  * navigate the list with the arrow keys.
  */
-export default function useSearchBox<T extends Partial<CompressedPlace>>({
+export default function useSearchBox({
 	places,
 	initiallySelectedPlace,
 	onItemSelected,
@@ -26,16 +26,16 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	/**
 	 * the list of all places to search through
 	 */
-	places: T[]
+	places: CompressedPlace[]
 	/**
 	 * which place is currently selected?
 	 */
-	initiallySelectedPlace?: T | Coordinate | Player
+	initiallySelectedPlace?: CompressedPlace | Coordinate | Player
 	/**
 	 * a callback when the selected place changes
 	 */
 	onItemSelected?: (
-		item: T | Coordinate | Player | undefined,
+		item: CompressedPlace | Coordinate | Player | undefined,
 		explicitly: boolean,
 	) => void
 	/**
@@ -52,7 +52,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	 * (or undefined if no item selected)
 	 */
 	const [selectedPlace, setSelectedPlace] = useState<
-		T | Coordinate | Player | undefined
+		CompressedPlace | Coordinate | Player | undefined
 	>(initiallySelectedPlace)
 	/**
 	 * what the user has physically typed into the input
@@ -68,7 +68,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 	const [isOpen, setIsOpen] = useState(false)
 
 	const selectPlace = (
-		place: T | Coordinate | Player | undefined,
+		place: CompressedPlace | Coordinate | Player | undefined,
 		explicitly: boolean,
 	) => {
 		setSelectedPlace(place)
@@ -129,7 +129,10 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 			: undefined,
 		inputProps: {
 			id,
-			value: isOpen || !selectedPlace ? boxText : getTextboxName(selectedPlace),
+			value:
+				isOpen || !selectedPlace
+					? boxText
+					: getTextboxName(selectedPlace).trim(),
 			onFocus: (e?: FocusEvent<HTMLTextAreaElement>) => {
 				const input = e?.currentTarget
 				if (!input) return
@@ -221,7 +224,7 @@ export default function useSearchBox<T extends Partial<CompressedPlace>>({
 		 * the current search results, or undefined if the suggestions dropdown is not visible
 		 */
 		searchResults:
-			| ((T | Coordinate | Player) & {
+			| ((CompressedPlace | Coordinate | Player) & {
 					selectItem: VoidFunction
 					highlighted: boolean
 			  })[]

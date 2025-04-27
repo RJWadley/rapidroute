@@ -32,9 +32,9 @@ const playerKeys: Record<
 	z: true,
 }
 
-export const search = <T extends Partial<CompressedPlace>>(
+export const search = (
 	query: string | null | undefined,
-	places: T[],
+	places: CompressedPlace[],
 	players: Player[] | undefined,
 ) => {
 	const coordinate = parseCoordinate(query)
@@ -62,10 +62,10 @@ export const search = <T extends Partial<CompressedPlace>>(
 	return null
 }
 
-export const findClosestPlace = <T extends Partial<CompressedPlace>>(
+export const findClosestPlace = (
 	query: string | null | undefined,
-	places: T[],
-): T | Coordinate | undefined => {
+	places: CompressedPlace[],
+): CompressedPlace | Coordinate | undefined => {
 	if (!query) return undefined
 
 	// directly check first

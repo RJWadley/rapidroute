@@ -10,66 +10,10 @@ import { Reset } from "app/icons/reset"
 import { Tune } from "app/icons/tune"
 import { motion } from "motion/react"
 import { theme } from "app/utils/theme"
+import { typeToString } from "app/data/typeToString"
 
 // biome-ignore lint/suspicious/noExplicitAny: some types here are impossible to check
 type Uncheckable = any
-
-const typeToString = (typeMode: string) => {
-	switch (typeMode) {
-		case "AirFlight":
-			return "Air Travel"
-		case "RailLine":
-			return "Rail Travel"
-		case "SeaLine":
-			return "Water Travel"
-		case "BusLine":
-			return "Bus Travel"
-		case "Walk":
-			return "Walking Connections"
-		case "SpawnWarp":
-			return "Teleportation"
-
-		case "AirFlighthelicopter":
-			return "Helicopters"
-		case "AirFlightseaplane":
-			return "Seaplanes"
-		case "AirFlightwarpPlane":
-			return "Standard Planes"
-		case "AirFlightunk":
-			return "Uncategorized"
-
-		case "RailLinewarp":
-			return "Warp Rail"
-		case "RailLineunk":
-			return "Uncategorized"
-
-		case "SeaLineferry":
-			return "Ferries"
-		case "SeaLineunk":
-			return "Uncategorized"
-
-		case "BusLineunk":
-			return "Uncategorized"
-
-		case "WalkatRouteStart":
-			return "Walking as First Step"
-		case "WalkatRouteEnd":
-			return "Walking as Last Step"
-		case "Walkmiddle":
-			return "Other Walking"
-
-		case "SpawnWarpportal":
-			return "World Portals"
-		case "SpawnWarppremier":
-			return "Premier Cities"
-		case "SpawnWarpterminus":
-			return "Line Terminus"
-		case "SpawnWarpmisc":
-			return "Other Warps"
-	}
-
-	return `mode name not supported: ${typeMode}`
-}
 
 export default function TypeModeFilter({
 	children,
