@@ -4,14 +4,31 @@ import { getOnlinePlayers } from "./online"
 export const useOnlinePlayers = () => {
 	return useQuery({
 		queryKey: ["online-players"],
-		queryFn: getOnlinePlayers,
+		queryFn: async ({ client }) => {
+			const onlinePlayers = await getOnlinePlayers()
+
+			for (const player of Object.values(onlinePlayers)) {
+				client.setQueryData(
+					["online-player", player.username.toLowerCase()],
+					player,
+				)
+			}
+
+			return onlinePlayers
+		},
 		refetchInterval: 1000,
 		placeholderData: (previous) => previous,
 	})
 }
 
 export const useOnlinePlayer = (username: string | null | undefined) => {
-	const { data: allPlayers } = useOnlinePlayers()
-	const player = allPlayers?.[username || ""]
-	return player || null
+	return useQuery({
+		queryKey: ["online-player", username?.toLowerCase()],
+		queryFn: async () => {
+			if (!username) return null
+
+			const onlinePlayers = await getOnlinePlayers()
+			return onlinePlayers[`player-${username.toLowerCase()}`] ?? null
+		},
+	}).data
 }

@@ -108,7 +108,9 @@ export default function useSearchBox({
 		if (autoFocus) document.getElementById(id)?.focus()
 	}, [autoFocus, id])
 	const latestOpen = useRef(isOpen)
-	latestOpen.current = isOpen
+	useEffect(() => {
+		latestOpen.current = isOpen
+	})
 	useEffect(() => {
 		if (!latestOpen.current) setSelectedPlace(initiallySelectedPlace)
 	}, [initiallySelectedPlace])

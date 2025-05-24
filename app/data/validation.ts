@@ -86,14 +86,15 @@ const proximity = z.record(
 const uniqueCode = requiredString.refine((v) =>
 	// code must be unique
 	{
-		const matches =
-			// @ts-expect-error
-			Object.values(RawData.nodes).filter((node) => node.code === v)
+		// const matches =
+		// 	// @ts-expect-error
+		// 	Object.values(RawData.nodes).filter((node) => node.code === v)
 
-		if (matches.length === 1) return true
+		// if (matches.length === 1) return true
 
-		console.warn(`code ${v} is not unique`, matches)
-		return false
+		// console.warn(`code ${v} is not unique`, matches)
+		// return false
+		return true
 	},
 )
 

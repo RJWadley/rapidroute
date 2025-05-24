@@ -8,6 +8,7 @@ import { styled } from "restyle"
 import { useRouting } from "app/providers/RoutingContext"
 import { useTRPC } from "app/api/trpc/client"
 import { getLongName } from "app/utils/displayNames"
+import DangerouslyRenderArticle from "./DangerouslyRenderArticle"
 
 const layout = {
 	layout: "position",
@@ -91,10 +92,7 @@ export default function WikiArticle() {
 							)}
 							<p>{data.synopsis}</p>
 
-							<ArticleContent
-								// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-								dangerouslySetInnerHTML={{ __html: data.content || "" }}
-							/>
+							<DangerouslyRenderArticle content={data.content || ""} />
 						</Wrapper>
 
 						<p>
@@ -132,10 +130,4 @@ const MainImage = styled("img", {
 	width: "100%",
 	height: "auto",
 	display: "block",
-})
-
-const ArticleContent = styled("div", {
-	".hatnote": {
-		border: "1px solid red",
-	},
 })
