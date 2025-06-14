@@ -1,6 +1,4 @@
-"use client"
-
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import { SetupTheme } from "app/utils/theme"
 import { MotionConfig } from "motion/react"
 import type { ReactNode } from "react"

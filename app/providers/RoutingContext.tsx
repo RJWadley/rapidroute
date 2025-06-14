@@ -1,5 +1,3 @@
-"use client"
-
 import { useQuery } from "@tanstack/react-query"
 import { useOnlinePlayer } from "app/api/players/client"
 import type { ExcludedRoutes } from "app/data"
@@ -10,7 +8,7 @@ import { findPathInWorker } from "app/pathing/worker-front"
 import { racePromisesWithLog } from "app/utils/racePromisesWithLog"
 import { useBetterThrottle } from "app/utils/useBetterThrottle"
 import { sleep } from "utils/sleep"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useNavigate, useLocation } from "@tanstack/react-router"
 import { createContext, memo, startTransition, use, useState } from "react"
 import { useDeepCompareMemo } from "use-deep-compare"
 
@@ -107,11 +105,15 @@ export function RoutingProvider({
 }: {
 	children: React.ReactNode
 }) {
-	const { segments } = useParams<{
-		segments: undefined | string[]
-	}>()
+	const params = useParams({ strict: false })
+	const location = useLocation()
+	const navigate = useNavigate()
+
+	// Extract path segments from the current location
+	const segments = location.pathname.split("/").filter(Boolean)
 	const [routeType, placeId, navigateFirstId, _, navigateSecondId] =
 		segments?.map((x) => decodeURIComponent(x)) ?? []
+
 	const currentRoute =
 		routeType === "place" && placeId
 			? // /place/to
@@ -141,8 +143,6 @@ export function RoutingProvider({
 							fromID: null,
 						} as const)
 
-	const router = useRouter()
-
 	const updateRoute = (
 		fromID: string | null | undefined,
 		toID: string | null | undefined,
@@ -151,15 +151,21 @@ export function RoutingProvider({
 		const encodedTo = toID
 		const currentSearchParams = window.location.search
 		if (fromID && toID) {
-			router.push(
-				`/navigate/from/${encodedFrom}/to/${encodedTo}${currentSearchParams}`,
-			)
+			navigate({
+				to: `/navigate/from/${encodedFrom}/to/${encodedTo}${currentSearchParams}`,
+			})
 		} else if (fromID) {
-			router.push(`/navigate/from/${encodedFrom}${currentSearchParams}`)
+			navigate({
+				to: `/navigate/from/${encodedFrom}${currentSearchParams}`,
+			})
 		} else if (toID) {
-			router.push(`/place/${encodedTo}${currentSearchParams}`)
+			navigate({
+				to: `/place/${encodedTo}${currentSearchParams}`,
+			})
 		} else {
-			router.push(`/${currentSearchParams}`)
+			navigate({
+				to: `/${currentSearchParams}`,
+			})
 		}
 	}
 
