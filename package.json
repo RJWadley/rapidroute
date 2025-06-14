@@ -8,7 +8,8 @@
 		"lint": "next lint",
 		"start": "next start",
 		"test": "bun test",
-		"postinstall": "bun ./update-gatelogue.ts"
+		"postinstall": "bun ./update-gatelogue.ts",
+		"validate": "bun ./app/data/validation.ts --watch"
 	},
 	"dependencies": {
 		"@ai-sdk/google": "1.2.13",
@@ -57,7 +58,7 @@
 		"superjson": "2.2.2",
 		"typescript": "5.8.3",
 		"use-deep-compare": "1.3.0",
-		"zod": "3.24.3"
+		"zod": "3.25.64"
 	},
 	"pnpm": {
 		"overrides": {

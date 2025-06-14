@@ -1,6 +1,6 @@
-import { z } from "zod"
 import BritishData from "@/gatelogue/data_no_sources.json"
 import { isServer } from "app/utils/isBrowser"
+import { z } from "zod/v4"
 
 if (!isServer)
 	throw new Error(
@@ -41,7 +41,7 @@ const id = z
 
 const requiredString = z.string().min(1)
 const optionalString = optional(
-	z.string().transform((v) => (v === "" ? null : v)),
+	z.string().transform((v) => (v === "" ? undefined : v)),
 )
 
 /**
@@ -83,20 +83,23 @@ const proximity = z.record(
 /**
  * airports have unique codes
  */
-const uniqueCode = requiredString.refine((v) =>
-	// code must be unique
-	{
-		// const matches =
-		// 	// @ts-expect-error
-		// 	Object.values(RawData.nodes).filter((node) => node.code === v)
+const uniqueCode = requiredString
+	.transform((v) => (v === "NAN" ? undefined : v))
+	.refine((v) =>
+		// code must be unique
+		{
+			if (!v) return true
 
-		// if (matches.length === 1) return true
+			const matches =
+				// @ts-expect-error
+				Object.values(RawData.nodes).filter((node) => node.code === v)
 
-		// console.warn(`code ${v} is not unique`, matches)
-		// return false
-		return true
-	},
-)
+			if (matches.length === 1) return true
+
+			console.warn(`code ${v} is not unique`, matches)
+			return false
+		},
+	)
 
 const world = optional(z.enum(["New", "Old", "Space"]))
 
@@ -181,7 +184,7 @@ const schema = z
 						(v) => v ?? "unk",
 					),
 					company: id,
-					ref_station: optional(id).transform((v) => undefined),
+					stations: z.array(id),
 				}),
 				z.strictObject({
 					type: z.literal("RailCompany"),
@@ -214,7 +217,7 @@ const schema = z
 					color: optionalString,
 					mode: optional(z.enum(["ferry"])).transform((v) => v ?? "unk"),
 					company: id,
-					ref_stop: optional(id).transform((v) => undefined),
+					stops: z.array(id),
 				}),
 				z.strictObject({
 					type: z.literal("SeaStop"),
@@ -252,7 +255,7 @@ const schema = z
 					name: optionalString,
 					color: optionalString,
 					company: id,
-					ref_stop: optional(id).transform((v) => undefined),
+					stops: z.array(id),
 				}),
 				z.strictObject({
 					type: z.literal("BusStop"),
@@ -316,7 +319,7 @@ const schema = z
 			]),
 		),
 		timestamp: requiredString,
-		version: z.literal(8),
+		version: z.literal(9),
 	})
 	.readonly()
 
@@ -325,6 +328,26 @@ const schema = z
 // globalThis.allowNull = true
 // const dataWithNull = schema.parse(RawData)
 // globalThis.allowNull = false
+
+// safely parse the error and log the offending path
+const { error } = schema.safeParse(RawData)
+if (error) {
+	const issue = error.issues.at(-1)
+	if (issue) {
+		const path = [...issue.path]
+
+		// unwrap the path
+		let level = RawData
+		for (const part of path) {
+			// biome-ignore lint/suspicious/noExplicitAny: debugging
+			level = (level as any)[part]
+		}
+
+		console.info(issue)
+		console.info("bad value:", level)
+	}
+}
+
 const data = schema.parse(RawData)
 Object.freeze(data)
 
