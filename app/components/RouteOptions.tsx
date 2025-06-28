@@ -143,7 +143,7 @@ export default function RouteOptions() {
 											{stepIndex !== 0 && <ChevronRight />}
 											<Step>
 												{getUnique(
-													step.options.map((o) => typeToString(o.type, true)),
+													step.options.map((o) => typeToString(o.route.type, true)),
 												).join(", ")}
 											</Step>
 										</Fragment>

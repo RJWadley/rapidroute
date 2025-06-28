@@ -25,17 +25,17 @@ export const convertToRoutes = (result: RoutingResult, data: DataType) => {
 		to,
 		skipped: undefined as (Place | Coordinate)[] | undefined,
 		options: getRouteOptions(from, to, data).map((option) => ({
-			...option,
+			...option, // this will spread route and time
 			gates:
-				"gates" in option
-					? option.gates
+				"gates" in option.route
+					? option.route.gates
 							.map((gate) => gates.map.get(gate))
 							.filter((x) => x !== undefined)
 					: undefined,
 			airline:
-				"airline" in option ? companies.map.get(option.airline) : undefined,
+				"airline" in option.route ? companies.map.get(option.route.airline) : undefined,
 			company:
-				"company" in option ? companies.map.get(option.company) : undefined,
+				"company" in option.route ? companies.map.get(option.route.company) : undefined,
 		})),
 	}))
 

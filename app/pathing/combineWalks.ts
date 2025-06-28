@@ -1,5 +1,6 @@
 import { getDistance } from "app/utils/getDistance"
 import type { convertToRoutes } from "./convertToRoutes"
+import { getRouteTime } from "./getRouteTime"
 
 export function combineWalks(
 	result: Awaited<ReturnType<typeof convertToRoutes>>,
@@ -15,31 +16,34 @@ export function combineWalks(
 		if (thisLeg && nextLeg) {
 			// if we can stay on the same route, let's get squishy!
 			const canSquish =
-				thisLeg.options.every((option) => option.type === "Walk") &&
-				nextLeg.options.every((option) => option.type === "Walk")
+				thisLeg.options.every((option) => option.route.type === "Walk") &&
+				nextLeg.options.every((option) => option.route.type === "Walk")
 
 			const fromCoordinates = thisLeg.from.coordinates
 			const toCoordinates = nextLeg.to.coordinates
 
 			if (canSquish && fromCoordinates && toCoordinates) {
+				const walkDistance =
+					Math.round(
+						getDistance(
+							fromCoordinates[0],
+							fromCoordinates[1],
+							toCoordinates[0],
+							toCoordinates[1],
+						),
+					) || 1
+				const walkRoute = {
+					type: "Walk" as const,
+					distance: walkDistance,
+				}
 				const squishedLeg = {
 					...thisLeg,
 					to: nextLeg.to,
 					options: [
 						{
-							type: "Walk" as const,
-							/**
-							 * recalculate distance for proper deduplication
-							 */
-							distance:
-								Math.round(
-									getDistance(
-										fromCoordinates[0],
-										fromCoordinates[1],
-										toCoordinates[0],
-										toCoordinates[1],
-									),
-								) || 1,
+							route: walkRoute,
+							time: getRouteTime(walkRoute),
+							// Add these to match the structure from convertToRoutes
 							gates: undefined,
 							airline: undefined,
 							company: undefined,

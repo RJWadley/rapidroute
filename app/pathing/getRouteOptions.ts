@@ -45,6 +45,8 @@ export const getRouteOptions = (
 				mode: "misc",
 				world: "New",
 				coordinates: [0, 0],
+				source: undefined, // Added to satisfy SpawnWarp type
+				shared_facility: undefined, // Added to satisfy SpawnWarp type
 			} satisfies SpawnWarp,
 		})
 	}
@@ -103,5 +105,5 @@ export const getRouteOptions = (
 			route: { type: "Walk", distance: walkOption.distance },
 		})
 
-	return options.map((o) => o.route)
+	return options.map(o => ({ route: o.route, time: o.time }))
 }

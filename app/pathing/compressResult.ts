@@ -31,8 +31,8 @@ export function compressResult(
 		const nextLeg = mutablePath[i + 1]
 
 		if (thisLeg && nextLeg) {
-			const firstRoute = thisLeg.options.map((o) => identifyRoute(o))
-			const secondRoute = nextLeg.options.map((o) => identifyRoute(o))
+			const firstRoute = thisLeg.options.map((o) => identifyRoute(o.route))
+			const secondRoute = nextLeg.options.map((o) => identifyRoute(o.route))
 
 			// if we can stay on the same route, let's get squishy!
 			const canSquish = firstRoute.some((routeId) =>
@@ -45,7 +45,7 @@ export function compressResult(
 					to: nextLeg.to,
 					// only keep options available in both legs
 					options: thisLeg.options.filter((option) =>
-						secondRoute.includes(identifyRoute(option)),
+						secondRoute.includes(identifyRoute(option.route)),
 					),
 					skipped: [...(thisLeg.skipped ?? []), nextLeg.from],
 				}
