@@ -28,7 +28,13 @@ export const getOfflinePlayers = async (): Promise<
 	const response = await fetch(
 		"https://script.googleusercontent.com/macros/echo?user_content_key=NeftXMjnaaBSg1_JRtSWaSCs3U-0XG4DCNJ7XXt5y26UuK0kfAf8NbXmbKXzsDqQl-qHTPYGzi1CvMIFs5rAJLzdYg1HT99LOJmA1Yb3SEsKFZqtv3DaNYcMrmhZHmUMWojr9NvTBuBLhyHCd5hHa_NRaJqKeKx8N66BjnSxpXpoJKQ3SGobotVtpOclafjZ4ii-NhRVgD-8bKhcMOJPHE3GhvdtfHCXUbh3Nlg6pIM9ahK_kgrcajYVvTXA5rrYQN_Pg4ZQwX91fRVN0sE9PpuU4W4X8Ds-7RsH8ZISKe7WnpR6LsjJ2u9hcaL8DDkC3fFEjCD3K7nIEB_jcADA_w&lib=MMKS_-5liUoh_6_qwm6HHwlScKf4pGqo7",
 		{ cache: "force-cache" },
-	).then((res) => res.json())
+	)
+		.then((res) => res.json())
+		// the source has gone offline before, don't take the whole request down with it
+		.catch((error) => {
+			console.error("failed to fetch offline players", error)
+			return null
+		})
 
 	const { success, data, error } = offlineSchema.safeParse(response)
 

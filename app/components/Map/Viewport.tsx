@@ -24,12 +24,17 @@ declare module "@pixi/react" {
 export const WORLD_SIZE = 61_000
 export const HALF_WORLD_SIZE = WORLD_SIZE / 2
 
+type MovementCallback = (viewport: Viewport) => void
+
 const ViewportContext = createContext<{
 	viewport: Viewport | null
-	movementCallbacks: RefObject<Record<string, (viewport: Viewport) => void>>
+	/**
+	 * register a callback for viewport movement, returns an unsubscribe function
+	 */
+	subscribeToMovement: (callback: MovementCallback) => () => void
 }>({
 	viewport: null,
-	movementCallbacks: { current: Object.freeze({}) },
+	subscribeToMovement: () => () => {},
 })
 
 /**
@@ -44,20 +49,19 @@ export const useViewport = () => {
  * @param callback the callback to be called when the viewport is moved
  */
 export const useViewportMoved = (callback: (viewport: Viewport) => void) => {
-	const { movementCallbacks } = use(ViewportContext)
+	const { subscribeToMovement } = use(ViewportContext)
 	const latestCallback = useRef(callback)
-	latestCallback.current = callback
-
 	useEffect(() => {
-		const key = crypto.randomUUID()
-		movementCallbacks.current[key] = (viewport) => {
-			latestCallback.current(viewport)
-		}
+		latestCallback.current = callback
+	})
 
-		return () => {
-			delete movementCallbacks.current[key]
-		}
-	}, [movementCallbacks])
+	useEffect(
+		() =>
+			subscribeToMovement((viewport) => {
+				latestCallback.current(viewport)
+			}),
+		[subscribeToMovement],
+	)
 }
 
 export function PixiViewport({
@@ -69,9 +73,14 @@ export function PixiViewport({
 
 	const [isometric] = useLocalIsometric()
 	const [viewport, setViewport] = useState<Viewport | null>(null)
-	const movementCallbacks = useRef<
-		Record<string, (viewport: Viewport) => void>
-	>({})
+	const movementCallbacks = useRef<Record<string, MovementCallback>>({})
+	const subscribeToMovement = (callback: MovementCallback) => {
+		const key = crypto.randomUUID()
+		movementCallbacks.current[key] = callback
+		return () => {
+			delete movementCallbacks.current[key]
+		}
+	}
 
 	/**
 	 * viewport setup
@@ -158,7 +167,7 @@ export function PixiViewport({
 			<ViewportContext.Provider
 				value={{
 					viewport,
-					movementCallbacks,
+					subscribeToMovement,
 				}}
 			>
 				{children}

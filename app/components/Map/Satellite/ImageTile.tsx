@@ -30,8 +30,7 @@ export default function ImageTile({
 		isometric,
 	})
 
-	const texture = useAsset(url)
-	if (texture) texture.source.scaleMode = "nearest"
+	const texture = useAsset(url, { scaleMode: "nearest" })
 
 	if (!texture) return null
 	return (
