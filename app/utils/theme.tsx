@@ -39,6 +39,14 @@ export const theme = {
 	timeBadgeText: "#0D4508",
 
 	/**
+	 * route steps
+	 */
+	flightCard: "light-dark(#C9F7D9, #1D3B2A)",
+	flightCardText: "light-dark(#0D3B1E, #C9F7D9)",
+	lineCard: "light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08))",
+	timeline: "light-dark(#181D18, #DFE4DC)",
+
+	/**
 	 * accent colors
 	 */
 	spinnerGreen: "light-dark(#4CAF50, #81C784)",
