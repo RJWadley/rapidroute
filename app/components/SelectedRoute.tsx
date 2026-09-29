@@ -14,14 +14,17 @@ import { Train } from "app/icons/train"
 import { Walk } from "app/icons/walk"
 import { Warp } from "app/icons/warp"
 import { formatTime } from "app/utils/formatTime"
+import { useLogos } from "app/utils/useLogos"
 import { capsizeInter } from "app/utils/text"
 import { theme } from "app/utils/theme"
 import { readableColor } from "color2k"
 import { AnimatePresence, motion } from "motion/react"
+import Link from "next/link"
 import { useState } from "react"
 import { styled } from "restyle"
 import { type RouteResult, useRouting } from "../providers/RoutingContext"
 import Box from "./Box"
+import { LogoFull, LogoIcon, hasIcon } from "./CompanyLogo"
 import { determineDifferences, getRouteTitle } from "./RouteOptions"
 
 type Leg = RouteResult["path"][number]
@@ -249,6 +252,7 @@ function FlightStep({
 	flights,
 }: { leg: Leg; flights: OptionOfType<"AirFlight">[] }) {
 	const stops = leg.skipped ?? []
+	const logos = useLogos()
 
 	return (
 		<StepGrid>
@@ -282,24 +286,46 @@ function FlightStep({
 						marker={isLast ? <EndMarker place={leg.to} /> : undefined}
 					>
 						<FlightCard>
-							<CardTitle>{flight.airline?.name ?? "Unknown Airline"}</CardTitle>
-							<Body>Flight {flight.codes.join(", ")}</Body>
-							{(fromGate?.code || toGate?.code) && (
-								<Gates>
-									{fromGate?.code && (
-										<Gate>
-											<FlightTakeoff width={16} height={16} />
-											Gate {fromGate.code}
-										</Gate>
+							<div>
+								<CardTitle>
+									{flight.airline ? (
+										<CompanyLink company={flight.airline} />
+									) : (
+										"Unknown Airline"
 									)}
-									{toGate?.code && (
-										<Gate>
-											<FlightLand width={16} height={16} />
-											Gate {toGate.code}
-										</Gate>
-									)}
-								</Gates>
-							)}
+								</CardTitle>
+								<Body>Flight {flight.codes.join(", ")}</Body>
+								{(fromGate?.code || toGate?.code) && (
+									<Gates>
+										{fromGate?.code && (
+											<Gate>
+												<FlightTakeoff width={16} height={16} />
+												Gate {fromGate.code}
+											</Gate>
+										)}
+										{toGate?.code && (
+											<Gate>
+												<FlightLand width={16} height={16} />
+												Gate {toGate.code}
+											</Gate>
+										)}
+									</Gates>
+								)}
+							</div>
+							{flight.airline &&
+								(hasIcon(logos?.[flight.airline.i]) ? (
+									<LogoIcon
+										logo={logos?.[flight.airline.i]}
+										name={flight.airline.name}
+									/>
+								) : (
+									<LogoFull
+										logo={logos?.[flight.airline.i]}
+										name={flight.airline.name}
+										maxWidth={96}
+										height={40}
+									/>
+								))}
 						</FlightCard>
 					</Row>
 				)
@@ -330,6 +356,7 @@ const summarizeStops = (stops: (Place | Coordinate)[]) => {
 }
 
 function LineStep({ leg, lines }: { leg: Leg; lines: LineOption[] }) {
+	const logos = useLogos()
 	const [first] = lines
 	if (!first) return null
 
@@ -347,10 +374,21 @@ function LineStep({ leg, lines }: { leg: Leg; lines: LineOption[] }) {
 					{lines.map((line) => (
 						<LineCard key={line.i}>
 							<div>
-								{line.company?.name && <Body>{line.company.name}</Body>}
+								{line.company && (
+									<Body>
+										<CompanyLink company={line.company} />
+									</Body>
+								)}
 								<CardTitle>{line.name || line.code}</CardTitle>
 							</div>
-							<LineBadge color={line.color} code={line.code} />
+							{hasIcon(logos?.[line.i]) ? (
+								<LogoIcon
+									logo={logos?.[line.i]}
+									name={line.name || line.code}
+								/>
+							) : (
+								<LineBadge color={line.color} code={line.code} />
+							)}
 						</LineCard>
 					))}
 				</LineCards>
@@ -397,10 +435,21 @@ function LineBadge({ color, code }: { color?: string; code: string }) {
 	)
 }
 
+/**
+ * companies link to their entry in the registry
+ */
+function CompanyLink({ company }: { company: { i: string; name: string } }) {
+	return (
+		<CompanyAnchor href={`/companies#${company.i}`}>
+			{company.name}
+		</CompanyAnchor>
+	)
+}
+
 function EndMarker({ place }: { place: Place | Coordinate }) {
 	const code = getCode(place)
 	// some stops use their full name as a code, which won't fit in the tag
-	return code && code.length <= 6 ? <Tag>{code}</Tag> : <Dot />
+	return code && code.length <= 4 ? <Tag>{code}</Tag> : <Dot />
 }
 
 const Content = styled(motion.div, {
@@ -598,7 +647,18 @@ const FlightCard = styled("div", {
 	background: theme.flightCard,
 	color: theme.flightCardText,
 	display: "grid",
-	gap: 2,
+	gridTemplateColumns: "1fr auto",
+	alignItems: "center",
+	gap: 8,
+})
+
+const CompanyAnchor = styled(Link, {
+	color: "inherit",
+	textDecoration: "none",
+
+	"&:hover": {
+		textDecoration: "underline",
+	},
 })
 
 const Gates = styled("div", {

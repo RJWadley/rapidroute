@@ -3,7 +3,6 @@ import { Inter } from "next/font/google"
 import { Providers } from "./providers"
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
-import { MapServer } from "components/Map/Server"
 import { getQueryClient } from "trpc/server"
 
 import "./global.css"
@@ -36,7 +35,6 @@ export default async function RootLayout({
 				<Providers>
 					<HydrationBoundary state={dehydrate(queryClient)}>
 						<Application>
-							<MapServer />
 							<Suspense fallback={null}>{children}</Suspense>
 						</Application>
 					</HydrationBoundary>

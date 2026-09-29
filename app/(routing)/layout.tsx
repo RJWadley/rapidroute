@@ -1,57 +1,19 @@
-"use client"
+import AppGrid from "app/components/AppGrid"
+import { MapServer } from "components/Map/Server"
 
-import { LayoutGroup, motion } from "motion/react"
-import { styled } from "restyle"
-import { SearchBox } from "app/components/SearchBox"
-import RouteOptions from "app/components/RouteOptions"
-import SelectedRoute from "app/components/SelectedRoute"
-import { useLocalDark, useLocalIsometric } from "app/utils/locals"
-import Box from "app/components/Box"
-
-export default function AppGrid({ children }: { children: React.ReactNode }) {
-	const [{ preference, isDark }, setDarkPreference] = useLocalDark()
-	const [isometric, setIsometric] = useLocalIsometric()
-
+/**
+ * the map and route panels persist across every routing segment
+ * (see ./[[...segments]]/page.tsx)
+ */
+export default function RoutingLayout({
+	children,
+}: {
+	children: React.ReactNode
+}) {
 	return (
 		<>
-			<LayoutGroup>
-				<Columns>
-					<Column layout>
-						<SearchBox />
-						<RouteOptions />
-					</Column>
-					<Column>
-						<SelectedRoute />
-					</Column>
-				</Columns>
-			</LayoutGroup>
+			<MapServer />
+			<AppGrid>{children}</AppGrid>
 		</>
 	)
 }
-
-const Columns = styled(motion.div, {
-	width: "100dvw",
-	position: "relative",
-	zIndex: 2,
-	height: "100dvh",
-	overflow: "clip",
-	pointerEvents: "none",
-	display: "grid",
-	gridTemplateColumns: "400px 400px 1fr",
-})
-
-const Column = styled(motion.div, {
-	overflow: "clip auto",
-
-	/* hide scrollbar */
-	"&::-webkit-scrollbar": {
-		display: "none",
-	},
-
-	/* firefox */
-	scrollbarWidth: "none",
-
-	"& > *": {
-		pointerEvents: "auto",
-	},
-})
