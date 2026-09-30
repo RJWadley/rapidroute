@@ -1,0 +1,19 @@
+savePrefix: ''
+preferOffline: true
+verifyDepsBeforeRun: install
+
+catalog:
+  react: 19.3.0
+  react-dom: 19.3.0
+
+overrides:
+  react: 'catalog:'
+  react-dom: 'catalog:'
+  '@types/react': ^19
+  '@types/react-dom': ^19
+
+allowBuilds:
+  '@vercel/speed-insights': true
+  '@biomejs/biome': true
+  sharp: true
+  bun: true

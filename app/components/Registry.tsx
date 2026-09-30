@@ -3,6 +3,7 @@
 import type { Company } from "app/data"
 import type { ResolvedLogo } from "app/data/logos"
 import { theme } from "app/utils/theme"
+import { readableColor } from "color2k"
 import Link from "next/link"
 import { useState } from "react"
 import { styled } from "restyle"
@@ -38,6 +39,7 @@ const sourceNames: Record<ResolvedLogo["source"], string> = {
 	"page image": "Guessed from wiki page",
 	filename: "Guessed from file name",
 	"line logo": "Line logo",
+	"AI guess": "Guessed from wiki",
 }
 
 /**
@@ -57,6 +59,14 @@ const uploadLink = (name: string, icon = false) => {
 }
 
 const normalize = (text: string) => text.toLowerCase().replaceAll(/\s+/g, "")
+
+const badgeColor = (color: string | undefined) => {
+	try {
+		return readableColor(color ?? "#888888")
+	} catch {
+		return undefined
+	}
+}
 
 export default function Registry({
 	companies,
@@ -100,10 +110,10 @@ export default function Registry({
 						spaces, and punctuation don't matter.
 					</p>
 					<p>
-						Without one, RapidRoute guesses: MRT lines use their{" "}
-						<code>Line_logo</code> file, and companies use the main image of
-						their wiki page, or a file with their name and "logo" in it. Logos
-						refresh once a day.
+						Without one, RapidRoute uses MRT line logos or chooses a logo from
+						the entity's wiki page and matching files. The source is linked
+						below each guess. Lines without a logo show a badge with their code
+						and color. Logos refresh once a day.
 					</p>
 				</details>
 				<Controls>
@@ -189,25 +199,7 @@ function CompanyCard({ company }: { company: RegistryCompany }) {
 			</CardHeader>
 
 			<Muted>
-				{company.logo ? (
-					<>
-						{sourceNames[company.logo.source]}
-						{company.logo.logo && (
-							<>
-								{": "}
-								<a
-									href={company.logo.logo.page}
-									target="_blank"
-									rel="noreferrer"
-								>
-									{company.logo.logo.file}
-								</a>
-							</>
-						)}
-					</>
-				) : (
-					"No logo found"
-				)}
+				<LogoAttribution logo={company.logo} />
 			</Muted>
 			<Muted>
 				<a href={upload.href} target="_blank" rel="noreferrer">
@@ -229,12 +221,38 @@ function CompanyCard({ company }: { company: RegistryCompany }) {
 							<LineRow key={line.id} id={line.id}>
 								{hasIcon(line.logo) ? (
 									<LogoIcon logo={line.logo} name={line.name} size={28} />
+								) : line.logo ? (
+									<LogoFull
+										logo={line.logo}
+										name={line.name}
+										maxWidth={64}
+										height={32}
+									/>
 								) : (
-									<Swatch style={{ background: line.color ?? "#888888" }} />
+									<CodeBadge
+										title="No logo found; showing the line code and color"
+										style={{
+											background: line.color ?? "#888888",
+											color: badgeColor(line.color),
+											width: Math.min(
+												64,
+												Math.max(28, line.code.length * 6 + 8),
+											),
+										}}
+									>
+										{line.code.length <= 8
+											? line.code
+											: `${line.code.slice(0, 7)}…`}
+									</CodeBadge>
 								)}
 								<div>
 									{line.name}
 									{line.code !== line.name && <Muted> · {line.code}</Muted>}
+									<div>
+										<Muted>
+											<LogoAttribution logo={line.logo} />
+										</Muted>
+									</div>
 								</div>
 								<a
 									href={uploadLink(line.name).href}
@@ -246,7 +264,9 @@ function CompanyCard({ company }: { company: RegistryCompany }) {
 											: "No logo found"
 									}
 								>
-									{line.logo ? "Logo" : "Set logo"}
+									{line.logo?.source === "override"
+										? "Replace logo"
+										: "Set logo"}
 								</a>
 							</LineRow>
 						))}
@@ -254,6 +274,32 @@ function CompanyCard({ company }: { company: RegistryCompany }) {
 				</details>
 			)}
 		</Card>
+	)
+}
+
+function LogoAttribution({ logo }: { logo: ResolvedLogo | undefined }) {
+	if (!logo) return <>No logo found</>
+	const image = logo.logo ?? logo.icon
+	return (
+		<>
+			{sourceNames[logo.source]}
+			{logo.sourcePage && (
+				<>
+					{": "}
+					<a href={logo.sourcePage.url} target="_blank" rel="noreferrer">
+						{logo.sourcePage.title}
+					</a>
+				</>
+			)}
+			{image && (
+				<>
+					{logo.sourcePage ? " · " : ": "}
+					<a href={image.page} target="_blank" rel="noreferrer">
+						{logo.sourcePage ? "Image file" : image.file}
+					</a>
+				</>
+			)}
+		</>
 	)
 }
 
@@ -406,14 +452,18 @@ const Lines = styled("div", {
 
 const LineRow = styled("div", {
 	display: "grid",
-	gridTemplateColumns: "28px 1fr auto",
+	gridTemplateColumns: "64px 1fr auto",
 	alignItems: "center",
 	gap: 8,
 	fontSize: 14,
 })
 
-const Swatch = styled("div", {
+const CodeBadge = styled("div", {
 	width: 28,
 	height: 28,
 	borderRadius: 6,
+	display: "grid",
+	placeItems: "center",
+	fontSize: 10,
+	fontWeight: "bold",
 })

@@ -1,5 +1,4 @@
-import invertLightness from "app/utils/color"
-import { dynamicColor } from "app/utils/theme"
+import { dynamicColor, theme } from "app/utils/theme"
 import { parseToHsla } from "color2k"
 import { memo } from "react"
 import { styled } from "restyle"
@@ -26,8 +25,6 @@ function DangerouslyRenderArticle({
 			dangerouslySetInnerHTML={{
 				__html: content,
 			}}
-			// we never want to preserve the content when we re-render
-			key={Math.random()}
 			ref={(article) => {
 				if (!article) return
 				const elementsWithBackground = article.querySelectorAll(
@@ -80,23 +77,6 @@ function DangerouslyRenderArticle({
 					}
 				}
 
-				/**
-				 * add images
-				 */
-				const lazyImages = article.querySelectorAll<HTMLSpanElement>(
-					"span.lazy-image-placeholder",
-				)
-				for (const image of lazyImages) {
-					const newImage = document.createElement("img")
-
-					const src = image.dataset.mwSrc
-					const width = image.dataset.mwWidth
-					const height = image.dataset.mwHeight
-					const srcset = image.dataset.mwSrcset
-
-					// image.replaceWith(newImage)
-				}
-
 				return () => {
 					for (const cleanup of cleanups) {
 						cleanup()
@@ -110,9 +90,19 @@ function DangerouslyRenderArticle({
 export default memo(DangerouslyRenderArticle)
 
 const ArticleContent = styled("div", {
-	// hide disambiguation links
+	"*": { userSelect: "text" },
+	"p, ul, ol": { marginBottom: "0.8em" },
+	img: { maxWidth: "100%", height: "auto" },
+	".thumb, .thumbinner": {
+		maxWidth: "100%",
+		float: "none",
+	},
 	".hatnote": {
-		border: "1px solid red",
+		padding: 10,
+		background: theme.cardHover,
+		borderRadius: 8,
+		fontSize: 12,
+		marginBottom: 12,
 	},
 
 	// hide table of contents

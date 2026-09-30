@@ -3,6 +3,15 @@ import { useSyncExternalStore } from "react"
 import { flushSync } from "react-dom"
 import { useClientOnly } from "./useClientOnly"
 
+export const useLocalGeneratedOverviews = () => {
+	const [enabled, setEnabled] = useLocalStorageState<boolean>(
+		"generated-overviews",
+		{ defaultValue: true, listenStorageChange: true },
+	)
+	// Wait for the browser preference before mounting anything that can research.
+	return [useClientOnly(enabled !== false, null), setEnabled] as const
+}
+
 export const useLocalIsometric = () => {
 	const [direct, setDirect] = useLocalStorageState("isometric", {
 		defaultValue: "isometric",

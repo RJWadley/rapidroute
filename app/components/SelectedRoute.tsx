@@ -14,9 +14,9 @@ import { Train } from "app/icons/train"
 import { Walk } from "app/icons/walk"
 import { Warp } from "app/icons/warp"
 import { formatTime } from "app/utils/formatTime"
-import { useLogos } from "app/utils/useLogos"
 import { capsizeInter } from "app/utils/text"
 import { theme } from "app/utils/theme"
+import { useLogos } from "app/utils/useLogos"
 import { readableColor } from "color2k"
 import { AnimatePresence, motion } from "motion/react"
 import Link from "next/link"
@@ -386,6 +386,12 @@ function LineStep({ leg, lines }: { leg: Leg; lines: LineOption[] }) {
 									logo={logos?.[line.i]}
 									name={line.name || line.code}
 								/>
+							) : logos?.[line.i] ? (
+								<LogoFull
+									logo={logos[line.i]}
+									name={line.name || line.code}
+									maxWidth={120}
+								/>
 							) : (
 								<LineBadge color={line.color} code={line.code} />
 							)}
@@ -430,7 +436,7 @@ function LineBadge({ color, code }: { color?: string; code: string }) {
 
 	return (
 		<Badge style={{ background, color: text }}>
-			{code.length <= 4 ? code : null}
+			{code.length <= 4 ? code : code.slice(0, 3)}
 		</Badge>
 	)
 }

@@ -1,133 +1,137 @@
 "use client"
 
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import { findClosestPlace } from "app/utils/search"
-import { AnimatePresence, motion } from "motion/react"
-import { Fragment } from "react"
-import { styled } from "restyle"
-import { useRouting } from "app/providers/RoutingContext"
+import {
+	useQuery,
+	useQueryClient,
+	useSuspenseQuery,
+} from "@tanstack/react-query"
+import { useSubscription } from "@trpc/tanstack-react-query"
+import type { WikiContext } from "app/api/getWikiContent/input"
 import { useTRPC } from "app/api/trpc/client"
-import { getLongName } from "app/utils/displayNames"
-import DangerouslyRenderArticle from "./DangerouslyRenderArticle"
-
-const layout = {
-	layout: "position",
-	initial: { opacity: 0 },
-	animate: { opacity: 1 },
-	exit: { opacity: 0 },
-} as const
-
-const components = {
-	h1: styled("h1"),
-	h2: styled("h2"),
-	h3: styled("h3"),
-	h4: styled("h4"),
-	h5: styled("h5"),
-	h6: styled("h6"),
-	p: styled("p"),
-	figure: styled("figure"),
-	ol: styled("ol"),
-	ul: styled("ul"),
-	li: styled("li"),
-}
+import { useRouting } from "app/providers/RoutingContext"
+import { useLocalGeneratedOverviews } from "app/utils/locals"
+import { findClosestPlace } from "app/utils/search"
+import { useState } from "react"
+import { WikiControls, WikiEmpty, WikiLoading, WikiResult } from "./WikiGuide"
 
 export default function WikiArticle() {
 	const { toID: placeID } = useRouting()
-
+	const [overviewsEnabled, setOverviewsEnabled] = useLocalGeneratedOverviews()
 	const trpc = useTRPC()
 	const { data: compressedPlaces } = useSuspenseQuery(
 		trpc.compressedPlaces.queryOptions(),
 	)
-
-	const relevantPlace = findClosestPlace(placeID, compressedPlaces)
-
+	const place = findClosestPlace(placeID, compressedPlaces)
 	const name =
-		relevantPlace?.type === "Coordinate" || placeID?.startsWith("player-")
+		place?.type === "Coordinate" || placeID?.startsWith("player-")
 			? null
-			: relevantPlace?.name || relevantPlace?.id || placeID
-
-	const { data, isLoading } = useQuery(
-		trpc.wikiContent.queryOptions(
-			{ name: name ?? "" },
-			{
-				enabled: !!name,
-			},
-		),
-	)
-
-	const state = !name
-		? "empty"
-		: isLoading
-			? "loading"
-			: data?.type
-				? "success"
-				: "404"
-
+			: place?.name || place?.id || placeID
+	if (!name) return null
+	const context: WikiContext =
+		place && place.type !== "Coordinate"
+			? {
+					id: place.id,
+					type: place.type,
+					codes: place.codes,
+					company: place.company?.name,
+					world: place.world,
+					coordinates: place.coordinates,
+					mayor: place.mayor,
+				}
+			: undefined
 	return (
-		<motion.div style={{ position: "relative" }}>
-			<AnimatePresence mode="popLayout" initial={false}>
-				{state === "loading" && (
-					<motion.h1 {...layout} key="loading">
-						loading...
-					</motion.h1>
-				)}
-				{state === "404" && (
-					<motion.h1 {...layout} key="404">
-						no article found for '{placeID}'
-					</motion.h1>
-				)}
-				{state === "success" && data && (
-					<motion.div key="content" {...layout}>
-						<MainImage src={data.mostProminentImage} alt={data.title} />
-						<Wrapper>
-							{data.type === "generic" && (
-								<motion.h1 {...layout} key="generic">
-									{getLongName(relevantPlace)} may be related to {data.title}
-								</motion.h1>
-							)}
-							{data.type === "specific" && (
-								<motion.h1 {...layout} key="specific">
-									{data.title}
-								</motion.h1>
-							)}
-							<p>{data.synopsis}</p>
-
-							<DangerouslyRenderArticle content={data.content || ""} />
-						</Wrapper>
-
-						<p>
-							"<a href={data.url}>{data.title}</a>" by Contributers to the MRT
-							wiki under{" "}
-							<a
-								href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
-								style={{ whiteSpace: "nowrap" }}
-							>
-								CC BY-NC-SA 3.0
-							</a>
-						</p>
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</motion.div>
+		<>
+			<WikiControls
+				name={name}
+				enabled={overviewsEnabled}
+				onChange={setOverviewsEnabled}
+			/>
+			{overviewsEnabled === true && (
+				<DestinationGuide key={placeID} input={{ name, context }} />
+			)}
+			{overviewsEnabled === false && (
+				<WikiOnlyGuide key={placeID} input={{ name, context }} />
+			)}
+		</>
 	)
 }
 
-const Wrapper = styled("div", {
-	maxWidth: "100%",
-	overflow: "clip",
-	padding: "12px",
+function WikiOnlyGuide({
+	input,
+}: { input: { name: string; context?: WikiContext } }) {
+	const trpc = useTRPC()
+	const { data, isPending, isError, refetch } = useQuery(
+		trpc.wikiArticle.queryOptions(input, { staleTime: 86400000, retry: false }),
+	)
+	if (isPending) return <WikiLoading name={input.name} mode="wiki" />
+	if (isError)
+		return (
+			<WikiEmpty
+				name={input.name}
+				mode="wiki"
+				error
+				onRetry={() => void refetch()}
+			/>
+		)
+	// The controls offer manual wiki search when the lookup finds no article.
+	if (!data) return null
+	return <WikiResult key={data.url} data={data} name={input.name} mode="wiki" />
+}
 
-	"*": {
-		userSelect: "text",
-	},
-
-	"h1:first-child": {
-		display: "none",
-	},
-})
-
-const MainImage = styled("img", {
-	width: "100%",
-	height: "auto",
-	display: "block",
-})
+function DestinationGuide({
+	input,
+}: { input: { name: string; context?: WikiContext } }) {
+	const trpc = useTRPC()
+	const queryClient = useQueryClient()
+	const options = trpc.wikiContent.queryOptions(input)
+	// The subscription delivers progress and the result in one request. Keep the
+	// result in the usual query cache so returning to a place is instantaneous.
+	const { data } = useQuery({
+		...options,
+		enabled: false,
+		staleTime: 86400000,
+	})
+	const [retrying, setRetrying] = useState(false)
+	const [failed, setFailed] = useState(false)
+	const subscription = useSubscription(
+		trpc.wikiResearch.subscriptionOptions(input, {
+			enabled: !failed && (data === undefined || retrying),
+			onData: (event) => {
+				if (event.type !== "result") return
+				queryClient.setQueryData(options.queryKey, event.content)
+				setRetrying(false)
+			},
+			onError: () => {
+				setFailed(true)
+				setRetrying(false)
+			},
+			onConnectionStateChange: ({ state, error }) => {
+				if (state !== "connecting" || !error) return
+				setFailed(true)
+				setRetrying(false)
+			},
+		}),
+	)
+	const retry = () => {
+		setFailed(false)
+		setRetrying(true)
+	}
+	const progress =
+		subscription.data?.type === "progress"
+			? subscription.data.progress
+			: undefined
+	if (data)
+		return (
+			<WikiResult
+				key={data.url}
+				data={data}
+				name={input.name}
+				retrying={retrying}
+				onRetry={retry}
+				progress={progress}
+			/>
+		)
+	if (failed) return <WikiEmpty name={input.name} error onRetry={retry} />
+	if (data === null && !retrying) return <WikiEmpty name={input.name} />
+	return <WikiLoading name={input.name} progress={progress} />
+}
