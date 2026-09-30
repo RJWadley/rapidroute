@@ -116,6 +116,8 @@ Work efficiently within the tool budgets. Call finishResearch when you have enou
 			}),
 		},
 		prepareStep: ({ stepNumber }) => {
+			// Stop spending model calls when the wiki tools cannot reach their source.
+			research.assertAvailable()
 			if (research.pages.size) report("summarizing")
 			// Reserve the final call for the structured answer, even after repeated tools.
 			if (stepNumber === 5)
@@ -155,7 +157,10 @@ Work efficiently within the tool budgets. Call finishResearch when you have enou
 				sources: [{ title: ambiguity.title, url: ambiguity.url }],
 			}
 	}
-	if (output.match === "none") return null
+	if (output.match === "none") {
+		research.assertAvailable()
+		return null
+	}
 	const page = output.articleTitle
 		? research.pages.get(output.articleTitle)
 		: undefined

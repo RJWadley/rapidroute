@@ -32,6 +32,7 @@ type Parts = ReturnType<typeof calls> | ReturnType<typeof final>
 let replies: Parts[]
 let replyIndex: number
 let generationStatus: number
+let wikiStatus: number
 let imageStatus: number
 let imageUrl: string
 let imageBytes: Uint8Array<ArrayBuffer>
@@ -51,7 +52,7 @@ const request = () =>
 beforeEach(() => {
 	caseId++
 	replyIndex = 0
-	generationStatus = imageStatus = 200
+	generationStatus = imageStatus = wikiStatus = 200
 	imageUrl = `${WIKI}/images/thumb/Kyoto_Centre.png/600px-Kyoto_Centre.png`
 	imageBytes = Buffer.from(PIXELS, "base64")
 	requestedModel = ""
@@ -120,6 +121,11 @@ beforeEach(() => {
 					},
 				})
 			}
+			if (wikiStatus !== 200)
+				return new Response("<title>Just a moment...</title>", {
+					status: wikiStatus,
+					headers: { "cf-mitigated": "challenge" },
+				})
 			if (url.pathname.startsWith("/images/"))
 				return new Response(imageBytes, {
 					status: imageStatus,
@@ -309,6 +315,48 @@ test("the model can decline to match a destination", async () => {
 	]
 	expect(await request()).toBeNull()
 	expect(requests).toHaveLength(2)
+})
+
+test("a blocked wiki cannot become a model's no-article answer", async () => {
+	wikiStatus = 403
+	replies = [
+		...replies.slice(0, 1),
+		final({
+			match: "none",
+			articleTitle: null,
+			synopsis: null,
+			sourceTitles: [],
+			imageId: null,
+			imageDescription: null,
+		}),
+	]
+	await expect(request()).rejects.toThrow("Cloudflare challenge")
+	expect(requests).toHaveLength(1)
+})
+
+test("a blocked wiki stream terminates with an error instead of a missing article", async () => {
+	wikiStatus = 403
+	replies = [
+		...replies.slice(0, 1),
+		final({
+			match: "none",
+			articleTitle: null,
+			synopsis: null,
+			sourceTitles: [],
+			imageId: null,
+			imageDescription: null,
+		}),
+	]
+	const events: WikiResearchEvent[] = []
+	const stream = (async () => {
+		for await (const event of streamWikiContent("Kyoto", {
+			id: `blocked-stream-${caseId}`,
+		}))
+			events.push(event)
+	})()
+	await expect(stream).rejects.toThrow("Cloudflare challenge")
+	expect(events.some((event) => event.type === "result")).toBe(false)
+	expect(requests).toHaveLength(1)
 })
 
 test("unresolved disambiguation is retained instead of claiming an exact match", async () => {

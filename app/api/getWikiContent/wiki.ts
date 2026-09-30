@@ -1,4 +1,5 @@
 import "server-only"
+import { fetchWiki } from "app/api/wikiRequest"
 import { load } from "cheerio"
 import type { SearchResponse } from "./types/PageSearch"
 import type { ParseResponse } from "./types/ParseQuery"
@@ -53,6 +54,7 @@ export class WikiResearch {
 	imageAttempts = 0
 	private searches = new Map<string, Promise<WikiSource[]>>()
 	private reads = new Map<string, Promise<WikiPage | null>>()
+	private requestFailure: unknown
 	private inspections = new Map<
 		string,
 		Promise<ReturnType<WikiResearch["imageResult"]>>
@@ -67,7 +69,7 @@ export class WikiResearch {
 		params: Record<string, string>,
 		signal?: AbortSignal,
 	): Promise<T> {
-		const response = await fetch(
+		const response = await fetchWiki(
 			`${WIKI}api.php?${new URLSearchParams({ format: "json", ...params })}`,
 			{
 				cache: "force-cache",
@@ -79,15 +81,24 @@ export class WikiResearch {
 				]),
 			},
 		)
-		if (!response.ok) throw new Error("The wiki request failed")
 		return response.json() as Promise<T>
+	}
+
+	/** Failed tools cannot establish that no matching article exists. */
+	assertAvailable() {
+		if (this.requestFailure) throw this.requestFailure
 	}
 
 	search(query: string, signal?: AbortSignal) {
 		const cached = this.searches.get(query)
 		if (cached) return cached
 		if (this.searches.size >= 4) throw new Error("Wiki search budget reached")
-		const request = this.searchArticles(query, signal)
+		const request = this.searchArticles(query, signal).catch(
+			(error: unknown) => {
+				this.requestFailure = error
+				throw error
+			},
+		)
 		this.searches.set(query, request)
 		return request
 	}
@@ -130,7 +141,10 @@ export class WikiResearch {
 		const cached = this.reads.get(title)
 		if (cached) return cached
 		if (this.reads.size >= 6) throw new Error("Wiki article budget reached")
-		const request = this.readArticle(title, signal)
+		const request = this.readArticle(title, signal).catch((error: unknown) => {
+			this.requestFailure = error
+			throw error
+		})
 		this.reads.set(title, request)
 		return request
 	}
@@ -314,7 +328,7 @@ export class WikiResearch {
 	}
 
 	private async downloadImage(image: WikiImage, signal?: AbortSignal) {
-		const response = await fetch(image.url, {
+		const response = await fetchWiki(image.url, {
 			cache: "force-cache",
 			next: { revalidate: 86400 },
 			redirect: "error",
@@ -326,7 +340,6 @@ export class WikiResearch {
 		})
 		const mediaType = response.headers.get("content-type")?.split(";")[0] ?? ""
 		if (
-			!response.ok ||
 			!["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
 				mediaType,
 			) ||

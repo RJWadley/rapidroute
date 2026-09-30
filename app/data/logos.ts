@@ -1,4 +1,5 @@
 import "server-only"
+import { fetchWiki } from "app/api/wikiRequest"
 import type { DataType } from "app/data"
 import { type LogoGuess, guessLogos } from "./guessLogos"
 
@@ -55,9 +56,7 @@ const wikiFetch = async <T>(params: Record<string, string>): Promise<T> => {
 		formatversion: "2",
 		...params,
 	})}`
-	const response = await fetch(url, { next: { revalidate: REVALIDATE } })
-	if (!response.ok)
-		throw new Error(`wiki request failed (${response.status}): ${url}`)
+	const response = await fetchWiki(url, { next: { revalidate: REVALIDATE } })
 	return response.json() as Promise<T>
 }
 

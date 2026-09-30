@@ -1,5 +1,6 @@
 import "server-only"
 import { getWikiModelId } from "app/api/wikiModel"
+import { WikiRequestError } from "app/api/wikiRequest"
 import { researchWiki } from "./agent"
 import type { WikiContext } from "./input"
 import type { WikiContent, WikiProgress } from "./types"
@@ -74,7 +75,9 @@ async function resolveWikiContent(
 	if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
 		try {
 			return await researchWiki(name, context, onProgress)
-		} catch {
+		} catch (error) {
+			// The article fallback uses the same blocked API; surface the retry state.
+			if (error instanceof WikiRequestError && error.blocked) throw error
 			console.warn(
 				"Wiki research failed; showing the original article when available.",
 			)
