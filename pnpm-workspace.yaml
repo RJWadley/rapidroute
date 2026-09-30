@@ -13,6 +13,7 @@ overrides:
   '@types/react-dom': ^19
 
 allowBuilds:
+  esbuild@0.28.2: true
   '@vercel/speed-insights': true
   '@biomejs/biome': true
   sharp: true
