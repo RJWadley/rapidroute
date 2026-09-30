@@ -1,4 +1,5 @@
 import "server-only"
+import { wikiDispatcher } from "./wikiTransport"
 
 const USER_AGENT = "RapidRoute/4.0 (+https://github.com/RJWadley/rapidroute)"
 
@@ -22,11 +23,13 @@ export class WikiRequestError extends Error {
 export async function fetchWiki(url: string, options: RequestInit = {}) {
 	const headers = new Headers(options.headers)
 	headers.set("User-Agent", USER_AGENT)
-	const response = await fetch(url, {
+	const request = {
 		...options,
 		headers,
 		signal: options.signal ?? AbortSignal.timeout(10000),
-	})
+		dispatcher: wikiDispatcher,
+	}
+	const response = await fetch(url, request)
 	if (!response.ok)
 		throw new WikiRequestError(
 			response.status,

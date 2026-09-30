@@ -1,11 +1,15 @@
 import { afterEach, expect, test } from "bun:test"
 import { act, cleanup, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { createTRPCClient, httpBatchLink } from "@trpc/client"
+import type { AppRouter } from "app/api/trpc/app"
+import { TRPCProvider } from "app/api/trpc/client"
+import superjson from "superjson"
 
-import useSearchBox from "./useSearchBox"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import type { ReactNode, RefObject } from "react"
 import type { CompressedPlace } from "app/utils/compressedPlaces"
+import type { ReactNode, RefObject } from "react"
+import useSearchBox from "./useSearchBox"
 
 const placesShim = [
 	{ id: "a", name: "thing a" },
@@ -52,8 +56,20 @@ function runHook(options?: Options) {
 	const queryClient = new QueryClient({
 		defaultOptions: { queries: { enabled: false } },
 	})
+	const trpcClient = createTRPCClient<AppRouter>({
+		links: [
+			httpBatchLink({
+				url: "http://localhost/api/trpc",
+				transformer: superjson,
+			}),
+		],
+	})
 	const wrapper = ({ children }: { children: ReactNode }) => (
-		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		<QueryClientProvider client={queryClient}>
+			<TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
+				{children}
+			</TRPCProvider>
+		</QueryClientProvider>
 	)
 
 	render(<TestComponent options={options} outputRef={output} />, {
