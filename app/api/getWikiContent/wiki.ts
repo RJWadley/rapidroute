@@ -158,6 +158,9 @@ export class WikiResearch {
 				action: "parse",
 				page: title,
 				redirects: "1",
+				mobileformat: "1",
+				disableeditsection: "1",
+				disabletoc: "1",
 				prop: "text|links|images|categories",
 			},
 			signal,
@@ -165,6 +168,33 @@ export class WikiResearch {
 		if (!parse?.text?.["*"]) return null
 		const source = { title: parse.title, url: wikiPageUrl(parse.title) }
 		const $ = load(parse.text["*"], null, false)
+		// MobileFrontend expects its own scripts to replace these placeholders.
+		// Restore ordinary images before normalizing their URLs for our reader.
+		$(".lazy-image-placeholder").each((_, element) => {
+			const placeholder = $(element)
+			const image = $("<img>").attr({
+				class: "gen-image",
+				loading: "lazy",
+				decoding: "async",
+				alt: placeholder.attr("data-alt") ?? "",
+			})
+			for (const [attribute, value] of [
+				[
+					"src",
+					placeholder.attr("data-mw-src") ?? placeholder.attr("data-src"),
+				],
+				[
+					"srcset",
+					placeholder.attr("data-mw-srcset") ?? placeholder.attr("data-srcset"),
+				],
+				["width", placeholder.attr("data-width")],
+				["height", placeholder.attr("data-height")],
+			] as const) {
+				if (value) image.attr(attribute, value)
+			}
+			placeholder.prev("noscript").remove()
+			placeholder.replaceWith(image)
+		})
 		$("[src], [href], [srcset]").each((_, element) => {
 			const node = $(element)
 			for (const attr of ["src", "href"]) {

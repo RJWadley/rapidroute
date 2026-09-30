@@ -2,6 +2,7 @@
 
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { useClickAway } from "ahooks"
+import { useOnlinePlayers } from "app/api/players/client"
 import { Add } from "app/icons/add"
 import { Close } from "app/icons/close"
 import { Pin } from "app/icons/pin"
@@ -9,17 +10,16 @@ import { Point } from "app/icons/point"
 import { Search } from "app/icons/search"
 import { useRouting } from "app/providers/RoutingContext"
 import { findClosestPlace } from "app/utils/search"
+import { theme } from "app/utils/theme"
 import { AnimatePresence, motion } from "motion/react"
 import { useRef, useState } from "react"
 import { styled } from "restyle"
+import { useTRPC } from "trpc/client"
 import Box from "../Box"
 import { TextArea } from "../TextArea"
 import WikiArticle from "../Wiki/WikiArticle"
 import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
-import { useTRPC } from "trpc/client"
-import { useOnlinePlayers } from "app/api/players/client"
-import { theme } from "app/utils/theme"
 
 export function SearchBox() {
 	const trpc = useTRPC()
@@ -106,107 +106,109 @@ export function SearchBox() {
 	} as const
 
 	return (
-		<Box>
-			<div ref={wrapper}>
-				<AnimatePresence mode="popLayout" initial={false}>
-					{!navMode && toID ? (
-						<NavigateTrigger
-							id="navigateButton"
-							type="button"
-							onClick={() => {
-								setNavMode(true)
-								setTimeout(() => {
-									fromFieldRef.current?.focus()
-								})
-							}}
-							ref={navigateRef}
-							{...layout}
-						>
-							<Add />
-							Choose a starting point
-						</NavigateTrigger>
-					) : null}
-				</AnimatePresence>
-				<SearchWrap layout style={{ borderRadius: 28 }}>
+		<>
+			<Box>
+				<div ref={wrapper}>
 					<AnimatePresence mode="popLayout" initial={false}>
-						{navMode && (
-							<SearchBar {...layout} layout>
-								<motion.div layout="position">
-									<Point />
-								</motion.div>
-								<motion.div layout="position">
-									<TextArea
-										{...fromProps}
-										onFocus={(e) => {
-											toFocusLost()
-											fromProps.onFocus(e)
+						{!navMode && toID ? (
+							<NavigateTrigger
+								id="navigateButton"
+								type="button"
+								onClick={() => {
+									setNavMode(true)
+									setTimeout(() => {
+										fromFieldRef.current?.focus()
+									})
+								}}
+								ref={navigateRef}
+								{...layout}
+							>
+								<Add />
+								Choose a starting point
+							</NavigateTrigger>
+						) : null}
+					</AnimatePresence>
+					<SearchWrap layout style={{ borderRadius: 28 }}>
+						<AnimatePresence mode="popLayout" initial={false}>
+							{navMode && (
+								<SearchBar {...layout} layout>
+									<motion.div layout="position">
+										<Point />
+									</motion.div>
+									<motion.div layout="position">
+										<TextArea
+											{...fromProps}
+											onFocus={(e) => {
+												toFocusLost()
+												fromProps.onFocus(e)
+											}}
+											placeholder="From"
+											ref={fromFieldRef}
+										/>
+									</motion.div>
+									<CloseButton
+										layout="position"
+										type="button"
+										onClick={() => {
+											clearFrom()
+											setNavMode(false)
 										}}
-										placeholder="From"
-										ref={fromFieldRef}
-									/>
-								</motion.div>
-								<CloseButton
-									layout="position"
-									type="button"
-									onClick={() => {
-										clearFrom()
-										setNavMode(false)
+										title="Reset Starting Point"
+										invisible={false}
+									>
+										<CloseIcon />
+									</CloseButton>
+								</SearchBar>
+							)}
+						</AnimatePresence>
+						<SearchBar layout>
+							<motion.div layout="position">
+								<Search
+									style={{ position: "absolute" }}
+									animate={{ opacity: navMode ? 0 : 1 }}
+								/>
+								<Pin animate={{ opacity: navMode ? 1 : 0 }} />
+							</motion.div>
+							<motion.div layout="position">
+								<TextArea
+									{...toProps}
+									onFocus={(e) => {
+										fromFocusLost()
+										toProps.onFocus(e)
 									}}
-									title="Reset Starting Point"
-									invisible={false}
-								>
-									<CloseIcon />
-								</CloseButton>
-							</SearchBar>
+									placeholder="to"
+								/>
+							</motion.div>
+							<CloseButton
+								layout="position"
+								type="button"
+								onClick={clearTo}
+								title="Reset"
+								invisible={!toProps.value}
+							>
+								<CloseIcon />
+							</CloseButton>
+						</SearchBar>
+					</SearchWrap>
+					<AnimatePresence mode="popLayout">
+						{hasSearchResults && (
+							<Results {...layout} key={hasFromResults ? "from" : "to"}>
+								{(fromResults ?? toResults)?.map((result) => (
+									<SearchResult key={result.id} place={result} />
+								))}
+							</Results>
 						)}
 					</AnimatePresence>
-					<SearchBar layout>
-						<motion.div layout="position">
-							<Search
-								style={{ position: "absolute" }}
-								animate={{ opacity: navMode ? 0 : 1 }}
-							/>
-							<Pin animate={{ opacity: navMode ? 1 : 0 }} />
-						</motion.div>
-						<motion.div layout="position">
-							<TextArea
-								{...toProps}
-								onFocus={(e) => {
-									fromFocusLost()
-									toProps.onFocus(e)
-								}}
-								placeholder="to"
-							/>
-						</motion.div>
-						<CloseButton
-							layout="position"
-							type="button"
-							onClick={clearTo}
-							title="Reset"
-							invisible={!toProps.value}
-						>
-							<CloseIcon />
-						</CloseButton>
-					</SearchBar>
-				</SearchWrap>
-				<AnimatePresence mode="popLayout">
-					{hasSearchResults && (
-						<Results {...layout} key={hasFromResults ? "from" : "to"}>
-							{(fromResults ?? toResults)?.map((result) => (
-								<SearchResult key={result.id} place={result} />
-							))}
-						</Results>
-					)}
-				</AnimatePresence>
-				<AnimatePresence mode="popLayout" initial={false}>
-					{allowChildren ? (
-						<motion.div {...layout}>
-							<WikiArticle />
-						</motion.div>
-					) : null}
-				</AnimatePresence>
-			</div>
-		</Box>
+				</div>
+			</Box>
+			<AnimatePresence mode="popLayout" initial={false}>
+				{allowChildren ? (
+					<motion.div {...layout}>
+						<WikiArticle />
+					</motion.div>
+				) : null}
+			</AnimatePresence>
+		</>
 	)
 }
 

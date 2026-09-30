@@ -27,7 +27,8 @@ function titleFromWikiLink(link?: string) {
 /** Copy lead paragraphs, excluding infoboxes, notices, captions and sections. */
 function introduction(content: string) {
 	const $ = load(content, null, false)
-	const body = $(".mw-parser-output").first()
+	const lead = $(".mf-section-0").first()
+	const body = lead.length ? lead : $(".mw-parser-output").first()
 	const children = body.length ? body.children() : $.root().children()
 	const paragraphs: string[] = []
 	for (const element of children.toArray()) {

@@ -23,11 +23,13 @@ beforeEach(() => {
 	searchResults = { nearmatch: [], title: [], text: [] }
 	missingTitles = new Set()
 	content = `<div class="mw-parser-output">
+		<section class="mf-section-0">
 		<style>.infobox { color: red; }</style>
 		<div class="hatnote"><p>Unrelated notice.</p></div>
 		<table class="infobox"><tr><td><p>Infobox boilerplate.</p></td></tr></table>
 		<p>Kyoto is a town in <b>Ward 9</b>.<sup class="reference">[1]</sup></p>
-		<p>The town is served by the Northern Line.</p>
+		<p>The town is served by the Northern Line.<noscript><img src="/images/line.png"></noscript><span class="lazy-image-placeholder" data-mw-src="/images/line.png" data-mw-srcset="/images/line@2x.png 2x" data-width="30" data-height="30" data-alt="Northern Line"></span></p>
+		</section>
 		<div class="mw-heading mw-heading2"><h2>History</h2></div>
 		<p>Later article section, outside the introduction.</p>
 		<div class="thumb"><img src="/images/${PHOTO.replaceAll(" ", "_")}"><div class="thumbcaption">The Pioneer district in July 2018.</div></div>
@@ -117,6 +119,11 @@ test("curated Kyoto reads Ward 9 and copies the wiki lead without generation", a
 		"Kyoto is a town in Ward 9.\n\nThe town is served by the Northern Line.",
 	)
 	expect(result?.content).toContain("Later article section")
+	expect(result?.content).toContain(`src="${WIKI}/images/line.png"`)
+	expect(result?.content).toContain(`srcset="${WIKI}/images/line@2x.png 2x"`)
+	expect(result?.content).toContain('width="30" height="30"')
+	expect(result?.content).not.toContain("lazy-image-placeholder")
+	expect(result?.content).not.toContain("<noscript>")
 	expect(result?.sources).toEqual([
 		{
 			title: "Kyoto (Ward 9)",
@@ -127,6 +134,10 @@ test("curated Kyoto reads Ward 9 and copies the wiki lead without generation", a
 	expect(result?.mostProminentImage).toBeUndefined()
 	expect(requests.every((url) => url.origin === WIKI)).toBe(true)
 	expect(requests.some((url) => url.searchParams.has("list"))).toBe(false)
+	const articleRequest = requests.find(
+		(url) => url.searchParams.get("action") === "parse",
+	)
+	expect(articleRequest?.searchParams.get("mobileformat")).toBe("1")
 })
 
 test("unmapped destinations still look up original wiki text without generation", async () => {

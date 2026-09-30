@@ -11,7 +11,8 @@ import { useTRPC } from "app/api/trpc/client"
 import { useRouting } from "app/providers/RoutingContext"
 import { useLocalGeneratedOverviews } from "app/utils/locals"
 import { findClosestPlace } from "app/utils/search"
-import { useState } from "react"
+import { type ReactNode, useState } from "react"
+import Box from "../Box"
 import { WikiControls, WikiEmpty, WikiLoading, WikiResult } from "./WikiGuide"
 
 export default function WikiArticle() {
@@ -39,48 +40,69 @@ export default function WikiArticle() {
 					mayor: place.mayor,
 				}
 			: undefined
-	return (
-		<>
-			<WikiControls
-				name={name}
-				enabled={overviewsEnabled}
-				onChange={setOverviewsEnabled}
-			/>
-			{overviewsEnabled === true && (
-				<DestinationGuide key={placeID} input={{ name, context }} />
-			)}
-			{overviewsEnabled === false && (
-				<WikiOnlyGuide key={placeID} input={{ name, context }} />
-			)}
-		</>
+	const controls = (
+		<WikiControls
+			name={name}
+			enabled={overviewsEnabled}
+			onChange={setOverviewsEnabled}
+		/>
 	)
+	if (overviewsEnabled === true)
+		return (
+			<DestinationGuide
+				key={placeID}
+				input={{ name, context }}
+				controls={controls}
+			/>
+		)
+	if (overviewsEnabled === false)
+		return (
+			<WikiOnlyGuide
+				key={placeID}
+				input={{ name, context }}
+				controls={controls}
+			/>
+		)
+	return <Box>{controls}</Box>
 }
 
 function WikiOnlyGuide({
 	input,
-}: { input: { name: string; context?: WikiContext } }) {
+	controls,
+}: { input: { name: string; context?: WikiContext }; controls: ReactNode }) {
 	const trpc = useTRPC()
 	const { data, isPending, isError, refetch } = useQuery(
 		trpc.wikiArticle.queryOptions(input, { staleTime: 86400000, retry: false }),
 	)
-	if (isPending) return <WikiLoading name={input.name} mode="wiki" />
+	if (isPending)
+		return <WikiLoading name={input.name} mode="wiki" controls={controls} />
 	if (isError)
 		return (
 			<WikiEmpty
 				name={input.name}
 				mode="wiki"
+				controls={controls}
 				error
 				onRetry={() => void refetch()}
 			/>
 		)
 	// The controls offer manual wiki search when the lookup finds no article.
-	if (!data) return null
-	return <WikiResult key={data.url} data={data} name={input.name} mode="wiki" />
+	if (!data) return <Box>{controls}</Box>
+	return (
+		<WikiResult
+			key={data.url}
+			data={data}
+			name={input.name}
+			mode="wiki"
+			controls={controls}
+		/>
+	)
 }
 
 function DestinationGuide({
 	input,
-}: { input: { name: string; context?: WikiContext } }) {
+	controls,
+}: { input: { name: string; context?: WikiContext }; controls: ReactNode }) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
 	const options = trpc.wikiContent.queryOptions(input)
@@ -129,9 +151,16 @@ function DestinationGuide({
 				retrying={retrying}
 				onRetry={retry}
 				progress={progress}
+				controls={controls}
 			/>
 		)
-	if (failed) return <WikiEmpty name={input.name} error onRetry={retry} />
-	if (data === null && !retrying) return <WikiEmpty name={input.name} />
-	return <WikiLoading name={input.name} progress={progress} />
+	if (failed)
+		return (
+			<WikiEmpty name={input.name} error onRetry={retry} controls={controls} />
+		)
+	if (data === null && !retrying)
+		return <WikiEmpty name={input.name} controls={controls} />
+	return (
+		<WikiLoading name={input.name} progress={progress} controls={controls} />
+	)
 }
