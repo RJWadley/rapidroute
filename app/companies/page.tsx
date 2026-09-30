@@ -1,9 +1,11 @@
 import Registry, { type RegistryCompany } from "app/components/Registry"
 import { data } from "app/data"
-import { resolveLogos } from "app/data/logos"
+import { type Logos, resolveLogos } from "app/data/logos"
 import type { Metadata } from "next"
+import { connection } from "next/server"
 
-export const revalidate = 86400
+// Override the root layout's static-only policy for live wiki discovery.
+export const dynamic = "auto"
 
 export const metadata: Metadata = {
 	title: "Companies - RapidRoute",
@@ -12,7 +14,13 @@ export const metadata: Metadata = {
 }
 
 export default async function CompaniesPage() {
-	const logos = await resolveLogos(data)
+	await connection()
+	let logos: Logos = {}
+	try {
+		logos = await resolveLogos(data)
+	} catch (error) {
+		console.error("Company logos are temporarily unavailable", error)
+	}
 
 	const companies: RegistryCompany[] = data.companies.list
 		.map((company) => ({

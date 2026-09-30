@@ -223,6 +223,20 @@ test("concurrent registry and API requests share the logo refresh", async () => 
 	expect(again).toBe(registry)
 })
 
+test("a failed wiki refresh reports its status and can be retried", async () => {
+	const data = fixture()
+	const workingFetch = globalThis.fetch
+	globalThis.fetch = mock(
+		async () => new Response(null, { status: 503 }),
+	) as unknown as typeof fetch
+
+	await expect(resolveLogos(data)).rejects.toThrow("wiki request failed (503)")
+
+	globalThis.fetch = workingFetch
+	const logos = await resolveLogos(data)
+	expect(logos.company?.logo?.file).toBe("Company_logo.png")
+})
+
 test("a shared line name cannot borrow a logo from another company", async () => {
 	selectedId = "line"
 	selectedFile = "Western_Line_logo.png"

@@ -56,7 +56,8 @@ const wikiFetch = async <T>(params: Record<string, string>): Promise<T> => {
 		...params,
 	})}`
 	const response = await fetch(url, { next: { revalidate: REVALIDATE } })
-	if (!response.ok) throw new Error(`wiki request failed: ${url}`)
+	if (!response.ok)
+		throw new Error(`wiki request failed (${response.status}): ${url}`)
 	return response.json() as Promise<T>
 }
 
