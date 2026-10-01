@@ -10,6 +10,12 @@ const fileName = (name: string) =>
 	name.replace(/^File:/, "").replaceAll("_", " ")
 export const wikiPageUrl = (title: string) =>
 	`${WIKI}index.php/${encodeURIComponent(title.replaceAll(" ", "_"))}`
+const normalizedName = (text: string) =>
+	text
+		.normalize("NFKC")
+		.toLowerCase()
+		.replace(/[^\p{L}\p{N}]+/gu, " ")
+		.trim()
 
 export type WikiSource = { title: string; url: string }
 export type WikiImage = {
@@ -101,6 +107,30 @@ export class WikiResearch {
 		)
 		this.searches.set(query, request)
 		return request
+	}
+
+	/** Broad search hits need a full-name mention before the plain reader uses them. */
+	async findArticle(name: string) {
+		const query = normalizedName(name)
+		if (!query) return null
+		const candidates = await this.search(name)
+		for (const candidate of candidates.slice(0, 3)) {
+			const page = await this.read(candidate.title)
+			if (!page) continue
+			const titles = [candidate.title, page.title].map(normalizedName)
+			const exact = titles.includes(query)
+			if (
+				exact ||
+				[...titles, normalizedName(page.text)].some((text) =>
+					` ${text} `.includes(` ${query} `),
+				)
+			)
+				return {
+					page,
+					match: exact ? ("exact" as const) : ("related" as const),
+				}
+		}
+		return null
 	}
 
 	private async searchArticles(query: string, signal?: AbortSignal) {

@@ -209,13 +209,16 @@ test("full-text results display original text with a related-article label", asy
 		"Marblelake Heathrow International Airport",
 		"Marblegate",
 	]
-	content = "<p>The airport serves the city of Marblegate.</p>"
+	content =
+		"<p>The airport serves the city of Marblegate, with a bus stop named Marblegate-Lakeview Heathrow Airport.</p>"
 	const result = await getWikiArticle("Marblegate-Lakeview Heathrow Airport", {
 		id: "IntraBus-Marblegate-Lakeview+Heathrow+Airport",
 		type: "BusStop",
 	})
 	expect(result?.title).toBe("Marblelake Heathrow International Airport")
-	expect(result?.synopsis).toBe("The airport serves the city of Marblegate.")
+	expect(result?.synopsis).toBe(
+		"The airport serves the city of Marblegate, with a bus stop named Marblegate-Lakeview Heathrow Airport.",
+	)
 	expect(result?.type).toBe("generic")
 	expect(result?.match).toBe("related")
 	expect(result?.highlights).toBeUndefined()
@@ -223,10 +226,10 @@ test("full-text results display original text with a related-article label", asy
 })
 
 test("stale search results do not hide a later available article", async () => {
-	searchResults.text = ["Missing article", "Available article"]
+	searchResults.text = ["Missing article", "Unmapped destination history"]
 	missingTitles.add("Missing article")
 	const result = await getWikiArticle("Unmapped destination")
-	expect(result?.title).toBe("Available article")
+	expect(result?.title).toBe("Unmapped destination history")
 })
 
 test("a missing curated article falls back to ordinary wiki search", async () => {

@@ -11,7 +11,6 @@
 	flex-wrap: wrap;
 	gap: 4px 12px;
 	padding: 10px 20px;
-	border-top: 1px solid var(--wiki-border);
 	color: var(--wiki-muted);
 	font-size: 12px;
 	font-weight: 400;

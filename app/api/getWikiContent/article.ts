@@ -74,18 +74,10 @@ export async function getWikiArticle(
 	const hasOverride = !!page
 	let match: WikiContent["match"] = "exact"
 	if (!page) {
-		// Exact matches and partial title matches precede article-text results.
-		// A few candidates allow for missing or stale wiki pages.
-		const candidates = await wiki.search(name)
-		for (const candidate of candidates.slice(0, 3)) {
-			page = await wiki.read(candidate.title)
-			if (!page) continue
-			match = [candidate.title, page.title].some(
-				(title) => title.toLowerCase() === name.toLowerCase(),
-			)
-				? "exact"
-				: "related"
-			break
+		const result = await wiki.findArticle(name)
+		if (result) {
+			page = result.page
+			match = result.match
 		}
 	}
 	if (!page) return null

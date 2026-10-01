@@ -86,22 +86,16 @@ async function resolveWikiContent(
 	// Keep the wiki readable if the model or its tools are unavailable.
 	onProgress?.({ stage: "fallback", pagesRead: 0, imagesChecked: 0 })
 	const wiki = new WikiResearch(AbortSignal.timeout(15000))
-	const candidates = await wiki.search(name)
-	for (const candidate of candidates.slice(0, 3)) {
-		const page = await wiki.read(candidate.title)
-		if (!page) continue
-		return {
-			type:
-				page.title.toLowerCase() === name.toLowerCase()
-					? "specific"
-					: "generic",
-			match: null,
-			title: page.title,
-			url: page.url,
-			content: page.content,
-			synopsis: null,
-			sources: [{ title: page.title, url: page.url }],
-		}
+	const result = await wiki.findArticle(name)
+	if (!result) return null
+	const { page, match } = result
+	return {
+		type: match === "exact" ? "specific" : "generic",
+		match: null,
+		title: page.title,
+		url: page.url,
+		content: page.content,
+		synopsis: null,
+		sources: [{ title: page.title, url: page.url }],
 	}
-	return null
 }
