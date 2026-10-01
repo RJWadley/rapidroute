@@ -168,6 +168,9 @@ export class WikiResearch {
 		if (!parse?.text?.["*"]) return null
 		const source = { title: parse.title, url: wikiPageUrl(parse.title) }
 		const $ = load(parse.text["*"], null, false)
+		// The embedded reader displays every section without MobileFrontend's JS.
+		$(".section-heading").removeAttr("onclick")
+		$(".section-heading > .indicator").remove()
 		// MobileFrontend expects its own scripts to replace these placeholders.
 		// Restore ordinary images before normalizing their URLs for our reader.
 		$(".lazy-image-placeholder").each((_, element) => {

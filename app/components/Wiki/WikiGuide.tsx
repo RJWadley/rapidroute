@@ -2,8 +2,9 @@
 
 import type { WikiContent, WikiProgress } from "app/api/getWikiContent/types"
 import { theme } from "app/utils/theme"
+import { motion, useReducedMotion } from "motion/react"
 import Image from "next/image"
-import { type CSSProperties, type ReactNode, useState } from "react"
+import { type CSSProperties, useId, useState } from "react"
 import Box from "../Box"
 import DangerouslyRenderArticle from "./DangerouslyRenderArticle"
 import styles from "./WikiGuide.module.css"
@@ -31,22 +32,10 @@ function ExternalArrow() {
 	)
 }
 
-function WikiCard({
-	children,
-	controls,
-}: { children: ReactNode; controls?: ReactNode }) {
-	return (
-		<Box>
-			{controls}
-			{children}
-		</Box>
-	)
-}
-
 function WikiAttribution() {
 	return (
 		<p className={styles.attribution}>
-			Wiki content by MRT Wiki contributors ·{" "}
+			MRT Wiki contributors ·{" "}
 			<a
 				href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
 				target="_blank"
@@ -58,35 +47,59 @@ function WikiAttribution() {
 	)
 }
 
-function WikiArticleBox({
+export function WikiArticleBox({
 	data,
 	name,
-	initiallyExpanded = false,
-	controls,
+	collapsible,
+	pending = false,
+	error = false,
+	onRetry,
 }: {
-	data: WikiContent
+	data?: WikiContent | null
 	name: string
-	initiallyExpanded?: boolean
-	controls?: ReactNode
+	collapsible: boolean
+	pending?: boolean
+	error?: boolean
+	onRetry: () => void
 }) {
-	const [expanded, setExpanded] = useState(initiallyExpanded)
+	const [expanded, setExpanded] = useState(false)
+	const bodyID = useId()
+	const headingID = useId()
+	const reducedMotion = useReducedMotion()
+	const open = !collapsible || expanded
+	if (collapsible && !data?.content) return null
 	return (
-		<WikiCard controls={controls}>
+		<Box animated={false}>
 			<section
 				className={`${styles.guide} ${styles.wikiArticle}`}
 				style={colors}
 				aria-label={`Wiki article about ${name}`}
 			>
-				<details
-					className={styles.article}
-					open={expanded}
-					onToggle={(event) => setExpanded(event.currentTarget.open)}
-				>
-					<summary>
-						<h2 className={styles.articleHeading}>
-							<span className={styles.eyebrow}>MRT Wiki article</span>
-							<span className={styles.articleTitle}>{data.title}</span>
-						</h2>
+				<header className={styles.articleHeader}>
+					<h2 id={headingID} className={styles.articleHeading}>
+						<span className={styles.eyebrow}>MRT Wiki article</span>
+						<span className={styles.articleTitle}>{data?.title ?? name}</span>
+					</h2>
+					{data && (
+						<a
+							className={styles.textLink}
+							href={data.url}
+							target="_blank"
+							rel="noreferrer"
+						>
+							Open on wiki <ExternalArrow />
+						</a>
+					)}
+				</header>
+				{collapsible && (
+					<button
+						className={styles.articleToggle}
+						type="button"
+						aria-expanded={open}
+						aria-controls={bodyID}
+						onClick={() => setExpanded(!expanded)}
+					>
+						{open ? "Hide article" : "Read full article"}
 						<svg
 							width="18"
 							height="18"
@@ -96,35 +109,67 @@ function WikiArticleBox({
 						>
 							<path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="1.5" />
 						</svg>
-					</summary>
-					{expanded && (
-						<div className={styles.articleBody}>
-							{initiallyExpanded && data.type === "generic" && (
-								<p className={styles.notice}>
-									{data.match === "ambiguous"
-										? `Several places share the name ${name}. Check the article to find the one you mean.`
-										: data.match === "related"
-											? `Related article for ${name}.`
-											: `Wiki search result for ${name}.`}
-								</p>
-							)}
+					</button>
+				)}
+				<motion.section
+					id={bodyID}
+					className={styles.articleViewport}
+					aria-labelledby={headingID}
+					aria-hidden={!open}
+					inert={!open}
+					initial={false}
+					animate={{ height: open ? "auto" : 0 }}
+					transition={{
+						duration: reducedMotion || !collapsible ? 0 : 0.22,
+						ease: "easeOut",
+					}}
+				>
+					<div className={styles.articleBody}>
+						{!collapsible && data?.type === "generic" && (
+							<p className={styles.notice}>
+								{data.match === "ambiguous"
+									? `Several places share the name ${name}. Check the article to find the one you mean.`
+									: data.match === "related"
+										? `Related article for ${name}.`
+										: `Wiki search result for ${name}.`}
+							</p>
+						)}
+						{data ? (
 							<DangerouslyRenderArticle content={data.content} />
-						</div>
-					)}
-				</details>
-				<footer className={styles.articleFooter}>
-					<a
-						className={styles.textLink}
-						href={data.url}
-						target="_blank"
-						rel="noreferrer"
-					>
-						Open on wiki <ExternalArrow />
-					</a>
-					<WikiAttribution />
-				</footer>
+						) : pending ? (
+							<output className={styles.researchStatus} aria-live="polite">
+								<span className={styles.spinner} aria-hidden="true" />
+								<span className={styles.statusLabel}>
+									Loading the wiki article…
+								</span>
+							</output>
+						) : (
+							<div className={styles.unavailable}>
+								<p>
+									{error
+										? "We couldn't load this article right now."
+										: "No matching article found. Try a different name with Search MRT Wiki above."}
+								</p>
+								{error && (
+									<button
+										className={styles.button}
+										type="button"
+										onClick={onRetry}
+									>
+										Try again
+									</button>
+								)}
+							</div>
+						)}
+					</div>
+				</motion.section>
+				{data && (
+					<footer className={styles.articleFooter}>
+						<WikiAttribution />
+					</footer>
+				)}
 			</section>
-		</WikiCard>
+		</Box>
 	)
 }
 
@@ -164,7 +209,7 @@ function ResearchStatus({ progress }: { progress?: WikiProgress }) {
 	const labels = {
 		searching: "Finding the right wiki article",
 		reading: "Reading the wiki",
-		images: "Looking at photos",
+		images: "Checking images",
 		summarizing: "Connecting the details",
 		fallback: "Opening the original article",
 	}
@@ -190,47 +235,30 @@ function ResearchStatus({ progress }: { progress?: WikiProgress }) {
 export function WikiLoading({
 	name,
 	progress,
-	mode = "generated",
-	controls,
 }: {
 	name: string
 	progress?: WikiProgress
-	mode?: "generated" | "wiki"
-	controls?: ReactNode
 }) {
 	return (
-		<WikiCard controls={controls}>
-			<section
-				className={`${styles.guide} ${styles.loading}`}
-				style={colors}
-				aria-label={`About ${name}`}
-			>
-				<p className={styles.eyebrow}>MRT WIKI</p>
-				<h2 className={styles.title}>{name}</h2>
-				{mode === "wiki" ? (
-					<output className={styles.researchStatus} aria-live="polite">
-						<span className={styles.spinner} aria-hidden="true" />
-						<span className={styles.statusLabel}>
-							Loading the wiki article…
-						</span>
-					</output>
-				) : (
-					<ResearchStatus progress={progress} />
-				)}
-				<div className={styles.skeleton} aria-hidden="true">
-					<span />
-					<span />
-					<span />
-				</div>
-				<p className={styles.loadingFootnote}>
-					{mode === "wiki"
-						? "From the original MRT Wiki article."
-						: progress?.pagesRead
-							? `${progress.pagesRead} ${progress.pagesRead === 1 ? "article" : "articles"} read${progress.imagesChecked ? ` · ${progress.imagesChecked} ${progress.imagesChecked === 1 ? "image" : "images"} checked` : ""}`
-							: "A short overview, with links to the original sources."}
-				</p>
-			</section>
-		</WikiCard>
+		<section
+			className={`${styles.guide} ${styles.loading}`}
+			style={colors}
+			aria-label={`About ${name}`}
+		>
+			<p className={styles.eyebrow}>Generated overview</p>
+			<h2 className={styles.title}>{name}</h2>
+			<ResearchStatus progress={progress} />
+			<div className={styles.skeleton} aria-hidden="true">
+				<span />
+				<span />
+				<span />
+			</div>
+			<p className={styles.loadingFootnote}>
+				{progress?.pagesRead
+					? `${progress.pagesRead} ${progress.pagesRead === 1 ? "article" : "articles"} read${progress.imagesChecked ? ` · ${progress.imagesChecked} ${progress.imagesChecked === 1 ? "image" : "images"} checked` : ""}`
+					: "A short overview, with links to the original sources."}
+			</p>
+		</section>
 	)
 }
 
@@ -259,7 +287,7 @@ function WikiPhoto({ data }: { data: WikiContent }) {
 						rel="noreferrer"
 						title={data.imageSource.file}
 					>
-						Photo source <ExternalArrow />
+						Image source <ExternalArrow />
 					</a>
 				</figcaption>
 			)}
@@ -273,137 +301,105 @@ export function WikiResult({
 	retrying = false,
 	onRetry,
 	progress,
-	mode = "generated",
-	controls,
 }: {
 	data: WikiContent
 	name: string
 	retrying?: boolean
 	onRetry?: () => void
 	progress?: WikiProgress
-	mode?: "generated" | "wiki"
-	controls?: ReactNode
 }) {
 	const ambiguous = data.match === "ambiguous"
-	if (mode === "wiki" && data.content)
-		return (
-			<WikiArticleBox
-				data={data}
-				name={name}
-				initiallyExpanded
-				controls={controls}
-			/>
-		)
 	return (
-		<>
-			<WikiCard controls={controls}>
-				<section
-					className={styles.guide}
-					style={colors}
-					aria-label={`About ${name}`}
-				>
-					<WikiPhoto key={data.mostProminentImage} data={data} />
-					<div className={styles.body}>
-						<div className={styles.heading}>
-							<p className={styles.eyebrow}>
-								{mode === "wiki"
-									? "FROM THE MRT WIKI"
-									: data.synopsis && !ambiguous
-										? "GENERATED OVERVIEW · MRT WIKI"
-										: "MRT WIKI"}
-							</p>
-							<h2 className={styles.title}>{data.title}</h2>
-						</div>
-						{data.type === "generic" && (
-							<p className={styles.notice}>
-								{ambiguous
-									? `Several places share the name ${name}. Check the article below to find the one you mean.`
-									: data.match === "related"
-										? `Related article for ${name}.`
-										: `Wiki search result for ${name}.`}
-							</p>
-						)}
-						{data.synopsis ? (
-							<p
-								className={`${styles.overview} ${mode === "wiki" ? styles.introduction : ""}`}
+		<section
+			className={styles.guide}
+			style={colors}
+			aria-label={`About ${name}`}
+		>
+			<WikiPhoto key={data.mostProminentImage} data={data} />
+			<div className={styles.body}>
+				<div className={styles.heading}>
+					<p className={styles.eyebrow}>Generated overview · MRT Wiki</p>
+					<h2 className={styles.title}>{data.title}</h2>
+				</div>
+				{data.type === "generic" && (
+					<p className={styles.notice}>
+						{ambiguous
+							? `Several places share the name ${name}. Check the article below to find the one you mean.`
+							: data.match === "related"
+								? `Related article for ${name}.`
+								: `Wiki search result for ${name}.`}
+					</p>
+				)}
+				{data.synopsis ? (
+					<p className={styles.overview}>{data.synopsis}</p>
+				) : (
+					<div className={styles.unavailable}>
+						<p>
+							The overview isn't available right now. You can read the original
+							wiki article below.
+						</p>
+						{onRetry && (
+							<button
+								className={styles.button}
+								type="button"
+								onClick={onRetry}
+								disabled={retrying}
 							>
-								{data.synopsis}
-							</p>
-						) : (
-							<div className={styles.unavailable}>
-								<p>
-									{mode === "wiki"
-										? "This article has no introduction. You can read the full wiki article below."
-										: "The overview isn't available right now. You can still read the original wiki article below."}
-								</p>
-								{mode === "generated" && onRetry && (
-									<button
-										className={styles.button}
-										type="button"
-										onClick={onRetry}
-										disabled={retrying}
-									>
-										{retrying ? "Trying again…" : "Try the overview again"}
-									</button>
-								)}
-							</div>
+								{retrying ? "Trying again…" : "Try the overview again"}
+							</button>
 						)}
-						{retrying && <ResearchStatus progress={progress} />}
-						{mode === "generated" &&
-							!ambiguous &&
-							data.highlights &&
-							data.highlights.length > 0 && (
-								<dl className={styles.highlights}>
-									{data.highlights.map((highlight, index) => (
-										<div
-											key={`${highlight.label}-${index}`}
-											className={styles.highlight}
-										>
-											<dt>{highlight.label}</dt>
-											<dd>
-												{highlight.detail}
-												<span className={styles.citations}>
-													{highlight.sources.map((source) => (
-														<a
-															key={source.url}
-															href={source.url}
-															target="_blank"
-															rel="noreferrer"
-															aria-label={`Source for ${highlight.label}: ${source.title}`}
-															title={source.title}
-														>
-															<ExternalArrow />
-														</a>
-													))}
-												</span>
-											</dd>
-										</div>
-									))}
-								</dl>
-							)}
-						<div className={styles.sources}>
-							<h3>
-								{mode === "wiki" ? "Read on the wiki" : "Read the sources"}
-							</h3>
-							<div className={styles.sourceLinks}>
-								{data.sources.map((source) => (
-									<a
-										key={source.url}
-										href={source.url}
-										target="_blank"
-										rel="noreferrer"
-									>
-										{source.title} <ExternalArrow />
-									</a>
-								))}
-							</div>
-						</div>
-						<WikiAttribution />
 					</div>
-				</section>
-			</WikiCard>
-			{data.content && <WikiArticleBox data={data} name={name} />}
-		</>
+				)}
+				{retrying && <ResearchStatus progress={progress} />}
+				{!ambiguous && data.highlights && data.highlights.length > 0 && (
+					<dl className={styles.highlights}>
+						{data.highlights.map((highlight, index) => (
+							<div
+								key={`${highlight.label}-${index}`}
+								className={styles.highlight}
+							>
+								<dt>{highlight.label}</dt>
+								<dd>
+									{highlight.detail}
+									<span className={styles.citations}>
+										{highlight.sources.map((source) => (
+											<a
+												key={source.url}
+												href={source.url}
+												target="_blank"
+												rel="noreferrer"
+												aria-label={`Source for ${highlight.label}: ${source.title}`}
+												title={source.title}
+											>
+												<ExternalArrow />
+											</a>
+										))}
+									</span>
+								</dd>
+							</div>
+						))}
+					</dl>
+				)}
+				{data.synopsis && data.sources.length > 0 && (
+					<div className={styles.sources}>
+						<h3>Read the sources</h3>
+						<div className={styles.sourceLinks}>
+							{data.sources.map((source) => (
+								<a
+									key={source.url}
+									href={source.url}
+									target="_blank"
+									rel="noreferrer"
+								>
+									{source.title} <ExternalArrow />
+								</a>
+							))}
+						</div>
+					</div>
+				)}
+				{!data.content && <WikiAttribution />}
+			</div>
+		</section>
 	)
 }
 
@@ -411,51 +407,41 @@ export function WikiEmpty({
 	name,
 	error = false,
 	onRetry,
-	mode = "generated",
-	controls,
 }: {
 	name: string
 	error?: boolean
 	onRetry?: () => void
-	mode?: "generated" | "wiki"
-	controls?: ReactNode
 }) {
 	return (
-		<WikiCard controls={controls}>
-			<section
-				className={`${styles.guide} ${styles.empty}`}
-				style={colors}
-				aria-label={`About ${name}`}
-			>
-				<p className={styles.eyebrow}>MRT WIKI</p>
-				<h2 className={styles.title}>
-					{error
-						? mode === "wiki"
-							? "Couldn't load this wiki article"
-							: "Couldn't load this guide"
-						: "No wiki article found"}
-				</h2>
-				<p className={styles.overview}>
-					{error
-						? `We couldn't look up ${name} right now.`
-						: `We couldn't find a matching article for ${name}. You can try a different name on the wiki.`}
-				</p>
-				<div className={styles.emptyActions}>
-					{onRetry && (
-						<button className={styles.button} type="button" onClick={onRetry}>
-							Try again
-						</button>
-					)}
-					<a
-						className={styles.textLink}
-						href={`https://wiki.minecartrapidtransit.net/index.php/Special:Search?search=${encodeURIComponent(name)}`}
-						target="_blank"
-						rel="noreferrer"
-					>
-						Search the wiki <ExternalArrow />
-					</a>
-				</div>
-			</section>
-		</WikiCard>
+		<section
+			className={`${styles.guide} ${styles.empty}`}
+			style={colors}
+			aria-label={`About ${name}`}
+		>
+			<p className={styles.eyebrow}>Generated overview</p>
+			<h2 className={styles.title}>
+				{error ? "Couldn't load this overview" : "No overview found"}
+			</h2>
+			<p className={styles.overview}>
+				{error
+					? `We couldn't look up ${name} right now.`
+					: `We couldn't put together an overview for ${name}. You can try a different name on the wiki.`}
+			</p>
+			<div className={styles.emptyActions}>
+				{onRetry && (
+					<button className={styles.button} type="button" onClick={onRetry}>
+						Try again
+					</button>
+				)}
+				<a
+					className={styles.textLink}
+					href={`https://wiki.minecartrapidtransit.net/index.php/Special:Search?search=${encodeURIComponent(name)}`}
+					target="_blank"
+					rel="noreferrer"
+				>
+					Search the wiki <ExternalArrow />
+				</a>
+			</div>
+		</section>
 	)
 }

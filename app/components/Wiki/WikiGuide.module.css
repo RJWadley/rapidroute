@@ -2,7 +2,6 @@
 	min-width: 0;
 	font-size: 14px;
 	font-weight: 400;
-	animation: appear 180ms ease-out;
 }
 
 .controls {
@@ -11,7 +10,8 @@
 	justify-content: space-between;
 	flex-wrap: wrap;
 	gap: 4px 12px;
-	padding: 8px 20px;
+	padding: 10px 20px;
+	border-top: 1px solid var(--wiki-border);
 	color: var(--wiki-muted);
 	font-size: 12px;
 	font-weight: 400;
@@ -56,8 +56,7 @@
 }
 
 .guide a:focus-visible,
-.guide button:focus-visible,
-.guide summary:focus-visible {
+.guide button:focus-visible {
 	outline: 2px solid var(--wiki-accent);
 	outline-offset: 3px;
 }
@@ -95,9 +94,6 @@
 .overview {
 	font-size: 14px;
 	line-height: 1.7;
-}
-.introduction {
-	white-space: pre-line;
 }
 .figure {
 	position: relative;
@@ -222,28 +218,53 @@
 	padding: 20px;
 }
 
-.article summary {
+.articleHeader {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.articleHeader > a {
+	flex-shrink: 0;
+	margin-top: 2px;
+	font-size: 11px;
+}
+
+.articleToggle {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
-	padding: 4px 0;
+	width: 100%;
+	margin-top: 16px;
+	padding: 10px 12px;
+	border: 1px solid var(--wiki-border);
+	border-radius: 10px;
+	background: transparent;
+	color: inherit;
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-align: left;
 	cursor: pointer;
-	list-style: none;
+	transition: background 150ms;
 }
 
-.article summary::-webkit-details-marker {
-	display: none;
-}
-.article summary:hover {
+.articleToggle:hover {
+	background: var(--wiki-surface);
 	color: var(--wiki-accent);
 }
-.article summary > svg {
+.articleToggle > svg {
 	flex-shrink: 0;
-	transition: transform 150ms;
+	transition: transform 220ms ease-out;
 }
-.article[open] summary svg {
+.articleToggle[aria-expanded="true"] > svg {
 	transform: rotate(180deg);
+}
+
+.articleViewport {
+	overflow: clip;
 }
 
 .articleHeading {
@@ -277,7 +298,7 @@
 }
 
 .articleFooter .attribution {
-	margin-top: 10px;
+	margin: 0;
 }
 
 .attribution {
@@ -411,19 +432,14 @@
 		opacity: 0.4;
 	}
 }
-@keyframes appear {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
 
 @media (prefers-reduced-motion: reduce) {
-	.guide,
 	.spinner,
 	.skeleton {
 		animation: none;
+	}
+	.articleToggle,
+	.articleToggle > svg {
+		transition: none;
 	}
 }

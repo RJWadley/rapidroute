@@ -1,110 +1,60 @@
 "use client"
 
-import {
-	useQuery,
-	useQueryClient,
-	useSuspenseQuery,
-} from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useSubscription } from "@trpc/tanstack-react-query"
 import type { WikiContext } from "app/api/getWikiContent/input"
 import { useTRPC } from "app/api/trpc/client"
-import { useRouting } from "app/providers/RoutingContext"
 import { useLocalGeneratedOverviews } from "app/utils/locals"
-import { findClosestPlace } from "app/utils/search"
-import { type ReactNode, useState } from "react"
+import { useState } from "react"
 import Box from "../Box"
-import { WikiControls, WikiEmpty, WikiLoading, WikiResult } from "./WikiGuide"
+import {
+	WikiArticleBox,
+	WikiControls,
+	WikiEmpty,
+	WikiLoading,
+	WikiResult,
+} from "./WikiGuide"
+import useWikiDestination from "./useWikiDestination"
 
 export default function WikiArticle() {
-	const { toID: placeID } = useRouting()
-	const [overviewsEnabled, setOverviewsEnabled] = useLocalGeneratedOverviews()
-	const trpc = useTRPC()
-	const { data: compressedPlaces } = useSuspenseQuery(
-		trpc.compressedPlaces.queryOptions(),
-	)
-	const place = findClosestPlace(placeID, compressedPlaces)
-	const name =
-		place?.type === "Coordinate" || placeID?.startsWith("player-")
-			? null
-			: place?.name || place?.id || placeID
-	if (!name) return null
-	const context: WikiContext =
-		place && place.type !== "Coordinate"
-			? {
-					id: place.id,
-					type: place.type,
-					codes: place.codes,
-					company: place.company?.name,
-					world: place.world,
-					coordinates: place.coordinates,
-					mayor: place.mayor,
-				}
-			: undefined
-	const controls = (
-		<WikiControls
-			name={name}
+	const input = useWikiDestination()
+	const [overviewsEnabled] = useLocalGeneratedOverviews()
+	if (!input || overviewsEnabled === null) return null
+	return (
+		<DestinationGuide
+			key={input.context?.id ?? input.name}
+			input={input}
 			enabled={overviewsEnabled}
-			onChange={setOverviewsEnabled}
 		/>
 	)
-	if (overviewsEnabled === true)
-		return (
-			<DestinationGuide
-				key={placeID}
-				input={{ name, context }}
-				controls={controls}
-			/>
-		)
-	if (overviewsEnabled === false)
-		return (
-			<WikiOnlyGuide
-				key={placeID}
-				input={{ name, context }}
-				controls={controls}
-			/>
-		)
-	return <Box>{controls}</Box>
 }
 
-function WikiOnlyGuide({
-	input,
-	controls,
-}: { input: { name: string; context?: WikiContext }; controls: ReactNode }) {
-	const trpc = useTRPC()
-	const { data, isPending, isError, refetch } = useQuery(
-		trpc.wikiArticle.queryOptions(input, { staleTime: 86400000, retry: false }),
-	)
-	if (isPending)
-		return <WikiLoading name={input.name} mode="wiki" controls={controls} />
-	if (isError)
-		return (
-			<WikiEmpty
-				name={input.name}
-				mode="wiki"
-				controls={controls}
-				error
-				onRetry={() => void refetch()}
-			/>
-		)
-	// The controls offer manual wiki search when the lookup finds no article.
-	if (!data) return <Box>{controls}</Box>
+export function WikiPreferences() {
+	const input = useWikiDestination()
+	const [overviewsEnabled, setOverviewsEnabled] = useLocalGeneratedOverviews()
+	if (!input) return null
 	return (
-		<WikiResult
-			key={data.url}
-			data={data}
+		<WikiControls
 			name={input.name}
-			mode="wiki"
-			controls={controls}
+			enabled={overviewsEnabled}
+			onChange={setOverviewsEnabled}
 		/>
 	)
 }
 
 function DestinationGuide({
 	input,
-	controls,
-}: { input: { name: string; context?: WikiContext }; controls: ReactNode }) {
+	enabled,
+}: { input: { name: string; context?: WikiContext }; enabled: boolean }) {
 	const trpc = useTRPC()
 	const queryClient = useQueryClient()
+	const article = useQuery(
+		trpc.wikiArticle.queryOptions(input, {
+			enabled: !enabled,
+			staleTime: 86400000,
+			retry: false,
+		}),
+	)
 	const options = trpc.wikiContent.queryOptions(input)
 	// The subscription delivers progress and the result in one request. Keep the
 	// result in the usual query cache so returning to a place is instantaneous.
@@ -117,7 +67,7 @@ function DestinationGuide({
 	const [failed, setFailed] = useState(false)
 	const subscription = useSubscription(
 		trpc.wikiResearch.subscriptionOptions(input, {
-			enabled: !failed && (data === undefined || retrying),
+			enabled: enabled && !failed && (data === undefined || retrying),
 			onData: (event) => {
 				if (event.type !== "result") return
 				queryClient.setQueryData(options.queryKey, event.content)
@@ -142,25 +92,35 @@ function DestinationGuide({
 		subscription.data?.type === "progress"
 			? subscription.data.progress
 			: undefined
-	if (data)
-		return (
-			<WikiResult
-				key={data.url}
-				data={data}
-				name={input.name}
-				retrying={retrying}
-				onRetry={retry}
-				progress={progress}
-				controls={controls}
-			/>
-		)
-	if (failed)
-		return (
-			<WikiEmpty name={input.name} error onRetry={retry} controls={controls} />
-		)
-	if (data === null && !retrying)
-		return <WikiEmpty name={input.name} controls={controls} />
 	return (
-		<WikiLoading name={input.name} progress={progress} controls={controls} />
+		<>
+			{enabled && (
+				<Box animated={false}>
+					{data ? (
+						<WikiResult
+							data={data}
+							name={input.name}
+							retrying={retrying}
+							onRetry={retry}
+							progress={progress}
+						/>
+					) : failed ? (
+						<WikiEmpty name={input.name} error onRetry={retry} />
+					) : data === null && !retrying ? (
+						<WikiEmpty name={input.name} onRetry={retry} />
+					) : (
+						<WikiLoading name={input.name} progress={progress} />
+					)}
+				</Box>
+			)}
+			<WikiArticleBox
+				data={enabled ? (data ?? article.data) : article.data}
+				name={input.name}
+				collapsible={enabled}
+				pending={!enabled && article.isPending}
+				error={!enabled && article.isError}
+				onRetry={() => void article.refetch()}
+			/>
+		</>
 	)
 }

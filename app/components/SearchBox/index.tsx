@@ -17,7 +17,7 @@ import { styled } from "restyle"
 import { useTRPC } from "trpc/client"
 import Box from "../Box"
 import { TextArea } from "../TextArea"
-import WikiArticle from "../Wiki/WikiArticle"
+import WikiArticle, { WikiPreferences } from "../Wiki/WikiArticle"
 import SearchResult from "./SearchResult"
 import useSearchBox from "./useSearchBox"
 
@@ -199,15 +199,10 @@ export function SearchBox() {
 							</Results>
 						)}
 					</AnimatePresence>
+					{allowChildren && <WikiPreferences />}
 				</div>
 			</Box>
-			<AnimatePresence mode="popLayout" initial={false}>
-				{allowChildren ? (
-					<motion.div {...layout}>
-						<WikiArticle />
-					</motion.div>
-				) : null}
-			</AnimatePresence>
+			{allowChildren && <WikiArticle />}
 		</>
 	)
 }

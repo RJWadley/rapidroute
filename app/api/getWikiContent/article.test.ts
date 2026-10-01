@@ -140,6 +140,17 @@ test("curated Kyoto reads Ward 9 and copies the wiki lead without generation", a
 	expect(articleRequest?.searchParams.get("mobileformat")).toBe("1")
 })
 
+test("mobile article headings remain readable without the wiki's collapse scripts", async () => {
+	content = `<section class="mf-section-0"><p>Kyoto is a town.</p></section>
+		<h2 class="section-heading" onclick="mfTempOpenSection(1)"><span class="indicator mf-icon mf-icon-expand"></span><span id="History">History</span></h2>
+		<section class="mf-section-1 collapsible-block"><p>The town's original history.</p></section>`
+	const result = await getWikiArticle("Kyoto", { id: "Kyoto", world: "New" })
+	expect(result?.content).toContain('id="History"')
+	expect(result?.content).toContain("The town's original history.")
+	expect(result?.content).not.toContain("mfTempOpenSection")
+	expect(result?.content).not.toContain("mf-icon-expand")
+})
+
 test("unmapped destinations still look up original wiki text without generation", async () => {
 	searchResults.nearmatch = ["London"]
 	content =
