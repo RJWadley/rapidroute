@@ -311,7 +311,7 @@ export function WikiResult({
 	const ambiguous = data.match === "ambiguous"
 	return (
 		<section
-			className={styles.guide}
+			className={`${styles.guide} ${styles.result}`}
 			style={colors}
 			aria-label={`About ${name}`}
 		>
@@ -359,46 +359,30 @@ export function WikiResult({
 								className={styles.highlight}
 							>
 								<dt>{highlight.label}</dt>
-								<dd>
-									{highlight.detail}
-									<span className={styles.citations}>
-										{highlight.sources.map((source) => (
-											<a
-												key={source.url}
-												href={source.url}
-												target="_blank"
-												rel="noreferrer"
-												aria-label={`Source for ${highlight.label}: ${source.title}`}
-												title={source.title}
-											>
-												<ExternalArrow />
-											</a>
-										))}
-									</span>
-								</dd>
+								<dd>{highlight.detail}</dd>
 							</div>
 						))}
 					</dl>
 				)}
-				{data.synopsis && data.sources.length > 0 && (
-					<div className={styles.sources}>
-						<h3>Read the sources</h3>
-						<div className={styles.sourceLinks}>
-							{data.sources.map((source) => (
-								<a
-									key={source.url}
-									href={source.url}
-									target="_blank"
-									rel="noreferrer"
-								>
-									{source.title} <ExternalArrow />
-								</a>
-							))}
-						</div>
-					</div>
-				)}
 				{!data.content && <WikiAttribution />}
 			</div>
+			{data.synopsis && data.sources.length > 0 && (
+				<footer className={styles.sources}>
+					<h3>Read the sources</h3>
+					<div className={styles.sourceLinks}>
+						{data.sources.map((source) => (
+							<a
+								key={source.url}
+								href={source.url}
+								target="_blank"
+								rel="noreferrer"
+							>
+								{source.title} <ExternalArrow />
+							</a>
+						))}
+					</div>
+				</footer>
+			)}
 		</section>
 	)
 }
