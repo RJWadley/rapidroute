@@ -61,6 +61,8 @@ export const typeToString = (typeMode: string, short?: boolean) => {
 			return "Premier Cities"
 		case "SpawnWarpterminus":
 			return "Line Terminus"
+		case "SpawnWarptraincarts":
+			return "Traincarts Warps"
 		case "SpawnWarpmisc":
 			return "Other Warps"
 

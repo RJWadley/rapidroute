@@ -41,7 +41,7 @@ const getMessage = (result: ReturnType<typeof useRouting>) => {
 	}
 }
 
-const determineDifferences = (options: RouteResult[]) => {
+export const determineDifferences = (options: RouteResult[]) => {
 	// get a list of items that are in all results
 	const allPlaces = options.flatMap((result) =>
 		result.path.flatMap((x) => [x.from, x.to]),
@@ -78,6 +78,22 @@ const determineDifferences = (options: RouteResult[]) => {
 
 	return resultsWithUniquestPlaces
 }
+
+/**
+ * name a route by the places that set it apart from the other options
+ */
+export const getRouteTitle = (
+	diffedResults: ReturnType<typeof determineDifferences>,
+	index: number,
+) => {
+	const route = diffedResults[index]
+	if (!route || diffedResults.length === 1) return "Best Route"
+
+	return listFormat.format(
+		getUnique(route.uniquestPlaces.map((x) => getShortName(x))),
+	)
+}
+const listFormat = new Intl.ListFormat("en", { type: "conjunction" })
 
 export default function RouteOptions() {
 	const result = useRouting()
@@ -126,13 +142,7 @@ export default function RouteOptions() {
 								}
 							>
 								<OptionTitle>
-									<TitleText>
-										{diffedResults.length > 1
-											? getUnique(
-													route.uniquestPlaces.map((x) => getShortName(x)),
-												)
-											: "Best Route"}
-									</TitleText>
+									<TitleText>{getRouteTitle(diffedResults, index)}</TitleText>
 									<TimeChip best={index === 0}>
 										{formatTime(route.time)}
 									</TimeChip>

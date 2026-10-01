@@ -1,173 +1,101 @@
-import { google } from "@ai-sdk/google"
-import { generateObject } from "ai"
-import dedent from "dedent"
-import { z } from "zod"
-import type { SearchResponse } from "./types/PageSearch"
-import type { ParseResponse } from "./types/ParseQuery"
-import { loadImageDimensions } from "./getImageDimensions"
+import "server-only"
+import { getWikiModelId } from "app/api/wikiModel"
+import { WikiRequestError } from "app/api/wikiRequest"
+import { researchWiki } from "./agent"
+import type { WikiContext } from "./input"
+import type { WikiContent, WikiProgress } from "./types"
+import { WikiResearch } from "./wiki"
 
-export const dynamic = "error"
+const cached = new Map<string, { expires: number; content: WikiContent }>()
+const pending = new Map<
+	string,
+	{
+		request: Promise<WikiContent | null>
+		state: {
+			progress?: WikiProgress
+			listeners: Set<(progress: WikiProgress) => void>
+		}
+	}
+>()
 
-const WIKI_URL = "https://wiki.minecartrapidtransit.net/"
-
-const googleModel = google("gemini-2.0-flash-exp")
-
-const schema = z.object({
-	innerHTML: z.array(
-		z.object({
-			tagName: z.enum([
-				"h1",
-				"h2",
-				"h3",
-				"h4",
-				"h5",
-				"h6",
-				"p",
-				"figure",
-				"ol",
-				"ul",
-			]),
-			textContent: z
-				.array(
-					z.object({
-						text: z.string(),
-						href: z.string().optional(),
-						reactStyleObject: z.record(z.string(), z.string()).optional(),
-					}),
-				)
-				.optional(),
-			figure: z
-				.object({
-					src: z.string(),
-					alt: z.string(),
-					caption: z.string(),
-				})
-				.optional(),
-		}),
-	),
-})
-
-const addImageDimensions = (result: z.infer<typeof schema>["innerHTML"]) => {
-	return Promise.all(
-		result.map(async (node) => {
-			const figure = node.figure
-
-			return {
-				...node,
-				figure: figure
-					? {
-							...figure,
-							...(await loadImageDimensions(figure.src)),
-						}
-					: undefined,
+export async function getWikiContent(
+	query: string,
+	context?: WikiContext,
+	onProgress?: (progress: WikiProgress) => void,
+) {
+	const name = query.trim()
+	if (!name) throw new Error("name is required")
+	const key = JSON.stringify({
+		name,
+		context,
+		model: getWikiModelId(),
+		version: 2,
+	})
+	const existing = cached.get(key)
+	if (existing && existing.expires > Date.now()) return existing.content
+	const inFlight = pending.get(key)
+	if (inFlight) {
+		if (onProgress) {
+			inFlight.state.listeners.add(onProgress)
+			if (inFlight.state.progress) onProgress(inFlight.state.progress)
+		}
+		return inFlight.request.finally(() => {
+			if (onProgress) inFlight.state.listeners.delete(onProgress)
+		})
+	}
+	const state: {
+		progress?: WikiProgress
+		listeners: Set<(progress: WikiProgress) => void>
+	} = { listeners: new Set(onProgress ? [onProgress] : []) }
+	const request = resolveWikiContent(name, context, (progress) => {
+		state.progress = progress
+		for (const listener of state.listeners) listener(progress)
+	})
+		.then((content) => {
+			// Share successful research across requests; failed summaries remain retryable.
+			if (content?.synopsis) {
+				if (cached.size >= 200) {
+					const oldest = cached.keys().next().value
+					if (oldest !== undefined) cached.delete(oldest)
+				}
+				cached.set(key, { expires: Date.now() + 86400000, content })
 			}
-		}),
-	)
+			return content
+		})
+		.finally(() => pending.delete(key))
+	pending.set(key, { request, state })
+	return request
 }
 
-export const getWikiContent = async (name: string) => {
-	if (!name) throw new Error("name is required")
-
-	const specificParams = {
-		action: "query",
-		list: "search",
-		srwhat: "nearmatch",
-		srsearch: name,
-		format: "json",
-		srlimit: "1",
+async function resolveWikiContent(
+	name: string,
+	context?: WikiContext,
+	onProgress?: (progress: WikiProgress) => void,
+): Promise<WikiContent | null> {
+	if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+		try {
+			return await researchWiki(name, context, onProgress)
+		} catch (error) {
+			// The article fallback uses the same blocked API; surface the retry state.
+			if (error instanceof WikiRequestError && error.blocked) throw error
+			console.warn(
+				"Wiki research failed; showing the original article when available.",
+			)
+		}
 	}
-	const specificUrl = `${WIKI_URL}api.php?${new URLSearchParams(
-		specificParams,
-	).toString()}`
-	const genericParams = {
-		...specificParams,
-		srwhat: "text",
-	}
-	const genericUrl = `${WIKI_URL}api.php?${new URLSearchParams(
-		genericParams,
-	).toString()}`
-
-	const specificResults = await fetch(specificUrl).then(
-		(res) => res.json() as Promise<SearchResponse>,
-	)
-	const genericResults = await fetch(genericUrl).then(
-		(res) => res.json() as Promise<SearchResponse>,
-	)
-
-	const genericResult = genericResults?.query.search[0]
-	const specificResult = specificResults?.query.search[0]
-
-	const result = specificResult
-		? ({
-				type: "specific",
-				...specificResult,
-			} as const)
-		: genericResult
-			? ({
-					type: "generic",
-					...genericResult,
-				} as const)
-			: null
-
+	// Keep the wiki readable if the model or its tools are unavailable.
+	onProgress?.({ stage: "fallback", pagesRead: 0, imagesChecked: 0 })
+	const wiki = new WikiResearch(AbortSignal.timeout(15000))
+	const result = await wiki.findArticle(name)
 	if (!result) return null
-
-	const pageParams = {
-		action: "parse",
-		page: result?.title ?? "",
-		format: "json",
-		redirects: "true",
-		mobileformat: "true",
-	}
-	const url = `${WIKI_URL}api.php?${new URLSearchParams(pageParams).toString()}`
-	const content = await fetch(url).then(
-		(res) => res.json() as Promise<ParseResponse>,
-	)
-
-	const text = content.parse?.text["*"]
-		.replaceAll("{{{subtextcolor}}}", "var(--default-text)")
-		.replaceAll("#ccf", "#ddd")
-		// make sure URLs are valid
-		.replaceAll('src="/', `src="${WIKI_URL}`)
-		.replaceAll('href="/', `href="${WIKI_URL}`)
-		// split apart any srcset attributes, upgrade the src, and rejoin them
-		.replaceAll(/srcset="(.*?)"/g, (match: string, p1: string) => {
-			const srcset = p1
-				.split(",")
-				.map((src) => src.trim())
-				.map((src) => {
-					const [imageURL, size] = src.split(" ")
-					return `${WIKI_URL}${imageURL} ${size}
-`
-				})
-				.join(",")
-			return `srcset="${srcset}"`
-		})
-
-	const { object } = await generateObject({
-		model: googleModel,
-		prompt: dedent(`
-			ARTICLE:
-			${text}
-
-			Given a wiki article, create a place details synopsis for a online maps listing for that place.
-			The synopsis should be about a paragraph long.
-
-			When selecting the most prominent image, the file might include a size descriptor, for example 'my/image/url/330px-Sample_Image.png'.
-			Update the size descriptor to 600px if it exists, for example 'my/image/url/600px-Sample_Image.png'..  If the image does not have a size descriptor, use the original url.
-		`),
-		schema: z.object({
-			synopsis: z.string(),
-			mostProminentImage: z.string().optional(),
-		}),
-	})
-
+	const { page, match } = result
 	return {
-		type: result.type,
-		title: result.title,
-		url: `${WIKI_URL}index.php/${result.title}`,
-		synopsis: object.synopsis,
-		mostProminentImage: object.mostProminentImage,
-
-		content: text,
+		type: match === "exact" ? "specific" : "generic",
+		match: null,
+		title: page.title,
+		url: page.url,
+		content: page.content,
+		synopsis: null,
+		sources: [{ title: page.title, url: page.url }],
 	}
 }

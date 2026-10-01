@@ -91,7 +91,7 @@ export default function MRTStops({
 				existingStop.z =
 					existingStop.markers.reduce((sum, marker) => sum + marker.z, 0) /
 					existingStop.markers.length
-				existingStop.combinedColors ||= [
+				existingStop.combinedColors = existingStop.combinedColors ?? [
 					existingStop.singleColors[0] ?? "black",
 				]
 				existingStop.combinedColors.push(newStop.color)

@@ -6,19 +6,21 @@ export default function Box({
 	children,
 	className,
 	isVisible = true,
+	animated = true,
 }: {
 	children: React.ReactNode
 	className?: string
 	isVisible?: boolean
+	animated?: boolean
 }) {
 	return (
 		<AnimatePresence mode="popLayout">
 			{isVisible && (
 				<Wrapper
-					initial={{ opacity: 0 }}
+					initial={animated ? { opacity: 0 } : false}
 					animate={{ opacity: 1 }}
-					exit={{ opacity: 0 }}
-					layout
+					exit={animated ? { opacity: 0 } : undefined}
+					layout={animated}
 					style={{ borderRadius: 28 }}
 					className={className}
 				>

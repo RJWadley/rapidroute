@@ -36,23 +36,14 @@ export function MotionContainer({
 
 	/**
 	 * create a spring for each supported value
+	 * (hooks can't be called in a loop, so each value is listed out)
 	 */
-	const springs = supportedValues.map((valueName) => {
-		const initialValue = initial?.[valueName] ?? animate?.[valueName]
-		const spring = useSpring(initialValue ?? 0, options)
-
-		const isAnimated = animate?.[valueName] !== undefined
-
-		useMotionValueEvent(spring, "change", (value) => {
-			if (!isAnimated) return
-
-			const container = containerRef.current
-			if (container) container[valueName] = value
-			if (container && valueName === "alpha") container.visible = value > 0
-		})
-
-		return { valueName, spring, isAnimated }
-	})
+	const springProps = { initial, animate, options, containerRef }
+	const springs = [
+		useValueSpring("x", springProps),
+		useValueSpring("y", springProps),
+		useValueSpring("alpha", springProps),
+	] satisfies { valueName: (typeof supportedValues)[number] }[]
 
 	/**
 	 * pass value changes to the spring
@@ -74,4 +65,34 @@ export function MotionContainer({
 			{...containerProps}
 		/>
 	)
+}
+
+function useValueSpring(
+	valueName: (typeof supportedValues)[number],
+	{
+		initial,
+		animate,
+		options,
+		containerRef,
+	}: {
+		initial?: SupportedValues
+		animate?: SupportedValues
+		options?: SpringOptions
+		containerRef: RefObject<Container | null>
+	},
+) {
+	const initialValue = initial?.[valueName] ?? animate?.[valueName]
+	const spring = useSpring(initialValue ?? 0, options)
+
+	const isAnimated = animate?.[valueName] !== undefined
+
+	useMotionValueEvent(spring, "change", (value) => {
+		if (!isAnimated) return
+
+		const container = containerRef.current
+		if (container) container[valueName] = value
+		if (container && valueName === "alpha") container.visible = value > 0
+	})
+
+	return { valueName, spring, isAnimated }
 }

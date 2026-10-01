@@ -53,10 +53,13 @@ export function Satellite() {
 	})
 
 	const [{ isDark }] = useLocalDark()
-	const filter = useMemo(() => new ColorMatrixFilter(), [])
-	filter.tint(0xccccff, false)
-	filter.contrast(2, true)
-	filter.brightness(0.3, true)
+	const filter = useMemo(() => {
+		const darkFilter = new ColorMatrixFilter()
+		darkFilter.tint(0xccccff, false)
+		darkFilter.contrast(0.15, true)
+		darkFilter.brightness(0.75, true)
+		return darkFilter
+	}, [])
 
 	return (
 		<pixiContainer filters={isDark ? [filter] : []}>

@@ -16,6 +16,17 @@ const RawData = JSON.parse(
 		.replaceAll("warp_type", "mode"),
 )
 
+// airports can have multiple names now, but we only display the first
+const rawNodes = (RawData as { nodes: Record<string, Record<string, unknown>> })
+	.nodes
+for (const node of Object.values(rawNodes)) {
+	if (node.type === "AirAirport") {
+		node.name = (node.names as string[] | null)?.[0] ?? null
+		// biome-ignore lint/performance/noDelete: keeps the schema strict
+		delete node.names
+	}
+}
+
 // all this schema is primarily to verify the data is of the type I'm expecting,
 // and helps me to understand the data structure better and its relationships
 
@@ -104,8 +115,10 @@ const connections = z.record(
 	id,
 	z
 		.strictObject({
+			type: z.literal("Connection").transform((v) => undefined),
 			line: id,
 			direction: z.strictObject({
+				type: z.literal("Direction").transform((v) => undefined),
 				direction: id,
 				forward_label: requiredString,
 				backward_label: requiredString,
@@ -181,7 +194,7 @@ const schema = z
 						(v) => v ?? "unk",
 					),
 					company: id,
-					ref_station: optional(id).transform((v) => undefined),
+					stations: id.array().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("RailCompany"),
@@ -214,7 +227,7 @@ const schema = z
 					color: optionalString,
 					mode: optional(z.enum(["ferry"])).transform((v) => v ?? "unk"),
 					company: id,
-					ref_stop: optional(id).transform((v) => undefined),
+					stops: id.array().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("SeaStop"),
@@ -252,7 +265,7 @@ const schema = z
 					name: optionalString,
 					color: optionalString,
 					company: id,
-					ref_stop: optional(id).transform((v) => undefined),
+					stops: id.array().transform((v) => undefined),
 				}),
 				z.strictObject({
 					type: z.literal("BusStop"),
@@ -311,12 +324,13 @@ const schema = z
 					proximity,
 					shared_facility,
 					name: requiredString,
-					mode: z.enum(["portal", "premier", "terminus", "misc"]),
+					mode: z.enum(["portal", "premier", "terminus", "traincarts", "misc"]),
 				}),
 			]),
 		),
 		timestamp: requiredString,
-		version: z.literal(8),
+		type: z.literal("GatelogueData").transform((v) => undefined),
+		version: z.literal(11),
 	})
 	.readonly()
 

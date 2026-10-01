@@ -23,6 +23,9 @@ const mrtLinesSchema = z.enum([
 	"western",
 	"expo",
 	"zephyr",
+	"garden",
+	"knight",
+	"yeti",
 ])
 
 const otherKeysSchema = z.enum([
@@ -33,6 +36,7 @@ const otherKeysSchema = z.enum([
 	"roads.a",
 	"roads.b",
 	"markers",
+	"lakes",
 ])
 
 const lineTypeSchema = z.strictObject({
@@ -51,7 +55,7 @@ const markerTypeSchema = z.strictObject({
 	x: z.number(),
 	icon: z.string(),
 	y: z.number(),
-	dim: z.enum(["16x16", "32x32"]),
+	dim: z.enum(["8x8", "16x16", "32x32"]),
 	z: z.number(),
 	label: z.string(),
 })
