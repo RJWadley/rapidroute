@@ -107,7 +107,7 @@ export function SearchBox() {
 
 	return (
 		<>
-			<Box>
+			<SearchCard>
 				<div ref={wrapper}>
 					<AnimatePresence mode="popLayout" initial={false}>
 						{!navMode && toID ? (
@@ -201,11 +201,15 @@ export function SearchBox() {
 					</AnimatePresence>
 					{allowChildren && <WikiPreferences />}
 				</div>
-			</Box>
+			</SearchCard>
 			{allowChildren && <WikiArticle />}
 		</>
 	)
 }
+
+const SearchCard = styled(Box, {
+	maxWidth: "calc(100dvw - 10px)",
+})
 
 const CloseButton = styled(
 	motion.button,
@@ -241,10 +245,13 @@ const SearchWrap = styled(motion.div, {
 	overflow: "clip",
 })
 
+// result rows use radius 20: the card's 28 minus this 8px inset
 const Results = styled(motion.div, {
-	padding: 16,
+	padding: 8,
 	display: "grid",
-	gap: 16,
+	gridTemplateColumns: "auto minmax(0, 1fr) fit-content(120px)",
+	columnGap: 12,
+	rowGap: 2,
 })
 
 const SearchBar = styled(motion.label, {

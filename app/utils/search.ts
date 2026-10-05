@@ -1,3 +1,4 @@
+import type { OnlinePlayer, Player } from "app/api/players/type"
 import {
 	type Coordinate,
 	parseCoordinate,
@@ -5,9 +6,14 @@ import {
 } from "app/data/coordinates"
 import searcher from "fuzzysort"
 import type { CompressedPlace } from "./compressedPlaces"
-import type { OnlinePlayer, Player } from "app/api/players/type"
 
-const keys: Record<Exclude<keyof CompressedPlace, "coordinates">, unknown> = {
+const keys: Record<
+	Exclude<
+		keyof CompressedPlace,
+		"coordinates" | "codeColors" | "nameIsCode" | "modes"
+	>,
+	unknown
+> = {
 	codes: true,
 	company: true,
 	deputy_mayor: true,
