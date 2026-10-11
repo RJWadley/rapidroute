@@ -1,13 +1,27 @@
 import type { DataType, Place } from "app/data"
 
+// Keep optional properties readable as undefined, without SuperJSON metadata.
+type DefinedFields<T> = {
+	[K in keyof T as undefined extends T[K] ? never : K]: T[K]
+} & {
+	[K in keyof T as undefined extends T[K] ? K : never]?: Exclude<
+		T[K],
+		undefined
+	>
+}
+const omitUndefined = <T extends object>(value: T): DefinedFields<T> =>
+	Object.fromEntries(
+		Object.entries(value).filter(([, value]) => value !== undefined),
+	) as DefinedFields<T>
+
 const getCompany = (id: string, data: DataType) => {
 	const { companies } = data
 	const company = companies.map.get(id)
 	return company
-		? {
+		? omitUndefined({
 				type: company.type,
 				name: company.name,
-			}
+			})
 		: undefined
 }
 
@@ -66,7 +80,7 @@ export const getCompressedPlaces = (data: DataType) =>
 							SeaStop: "Unnamed ferry stop",
 							AirAirport: "Unnamed airport",
 						}[place.type])
-			return {
+			return omitUndefined({
 				id: place.pretty_id,
 				name: place.name || fallbackName,
 				nameIsCode: !place.name && codes?.length ? true : undefined,
@@ -81,7 +95,7 @@ export const getCompressedPlaces = (data: DataType) =>
 				deputy_mayor: "deputy_mayor" in place ? place.deputy_mayor : undefined,
 				coordinates: place.coordinates,
 				codeColors: getCodeColors(place, data),
-			}
+			})
 		})
 
 export type CompressedPlace = ReturnType<typeof getCompressedPlaces>[number]
