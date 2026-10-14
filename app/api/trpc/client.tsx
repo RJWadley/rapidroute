@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query"
 import {
 	createTRPCClient,
 	httpBatchLink,
+	httpLink,
 	httpSubscriptionLink,
 	splitLink,
 } from "@trpc/client"
@@ -58,9 +59,11 @@ export function TRPCReactProvider(
 						transformer: superjson,
 						url: getUrl(),
 					}),
-					false: httpBatchLink({
-						transformer: superjson,
-						url: getUrl(),
+					false: splitLink({
+						condition: (op) =>
+							op.type === "query" && op.path === "compressedPlaces",
+						true: httpLink({ transformer: superjson, url: getUrl() }),
+						false: httpBatchLink({ transformer: superjson, url: getUrl() }),
 					}),
 				}),
 			],
