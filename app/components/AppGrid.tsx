@@ -8,7 +8,7 @@ import { useLocalDark, useLocalIsometric } from "app/utils/locals"
 import { LayoutGroup, motion } from "motion/react"
 import { styled } from "restyle"
 
-export default function AppGrid({ children }: { children: React.ReactNode }) {
+export default function AppGrid() {
 	const [{ preference, isDark }, setDarkPreference] = useLocalDark()
 	const [isometric, setIsometric] = useLocalIsometric()
 

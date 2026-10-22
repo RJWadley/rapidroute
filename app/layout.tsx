@@ -1,12 +1,11 @@
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { Providers } from "./providers"
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query"
 import { styled } from "restyle"
 import { getQueryClient } from "trpc/server"
+import { Providers } from "./providers"
 
 import "./global.css"
-import { Suspense } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -34,9 +33,7 @@ export default async function RootLayout({
 			>
 				<Providers>
 					<HydrationBoundary state={dehydrate(queryClient)}>
-						<Application>
-							<Suspense fallback={null}>{children}</Suspense>
-						</Application>
+						<Application>{children}</Application>
 					</HydrationBoundary>
 				</Providers>
 			</body>

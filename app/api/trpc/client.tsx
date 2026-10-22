@@ -9,7 +9,10 @@ import {
 	httpSubscriptionLink,
 	splitLink,
 } from "@trpc/client"
-import { createTRPCContext } from "@trpc/tanstack-react-query"
+import {
+	createTRPCContext,
+	createTRPCOptionsProxy,
+} from "@trpc/tanstack-react-query"
 import { useState } from "react"
 import superjson from "superjson"
 import type { AppRouter } from "./app"
@@ -40,6 +43,35 @@ function getUrl() {
 	return `${base}/api/trpc`
 }
 
+export function createAppTRPCClient(queryClient: QueryClient, url = getUrl()) {
+	const client = createTRPCClient<AppRouter>({
+		links: [
+			splitLink({
+				condition: (op) => op.type === "subscription",
+				true: httpSubscriptionLink({ transformer: superjson, url }),
+				false: splitLink({
+					condition: (op) =>
+						op.type === "query" &&
+						(op.path === "compressedPlaces" || op.path === "offlinePlayers"),
+					true: httpLink({ transformer: superjson, url }),
+					false: httpBatchLink({ transformer: superjson, url }),
+				}),
+			}),
+		],
+	})
+	const trpc = createTRPCOptionsProxy<AppRouter>({ client, queryClient })
+	const directoryRefreshTime = 60 * 60 * 1000
+	// Both SearchBox and its search-result hooks observe this query.
+	queryClient.setQueryDefaults(trpc.offlinePlayers.queryKey(), {
+		staleTime: (query) =>
+			query.state.data && Object.keys(query.state.data).length > 0
+				? directoryRefreshTime
+				: 0,
+		gcTime: directoryRefreshTime,
+	})
+	return client
+}
+
 export function TRPCReactProvider(
 	props: Readonly<{
 		children: React.ReactNode
@@ -50,25 +82,7 @@ export function TRPCReactProvider(
 	//       suspend because React will throw away the client on the initial
 	//       render if it suspends and there is no boundary
 	const queryClient = getQueryClient()
-	const [trpcClient] = useState(() =>
-		createTRPCClient<AppRouter>({
-			links: [
-				splitLink({
-					condition: (op) => op.type === "subscription",
-					true: httpSubscriptionLink({
-						transformer: superjson,
-						url: getUrl(),
-					}),
-					false: splitLink({
-						condition: (op) =>
-							op.type === "query" && op.path === "compressedPlaces",
-						true: httpLink({ transformer: superjson, url: getUrl() }),
-						false: httpBatchLink({ transformer: superjson, url: getUrl() }),
-					}),
-				}),
-			],
-		}),
-	)
+	const [trpcClient] = useState(() => createAppTRPCClient(queryClient))
 
 	return (
 		<QueryClientProvider client={queryClient}>

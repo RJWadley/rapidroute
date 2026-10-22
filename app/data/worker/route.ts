@@ -1,11 +1,11 @@
 import SuperJSON from "superjson"
 import * as data from "../format"
 
-export type InternalFetchedData = typeof data
+export type { InternalFetchedData } from "./transport"
 
 export const dynamic = "error"
 
-// Lists and lookup maps share their nodes; send each object only once.
+// Keep already-open tabs using the original worker protocol working across deploys.
 const serializer = new SuperJSON({ dedupe: true })
 
 export const GET = () => {

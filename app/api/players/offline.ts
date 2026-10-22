@@ -45,7 +45,6 @@ export const getOfflinePlayers = async (): Promise<
 			data.table.rows
 				.map((row) => row.c[0]?.v?.toString().trim())
 				.filter((username): username is string => !!username)
-				.sort(() => Math.random() - 0.5)
 				.map(
 					(username) =>
 						[

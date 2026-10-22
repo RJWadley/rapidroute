@@ -1,21 +1,30 @@
 "use client"
 
 import { Application } from "@pixi/react"
+import { useQuery } from "@tanstack/react-query"
 import { useEventListener } from "ahooks"
 import { isBrowser } from "app/utils/isBrowser"
 import { useRef } from "react"
 import { styled } from "restyle"
+import Cities from "./Cities/Cities"
 import { Dynmap } from "./Dynmap"
 import MapPlayers from "./Players"
 import { Satellite } from "./Satellite"
 import { PixiViewport } from "./Viewport"
-import type { parseMarkersWithFallback } from "./markers-schema"
+import { parseMarkersWithFallback } from "./markers-schema"
 import { OverlappingProvider } from "./util/useHideOverlapping"
-import Cities from "./Cities/Cities"
 
-export function MapClient({
-	markers,
-}: { markers: ReturnType<typeof parseMarkersWithFallback> }) {
+export function MapClient() {
+	const { data: markers } = useQuery({
+		queryKey: ["map-markers"],
+		queryFn: async () => {
+			const response = await fetch("/api/markers")
+			if (!response.ok)
+				throw new Error(`Map markers request failed (${response.status})`)
+			return parseMarkersWithFallback(await response.json())
+		},
+		staleTime: 60 * 60 * 1000,
+	})
 	const wrapperRef = useRef<HTMLDivElement>(null)
 	// TODO reenable
 	// const { lastUsedMethod } = use(MovementContext)
@@ -76,7 +85,7 @@ export function MapClient({
 				<PixiViewport>
 					<OverlappingProvider>
 						<Satellite />
-						{markers.data && <Dynmap markers={markers.data} />}
+						{markers?.data && <Dynmap markers={markers.data} />}
 						<Cities />
 						<MapPlayers />
 					</OverlappingProvider>
