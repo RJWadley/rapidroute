@@ -1,4 +1,8 @@
 import { afterEach, beforeEach, expect, mock, spyOn, test } from "bun:test"
+import { initTRPC } from "@trpc/server"
+import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
+import superjson from "superjson"
+import { compressedPlacesResponseMeta } from "../trpc/cache"
 import { getOfflinePlayers } from "./offline"
 
 const originalFetch = globalThis.fetch
@@ -14,6 +18,29 @@ const sheetResponse = (usernames: (string | number | null)[], status = 200) =>
 		})});`,
 		{ status, headers: { "content-type": "application/javascript" } },
 	)
+
+const t = initTRPC.create({ transformer: superjson })
+const router = t.router({
+	offlinePlayers: t.procedure.query(() => getOfflinePlayers()),
+})
+function directoryResponse() {
+	const req = new Request("http://localhost/api/trpc/offlinePlayers")
+	return fetchRequestHandler({
+		endpoint: "/api/trpc",
+		req,
+		router,
+		responseMeta: (opts) => compressedPlacesResponseMeta(req, opts),
+	})
+}
+
+async function readDirectoryResponse(response: Response) {
+	const body = (await response.json()) as {
+		result: { data: Parameters<typeof superjson.deserialize>[0] }
+	}
+	return superjson.deserialize<Awaited<ReturnType<typeof getOfflinePlayers>>>(
+		body.result.data,
+	)
+}
 
 beforeEach(() => {
 	errors = spyOn(console, "error").mockImplementation(() => {})
@@ -66,6 +93,64 @@ test("preserves numeric usernames and omits blank spreadsheet rows", async () =>
 		"player-exampleplayer",
 	])
 	expect(players["player-12345"]?.username).toBe("12345")
+})
+
+test("preserves directory order across responses without shuffling the server list", async () => {
+	globalThis.fetch = mock(async () =>
+		sheetResponse(["Zed", "Alice", "Middle"]),
+	) as unknown as typeof fetch
+	const random = spyOn(Math, "random").mockReturnValue(0)
+	try {
+		for (let i = 0; i < 2; i++)
+			expect(Object.keys(await getOfflinePlayers())).toEqual([
+				"player-zed",
+				"player-alice",
+				"player-middle",
+			])
+	} finally {
+		random.mockRestore()
+	}
+})
+
+test("a validated nonempty spreadsheet becomes a cacheable tRPC directory", async () => {
+	globalThis.fetch = mock(async () =>
+		sheetResponse([" ExamplePlayer ", null, ""]),
+	) as unknown as typeof fetch
+	const res = await directoryResponse()
+	expect(res.status).toBe(200)
+	expect(res.headers.get("Vercel-CDN-Cache-Control")).toBe(
+		"public, max-age=3600",
+	)
+	expect(await readDirectoryResponse(res)).toEqual({
+		"player-exampleplayer": {
+			id: "player-exampleplayer",
+			type: "Player",
+			isOnline: false,
+			username: "ExamplePlayer",
+		},
+	})
+})
+
+test("empty spreadsheets and directory failures cannot become cached tRPC successes", async () => {
+	for (const source of [
+		async () => sheetResponse([]),
+		async () => sheetResponse([null, "", "  "]),
+		async () => sheetResponse(["ExamplePlayer"], 503),
+		async () => new Response("not a spreadsheet"),
+		async () =>
+			new Response("<title>Unavailable</title>", {
+				headers: { "content-type": "text/html" },
+			}),
+		async () => {
+			throw new Error("Network unavailable")
+		},
+	]) {
+		globalThis.fetch = mock(source) as unknown as typeof fetch
+		const res = await directoryResponse()
+		expect(res.status).toBe(200)
+		expect(res.headers.has("Vercel-CDN-Cache-Control")).toBe(false)
+		expect(await readDirectoryResponse(res)).toEqual({})
+	}
 })
 
 test("an HTTP error cannot be accepted as a player directory", async () => {

@@ -320,6 +320,9 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
     devDependencies:
+      '@types/node':
+        specifier: 22.13.11
+        version: 22.13.11
       node:
         specifier: runtime:^24.0.0
         version: runtime:24.21.0

@@ -3,13 +3,13 @@ import { type Coordinate, parseCoordinateId } from "app/data/coordinates"
 import { placesMatch } from "app/data/placesMatch"
 import { getCompressedPlaces } from "app/utils/compressedPlaces"
 import { findClosestPlace } from "app/utils/search"
+import { sleep } from "app/utils/sleep"
 import hash from "object-hash"
 import PriorityQueue from "../utils/PriorityQueue"
 import { combineWalks } from "./combineWalks"
 import { compressResult } from "./compressResult"
 import { convertToRoutes } from "./convertToRoutes"
 import { getNeighbors } from "./getNeighbors"
-import { sleep } from "app/utils/sleep"
 
 export type RoutingResult = {
 	path: (Place | Coordinate)[]
@@ -195,8 +195,9 @@ export const findPath = (
 			.map(compressResult)
 			.map((x) => ({
 				...x,
-				path: x.path.map((y) => ({ ...y, id: hash(y) })),
-				id: hash(x),
+				// Omitted optional fields must not change server/worker route IDs.
+				path: x.path.map((y) => ({ ...y, id: hash(JSON.stringify(y)) })),
+				id: hash(JSON.stringify(x)),
 			}))
 			// filter out duplicates - we can take advantage of the id being a hash
 			.filter((x, i, arr) => arr.findIndex((y) => x.id === y.id) === i)

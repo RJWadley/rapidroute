@@ -1,5 +1,6 @@
 import AppGrid from "app/components/AppGrid"
-import { MapServer } from "components/Map/Server"
+import { MapClient } from "components/Map/Client"
+import { Suspense } from "react"
 
 /**
  * the map and route panels persist across every routing segment
@@ -12,8 +13,11 @@ export default function RoutingLayout({
 }) {
 	return (
 		<>
-			<MapServer />
-			<AppGrid>{children}</AppGrid>
+			{children}
+			<Suspense fallback={null}>
+				<MapClient />
+				<AppGrid />
+			</Suspense>
 		</>
 	)
 }
